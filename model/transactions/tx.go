@@ -98,7 +98,7 @@ type BaseTx struct {
 
 /*
 ValidateBaseTx validates the given BaseTx object.
-Returns an error if any of the fields are missing.
+Throws a panic if the BaseTx object is invalid.
 TODO: Add validation for other fields.
 */
 func ValidateBaseTx(tx *BaseTx) {
