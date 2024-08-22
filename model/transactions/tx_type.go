@@ -13,7 +13,7 @@ const (
 	CheckCancelTx          TxType = "CheckCancel"
 	CheckCashTx            TxType = "CheckCash"
 	CheckCreateTx          TxType = "CheckCreate"
-	ClawbackTx			   TxType = "Clawback"
+	ClawbackTx             TxType = "Clawback"
 	DepositPreauthTx       TxType = "DepositPreauth"
 	EscrowCancelTx         TxType = "EscrowCancel"
 	EscrowCreateTx         TxType = "EscrowCreate"
