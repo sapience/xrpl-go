@@ -26,19 +26,74 @@ func (tx *Binary) TxType() TxType {
 }
 
 type BaseTx struct {
-	Account            types.Address
-	TransactionType    TxType
-	Fee                types.XRPCurrencyAmount `json:",omitempty"`
-	Sequence           uint                    `json:",omitempty"`
-	AccountTxnID       types.Hash256           `json:",omitempty"`
-	Flags              uint                    `json:",omitempty"`
-	LastLedgerSequence uint                    `json:",omitempty"`
-	Memos              []MemoWrapper           `json:",omitempty"`
-	Signers            []Signer                `json:",omitempty"`
-	SourceTag          uint                    `json:",omitempty"`
-	SigningPubKey      string                  `json:",omitempty"`
-	TicketSequence     uint                    `json:",omitempty"`
-	TxnSignature       string                  `json:",omitempty"`
+	/* The unique address of the transaction sender. */
+	Account types.Address
+	/*
+		The type of transaction. Valid types include: `Payment`, `OfferCreate`,
+		`TrustSet`, and many others.
+	*/
+	TransactionType TxType
+	/*
+		Integer amount of XRP, in drops, to be destroyed as a cost for
+		distributing this transaction to the network. Some transaction types have
+		different minimum requirements.
+	*/
+	Fee types.XRPCurrencyAmount `json:",omitempty"`
+	/*
+		The sequence number of the account sending the transaction. A transaction
+		is only valid if the Sequence number is exactly 1 greater than the previous
+		transaction from the same account. The special case 0 means the transaction
+		is using a Ticket instead.
+	*/
+	Sequence uint `json:",omitempty"`
+	/*
+		Hash value identifying another transaction. If provided, this transaction
+		is only valid if the sending account's previously-sent transaction matches
+		the provided hash.
+	*/
+	AccountTxnID types.Hash256 `json:",omitempty"`
+	/* Set of bit-flags for this transaction. */
+	Flags uint `json:",omitempty"`
+	/*
+		Highest ledger index this transaction can appear in. Specifying this field
+		places a strict upper limit on how long the transaction can wait to be
+		validated or rejected.
+	*/
+	LastLedgerSequence uint `json:",omitempty"`
+	/*
+	   Additional arbitrary information used to identify this transaction.
+	*/
+	Memos []MemoWrapper `json:",omitempty"`
+	/* The network id of the transaction. */
+	NetworkId uint `json:",omitempty"`
+	/*
+		Array of objects that represent a multi-signature which authorizes this
+		transaction.
+	*/
+	Signers []Signer `json:",omitempty"`
+	/*
+	   Arbitrary integer used to identify the reason for this payment, or a sender
+	   on whose behalf this transaction is made. Conventionally, a refund should
+	   specify the initial payment's SourceTag as the refund payment's
+	   DestinationTag.
+	*/
+	SourceTag uint `json:",omitempty"`
+	/*
+	  Hex representation of the public key that corresponds to the private key
+	  used to sign this transaction. If an empty string, indicates a
+	  multi-signature is present in the Signers field instead.
+	*/
+	SigningPubKey string `json:",omitempty"`
+	/*
+	  The sequence number of the ticket to use in place of a Sequence number. If
+	  this is provided, Sequence must be 0. Cannot be used with AccountTxnID.
+	*/
+	TicketSequence uint `json:",omitempty"`
+	/*
+	   The signature that verifies this transaction as originating from the
+	   account it says it is from.
+	*/
+	TxnSignature string `json:",omitempty"`
 }
 
 func (tx *BaseTx) TxType() TxType {

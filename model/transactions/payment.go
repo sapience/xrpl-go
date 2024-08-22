@@ -17,6 +17,19 @@ type Payment struct {
 	DeliverMin     types.CurrencyAmount `json:",omitempty"`
 }
 
+func New(payment Payment) Payment {
+	return Payment{
+		BaseTx:         payment.BaseTx,
+		Amount:         payment.Amount,
+		Destination:    payment.Destination,
+		DestinationTag: payment.DestinationTag,
+		InvoiceID:      payment.InvoiceID,
+		Paths:          payment.Paths,
+		SendMax:        payment.SendMax,
+		DeliverMin:     payment.DeliverMin,
+	}
+}
+
 func (*Payment) TxType() TxType {
 	return PaymentTx
 }
