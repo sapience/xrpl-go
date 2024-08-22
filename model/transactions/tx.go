@@ -96,6 +96,22 @@ type BaseTx struct {
 	TxnSignature string `json:",omitempty"`
 }
 
+/*
+ValidateBaseTx validates the given BaseTx object.
+Returns an error if any of the fields are missing.
+TODO: Add validation for other fields.
+*/
+func ValidateBaseTx(tx *BaseTx) {
+	if tx.Account == "" {
+		panic("base transaction: missing Account")
+	}
+	if tx.TransactionType == "" {
+		panic("base transaction: missing TransactionType")
+	}
+
+	// TODO: validate other fields
+}
+
 func (tx *BaseTx) TxType() TxType {
 	return tx.TransactionType
 }
