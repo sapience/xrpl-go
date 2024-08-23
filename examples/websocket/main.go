@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/xyield/xrpl-go/client/websocket"
-	"github.com/xyield/xrpl-go/model/client/account"
+	"github.com/Peersyst/xrpl-go/xrpl/client/websocket"
+	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
 )
 
 func main() {

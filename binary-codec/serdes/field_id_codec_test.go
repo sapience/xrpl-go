@@ -7,8 +7,8 @@ import (
 	"encoding/hex"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/stretchr/testify/require"
-	"github.com/xyield/xrpl-go/binary-codec/definitions"
 )
 
 func TestEncodeFieldID(t *testing.T) {
