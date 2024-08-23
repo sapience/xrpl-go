@@ -11,6 +11,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Returns the field name represented by the given field ID in hex string form.
+func decodeFieldID(h string) (string, error) {
+	b, err := hex.DecodeString(h)
+	if err != nil {
+		return "", err
+	}
+	if len(b) == 1 {
+		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[0]>>4), int32(b[0]&byte(15))))
+	}
+	if len(b) == 2 {
+		firstByteHighBits := b[0] >> 4
+		firstByteLowBits := b[0] & byte(15)
+		if firstByteHighBits == 0 {
+			return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(firstByteLowBits)))
+		}
+		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(firstByteHighBits), int32(b[1])))
+	}
+	if len(b) == 3 {
+		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(b[2])))
+	}
+	return "", nil
+}
+
 func TestEncodeFieldID(t *testing.T) {
 	tt := []struct {
 		description string
