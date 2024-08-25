@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/stretchr/testify/require"
-	"github.com/xyield/xrpl-go/binary-codec/serdes"
 )
 
 func TestIsPathStep(t *testing.T) {

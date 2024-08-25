@@ -3,8 +3,8 @@ package keypairs
 import (
 	"testing"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/stretchr/testify/require"
-	addresscodec "github.com/xyield/xrpl-go/address-codec"
 )
 
 func TestED25519DeriveKeypair(t *testing.T) {

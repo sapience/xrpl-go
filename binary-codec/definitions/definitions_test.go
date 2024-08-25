@@ -6,6 +6,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func convertIntToBytes(i int32) []byte {
+
+	return []byte{3}
+}
+
 func TestLoadDefinitions(t *testing.T) {
 
 	err := loadDefinitions()

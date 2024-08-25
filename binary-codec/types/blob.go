@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/xyield/xrpl-go/binary-codec/serdes"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 )
 
 // ErrNoLengthPrefix error is raised when no length prefix size is given.
