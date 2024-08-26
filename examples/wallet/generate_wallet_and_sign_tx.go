@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl"
 )
 
@@ -72,20 +71,4 @@ func main() {
 
 	fmt.Printf("txBlob: %s\n", txBlob)
 	fmt.Printf("hash: %s\n", hash)
-
-	fmt.Println("\nVerifying a transaction")
-
-	signedTx, err := binarycodec.Decode(txBlob)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("signedTx", signedTx)
-
-	valid, err := wallet.VerifyTransaction(tx)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Transaction is valid: %t\n", valid)
 }
