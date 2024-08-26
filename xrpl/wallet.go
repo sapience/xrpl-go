@@ -123,6 +123,8 @@ func NewWalletFromMnemonic(mnemonic string) (*Wallet, error) {
 // Signs a transaction offline.
 // In order for a transaction to be validated, it must be signed by the account sending the transaction to prove
 // that the owner is actually the one deciding to take that action.
+//
+// TODO: Refactor to accept a `Transaction` object instead of a map.
 func (w *Wallet) Sign(tx map[string]any) (string, string, error) {
 	encodedTx, _ := binarycodec.EncodeForSigning(tx)
 	hexTx, err := hex.DecodeString(encodedTx)
