@@ -6,6 +6,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
+// A Payment transaction represents a transfer of value from one account to another.
 type Payment struct {
 	BaseTx
 	/*
@@ -54,22 +55,6 @@ type Payment struct {
 		Must be omitted for XRP-to-XRP payments.
 	*/
 	SendMax types.CurrencyAmount `json:",omitempty"`
-}
-
-// "New" creates a new Payment object based on the provided Payment struct.
-// It validates the different fields of the payment.
-// If no validation error is found, it initializes a new Payment object with the provided fields and returns it.
-func New(payment Payment) Payment {
-	return Payment{
-		BaseTx:         payment.BaseTx,
-		Amount:         payment.Amount,
-		Destination:    payment.Destination,
-		DestinationTag: payment.DestinationTag,
-		InvoiceID:      payment.InvoiceID,
-		Paths:          payment.Paths,
-		SendMax:        payment.SendMax,
-		DeliverMin:     payment.DeliverMin,
-	}
 }
 
 func (*Payment) TxType() TxType {
