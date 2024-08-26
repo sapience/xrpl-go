@@ -14,7 +14,7 @@ func (c *ed25519Alg) deriveKeypair(decodedSeed []byte, validator bool) (string, 
 	if validator {
 		return "", "", &ed25519ValidatorError{}
 	}
-	rawPriv := sha512Half(decodedSeed)
+	rawPriv := Sha512Half(decodedSeed)
 	pubKey, privKey, err := ed25519.GenerateKey(bytes.NewBuffer(rawPriv))
 	if err != nil {
 		return "", "", err
