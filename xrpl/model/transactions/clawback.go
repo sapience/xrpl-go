@@ -8,6 +8,10 @@ import (
 
 type Clawback struct {
 	BaseTx
+
+	// The amount of currency to deliver, and it must be non-XRP. The nested field
+	// names MUST be lower-case. The `issuer` field MUST be the holder's address,
+	// whom to be clawed back.
 	Amount types.CurrencyAmount
 }
 
