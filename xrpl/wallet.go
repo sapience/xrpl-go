@@ -169,12 +169,12 @@ func (w *Wallet) VerifyTransaction(tx map[string]any) (bool, error) {
 	// if sig == "" {
 	// 	return false, errors.New("transaction signature is missing")
 	// }
-	
+
 	// encodedTx, err := binarycodec.Encode(tx)
 	// if err != nil {
 	// 	return false, err
 	// }
-	
+
 	// return keypairs.Validate(encodedTx, w.PublicKey, sig)
 }
 
