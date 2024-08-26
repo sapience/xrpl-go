@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	addresscodec "github.com/xyield/xrpl-go/address-codec"
-	"github.com/xyield/xrpl-go/binary-codec/serdes"
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 )
 
 const (

@@ -152,8 +152,3 @@ func createFieldIdNameMap() {
 		definitions.FieldIdNameMap[*fh] = k
 	}
 }
-
-func convertIntToBytes(i int32) []byte {
-
-	return []byte{3}
-}

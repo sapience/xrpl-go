@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/stretchr/testify/require"
-	addresscodec "github.com/xyield/xrpl-go/address-codec"
 )
 
 func TestGenerateEncodeSeed(t *testing.T) {
