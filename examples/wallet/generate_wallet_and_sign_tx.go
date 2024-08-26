@@ -7,6 +7,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl"
 )
 
+const (
+	AccountSeed = "sEd7MgLAff94dLx91rVRByUbLrdSrdj"
+	DestinationAddress = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
+)
+
 func main() {
 	wallet, err := xrpl.NewWallet(addresscodec.ED25519)
 	if err != nil {
@@ -45,4 +50,25 @@ func main() {
 	fmt.Printf("Public 	key: %s\n", walletFromMnemonic.PublicKey)
 	fmt.Printf("Classic address: %s\n", walletFromMnemonic.ClassicAddress)
 	fmt.Printf("Seed: %s\n", walletFromMnemonic.Seed)
+
+	fmt.Println("\nSigning a transaction")
+
+	tx := map[string]any{
+		"Account":         wallet.ClassicAddress,
+		"TransactionType": "Payment",
+		"Amount":          "15",
+		"Destination":     DestinationAddress,
+		"Flags":           0,
+		"Fee":             "12",
+		"Sequence":        1798962,
+		"SigningPubKey":   wallet.PublicKey,
+	}
+
+	txBlob, hash, err := wallet.Sign(tx)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("txBlob: %s\n", txBlob)
+	fmt.Printf("hash: %s\n", hash)	
 }

@@ -7,8 +7,9 @@ import (
 	"strings"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/keypairs"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	"github.com/tyler-smith/go-bip32"
 	"github.com/tyler-smith/go-bip39"
 )
@@ -23,7 +24,7 @@ type Wallet struct {
 	Seed           string
 }
 
-// creates a new random Wallet. In order to make this a valid account on ledger, you must
+// Creates a new random Wallet. In order to make this a valid account on ledger, you must
 // Send XRP to it.
 func NewWallet(alg addresscodec.CryptoAlgorithm) (Wallet, error) {
 	seed, err := keypairs.GenerateSeed("", alg)
@@ -122,25 +123,34 @@ func NewWalletFromMnemonic(mnemonic string) (*Wallet, error) {
 // Signs a transaction offline.
 // In order for a transaction to be validated, it must be signed by the account sending the transaction to prove
 // that the owner is actually the one deciding to take that action.
-func (w *Wallet) Sign(tx transactions.BaseTx) (txBlob, hash string, err error) {
-	return "", "", errors.New("not implemented")
+func (w *Wallet) Sign(tx map[string]any) (string, string, error) {
+	encodedTx, _ := binarycodec.EncodeForSigning(tx)
+	hexTx, err := hex.DecodeString(encodedTx)
+	if err != nil {
+		return "", "", err
+	}
 
-	// encodedTx, _ := binarycodec.EncodeForSigning(tx)
-	// hexTx, err := hex.DecodeString(encodedTx)
-	// if err != nil {
-	// 	return "", "", err
-	// }
+	txHash, err := keypairs.Sign(string(hexTx), w.PrivateKey)
+	if err != nil {
+		return "", "", err
+	}
 
-	// hash, err = keypairs.Sign(string(hexTx), w.PrivateKey)
-	// if err != nil {
-	// 	return "", "", err
-	// }
+	tx["TxnSignature"] = txHash
 
-	// tx.TxnSignature = hash
+	txBlob, err := binarycodec.Encode(tx)
+	if err != nil {
+		return "", "", err
+	}
 
-	// txBlob, err = binarycodec.Encode(tx)
-	// if err != nil {
-	// 	return "", "", err
-	// }
-	// return txBlob, hash, nil
+	txHash, err = hash.HashSignedTx(txBlob)
+	if err != nil {
+		return "", "", err
+	}
+
+	return txBlob, txHash, nil
+}
+
+// Returns the classic address of the wallet.
+func (w *Wallet) GetAddress() string {
+	return w.ClassicAddress
 }

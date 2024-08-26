@@ -143,5 +143,71 @@ func TestNewWalletFromMnemonic(t *testing.T) {
 	}
 }
 
+func TestSign(t *testing.T) {
+	testCases := []struct {
+		name           string
+		wallet         *Wallet
+		tx             map[string]any
+		expectedTxBlob string
+		expectedHash   string
+	}{
+		{
+			name: "Test Sign with Wallet 1",
+			wallet: &Wallet{
+				PublicKey:      "EDE5638D8055CCD45EBF7F5FFD59FC1703D6BC00800BBA19F158119DAA1A52A8D5",
+				PrivateKey:     "ED0A961B472E78B89F1AE6A7CC4FB55FD083B36661D3D124E1BA29998346AE1AA1",
+				ClassicAddress: "raJB6EHNSJa3jV7FqWNrAhcL6FEDE3PGc5",
+			},
+			tx: map[string]any{
+				"Account":         "raJB6EHNSJa3jV7FqWNrAhcL6FEDE3PGc5",
+				"TransactionType": "Payment",
+				"Amount":          "15",
+				"Destination":     "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg",
+				"Flags":           0,
+				"Fee":             "12",
+				"Sequence":        1798962,
+				"SigningPubKey":   "028E831F16FD85ABEDA7577B6F4F26500FAB80AEA54B8A89EEC6FA44BCC7AF5678",
+			},
+			expectedTxBlob: "120000220000000024001B733261400000000000000F68400000000000000C7321EDE5638D8055CCD45EBF7F5FFD59FC1703D6BC00800BBA19F158119DAA1A52A8D57440A973391D589C1D81E55516420A8D095DD98D2FC1F85E53C427EEEC22C6D3DEBADFA184005F5539E6A672CC4FA468125981584DDCE9365A6C7076F2E9CAF86B0E81143A18A088CF12B2D3E51F47A75D2A9859EF61ECA78314858233827B488ECB8D0EB940E7AC85CE41E343CF",
+			expectedHash:   "37186C50D0A3FAB1218B5F7DAA235E4592F5080AF1C81F9B2678D4751C103CDF",
+		},
+		{
+			name: "Test Sign with Wallet 2",
+			wallet: &Wallet{
+				PublicKey:      "ED839AE597DD34FDD0A806CE7690A7F0A753CAEEAC7A0B1DE1EF6EC647DD3CBC6D",
+				PrivateKey:     "ED3841062F784C9F890249D736A0A36424497B0C53679A346B88A147F09B30CB9F",
+				ClassicAddress: "rLY96NyP8Wq5yX5NQ3XdeZdUyUFBRbWNgd",
+			},
+			tx: map[string]any{
+				"Account":         "rLY96NyP8Wq5yX5NQ3XdeZdUyUFBRbWNgd",
+				"TransactionType": "Payment",
+				"Amount":          "15",
+				"Destination":     "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg",
+				"Flags":           0,
+				"Fee":             "12",
+				"Sequence":        1798962,
+				"SigningPubKey":   "028E831F16FD85ABEDA7577B6F4F26500FAB80AEA54B8A89EEC6FA44BCC7AF5678",
+			},
+			expectedTxBlob: "120000220000000024001B733261400000000000000F68400000000000000C7321ED839AE597DD34FDD0A806CE7690A7F0A753CAEEAC7A0B1DE1EF6EC647DD3CBC6D7440BAD74EEF422A1F8DDB28E005ECC3A19E5678EA36349722E1B8F7B76528A81D22E1CB0F0C15593613A3970B1D95CBB901C7C0F701381AD70C50FA8411778254078114D64E8ABC22DA5D143D60AEA083E17D3508DEE19C8314858233827B488ECB8D0EB940E7AC85CE41E343CF",
+			expectedHash:   "94DB52A478D965C73A17427593004FD14FF74853DD667D8F3E8BF2A1FE66A11F",
+		},
+	}
 
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			txBlob, hash, err := tc.wallet.Sign(tc.tx)
+			if err != nil {
+				t.Fatalf("Error signing transaction: %v", err)
+			}
+
+			if txBlob == "" {
+				t.Error("Expected non-empty txBlob, got empty string")
+			}
+
+			if hash == "" {
+				t.Error("Expected non-empty hash, got empty string")
+			}
+		})
+	}
+}
 
