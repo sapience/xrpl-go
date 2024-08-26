@@ -3,8 +3,8 @@ package binarycodec
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/types"
 	"github.com/stretchr/testify/require"
-	"github.com/xyield/xrpl-go/binary-codec/types"
 )
 
 func TestEncode(t *testing.T) {

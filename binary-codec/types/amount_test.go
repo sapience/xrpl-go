@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
+	bigdecimal "github.com/Peersyst/xrpl-go/pkg/big-decimal"
 	"github.com/stretchr/testify/require"
-	bigdecimal "github.com/xyield/xrpl-go/pkg/big-decimal"
 )
 
 func TestVerifyXrpValue(t *testing.T) {
