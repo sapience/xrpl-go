@@ -12,11 +12,6 @@ The latest version can be installed using - **TODO**
 Requiring Go version `1.18.0` and later.
 [Download latest Go version](https://go.dev/dl/)
 
-#### Pre-requisites:
-</br>
-Install [pre-commit](https://github.com/pre-commit/pre-commit-hooks)
-</br>
-
 ## Features
 * Binary Codec
 * Address Codec
