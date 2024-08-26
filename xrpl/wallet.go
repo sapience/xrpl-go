@@ -156,3 +156,29 @@ func (w *Wallet) Sign(tx map[string]any) (string, string, error) {
 func (w *Wallet) GetAddress() string {
 	return w.ClassicAddress
 }
+
+// Verifies a signed transaction offline.
+// Returns a boolean indicating if the transaction is valid and an error if it is not.
+// If the transaction is signed with a public key, the public key must match the one in the transaction.
+func (w *Wallet) VerifyTransaction(tx map[string]any) (bool, error) {
+	return false, errors.New("not implemented")
+	// sig := tx["TxnSignature"].(string)
+
+	// fmt.Println("sig", sig)
+
+	// if sig == "" {
+	// 	return false, errors.New("transaction signature is missing")
+	// }
+	
+	// encodedTx, err := binarycodec.Encode(tx)
+	// if err != nil {
+	// 	return false, err
+	// }
+	
+	// return keypairs.Validate(encodedTx, w.PublicKey, sig)
+}
+
+// Gets an X-address in Testnet/Mainnet format.
+func (w *Wallet) GetXAddress() (string, error) {
+	return "", errors.New("not implemented")
+}
