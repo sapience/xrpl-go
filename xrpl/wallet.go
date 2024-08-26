@@ -162,20 +162,6 @@ func (w *Wallet) GetAddress() string {
 // If the transaction is signed with a public key, the public key must match the one in the transaction.
 func (w *Wallet) VerifyTransaction(tx map[string]any) (bool, error) {
 	return false, errors.New("not implemented")
-	// sig := tx["TxnSignature"].(string)
-
-	// fmt.Println("sig", sig)
-
-	// if sig == "" {
-	// 	return false, errors.New("transaction signature is missing")
-	// }
-
-	// encodedTx, err := binarycodec.Encode(tx)
-	// if err != nil {
-	// 	return false, err
-	// }
-
-	// return keypairs.Validate(encodedTx, w.PublicKey, sig)
 }
 
 // Gets an X-address in Testnet/Mainnet format.
