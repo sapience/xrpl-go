@@ -126,6 +126,8 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 		tx = &CheckCash{}
 	case CheckCreateTx:
 		tx = &CheckCreate{}
+	case ClawbackTx:
+		tx = &Clawback{}
 	case DepositPreauthTx:
 		tx = &DepositPreauth{}
 	case EscrowCancelTx:
