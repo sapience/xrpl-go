@@ -2,6 +2,7 @@ package client
 
 type Client interface {
 	SendRequest(req XRPLRequest) (XRPLResponse, error)
+	Submit(tx interface{}, failHard bool) (XRPLResponse, error)
 }
 
 type XRPLClient struct {

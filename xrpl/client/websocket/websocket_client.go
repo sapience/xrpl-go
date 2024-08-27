@@ -7,6 +7,7 @@ import (
 	"sync/atomic"
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
+	"github.com/Peersyst/xrpl-go/xrpl/helpers"
 	"github.com/gorilla/websocket"
 )
 
@@ -67,6 +68,11 @@ func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLRespon
 	}
 
 	return &res, nil
+}
+
+func (c *WebsocketClient) Submit(tx interface{}, failHard bool) (client.XRPLResponse, error) {
+	_, response, error := helpers.SubmitTransaction(tx, NewClient(c.cfg), failHard)
+	return response, error
 }
 
 /*

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/test"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/require"

@@ -13,6 +13,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	jsonrpcmodels "github.com/Peersyst/xrpl-go/xrpl/client/jsonrpc/models"
+	"github.com/Peersyst/xrpl-go/xrpl/helpers"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -115,6 +116,12 @@ func (c *JsonRpcClient) SendRequest(reqParams client.XRPLRequest) (client.XRPLRe
 	}
 
 	return &jr, nil
+}
+
+func (c *JsonRpcClient) Submit(tx interface{}, failHard bool) (client.XRPLResponse, error) {
+	_, response, error := helpers.SubmitTransaction(tx, NewClient(c.Config), failHard)
+
+	return response, error
 }
 
 // CreateRequest formats the parameters and method name ready for sending request
