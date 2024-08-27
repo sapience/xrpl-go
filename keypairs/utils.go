@@ -21,7 +21,7 @@ func (r *randomizer) generateBytes(n int) ([]byte, error) {
 }
 
 // Returns the first 32 bytes of a sha512 hash of a message
-func sha512Half(msg []byte) []byte {
+func Sha512Half(msg []byte) []byte {
 	h := sha512.Sum512(msg)
 	return h[:32]
 }

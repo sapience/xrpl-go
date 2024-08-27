@@ -37,9 +37,6 @@ func (p *BinaryParser) ReadField() (*definitions.FieldInstance, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	return f, nil
 }
 
