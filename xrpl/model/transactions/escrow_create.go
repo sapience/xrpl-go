@@ -17,3 +17,8 @@ type EscrowCreate struct {
 func (*EscrowCreate) TxType() TxType {
 	return EscrowCreateTx
 }
+
+// TODO: Implement flatten
+func (s *EscrowCreate) Flatten() map[string]interface{} {
+	return nil
+}

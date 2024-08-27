@@ -14,3 +14,8 @@ type PaymentChannelFund struct {
 func (*PaymentChannelFund) TxType() TxType {
 	return PaymentChannelFundTx
 }
+
+// TODO: Implement flatten
+func (s *PaymentChannelFund) Flatten() map[string]interface{} {
+	return nil
+}
