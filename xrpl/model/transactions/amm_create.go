@@ -7,3 +7,8 @@ type AMMCreate struct {
 func (*AMMCreate) TxType() TxType {
 	return AMMCreateTx
 }
+
+// TODO: Implement flatten
+func (s *AMMCreate) Flatten() map[string]interface{} {
+	return nil
+}
