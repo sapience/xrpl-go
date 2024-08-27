@@ -5,11 +5,16 @@ import (
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
 const (
 	AccountSeed = "sEd7MgLAff94dLx91rVRByUbLrdSrdj"
 	DestinationAddress = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
+	Currency = "USD"
+	Value = "100"
+	Issuer = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
 )
 
 func main() {
@@ -53,18 +58,21 @@ func main() {
 
 	fmt.Println("\nSigning a transaction")
 
-	tx := map[string]any{
-		"Account":         wallet.ClassicAddress,
-		"TransactionType": "Payment",
-		"Amount":          "15",
-		"Destination":     DestinationAddress,
-		"Flags":           0,
-		"Fee":             "12",
-		"Sequence":        1798962,
-		"SigningPubKey":   wallet.PublicKey,
+	tx := transactions.Payment{
+		BaseTx: transactions.BaseTx{
+			Account: types.Address(wallet.ClassicAddress),
+		},
+		Amount: types.IssuedCurrencyAmount{
+			Issuer:   Issuer,
+			Currency: Currency,
+			Value:    Value,
+		},
+		Destination: types.Address(DestinationAddress),
 	}
 
-	txBlob, hash, err := wallet.Sign(tx)
+	fmt.Println(tx.Flatten())
+
+	txBlob, hash, err := wallet.Sign(tx.Flatten())
 	if err != nil {
 		panic(err)
 	}
