@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"errors"
+
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
@@ -79,4 +81,15 @@ func isSigned(tx interface{}) bool {
 	default:
 		return false
 	}
+}
+
+// GetSignedTx returns a signed transaction.
+func GetSignedTx(c *client.XRPLClient, tx interface{}, opts GetSignedTxOptions) (interface{}, error) {
+	if isSigned(tx) {
+		return tx, nil
+	}
+
+	// TODO: implement this function when wallet and autofill are available
+
+	return nil, errors.New("Not yet implemented")
 }
