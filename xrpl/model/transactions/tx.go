@@ -7,6 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
+// TODO: Refactor to use a single interface for all transaction types
 type Tx interface {
 	TxType() TxType
 }
@@ -100,6 +101,55 @@ func (tx *BaseTx) TxType() TxType {
 	return tx.TransactionType
 }
 
+func (tx *BaseTx) Flatten() map[string]any {
+	flattened := make(map[string]any)
+
+	if tx.Account != "" {
+		flattened["Account"] = tx.Account.String()
+	}
+	if tx.TransactionType != "" {
+		flattened["TransactionType"] = tx.TransactionType
+	}
+	if tx.Fee != 0 {
+		flattened["Fee"] = tx.Fee.Uint64()
+	}
+	if tx.Sequence != 0 {
+		flattened["Sequence"] = tx.Sequence
+	}
+	if tx.AccountTxnID != "" {
+		flattened["AccountTxnID"] = tx.AccountTxnID
+	}
+	if tx.Flags != 0 {
+		flattened["Flags"] = tx.Flags
+	}
+	if tx.LastLedgerSequence != 0 {
+		flattened["LastLedgerSequence"] = tx.LastLedgerSequence
+	}
+	if len(tx.Memos) > 0 {
+		flattened["Memos"] = tx.Memos
+	}
+	if tx.NetworkId != 0 {
+		flattened["NetworkId"] = tx.NetworkId
+	}
+	if len(tx.Signers) > 0 {
+		flattened["Signers"] = tx.Signers
+	}
+	if tx.SourceTag != 0 {
+		flattened["SourceTag"] = tx.SourceTag
+	}
+	if tx.SigningPubKey != "" {
+		flattened["SigningPubKey"] = tx.SigningPubKey
+	}
+	if tx.TicketSequence != 0 {
+		flattened["TicketSequence"] = tx.TicketSequence
+	}
+	if tx.TxnSignature != "" {
+		flattened["TxnSignature"] = tx.TxnSignature
+	}
+
+	return flattened
+}
+
 func UnmarshalTx(data json.RawMessage) (Tx, error) {
 	if len(data) == 0 {
 		return nil, nil
@@ -130,6 +180,16 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 	}
 	var tx Tx
 	switch txType.TransactionType {
+	case AMMBidTx:
+		tx = &AMMBid{}
+	case AMMCreateTx:
+		tx = &AMMCreate{}
+	case AMMDepositTx:
+		tx = &AMMDeposit{}
+	case AMMVoteTx:
+		tx = &AMMVote{}
+	case AMMWithdrawTx:
+		tx = &AMMWithdraw{}
 	case AccountSetTx:
 		tx = &AccountSet{}
 	case AccountDeleteTx:

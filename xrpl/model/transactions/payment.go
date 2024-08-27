@@ -57,8 +57,46 @@ type Payment struct {
 	SendMax types.CurrencyAmount `json:",omitempty"`
 }
 
-func (*Payment) TxType() TxType {
-	return PaymentTx
+func (p *Payment) Flatten() map[string]interface{} {
+	// Add BaseTx fields
+	flattened := p.BaseTx.Flatten()
+
+	// Add Payment-specific fields
+	flattened["TransactionType"] = "Payment"
+
+	if p.Amount != nil {
+		flattened["Amount"] = p.Amount.Flatten()
+	}
+
+	if p.DeliverMax != nil {
+		flattened["DeliverMax"] = p.DeliverMax.Flatten()
+	}
+
+	if p.DeliverMin != nil {
+		flattened["DeliverMin"] = p.DeliverMin.Flatten()
+	}
+
+	if p.Destination != "" {
+		flattened["Destination"] = p.Destination.String()
+	}
+
+	if p.DestinationTag != 0 {
+		flattened["DestinationTag"] = p.DestinationTag
+	}
+
+	if p.InvoiceID != 0 {
+		flattened["InvoiceID"] = p.InvoiceID
+	}
+
+	if len(p.Paths) > 0 {
+		flattened["Paths"] = p.Paths
+	}
+
+	if p.SendMax != nil {
+		flattened["SendMax"] = p.SendMax.Flatten()
+	}
+
+	return flattened
 }
 
 func (p *Payment) UnmarshalJSON(data []byte) error {

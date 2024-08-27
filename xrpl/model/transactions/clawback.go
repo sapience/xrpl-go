@@ -19,6 +19,18 @@ func (*Clawback) TxType() TxType {
 	return ClawbackTx
 }
 
+func (s *Clawback) Flatten() map[string]interface{} {
+	flattened := s.BaseTx.Flatten()
+
+	flattened["TransactionType"] = "Clawback"
+
+	if s.Amount != nil {
+		flattened["Amount"] = s.Amount.Flatten()
+	}
+
+	return flattened
+}
+
 // UnmarshalJSON unmarshals the JSON data into a Clawback struct.
 func (c *Clawback) UnmarshalJSON(data []byte) error {
 	// Define a helper struct to hold the unmarshaled data

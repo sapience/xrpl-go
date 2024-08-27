@@ -55,3 +55,37 @@ func TestClawbackTransaction(t *testing.T) {
 		t.Error("UnmarshalTx result differs from expected")
 	}
 }
+
+func TestClawbackFlatten(t *testing.T) {
+	s := Clawback{
+		BaseTx: BaseTx{
+			Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+			TransactionType: ClawbackTx,
+			Fee:             types.XRPCurrencyAmount(1),
+			Sequence:        1234,
+		},
+		Amount: types.IssuedCurrencyAmount{
+			Issuer:   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+			Currency: "USD",
+			Value:    "1",
+		},
+	}
+
+	flattened := s.Flatten()
+
+	expected := map[string]interface{}{
+		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+		"TransactionType": "Clawback",
+		"Fee":             uint64(1),
+		"Sequence":        uint(1234),
+		"Amount": map[string]interface{}{
+			"issuer":   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+			"currency": "USD",
+			"value":    "1",
+		},
+	}
+
+	if !reflect.DeepEqual(flattened, expected) {
+		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
+	}
+}

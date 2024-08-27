@@ -49,3 +49,39 @@ func TestPaymentTx(t *testing.T) {
 		t.Error("UnmarshalTx result differs from expected")
 	}
 }
+
+func TestPaymentFlatten(t *testing.T) {
+	s := Payment{
+		BaseTx: BaseTx{
+			Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+			TransactionType: PaymentTx,
+			Fee:             types.XRPCurrencyAmount(1000),
+			Flags:           262144,
+		},
+		Amount: types.IssuedCurrencyAmount{
+			Issuer:   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+			Currency: "USD",
+			Value:    "1",
+		},
+		Destination: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+	}
+
+	flattened := s.Flatten()
+
+	expected := map[string]interface{}{
+		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+		"TransactionType": "Payment",
+		"Fee":             uint64(1000),
+		"Flags":           uint(262144),
+		"Amount": map[string]interface{}{
+			"issuer":   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+			"currency": "USD",
+			"value":    "1",
+		},
+		"Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+	}
+
+	if !reflect.DeepEqual(flattened, expected) {
+		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
+	}
+}
