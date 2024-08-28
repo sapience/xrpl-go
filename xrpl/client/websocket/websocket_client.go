@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
-	"github.com/Peersyst/xrpl-go/xrpl/helpers"
+	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
 	"github.com/gorilla/websocket"
 )
 
@@ -70,8 +70,16 @@ func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLRespon
 	return &res, nil
 }
 
-func (c *WebsocketClient) Submit(tx interface{}, failHard bool) (client.XRPLResponse, error) {
-	_, response, error := helpers.SubmitTransaction(tx, NewClient(c.cfg), failHard)
+func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (client.XRPLResponse, error) {
+	submitRequest := &requests.SubmitRequest{
+		TxBlob:   txBlob,
+		FailHard: failHard,
+	}
+
+	// TODO: Check if txBlob is signed, will be part of another PR
+
+	response, error := c.SendRequest(submitRequest)
+
 	return response, error
 }
 

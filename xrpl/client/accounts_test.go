@@ -36,7 +36,7 @@ func (m *mockClient) SendRequest(req XRPLRequest) (XRPLResponse, error) {
 	return args.Get(0).(XRPLResponse), args.Error(1)
 }
 
-func (m *mockClient) Submit(tx interface{}, failHard bool) (XRPLResponse, error) {
+func (m *mockClient) SubmitTransactionBlob(tx string, failHard bool) (XRPLResponse, error) {
 	args := m.Called(tx)
 	return args.Get(0).(XRPLResponse), args.Error(1)
 }
