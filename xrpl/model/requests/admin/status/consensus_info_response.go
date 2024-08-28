@@ -1,6 +1,6 @@
 package status
 
-import "github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+import "github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 
 type ConsensusInfoResponse struct {
 	Info ConsensusInfo `json:"info"`

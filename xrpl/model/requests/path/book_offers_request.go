@@ -3,7 +3,7 @@ package path
 import (
 	"encoding/json"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 

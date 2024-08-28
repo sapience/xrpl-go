@@ -1,6 +1,6 @@
 package ledger
 
-import "github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+import "github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 
 type LedgerClosedResponse struct {
 	LedgerHash  string             `json:"ledger_hash"`

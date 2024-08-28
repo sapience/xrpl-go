@@ -3,8 +3,8 @@ package data
 import (
 	"encoding/json"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/ledger"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/ledger"
 )
 
 type LedgerRequestResponse struct {

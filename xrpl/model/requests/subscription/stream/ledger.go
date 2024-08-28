@@ -1,6 +1,6 @@
 package stream
 
-import "github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+import "github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 
 type LedgerStream struct {
 	Type             StreamType         `json:"type"`

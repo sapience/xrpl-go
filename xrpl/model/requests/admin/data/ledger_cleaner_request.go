@@ -1,6 +1,6 @@
 package data
 
-import "github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+import "github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 
 type LedgerCleanerRequest struct {
 	Ledger     common.LedgerIndex `json:"ledger,omitempty"`

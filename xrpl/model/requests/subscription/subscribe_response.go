@@ -1,8 +1,8 @@
 package subscribe
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
 	"github.com/Peersyst/xrpl-go/xrpl/model/ledger"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 )
 
 type SubscribeResponse struct {

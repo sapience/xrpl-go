@@ -1,7 +1,7 @@
 package stream
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 )
 
 type ValidationStream struct {

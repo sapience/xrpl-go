@@ -3,7 +3,7 @@ package data
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 	"github.com/Peersyst/xrpl-go/xrpl/test"
 )
 

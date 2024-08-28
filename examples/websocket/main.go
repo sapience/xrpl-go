@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl/client/websocket"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 )
 
 func main() {

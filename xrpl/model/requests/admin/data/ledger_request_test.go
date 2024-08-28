@@ -3,7 +3,7 @@ package data
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/ledger"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/ledger"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 	"github.com/Peersyst/xrpl-go/xrpl/test"
 )
