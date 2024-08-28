@@ -15,3 +15,8 @@ type NFTokenMint struct {
 func (*NFTokenMint) TxType() TxType {
 	return NFTokenMintTx
 }
+
+// TODO: Implement flatten
+func (s *NFTokenMint) Flatten() map[string]interface{} {
+	return nil
+}

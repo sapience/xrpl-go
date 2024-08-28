@@ -9,6 +9,11 @@ type CheckCancel struct {
 	CheckID types.Hash256
 }
 
+// TODO: Implement flatten
 func (*CheckCancel) TxType() TxType {
 	return CheckCancelTx
+}
+
+func (s *CheckCancel) Flatten() map[string]interface{} {
+	return nil
 }

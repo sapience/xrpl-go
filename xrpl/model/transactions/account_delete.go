@@ -13,3 +13,8 @@ type AccountDelete struct {
 func (*AccountDelete) TxType() TxType {
 	return AccountDeleteTx
 }
+
+// TODO: Implement flatten
+func (s *AccountDelete) Flatten() map[string]interface{} {
+	return nil
+}

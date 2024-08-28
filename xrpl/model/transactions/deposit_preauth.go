@@ -13,3 +13,8 @@ type DepositPreauth struct {
 func (*DepositPreauth) TxType() TxType {
 	return DepositPreauthTx
 }
+
+// TODO: Implement flatten
+func (s *DepositPreauth) Flatten() map[string]interface{} {
+	return nil
+}

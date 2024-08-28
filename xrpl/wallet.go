@@ -125,7 +125,7 @@ func NewWalletFromMnemonic(mnemonic string) (*Wallet, error) {
 // that the owner is actually the one deciding to take that action.
 //
 // TODO: Refactor to accept a `Transaction` object instead of a map.
-func (w *Wallet) Sign(tx map[string]any) (string, string, error) {
+func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 	encodedTx, _ := binarycodec.EncodeForSigning(tx)
 	hexTx, err := hex.DecodeString(encodedTx)
 	if err != nil {

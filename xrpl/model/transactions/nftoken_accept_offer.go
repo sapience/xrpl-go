@@ -41,3 +41,8 @@ func (n *NFTokenAcceptOffer) UnmarshalJSON(data []byte) error {
 	n.NFTokenBrokerFee = fee
 	return nil
 }
+
+// TODO: Implement flatten
+func (s *NFTokenAcceptOffer) Flatten() map[string]interface{} {
+	return nil
+}

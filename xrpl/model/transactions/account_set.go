@@ -21,3 +21,8 @@ type AccountSet struct {
 func (*AccountSet) TxType() TxType {
 	return AccountSetTx
 }
+
+// TODO: Implement flatten
+func (s *AccountSet) Flatten() map[string]interface{} {
+	return nil
+}

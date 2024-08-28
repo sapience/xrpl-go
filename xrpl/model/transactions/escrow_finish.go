@@ -15,3 +15,8 @@ type EscrowFinish struct {
 func (*EscrowFinish) TxType() TxType {
 	return EscrowFinishTx
 }
+
+// TODO: Implement flatten
+func (s *EscrowFinish) Flatten() map[string]interface{} {
+	return nil
+}
