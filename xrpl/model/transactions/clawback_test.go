@@ -76,7 +76,7 @@ func TestClawbackFlatten(t *testing.T) {
 	expected := map[string]interface{}{
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "Clawback",
-		"Fee":             uint64(1),
+		"Fee":             "1",
 		"Sequence":        uint(1234),
 		"Amount": map[string]interface{}{
 			"issuer":   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",

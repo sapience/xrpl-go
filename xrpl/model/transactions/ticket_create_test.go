@@ -58,9 +58,9 @@ func TestTicketCreateFlatten(t *testing.T) {
 	expected := map[string]interface{}{
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "TicketCreate",
-		"Fee":             uint64(10),
+		"Fee":             "10",
 		"Sequence":        uint(50),
-		"TicketCount":     uint(5),
+		"TicketCount":     uint32(5),
 	}
 
 	if !reflect.DeepEqual(flattened, expected) {

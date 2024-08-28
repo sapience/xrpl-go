@@ -101,8 +101,8 @@ func (tx *BaseTx) TxType() TxType {
 	return tx.TransactionType
 }
 
-func (tx *BaseTx) Flatten() map[string]any {
-	flattened := make(map[string]any)
+func (tx *BaseTx) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
 
 	if tx.Account != "" {
 		flattened["Account"] = tx.Account.String()
@@ -111,7 +111,7 @@ func (tx *BaseTx) Flatten() map[string]any {
 		flattened["TransactionType"] = tx.TransactionType
 	}
 	if tx.Fee != 0 {
-		flattened["Fee"] = tx.Fee.Uint64()
+		flattened["Fee"] = tx.Fee.String()
 	}
 	if tx.Sequence != 0 {
 		flattened["Sequence"] = tx.Sequence

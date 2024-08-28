@@ -74,7 +74,7 @@ func TestTrustSetFlatten(t *testing.T) {
 	expected := map[string]interface{}{
 		"Account":            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType":    "TrustSet",
-		"Fee":                uint64(12),
+		"Fee":                "12",
 		"Flags":              uint(262144),
 		"Sequence":           uint(12),
 		"LastLedgerSequence": uint(8007750),

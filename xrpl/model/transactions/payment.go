@@ -9,51 +9,42 @@ import (
 // A Payment transaction represents a transfer of value from one account to another.
 type Payment struct {
 	BaseTx
-	/*
-		API v1: Only available in API v1.
-		The maximum amount of currency to deliver.
-		For non-XRP amounts, the nested field names MUST be lower-case.
-		If the tfPartialPayment flag is set, deliver up to this amount instead.
-	*/
+	// API v1: Only available in API v1.
+	// The maximum amount of currency to deliver.
+	// For non-XRP amounts, the nested field names MUST be lower-case.
+	// If the tfPartialPayment flag is set, deliver up to this amount instead.
 	Amount types.CurrencyAmount
-	/*
-		API v2: Only available in API v2.
-		The maximum amount of currency to deliver.
-		For non-XRP amounts, the nested field names MUST be lower-case.
-		If the tfPartialPayment flag is set, deliver up to this amount instead.
-	*/
+
+	// API v2: Only available in API v2.
+	// The maximum amount of currency to deliver.
+	// For non-XRP amounts, the nested field names MUST be lower-case.
+	// If the tfPartialPayment flag is set, deliver up to this amount instead.
 	DeliverMax types.CurrencyAmount `json:",omitempty"`
-	/*
-		(Optional) Minimum amount of destination currency this transaction should deliver.
-		Only valid if this is a partial payment.
-		For non-XRP amounts, the nested field names are lower-case.
-	*/
+
+	// (Optional) Minimum amount of destination currency this transaction should deliver.
+	// Only valid if this is a partial payment.
+	// For non-XRP amounts, the nested field names are lower-case.
 	DeliverMin types.CurrencyAmount `json:",omitempty"`
-	/*
-		The unique address of the account receiving the payment.
-	*/
+
+	// The unique address of the account receiving the payment.
 	Destination types.Address
-	/*
-		(Optional) Arbitrary tag that identifies the reason for the payment to the destination, or a hosted recipient to pay.
-	*/
-	DestinationTag uint `json:",omitempty"`
-	/*
-		(Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this payment
-	*/
-	InvoiceID uint `json:",omitempty"`
-	/*
-		(Optional, auto-fillable) Array of payment paths to be used for this transaction.
-		Must be omitted for XRP-to-XRP transactions.
-	*/
+
+	// (Optional) Arbitrary tag that identifies the reason for the payment to the destination, or a hosted recipient to pay.
+	DestinationTag uint32 `json:",omitempty"`
+
+	// (Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this payment
+	InvoiceID types.Hash256 `json:",omitempty"`
+
+	// (Optional, auto-fillable) Array of payment paths to be used for this transaction.
+	// Must be omitted for XRP-to-XRP transactions.
 	Paths [][]PathStep `json:",omitempty"`
-	/*
-		(Optional) Highest amount of source currency this transaction is allowed to cost,
-		including transfer fees, exchange rates, and slippage.
-		Does not include the XRP destroyed as a cost for submitting the transaction.
-		For non-XRP amounts, the nested field names MUST be lower-case.
-		Must be supplied for cross-currency/cross-issue payments.
-		Must be omitted for XRP-to-XRP payments.
-	*/
+
+	// (Optional) Highest amount of source currency this transaction is allowed to cost,
+	// including transfer fees, exchange rates, and slippage.
+	// Does not include the XRP destroyed as a cost for submitting the transaction.
+	// For non-XRP amounts, the nested field names MUST be lower-case.
+	// Must be supplied for cross-currency/cross-issue payments.
+	// Must be omitted for XRP-to-XRP payments.
 	SendMax types.CurrencyAmount `json:",omitempty"`
 }
 
@@ -84,8 +75,8 @@ func (p *Payment) Flatten() map[string]interface{} {
 		flattened["DestinationTag"] = p.DestinationTag
 	}
 
-	if p.InvoiceID != 0 {
-		flattened["InvoiceID"] = p.InvoiceID
+	if p.InvoiceID != "" {
+		flattened["InvoiceID"] = p.InvoiceID.String()
 	}
 
 	if len(p.Paths) > 0 {
@@ -104,8 +95,8 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 		BaseTx
 		Amount         json.RawMessage
 		Destination    types.Address
-		DestinationTag uint            `json:",omitempty"`
-		InvoiceID      uint            `json:",omitempty"`
+		DestinationTag uint32          `json:",omitempty"`
+		InvoiceID      types.Hash256   `json:",omitempty"`
 		Paths          [][]PathStep    `json:",omitempty"`
 		SendMax        json.RawMessage `json:",omitempty"`
 		DeliverMin     json.RawMessage `json:",omitempty"`

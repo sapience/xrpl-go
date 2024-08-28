@@ -71,7 +71,7 @@ func TestPaymentFlatten(t *testing.T) {
 	expected := map[string]interface{}{
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "Payment",
-		"Fee":             uint64(1000),
+		"Fee":             "1000",
 		"Flags":           uint(262144),
 		"Amount": map[string]interface{}{
 			"issuer":   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
