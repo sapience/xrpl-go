@@ -2,6 +2,7 @@ package client
 
 type Client interface {
 	SendRequest(req XRPLRequest) (XRPLResponse, error)
+	Autofill(tx *map[string]interface{}) error
 }
 
 type XRPLClient struct {

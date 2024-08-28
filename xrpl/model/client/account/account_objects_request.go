@@ -35,6 +35,11 @@ func (*AccountObjectsRequest) Method() string {
 	return "account_objects"
 }
 
+// TODO: Implement
+func (*AccountObjectsRequest) Validate() error {
+	return nil
+}
+
 func (r *AccountObjectsRequest) UnmarshalJSON(data []byte) error {
 	type aorHelper struct {
 		Account              types.Address     `json:"account"`

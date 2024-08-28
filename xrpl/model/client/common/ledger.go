@@ -38,10 +38,14 @@ func UnmarshalLedgerSpecifier(data []byte) (LedgerSpecifier, error) {
 	}
 }
 
-type LedgerIndex uint
+type LedgerIndex uint32
 
 func (l LedgerIndex) Ledger() string {
 	return strconv.FormatUint(uint64(l), 10)
+}
+
+func (l LedgerIndex) Uint32() uint32 {
+	return uint32(l)
 }
 
 type LedgerTitle string
