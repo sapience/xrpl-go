@@ -14,11 +14,15 @@ const (
 
 var _ FaucetProvider = (*TestnetFaucetProvider)(nil)
 
+// TestnetFaucetProvider implements the FaucetProvider interface for the XRPL Testnet.
+// It provides functionality to interact with the Testnet faucet for funding wallets.
 type TestnetFaucetProvider struct {
 	host        string
-	accountPath string
+	accountPath string 
 }
 
+// NewTestnetFaucetProvider creates and returns a new instance of TestnetFaucetProvider
+// with predefined Testnet faucet host and account path.
 func NewTestnetFaucetProvider() *TestnetFaucetProvider {
 	return &TestnetFaucetProvider{
 		host:        TESTNET_FAUCET_HOST,
@@ -26,6 +30,8 @@ func NewTestnetFaucetProvider() *TestnetFaucetProvider {
 	}
 }
 
+// FundWallet sends a request to the Testnet faucet to fund the specified wallet address.
+// It returns an error if the funding request fails.
 func (fp *TestnetFaucetProvider) FundWallet(address string) error {
 	url := fmt.Sprintf("https://%s%s", fp.host, fp.accountPath)
 	payload := map[string]string{"destination": address, "userAgent": USER_AGENT}

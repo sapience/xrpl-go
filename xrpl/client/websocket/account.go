@@ -7,6 +7,9 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/utils"
 )
 
+// GetAccountInfo retrieves information about an account on the XRP Ledger.
+// It takes an AccountInfoRequest as input and returns an AccountInfoResponse,
+// along with the raw XRPL response and any error encountered.
 func (c *WebsocketClient) GetAccountInfo(req *account.AccountInfoRequest) (*account.AccountInfoResponse, client.XRPLResponse, error) {
 	res, err := c.SendRequest(req)
 	if err != nil {
@@ -20,6 +23,9 @@ func (c *WebsocketClient) GetAccountInfo(req *account.AccountInfoRequest) (*acco
 	return &air, res, nil
 }
 
+// GetAccountObjects retrieves a list of objects owned by an account on the XRP Ledger.
+// It takes an AccountObjectsRequest as input and returns an AccountObjectsResponse,
+// along with any error encountered.
 func (c *WebsocketClient) GetAccountObjects(req *account.AccountObjectsRequest) (*account.AccountObjectsResponse, error) {
 	res, err := c.SendRequest(req)
 	if err != nil {
@@ -33,6 +39,8 @@ func (c *WebsocketClient) GetAccountObjects(req *account.AccountObjectsRequest) 
 	return &acr, nil
 }
 
+// GetXrpBalance retrieves the XRP balance of a given account address.
+// It returns the balance as a string in XRP (not drops) and any error encountered.
 func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
 	res, _, err := c.GetAccountInfo(&account.AccountInfoRequest{
 		Account: types.Address(address),

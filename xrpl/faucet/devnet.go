@@ -14,11 +14,16 @@ const (
 
 var _ FaucetProvider = (*DevnetFaucetProvider)(nil)
 
+
+// DevnetFaucetProvider implements the FaucetProvider interface for the XRPL Devnet.
+// It provides functionality to interact with the Devnet faucet for funding wallets.
 type DevnetFaucetProvider struct {
-	host        string
-	accountPath string
+	host        string // The hostname of the Devnet faucet
+	accountPath string // The API path for account-related operations
 }
 
+// NewDevnetFaucetProvider creates and returns a new instance of DevnetFaucetProvider
+// with predefined Devnet faucet host and account path.
 func NewDevnetFaucetProvider() *DevnetFaucetProvider {
 	return &DevnetFaucetProvider{
 		host:        DEVNET_FAUCET_HOST,
@@ -26,6 +31,8 @@ func NewDevnetFaucetProvider() *DevnetFaucetProvider {
 	}
 }
 
+// FundWallet sends a request to the Devnet faucet to fund the specified wallet address.
+// It returns an error if the funding request fails.
 func (fp *DevnetFaucetProvider) FundWallet(address string) error {
 	url := fmt.Sprintf("https://%s%s", fp.host, fp.accountPath)
 	payload := map[string]string{"destination": address, "userAgent": USER_AGENT}
