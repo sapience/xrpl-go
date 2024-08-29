@@ -22,12 +22,11 @@ var _ client.Client = (*WebsocketClient)(nil)
 
 var ErrIncorrectId = errors.New("incorrect id")
 
-
 type WebsocketClient struct {
-	cfg 		WebsocketClientConfig
-	
-	idCounter	atomic.Uint32
-	NetworkId  uint32
+	cfg WebsocketClientConfig
+
+	idCounter atomic.Uint32
+	NetworkId uint32
 }
 
 // Creates a new websocket client with cfg.

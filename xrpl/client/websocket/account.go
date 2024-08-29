@@ -38,7 +38,7 @@ func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
 		Account: types.Address(address),
 	})
 	if err != nil {
-		return "", err 
+		return "", err
 	}
 
 	xrpBalance, err := utils.DropsToXrp(res.AccountData.Balance.String())

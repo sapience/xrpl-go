@@ -4,7 +4,7 @@ import "github.com/Peersyst/xrpl-go/xrpl/faucet"
 
 type WebsocketClientConfig struct {
 	// Connection config
-	host 		string
+	host string
 
 	// Fee config
 	feeCushion float32
@@ -16,9 +16,9 @@ type WebsocketClientConfig struct {
 
 func NewWebsocketClientConfig() *WebsocketClientConfig {
 	return &WebsocketClientConfig{
-		host: "",
+		host:       "",
 		feeCushion: DEFAULT_FEE_CUSHION,
-		maxFeeXRP: DEFAULT_MAX_FEE_XRP,
+		maxFeeXRP:  DEFAULT_MAX_FEE_XRP,
 	}
 }
 

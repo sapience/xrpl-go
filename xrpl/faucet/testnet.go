@@ -14,25 +14,23 @@ const (
 
 var _ FaucetProvider = (*TestnetFaucetProvider)(nil)
 
-
 type TestnetFaucetProvider struct {
-	host string
+	host        string
 	accountPath string
 }
 
 func NewTestnetFaucetProvider() *TestnetFaucetProvider {
 	return &TestnetFaucetProvider{
-		host: TESTNET_FAUCET_HOST,
+		host:        TESTNET_FAUCET_HOST,
 		accountPath: TESTNET_FAUCET_PATH,
 	}
 }
-
 
 func (fp *TestnetFaucetProvider) FundWallet(address string) error {
 	url := fmt.Sprintf("https://%s%s", fp.host, fp.accountPath)
 	payload := map[string]string{"destination": address, "userAgent": USER_AGENT}
 	jsonPayload, err := json.Marshal(payload)
-	
+
 	if err != nil {
 		return fmt.Errorf("error marshaling payload: %v", err)
 	}
