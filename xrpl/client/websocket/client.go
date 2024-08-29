@@ -84,15 +84,13 @@ func (c *WebsocketClient) Autofill(tx *map[string]interface{}) error {
 			return err
 		}
 	}
-	if txType, ok := (*tx)["TransactionType"].(transactions.TxType); !ok {
+	if txType, ok := (*tx)["TransactionType"].(transactions.TxType); ok {
 		if acc, ok := (*tx)["Account"].(types.Address); txType == transactions.AccountDeleteTx && ok {
 			err := c.checkAccountDeleteBlockers(acc)
 			if err != nil {
 				return err
 			}
 		}
-	}
-	if txType, ok := (*tx)["TransactionType"].(transactions.TxType); !ok {
 		if txType == transactions.PaymentTx {
 			err := c.checkPaymentAmounts(tx)
 			if err != nil {
@@ -100,7 +98,6 @@ func (c *WebsocketClient) Autofill(tx *map[string]interface{}) error {
 			}
 		}
 	}
-
 	return nil
 }
 

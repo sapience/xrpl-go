@@ -37,12 +37,10 @@ func (c *WebsocketClient) getClassicAccountAndTag(address string) (string, uint3
 	return address, 0
 }
 
-func (c *WebsocketClient) convertTransactionAddressToclassicAddress(tx *map[string]interface{}, fieldName string) {
-	if value, ok := (*tx)[fieldName]; ok {
-		if address, isString := value.(string); isString {
-			classicAddress, _ := c.getClassicAccountAndTag(address)
-			(*tx)[fieldName] = classicAddress
-		}
+func (c *WebsocketClient) convertTransactionAddressToClassicAddress(tx *map[string]interface{}, fieldName string) {
+	if address, ok := (*tx)[fieldName].(string); ok {
+		classicAddress, _ := c.getClassicAccountAndTag(address)
+		(*tx)[fieldName] = classicAddress
 	}
 }
 
@@ -74,12 +72,12 @@ func (c *WebsocketClient) setValidTransactionAddresses(tx *map[string]interface{
 	}
 
 	// DepositPreuaht
-	c.convertTransactionAddressToclassicAddress(tx, "Authorize")
-	c.convertTransactionAddressToclassicAddress(tx, "Unauthorize")
+	c.convertTransactionAddressToClassicAddress(tx, "Authorize")
+	c.convertTransactionAddressToClassicAddress(tx, "Unauthorize")
 	// EscrowCancel, EscrowFinish
-	c.convertTransactionAddressToclassicAddress(tx, "Owner")
+	c.convertTransactionAddressToClassicAddress(tx, "Owner")
 	// SetRegularKey
-	c.convertTransactionAddressToclassicAddress(tx, "RegularKey")
+	c.convertTransactionAddressToClassicAddress(tx, "RegularKey")
 
 	return nil
 }
@@ -87,7 +85,7 @@ func (c *WebsocketClient) setValidTransactionAddresses(tx *map[string]interface{
 // Sets the next valid sequence number for a given transaction.
 func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *map[string]interface{}) error {
 	if _, ok := (*tx)["Account"].(string); !ok {
-		return errors.New("missing transaction ")
+		return errors.New("missing Account in transaction")
 	}
 	res, _, err := c.GetAccountInfo(&account.AccountInfoRequest{
 		Account:     types.Address((*tx)["Account"].(string)),
@@ -215,6 +213,17 @@ func (c *WebsocketClient) setTransactionFlags(tx *map[string]interface{}) error 
 
 	switch txType {
 	default:
+		// TODO: Add missing flag support
+		// - AccountSet
+		// - AMMDeposit
+		// - AMMWithdraw
+		// - NFTokenCreateOffer
+		// - NFTokenMint
+		// - OfferCreate
+		// - PaymentChannelClaim
+		// - Payment
+		// - TrustSet
+		// - XChainModifyBridge (XChainBridge not supported)
 		if flags > 0 {
 			return nil
 		} else {
