@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	fmt.Println("Funding wallet on testnet:\n")
+	fmt.Println("Funding wallet on testnet:")
 
 	testnetFaucet := faucet.NewTestnetFaucetProvider()
 
@@ -51,7 +51,7 @@ func main() {
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
 
 
-	fmt.Println("Funding wallet on devnet:\n")
+	fmt.Println("Funding wallet on devnet:")
 
 	devnetFaucet := faucet.NewDevnetFaucetProvider()
 

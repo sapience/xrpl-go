@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	DEVNET_FAUCET_HOST = "faucet.altnet.rippletest.net"
+	DEVNET_FAUCET_HOST = "faucet.devnet.rippletest.net"
 	DEVNET_FAUCET_PATH = "/accounts"
 )
 
