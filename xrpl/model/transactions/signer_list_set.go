@@ -13,3 +13,8 @@ type SignerListSet struct {
 func (*SignerListSet) TxType() TxType {
 	return SignerListSetTx
 }
+
+// TODO: Implement flatten
+func (s *SignerListSet) Flatten() map[string]interface{} {
+	return nil
+}

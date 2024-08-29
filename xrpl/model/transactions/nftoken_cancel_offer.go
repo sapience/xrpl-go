@@ -12,3 +12,8 @@ type NFTokenCancelOffer struct {
 func (*NFTokenCancelOffer) TxType() TxType {
 	return NFTokenCancelOfferTx
 }
+
+// TODO: Implement flatten
+func (s *NFTokenCancelOffer) Flatten() map[string]interface{} {
+	return nil
+}

@@ -12,3 +12,8 @@ type SetRegularKey struct {
 func (*SetRegularKey) TxType() TxType {
 	return SetRegularKeyTx
 }
+
+// TODO: Implement flatten
+func (s *SetRegularKey) Flatten() map[string]interface{} {
+	return nil
+}

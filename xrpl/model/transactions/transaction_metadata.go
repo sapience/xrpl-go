@@ -58,14 +58,14 @@ func (m *TxObjMeta) UnmarshalJSON(data []byte) error {
 		TransactionIndex:  h.TransactionIndex,
 		TransactionResult: h.TransactionResult,
 	}
-	if h.PartialDeliveredAmount != nil && len(h.PartialDeliveredAmount) > 0 {
+	if len(h.PartialDeliveredAmount) > 0 {
 		if part, err := types.UnmarshalCurrencyAmount(h.PartialDeliveredAmount); err != nil {
 			return fmt.Errorf("unmarshal TxMeta object: %w", err)
 		} else {
 			m.PartialDeliveredAmount = part
 		}
 	}
-	if h.DeliveredAmount != nil && len(h.DeliveredAmount) > 0 {
+	if len(h.DeliveredAmount) > 0 {
 		if deliv, err := types.UnmarshalCurrencyAmount(h.DeliveredAmount); err != nil {
 			return fmt.Errorf("unmarshal TxMeta object: %w", err)
 		} else {
@@ -104,7 +104,7 @@ func (n *CreatedNode) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("unmarshal CreatedNode: %w", err)
 	}
 	et := obj.EntryType()
-	if h.NewFields != nil && len(h.NewFields) > 0 {
+	if len(h.NewFields) > 0 {
 		if err = json.Unmarshal(h.NewFields, obj); err != nil {
 			return fmt.Errorf("unmarshal CreatedNode: %w", err)
 		}
@@ -151,7 +151,7 @@ func (n *ModifiedNode) UnmarshalJSON(data []byte) error {
 	if fin, err = ledger.EmptyLedgerObject(string(h.LedgerEntryType)); err != nil {
 		return fmt.Errorf("unmarshal ModifiedNode: %w", err)
 	}
-	if h.PreviousFields != nil && len(h.PreviousFields) > 0 {
+	if len(h.PreviousFields) > 0 {
 		if err = json.Unmarshal(h.PreviousFields, prev); err != nil {
 			return fmt.Errorf("unmarshal ModifiedNode: %w", err)
 		}
@@ -159,7 +159,7 @@ func (n *ModifiedNode) UnmarshalJSON(data []byte) error {
 		// Do not set if no previous fields
 		prev = nil
 	}
-	if h.FinalFields != nil && len(h.FinalFields) > 0 {
+	if len(h.FinalFields) > 0 {
 		if err = json.Unmarshal(h.FinalFields, fin); err != nil {
 			return fmt.Errorf("unmarshal ModifiedNode: %w", err)
 		}
@@ -199,7 +199,7 @@ func (n *DeletedNode) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("unmarshal DeletedNode: %w", err)
 	}
 	et := obj.EntryType()
-	if h.FinalFields != nil && len(h.FinalFields) > 0 {
+	if len(h.FinalFields) > 0 {
 		if err = json.Unmarshal(h.FinalFields, obj); err != nil {
 			return fmt.Errorf("unmarshal DeletedNode: %w", err)
 		}
