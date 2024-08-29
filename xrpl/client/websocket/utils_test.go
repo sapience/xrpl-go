@@ -16,7 +16,7 @@ import (
 )
 
 func TestWebsocketClient_formatRequest(t *testing.T) {
-	ws := &WebsocketClient{cfg: &WebsocketConfig{}}
+	ws := &WebsocketClient{}
 	tt := []struct {
 		description string
 		req         client.XRPLRequest
@@ -286,7 +286,11 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 			defer s.Close()
 			
 			url, _ := test.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{cfg: &WebsocketConfig{URL: url}}
+			cl := &WebsocketClient{
+				cfg: WebsocketClientConfig{
+					host: url,
+				},
+			}
 
 			err := cl.setTransactionNextValidSequenceNumber(&tt.tx)
 
@@ -401,9 +405,11 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 			
 			url, _ := test.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
-				cfg: &WebsocketConfig{URL: url},
-				FeeCushion: tt.feeCushion,
-				MaxFeeXRP: 2,
+				cfg: WebsocketClientConfig{
+					host: url,
+					feeCushion: tt.feeCushion,
+					maxFeeXRP: DEFAULT_MAX_FEE_XRP,
+				},
 			}
 
 			err := cl.calculateFeePerTransactionType(&tt.tx)
@@ -463,9 +469,10 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 			
 			url, _ := test.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
-				cfg: &WebsocketConfig{URL: url},
+				cfg: WebsocketClientConfig{
+					host: url,
+				},
 			}
-
 			err := cl.setLastLedgerSequence(&tt.tx)
 
 			if tt.expectedErr != nil {
@@ -525,7 +532,9 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 			
 			url, _ := test.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
-				cfg: &WebsocketConfig{URL: url},
+				cfg: WebsocketClientConfig{
+					host: url,
+				},
 			}
 
 			err := cl.checkAccountDeleteBlockers(tt.address)

@@ -3,6 +3,8 @@ package websocket
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	"github.com/Peersyst/xrpl-go/xrpl/utils"
 )
 
 func (c *WebsocketClient) GetAccountInfo(req *account.AccountInfoRequest) (*account.AccountInfoResponse, client.XRPLResponse, error) {
@@ -29,4 +31,20 @@ func (c *WebsocketClient) GetAccountObjects(req *account.AccountObjectsRequest) 
 		return nil, err
 	}
 	return &acr, nil
+}
+
+func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
+	res, _, err := c.GetAccountInfo(&account.AccountInfoRequest{
+		Account: types.Address(address),
+	})
+	if err != nil {
+		return "", err 
+	}
+
+	xrpBalance, err := utils.DropsToXrp(res.AccountData.Balance.String())
+	if err != nil {
+		return "", err
+	}
+
+	return xrpBalance, nil
 }
