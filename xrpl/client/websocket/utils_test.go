@@ -553,7 +553,7 @@ func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 		{
 			name: "No flags set",
 			tx: map[string]interface{}{
-				"TransactionType": transactions.PaymentTx,
+				"TransactionType": string(transactions.PaymentTx),
 			},
 			expected: 0,
 			wantErr:  false,
@@ -561,7 +561,7 @@ func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 		{
 			name: "Flags already set",
 			tx: map[string]interface{}{
-				"TransactionType": transactions.PaymentTx,
+				"TransactionType": string(transactions.PaymentTx),
 				"Flags":           uint32(1),
 			},
 			expected: 1,
