@@ -178,6 +178,8 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 			TxBlob: txType.TxBlob,
 		}, nil
 	}
+
+	fmt.Println("TxType", txType.TransactionType)
 	var tx Tx
 	switch txType.TransactionType {
 	case AMMBidTx:

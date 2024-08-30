@@ -95,4 +95,5 @@ func main() {
 
 	fmt.Println("	Transaction engine result:", response.EngineResult)
 	fmt.Println("	Transaction accepted:", response.Accepted)
+	fmt.Println("	Transaction tx:", response.Tx["hash"])
 }
