@@ -14,7 +14,6 @@ const (
 
 var _ FaucetProvider = (*DevnetFaucetProvider)(nil)
 
-
 // DevnetFaucetProvider implements the FaucetProvider interface for the XRPL Devnet.
 // It provides functionality to interact with the Devnet faucet for funding wallets.
 type DevnetFaucetProvider struct {

@@ -18,7 +18,7 @@ var _ FaucetProvider = (*TestnetFaucetProvider)(nil)
 // It provides functionality to interact with the Testnet faucet for funding wallets.
 type TestnetFaucetProvider struct {
 	host        string
-	accountPath string 
+	accountPath string
 }
 
 // NewTestnetFaucetProvider creates and returns a new instance of TestnetFaucetProvider

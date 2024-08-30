@@ -14,11 +14,9 @@ func main() {
 	fmt.Println("Funding wallet on testnet:")
 
 	testnetFaucet := faucet.NewTestnetFaucetProvider()
-
 	testnetClientCfg := websocket.NewWebsocketClientConfig().
 		WithHost("wss://s.altnet.rippletest.net:51233").
 		WithFaucetProvider(testnetFaucet)
-
 	testnetClient := websocket.NewWebsocketClient(testnetClientCfg)
 
 	wallet, err := xrpl.NewWallet(addresscodec.ED25519)
@@ -34,8 +32,6 @@ func main() {
 
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
 
-	
-
 	fmt.Println("Funding wallet", wallet.ClassicAddress)
 	err = testnetClient.FundWallet(&wallet)
 	if err != nil {
@@ -49,7 +45,6 @@ func main() {
 		return
 	}
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
-
 
 	fmt.Println("Funding wallet on devnet:")
 
@@ -67,7 +62,6 @@ func main() {
 	}
 
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
-
 	
 	fmt.Println("Funding wallet", wallet.ClassicAddress)
 	err = devnetClient.FundWallet(&wallet)
@@ -82,6 +76,4 @@ func main() {
 		return
 	}
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
-
-
 }
