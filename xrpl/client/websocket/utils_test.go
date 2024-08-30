@@ -260,7 +260,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 			},
 			expected: map[string]interface{}{
 				"Account":  "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
-				"Sequence": uint64(42),
+				"Sequence": int(42),
 			},
 			expectedErr: nil,
 		},
@@ -306,8 +306,15 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(tt.expected, tt.tx) {
+				t.Logf("Expected:")
+				for k, v := range tt.expected {
+					t.Logf("  %s: %v (type: %T)", k, v, v)
+				}
+				t.Logf("Got:")
+				for k, v := range tt.tx {
+					t.Logf("  %s: %v (type: %T)", k, v, v)
+				}
 				t.Errorf("Expected %v but got %v", tt.expected, tt.tx)
-				
 			}
 		})
 	}
@@ -450,7 +457,7 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 				},
 			},
 			tx:              map[string]interface{}{},
-			expectedTx:      map[string]interface{}{"LastLedgerSequence": uint32(1000 + LEDGER_OFFSET)},
+			expectedTx:      map[string]interface{}{"LastLedgerSequence": int(1000 + LEDGER_OFFSET)},
 			expectedErr:     nil,
 		},
 	}
