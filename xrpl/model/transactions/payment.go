@@ -14,7 +14,7 @@ const (
 	// If the specified Amount cannot be sent without spending more than SendMax,
 	// reduce the received amount instead of failing outright. See Partial
 	// Payments for more details.
-	tfPartialPayment  uint = 131072
+	tfPartialPayment uint = 131072
 	// Only take paths where all the conversions have an input:output ratio that
 	// is equal or better than the ratio of Amount:SendMax. See Limit Quality for
 	// details.

@@ -6,15 +6,15 @@ import (
 
 const (
 	// The same as SetFlag: asfRequireDest.
-	tfRequireDestTag  uint = 65536 // 0x00010000
+	tfRequireDestTag uint = 65536 // 0x00010000
 	// The same as ClearFlag: asfRequireDestTag.
-	tfOptionalDestTag uint = 131072 // 0x00020000	
+	tfOptionalDestTag uint = 131072 // 0x00020000
 	// The same as SetFlag: asfRequireAuth.
 	tfRequireAuth uint = 262144 // 0x00040000
 	// The same as ClearFlag: asfRequireAuth.
 	tfOptionalAuth uint = 524288 // 0x00080000
 	// The same as SetFlag: asfDisallowXRP.
-	tfDisallowXRP     uint = 1048576 // 0x00100000
+	tfDisallowXRP uint = 1048576 // 0x00100000
 	// The same as ClearFlag: asfDisallowXRP.
 	tfAllowXRP uint = 2097152 // 0x00200000
 )
@@ -24,23 +24,23 @@ const (
 type AccountSet struct {
 	BaseTx
 	// ClearFlag: asfRequireDestTag, asfOptionalDestTag, asfRequireAuth, asfOptionalAuth, asfDisallowXRP, asfAllowXRP
-	ClearFlag     uint          `json:",omitempty"`
+	ClearFlag uint `json:",omitempty"`
 	// The domain that owns this account, as a string of hex representing the.
 	// ASCII for the domain in lowercase.
-	Domain        string        `json:",omitempty"`
+	Domain string `json:",omitempty"`
 	// Hash of an email address to be used for generating an avatar image.
-	EmailHash     types.Hash128 `json:",omitempty"`
+	EmailHash types.Hash128 `json:",omitempty"`
 	//Public key for sending encrypted messages to this account.
-	MessageKey    string        `json:",omitempty"`
+	MessageKey string `json:",omitempty"`
 	// Sets an alternate account that is allowed to mint NFTokens on this
 	// account's behalf using NFTokenMint's `Issuer` field.
-	NFTokenMinter string        `json:",omitempty"`
+	NFTokenMinter string `json:",omitempty"`
 	// Integer flag to enable for this account.
-	SetFlag       uint          `json:",omitempty"`
+	SetFlag uint `json:",omitempty"`
 	// The fee to charge when users transfer this account's issued currencies,
 	// represented as billionths of a unit. Cannot be more than 2000000000 or less
 	// than 1000000000, except for the special case 0 meaning no fee.
-	TransferRate  uint          `json:",omitempty"`
+	TransferRate uint `json:",omitempty"`
 	// Tick size to use for offers involving a currency issued by this address.
 	// The exchange rates of those offers is rounded to this many significant
 	// digits. Valid values are 3 to 15 inclusive, or 0 to disable.
@@ -121,4 +121,3 @@ func (s *AccountSet) SetOptionalAuth() {
 func (s *AccountSet) SetAllowXRP() {
 	s.Flags |= tfAllowXRP
 }
-
