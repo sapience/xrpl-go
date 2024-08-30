@@ -1,6 +1,8 @@
 package websocket
 
 import (
+	"fmt"
+
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/mitchellh/mapstructure"
 )
@@ -33,7 +35,12 @@ func (r *WebSocketClientXrplResponse) GetResult(v any) error {
 	if err != nil {
 		return err
 	}
-	return dec.Decode(r.Result)
+	err = dec.Decode(r.Result)
+	if err != nil {
+		fmt.Println("aqui", err)
+		return err
+	}
+	return nil
 }
 
 func (r *WebSocketClientXrplResponse) CheckError() error {

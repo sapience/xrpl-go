@@ -6,9 +6,12 @@ import (
 	"errors"
 	"sync/atomic"
 
+	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
+
+	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 	"github.com/gorilla/websocket"
 )
@@ -152,4 +155,43 @@ func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLRespon
 	}
 
 	return &res, nil
+}
+
+func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
+	tx, err := binarycodec.Decode(txBlob)
+	if err != nil {
+		return nil, err
+	}
+
+	_, okTxSig := tx["TxSignature"].(string)
+	_, okPubKey := tx["SigningPubKey"].(string)
+	signers, okSigners := tx["Signers"].([]transactions.Signer)
+
+	if okSigners && len(signers) > 0 {
+		for _, signer := range signers {
+			if signer.SignerData.SigningPubKey == "" && signer.SignerData.TxnSignature == "" {
+				return nil, errors.New("signer data is empty")
+			}
+		}
+	} else if !okTxSig && !okPubKey {
+		return nil, errors.New("transaction must have a TxSignature or SigningPubKey set")
+	}
+
+	return c.SubmitRequest(&requests.SubmitRequest{
+		TxBlob:   txBlob,
+		FailHard: failHard,
+	})
+}
+
+func (c *WebsocketClient) SubmitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
+	res, err := c.SendRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	var subRes requests.SubmitResponse
+	err = res.GetResult(&subRes)
+	if err != nil {
+		return nil, err
+	}
+	return &subRes, nil
 }

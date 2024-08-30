@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -33,6 +33,11 @@ func (m *mockClientXrplResponse) GetResult(v any) error {
 
 func (m *mockClient) SendRequest(req XRPLRequest) (XRPLResponse, error) {
 	args := m.Called(req)
+	return args.Get(0).(XRPLResponse), args.Error(1)
+}
+
+func (m *mockClient) SubmitTransactionBlob(tx string, failHard bool) (XRPLResponse, error) {
+	args := m.Called(tx)
 	return args.Get(0).(XRPLResponse), args.Error(1)
 }
 

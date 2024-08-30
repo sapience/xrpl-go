@@ -13,6 +13,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	jsonrpcmodels "github.com/Peersyst/xrpl-go/xrpl/client/jsonrpc/models"
+	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -115,6 +116,19 @@ func (c *JsonRpcClient) SendRequest(reqParams client.XRPLRequest) (client.XRPLRe
 	}
 
 	return &jr, nil
+}
+
+func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (client.XRPLResponse, error) {
+	submitRequest := &requests.SubmitRequest{
+		TxBlob:   txBlob,
+		FailHard: failHard,
+	}
+
+	// TODO: Check if txBlob is signed, will be part of another PR
+
+	response, error := c.SendRequest(submitRequest)
+
+	return response, error
 }
 
 func (c *JsonRpcClient) Autofill(tx *map[string]interface{}) error {

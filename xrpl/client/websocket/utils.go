@@ -7,9 +7,9 @@ import (
 	"math"
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/server"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/server"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 	"github.com/Peersyst/xrpl-go/xrpl/utils"
 	"github.com/mitchellh/mapstructure"
@@ -95,7 +95,7 @@ func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *map[string]i
 		return err
 	}
 
-	(*tx)["Sequence"] = res.AccountData.Sequence
+	(*tx)["Sequence"] = int(res.AccountData.Sequence)
 	return nil
 }
 
@@ -156,7 +156,7 @@ func (c *WebsocketClient) setLastLedgerSequence(tx *map[string]interface{}) erro
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Uint32() + LEDGER_OFFSET
+	(*tx)["LastLedgerSequence"] = index.Int() + int(LEDGER_OFFSET)
 	return err
 }
 
@@ -197,7 +197,7 @@ func (c *WebsocketClient) checkPaymentAmounts(tx *map[string]interface{}) error 
 func (c *WebsocketClient) setTransactionFlags(tx *map[string]interface{}) error {
 	flags, ok := (*tx)["Flags"].(uint32)
 	if !ok && flags > 0 {
-		(*tx)["Flags"] = uint32(0)
+		(*tx)["Flags"] = int(0)
 		return nil
 	}
 

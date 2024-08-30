@@ -1,6 +1,6 @@
 package websocket
 
-import "github.com/Peersyst/xrpl-go/xrpl/model/client/server"
+import "github.com/Peersyst/xrpl-go/xrpl/model/requests/server"
 
 func (c *WebsocketClient) GetServerInfo(req *server.ServerInfoRequest) (*server.ServerInfoResponse, error) {
 	res, err := c.SendRequest(req)
