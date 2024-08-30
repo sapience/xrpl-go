@@ -117,6 +117,10 @@ func (c *JsonRpcClient) SendRequest(reqParams client.XRPLRequest) (client.XRPLRe
 	return &jr, nil
 }
 
+func (c *JsonRpcClient) Autofill(tx *map[string]interface{}) error {
+	return errors.New("not implemented")
+}
+
 // CreateRequest formats the parameters and method name ready for sending request
 // Params will have been serialised if required and added to request struct before being passed to this method
 func CreateRequest(reqParams client.XRPLRequest) ([]byte, error) {

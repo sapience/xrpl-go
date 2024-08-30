@@ -90,3 +90,68 @@ func TestTrustSetFlatten(t *testing.T) {
 	    t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
 	}
 }
+
+func TestTrustSetFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*TrustSet)
+		expected uint
+	}{
+		{
+			name: "SetSetAuthFlag",
+			setter: func(ts *TrustSet) {
+				ts.SetSetAuthFlag()
+			},
+			expected: tfSetAuth,
+		},
+		{
+			name: "SetSetNoRippleFlag",
+			setter: func(ts *TrustSet) {
+				ts.SetSetNoRippleFlag()
+			},
+			expected: tfSetNoRipple,
+		},
+		{
+			name: "SetClearNoRippleFlag",
+			setter: func(ts *TrustSet) {
+				ts.SetClearNoRippleFlag()
+			},
+			expected: tfClearNoRipple,
+		},
+		{
+			name: "SetSetfAuthFlag and SetSetNoRippleFlag",
+			setter: func(ts *TrustSet) {
+				ts.SetSetAuthFlag()
+				ts.SetSetNoRippleFlag()
+			},
+			expected: tfSetAuth | tfSetNoRipple,
+		},
+		{
+			name: "SetSetfAuthFlag and SetClearNoRippleFlag",
+			setter: func(ts *TrustSet) {
+				ts.SetSetAuthFlag()
+				ts.SetClearNoRippleFlag()
+			},
+			expected: tfSetAuth | tfClearNoRipple,
+		},
+		{
+			name: "All flags",
+			setter: func(ts *TrustSet) {
+				ts.SetSetAuthFlag()
+				ts.SetSetNoRippleFlag()
+				ts.SetClearNoRippleFlag()
+			},
+			expected: tfSetAuth | tfSetNoRipple | tfClearNoRipple,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ts := &TrustSet{}
+			tt.setter(ts)
+			if ts.Flags != tt.expected {
+				t.Errorf("Expected Flags to be %d, got %d", tt.expected, ts.Flags)
+			}
+		})
+	}
+}

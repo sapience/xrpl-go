@@ -23,6 +23,11 @@ func (*LedgerRequest) Method() string {
 	return "ledger"
 }
 
+// TODO: Implement
+func (*LedgerRequest) Validate() error {
+	return nil
+}
+
 func (r *LedgerRequest) UnmarshalJSON(data []byte) error {
 	type lrHelper struct {
 		LedgerHash   common.LedgerHash      `json:"ledger_hash,omitempty"`
