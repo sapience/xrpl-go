@@ -41,6 +41,11 @@ func (m *mockClient) SubmitTransactionBlob(tx string, failHard bool) (XRPLRespon
 	return args.Get(0).(XRPLResponse), args.Error(1)
 }
 
+func (m *mockClient) Autofill(tx *map[string]interface{}) error {
+	m.Called(tx)
+	return nil
+}
+
 func TestGetAccountChannels(t *testing.T) {
 
 	tt := []struct {
