@@ -7,9 +7,9 @@ import (
 	"math"
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/server"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/server"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 	"github.com/Peersyst/xrpl-go/xrpl/utils"
 	"github.com/mitchellh/mapstructure"
