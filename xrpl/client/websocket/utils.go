@@ -196,7 +196,7 @@ func (c *WebsocketClient) checkPaymentAmounts(tx *map[string]interface{}) error 
 }
 
 // Sets a transaction's flags to its numeric representation.
-// TODO: Add flag support for AccountSet, AMMDeposit, AMMWithdraw,
+// TODO: Add flag support for AMMDeposit, AMMWithdraw,
 // NFTTOkenCreateOffer, NFTokenMint, OfferCreate, XChainModifyBridge (not supported).
 func (c *WebsocketClient) setTransactionFlags(tx *map[string]interface{}) error {
 	flags, ok := (*tx)["Flags"].(uint32)
