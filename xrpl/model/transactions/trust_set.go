@@ -6,6 +6,14 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
+const (
+	TfSetAuth       uint = 65536
+	TfSetNoRipple   uint = 131072
+	TfClearNoRipple uint = 262144
+	TfSetFreeze     uint = 1048576
+	TfClearFreeze   uint = 2097152
+)
+
 // Create or modify a trust line linking two accounts.
 type TrustSet struct {
 	// Base transaction fields
@@ -43,6 +51,46 @@ func (t *TrustSet) Flatten() map[string]interface{} {
 	}
 
 	return flattened
+}
+
+func (t *TrustSet) SetSetAuthFlag(enabled bool) {
+	if enabled {
+		t.Flags |= TfSetAuth
+	} else {
+		t.Flags &= ^TfSetAuth
+	}
+}
+
+func (t *TrustSet) SetSetNoRippleFlag(enabled bool) {
+	if enabled {
+		t.Flags |= TfSetNoRipple
+	} else {
+		t.Flags &= ^TfSetNoRipple
+	}
+}
+
+func (t *TrustSet) SetClearNoRippleFlag(enabled bool) {
+	if enabled {
+		t.Flags |= TfClearNoRipple
+	} else {
+		t.Flags &= ^TfClearNoRipple
+	}
+}
+
+func (t *TrustSet) SetSetFreezeFlag(enabled bool) {
+	if enabled {
+		t.Flags |= TfSetFreeze
+	} else {
+		t.Flags &= ^TfSetFreeze
+	}
+}
+
+func (t *TrustSet) SetClearFreezeFlag(enabled bool) {
+	if enabled {
+		t.Flags |= TfClearFreeze
+	} else {
+		t.Flags &= ^TfClearFreeze
+	}
 }
 
 func (t *TrustSet) UnmarshalJSON(data []byte) error {

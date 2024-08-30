@@ -197,8 +197,7 @@ func (c *WebsocketClient) checkPaymentAmounts(tx *map[string]interface{}) error 
 
 // Sets a transaction's flags to its numeric representation.
 // TODO: Add flag support for AccountSet, AMMDeposit, AMMWithdraw,
-// NFTTOkenCreateOffer, NFTokenMint, OfferCreate, PaymentChannelClaim,
-// Payment, TrustSet, XChainModifyBridge (not supported).
+// NFTTOkenCreateOffer, NFTokenMint, OfferCreate, XChainModifyBridge (not supported).
 func (c *WebsocketClient) setTransactionFlags(tx *map[string]interface{}) error {
 	flags, ok := (*tx)["Flags"].(uint32)
 	if !ok && flags > 0 {
@@ -206,29 +205,10 @@ func (c *WebsocketClient) setTransactionFlags(tx *map[string]interface{}) error 
 		return nil
 	}
 
-	txType, ok := (*tx)["TransactionType"].(string)
+	_, ok = (*tx)["TransactionType"].(string)
 	if !ok {
 		return errors.New("transaction type is missing in transaction")
 	}
 
-	switch txType {
-	default:
-		// TODO: Add missing flag support
-		// - AccountSet
-		// - AMMDeposit
-		// - AMMWithdraw
-		// - NFTokenCreateOffer
-		// - NFTokenMint
-		// - OfferCreate
-		// - PaymentChannelClaim
-		// - Payment
-		// - TrustSet
-		// - XChainModifyBridge (XChainBridge not supported)
-		if flags > 0 {
-			return nil
-		} else {
-			(*tx)["Flags"] = uint32(0)
-		}
-	}
 	return nil
 }

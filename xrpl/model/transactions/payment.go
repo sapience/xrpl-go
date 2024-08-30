@@ -6,6 +6,18 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
+const (
+	TfRippleNotDirect uint = 65536
+	TfPartialPayment  uint = 131072
+	TfLimitQuality    uint = 262144
+)
+
+type PaymentFlags struct {
+	RippleNotDirect bool
+	PartialPayment  bool
+	LimitQuality    bool
+}
+
 // A Payment transaction represents a transfer of value from one account to another.
 type Payment struct {
 	BaseTx
@@ -88,6 +100,30 @@ func (p *Payment) Flatten() map[string]interface{} {
 	}
 
 	return flattened
+}
+
+func (p *Payment) SetRippleNotDirectFlag(enabled bool) {
+	if enabled {
+		p.Flags |= TfRippleNotDirect
+	} else {
+		p.Flags &= ^TfRippleNotDirect
+	}
+}
+
+func (p *Payment) SetPartialPaymentFlag(enabled bool) {
+	if enabled {
+		p.Flags |= TfPartialPayment
+	} else {
+		p.Flags &= ^TfPartialPayment
+	}
+}
+
+func (p *Payment) SetLimitQualityFlag(enabled bool) {
+	if enabled {
+		p.Flags |= TfLimitQuality
+	} else {
+		p.Flags &= ^TfLimitQuality
+	}
 }
 
 func (p *Payment) UnmarshalJSON(data []byte) error {
