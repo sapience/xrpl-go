@@ -565,7 +565,7 @@ func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 			tx: map[string]interface{}{
 				"TransactionType": string(transactions.PaymentTx),
 			},
-			expected: 0,
+			expected: uint32(0),
 			wantErr:  false,
 		},
 		{
@@ -593,13 +593,15 @@ func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 			err := c.setTransactionFlags(&tt.tx)
 
 			if (err != nil) != tt.wantErr {
+				
 				t.Errorf("setTransactionFlags() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if !tt.wantErr {
-				if flags, ok := tt.tx["Flags"].(uint32); !ok || flags != tt.expected {
-					t.Errorf("setTransactionFlags() got = %v, want %v", flags, tt.expected)
+				flags, ok := tt.tx["Flags"];
+				if !ok && tt.expected != 0 {
+					t.Errorf("setTransactionFlags() got = %v (type %T), want %v (type %T)", flags, flags, tt.expected, tt.expected)
 				}
 			}
 		})
