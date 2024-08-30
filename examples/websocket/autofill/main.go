@@ -10,7 +10,10 @@ import (
 
 func main() {
 
-	wsClient:= websocket.NewWebsocketClient(&websocket.WebsocketConfig{URL: "wss://s.altnet.rippletest.net"})
+	wsClient:= websocket.NewWebsocketClient(
+		websocket.NewWebsocketClientConfig().
+			WithHost("wss://s.altnet.rippletest.net:51233"),
+	)
 
 	payment := transactions.Payment{
 		BaseTx: transactions.BaseTx{

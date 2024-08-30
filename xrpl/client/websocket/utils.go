@@ -118,8 +118,8 @@ func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) {
 
 	fee := res.Info.ValidatedLedger.BaseFeeXRP * float32(loadFactor) * cushion
 
-	if fee > c.MaxFeeXRP {
-		fee = c.MaxFeeXRP
+	if fee > c.cfg.maxFeeXRP {
+		fee = c.cfg.maxFeeXRP
 	}
 
 	// Round fee to NUM_DECIMAL_PLACES
@@ -133,7 +133,7 @@ func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) {
 //
 // TODO: Add fee support for `EscrowFinish` `AccountDelete`, `AMMCreate`, and multisigned transactions.
 func (c *WebsocketClient) calculateFeePerTransactionType(tx *map[string]interface{}) error {
-	fee, err := c.getFeeXrp(c.FeeCushion)
+	fee, err := c.getFeeXrp(c.cfg.feeCushion)
 	if err != nil {
 		return err
 	}

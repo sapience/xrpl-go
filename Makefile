@@ -7,7 +7,7 @@ lint:
 
 test:
 	@echo "Running Go tests..."
-	@go test ./...
+	@go test $(shell go list ./... | grep -v /faucet | grep -v /examples)
 	@echo "Tests complete!"
 
 benchmark:

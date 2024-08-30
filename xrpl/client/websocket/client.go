@@ -6,6 +6,7 @@ import (
 	"errors"
 	"sync/atomic"
 
+	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
@@ -21,33 +22,26 @@ var _ client.Client = (*WebsocketClient)(nil)
 
 var ErrIncorrectId = errors.New("incorrect id")
 
-type WebsocketConfig struct {
-	URL string
-}
-
 type WebsocketClient struct {
-	cfg       *WebsocketConfig
-	idCounter atomic.Uint32
+	cfg WebsocketClientConfig
 
-	NetworkId  uint32
-	FeeCushion float32
-	MaxFeeXRP  float32
+	idCounter atomic.Uint32
+	NetworkId uint32
 }
 
 // Creates a new websocket client with cfg.
 // This client will open and close a websocket connection for each request.
-func NewWebsocketClient(cfg *WebsocketConfig) *WebsocketClient {
+func NewWebsocketClient(cfg WebsocketClientConfig) *WebsocketClient {
 	return &WebsocketClient{
-		cfg:        cfg,
-		FeeCushion: DEFAULT_FEE_CUSHION,
-		MaxFeeXRP:  DEFAULT_MAX_FEE_XRP,
+		cfg: cfg,
 	}
 }
 
-func NewClient(cfg *WebsocketConfig) *client.XRPLClient {
-	wcl := &WebsocketClient{
-		cfg: cfg,
-	}
+func NewClient(host string) *client.XRPLClient {
+	wcl := NewWebsocketClient(
+		NewWebsocketClientConfig().
+			WithHost(host),
+	)
 	return client.NewXRPLClient(wcl)
 }
 
@@ -101,6 +95,19 @@ func (c *WebsocketClient) Autofill(tx *map[string]interface{}) error {
 	return nil
 }
 
+func (c *WebsocketClient) FundWallet(wallet *xrpl.Wallet) error {
+	if wallet.ClassicAddress == "" {
+		return errors.New("fund wallet: cannot fund a wallet without a classic address")
+	}
+
+	err := c.cfg.faucetProvider.FundWallet(wallet.ClassicAddress)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLResponse, error) {
 	err := req.Validate()
 	if err != nil {
@@ -109,7 +116,7 @@ func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLRespon
 
 	id := c.idCounter.Add(1)
 
-	conn, _, err := websocket.DefaultDialer.Dial(c.cfg.URL, nil)
+	conn, _, err := websocket.DefaultDialer.Dial(c.cfg.host, nil)
 	if err != nil {
 		return nil, err
 	}
