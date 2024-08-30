@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"strconv"
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
@@ -139,15 +138,12 @@ func (c *WebsocketClient) calculateFeePerTransactionType(tx *map[string]interfac
 		return err
 	}
 
-	// TODO: Replace with XrpToDrops util when implemented
-	feeFloat, err := strconv.ParseFloat(fee, 64)
+	feeDrops, err := utils.XrpToDrops(fee)
 	if err != nil {
 		return err
 	}
-	feeDrops := feeFloat * utils.DROPS_PER_XRP
 
-	roundedFee := math.Ceil(feeDrops)
-	(*tx)["Fee"] = fmt.Sprintf("%.0f", roundedFee)
+	(*tx)["Fee"] = feeDrops
 
 	return nil
 }
