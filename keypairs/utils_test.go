@@ -21,7 +21,7 @@ func TestSha512Half(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
-			got := sha512Half(tc.input)
+			got := Sha512Half(tc.input)
 			require.Equal(t, tc.expected, got)
 		})
 	}

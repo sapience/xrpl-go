@@ -19,6 +19,11 @@ func (*CheckCreate) TxType() TxType {
 	return CheckCreateTx
 }
 
+// TODO: Implement flatten
+func (s *CheckCreate) Flatten() map[string]interface{} {
+	return nil
+}
+
 func (c *CheckCreate) UnmarshalJSON(data []byte) error {
 	type ccHelper struct {
 		BaseTx

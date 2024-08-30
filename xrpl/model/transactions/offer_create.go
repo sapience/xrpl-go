@@ -18,6 +18,11 @@ func (*OfferCreate) TxType() TxType {
 	return OfferCreateTx
 }
 
+// TODO: Implement flatten
+func (s *OfferCreate) Flatten() map[string]interface{} {
+	return nil
+}
+
 func (o *OfferCreate) UnmarshalJSON(data []byte) error {
 	type ocHelper struct {
 		BaseTx

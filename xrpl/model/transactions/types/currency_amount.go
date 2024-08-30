@@ -14,6 +14,7 @@ const (
 
 type CurrencyAmount interface {
 	Kind() CurrencyKind
+	Flatten() interface{}
 }
 
 func UnmarshalCurrencyAmount(data []byte) (CurrencyAmount, error) {
@@ -46,10 +47,30 @@ func (IssuedCurrencyAmount) Kind() CurrencyKind {
 	return ISSUED
 }
 
+func (i IssuedCurrencyAmount) Flatten() interface{} {
+	json := make(map[string]interface{})
+	json["issuer"] = i.Issuer.String()
+	json["currency"] = i.Currency
+	json["value"] = i.Value
+	return json
+}
+
 type XRPCurrencyAmount uint64
+
+func (a XRPCurrencyAmount) Uint64() uint64 {
+	return uint64(a)
+}
+
+func (a XRPCurrencyAmount) String() string {
+	return strconv.FormatUint(uint64(a), 10)
+}
 
 func (XRPCurrencyAmount) Kind() CurrencyKind {
 	return XRP
+}
+
+func (a XRPCurrencyAmount) Flatten() interface{} {
+	return a.String()
 }
 
 func (a XRPCurrencyAmount) MarshalJSON() ([]byte, error) {

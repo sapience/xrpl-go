@@ -19,6 +19,11 @@ func (*NFTokenCreateOffer) TxType() TxType {
 	return NFTokenCreateOfferTx
 }
 
+// TODO: Implement flatten
+func (s *NFTokenCreateOffer) Flatten() map[string]interface{} {
+	return nil
+}
+
 func (n *NFTokenCreateOffer) UnmarshalJSON(data []byte) error {
 	type ncoHelper struct {
 		BaseTx
