@@ -6,6 +6,21 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
+const (
+	// Do not use the default path; only use paths included in the Paths field.
+	// This is intended to force the transaction to take arbitrage opportunities.
+	// Most clients do not need this.
+	tfRippleNotDirect uint = 65536
+	// If the specified Amount cannot be sent without spending more than SendMax,
+	// reduce the received amount instead of failing outright. See Partial
+	// Payments for more details.
+	tfPartialPayment uint = 131072
+	// Only take paths where all the conversions have an input:output ratio that
+	// is equal or better than the ratio of Amount:SendMax. See Limit Quality for
+	// details.
+	tfLimitQuality uint = 262144
+)
+
 // A Payment transaction represents a transfer of value from one account to another.
 type Payment struct {
 	BaseTx
@@ -48,6 +63,12 @@ type Payment struct {
 	SendMax types.CurrencyAmount `json:",omitempty"`
 }
 
+// TxType returns the type of the transaction (Payment).
+func (*Payment) TxType() TxType {
+	return PaymentTx
+}
+
+// Flatten returns the flattened map of the Payment transaction.
 func (p *Payment) Flatten() map[string]interface{} {
 	// Add BaseTx fields
 	flattened := p.BaseTx.Flatten()
@@ -90,6 +111,34 @@ func (p *Payment) Flatten() map[string]interface{} {
 	return flattened
 }
 
+// SetRippleNotDirectFlag sets the RippleNotDirect flag.
+//
+// RippleNotDirect: Do not use the default path; only use paths included in the Paths field.
+// This is intended to force the transaction to take arbitrage opportunities.
+// Most clients do not need this.
+func (p *Payment) SetRippleNotDirectFlag() {
+	p.Flags |= tfRippleNotDirect
+}
+
+// SetPartialPaymentFlag sets the PartialPayment flag.
+//
+// PartialPayment: If the specified Amount cannot be sent without spending more than SendMax,
+// reduce the received amount instead of failing outright. See Partial
+// Payments for more details.
+func (p *Payment) SetPartialPaymentFlag() {
+	p.Flags |= tfPartialPayment
+}
+
+// SetLimitQualityFlag sets the LimitQuality flag.
+//
+// LimitQuality: Only take paths where all the conversions have an input:output ratio that
+// is equal or better than the ratio of Amount:SendMax. See Limit Quality for
+// details.
+func (p *Payment) SetLimitQualityFlag() {
+	p.Flags |= tfLimitQuality
+}
+
+// UnmarshalJSON unmarshals the Payment transaction from JSON.
 func (p *Payment) UnmarshalJSON(data []byte) error {
 	type pHelper struct {
 		BaseTx
