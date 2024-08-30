@@ -7,11 +7,18 @@ import (
 )
 
 const (
-	TfSetAuth       uint = 65536
-	TfSetNoRipple   uint = 131072
-	TfClearNoRipple uint = 262144
-	TfSetFreeze     uint = 1048576
-	TfClearFreeze   uint = 2097152
+	// Authorize the other party to hold currency issued by this account. (No
+	// effect unless using the asfRequireAuth AccountSet flag.) Cannot be unset.
+	tfSetAuth       uint = 65536 // 0x00010000
+	// Enable the No Ripple flag, which blocks rippling between two trust lines.
+	// of the same currency if this flag is enabled on both.
+	tfSetNoRipple   uint = 131072 // 0x00020000
+	// Disable the No Ripple flag, allowing rippling on this trust line.
+	tfClearNoRipple uint = 262144 // 0x00040000
+	// Freeze the trust line
+	tfSetFreeze     uint = 1048576 // 0x00100000
+	// Unfreeze the trust line
+	tfClearFreeze   uint = 2097152 // 0x00200000
 )
 
 // Create or modify a trust line linking two accounts.
@@ -31,10 +38,12 @@ type TrustSet struct {
 	QualityOut uint32 `json:",omitempty"`
 }
 
+// TxType returns the type of the transaction (TrustSet).
 func (*TrustSet) TxType() TxType {
 	return TrustSetTx
 }
 
+// Flatten returns a flattened map of the TrustSet transaction.
 func (t *TrustSet) Flatten() map[string]interface{} {
 	flattened := t.BaseTx.Flatten()
 
@@ -53,44 +62,41 @@ func (t *TrustSet) Flatten() map[string]interface{} {
 	return flattened
 }
 
-func (t *TrustSet) SetSetAuthFlag(enabled bool) {
-	if enabled {
-		t.Flags |= TfSetAuth
-	} else {
-		t.Flags &= ^TfSetAuth
-	}
+// Set the SetAuth flag
+//
+// SetAuth: Authorize the other party to hold currency issued by this account. (No
+// effect unless using the asfRequireAuth AccountSet flag.) Cannot be unset.
+func (t *TrustSet) SetSetAuthFlag() {
+	t.Flags |= tfSetAuth
 }
 
-func (t *TrustSet) SetSetNoRippleFlag(enabled bool) {
-	if enabled {
-		t.Flags |= TfSetNoRipple
-	} else {
-		t.Flags &= ^TfSetNoRipple
-	}
+// Set the SetNoRipple flag
+//
+// SetNoRipple: Enable the No Ripple flag, which blocks rippling between two trust lines.
+// of the same currency if this flag is enabled on both.
+func (t *TrustSet) SetSetNoRippleFlag() {
+	t.Flags |= tfSetNoRipple
 }
 
-func (t *TrustSet) SetClearNoRippleFlag(enabled bool) {
-	if enabled {
-		t.Flags |= TfClearNoRipple
-	} else {
-		t.Flags &= ^TfClearNoRipple
-	}
+// Set the ClearNoRipple flag
+//
+// ClearNoRipple: Disable the No Ripple flag, allowing rippling on this trust line.
+func (t *TrustSet) SetClearNoRippleFlag() {
+	t.Flags |= tfClearNoRipple
 }
 
-func (t *TrustSet) SetSetFreezeFlag(enabled bool) {
-	if enabled {
-		t.Flags |= TfSetFreeze
-	} else {
-		t.Flags &= ^TfSetFreeze
-	}
+// Set the SetFreeze flag
+//
+// SetFreeze: Freeze the trust line
+func (t *TrustSet) SetSetFreezeFlag() {
+	t.Flags |= tfSetFreeze
 }
 
-func (t *TrustSet) SetClearFreezeFlag(enabled bool) {
-	if enabled {
-		t.Flags |= TfClearFreeze
-	} else {
-		t.Flags &= ^TfClearFreeze
-	}
+// Set the ClearFreeze flag
+//
+// ClearFreeze: Unfreeze the trust line
+func (t *TrustSet) SetClearFreezeFlag() {
+	t.Flags |= tfClearFreeze
 }
 
 func (t *TrustSet) UnmarshalJSON(data []byte) error {

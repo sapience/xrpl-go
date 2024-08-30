@@ -6,17 +6,17 @@ import (
 
 const (
 	// The same as SetFlag: asfRequireDest.
-	tfRequireDestTag  uint = 65536
+	tfRequireDestTag  uint = 65536 // 0x00010000
 	// The same as ClearFlag: asfRequireDestTag.
-	tfOptionalDestTag uint = 131072
+	tfOptionalDestTag uint = 131072 // 0x00020000	
 	// The same as SetFlag: asfRequireAuth.
-	tfRequireAuth uint = 262144
+	tfRequireAuth uint = 262144 // 0x00040000
 	// The same as ClearFlag: asfRequireAuth.
-	tfOptionalAuth uint = 524288
+	tfOptionalAuth uint = 524288 // 0x00080000
 	// The same as SetFlag: asfDisallowXRP.
-	tfDisallowXRP     uint = 1048576
+	tfDisallowXRP     uint = 1048576 // 0x00100000
 	// The same as ClearFlag: asfDisallowXRP.
-	tfAllowXRP uint = 2097152
+	tfAllowXRP uint = 2097152 // 0x00200000
 )
 
 // An AccountSet transaction modifies the properties of an account in the XRP
@@ -93,68 +93,32 @@ func (s *AccountSet) Flatten() map[string]interface{} {
 }
 
 // SetRequireDestTag sets the require destination tag flag.
-// If enable is true, the require destination tag flag is set.
-// This flag is disabled by default.
-func (s *AccountSet) SetRequireDestTag(enable bool) {
-	if enable {
-		s.Flags |= tfRequireDestTag
-	} else {
-		s.Flags |= tfRequireDestTag
-	}
+func (s *AccountSet) SetRequireDestTag() {
+	s.Flags |= tfRequireDestTag
 }
 
 // SetRequireAuth sets the require auth flag.
-// If enable is true, the require auth flag is set.
-// This flag is disabled by default.
-func (s *AccountSet) SetRequireAuth(enable bool) {
-	if enable {
-		s.Flags |= tfRequireAuth
-	} else {
-		s.Flags &= ^tfRequireAuth
-	}
+func (s *AccountSet) SetRequireAuth() {
+	s.Flags |= tfRequireAuth
 }
 
 // SetDisallowXRP sets the disallow XRP flag.
-// If enable is true, the disallow XRP flag is set.
-// This flag is disabled by default.
-func (s *AccountSet) SetDisallowXRP(enable bool) {
-	if enable {
-		s.Flags |= tfDisallowXRP
-	} else {
-		s.Flags &= ^tfDisallowXRP
-	}
+func (s *AccountSet) SetDisallowXRP() {
+	s.Flags |= tfDisallowXRP
 }
 
 // SetOptionalDestTag sets the optional destination tag flag.
-// If enable is true, the optional destination tag flag is set.
-// This flag is disabled by default.
-func (s *AccountSet) SetOptionalDestTag(enable bool) {
-	if enable {
-		s.Flags |= tfOptionalDestTag
-	} else {
-		s.Flags &= ^tfOptionalDestTag
-	}
+func (s *AccountSet) SetOptionalDestTag() {
+	s.Flags |= tfOptionalDestTag
 }
 
 // SetOptionalAuth sets the optional auth flag.
-// If enable is true, the optional auth flag is set.
-// This flag is disabled by default.
-func (s *AccountSet) SetOptionalAuth(enable bool) {
-	if enable {
-		s.Flags |= tfOptionalAuth
-	} else {
-		s.Flags &= ^tfOptionalAuth
-	}
+func (s *AccountSet) SetOptionalAuth() {
+	s.Flags |= tfOptionalAuth
 }
 
 // SetAllowXRP sets the allow XRP flag.
-// If enable is true, the allow XRP flag is set.
-// This flag is disabled by default.
-func (s *AccountSet) SetAllowXRP(enable bool) {
-	if enable {
-		s.Flags |= tfAllowXRP
-	} else {
-		s.Flags &= ^tfAllowXRP
-	}
+func (s *AccountSet) SetAllowXRP() {
+	s.Flags |= tfAllowXRP
 }
 

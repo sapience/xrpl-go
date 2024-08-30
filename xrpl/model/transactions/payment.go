@@ -116,15 +116,8 @@ func (p *Payment) Flatten() map[string]interface{} {
 // RippleNotDirect: Do not use the default path; only use paths included in the Paths field.
 // This is intended to force the transaction to take arbitrage opportunities.
 // Most clients do not need this.
-//
-// If enabled is true, the RippleNotDirect flag is set.
-// This flag is disabled by default.
-func (p *Payment) SetRippleNotDirectFlag(enabled bool) {
-	if enabled {
-		p.Flags |= tfRippleNotDirect
-	} else {
-		p.Flags &= ^tfRippleNotDirect
-	}
+func (p *Payment) SetRippleNotDirectFlag() {
+	p.Flags |= tfRippleNotDirect
 }
 
 // SetPartialPaymentFlag sets the PartialPayment flag.
@@ -132,15 +125,8 @@ func (p *Payment) SetRippleNotDirectFlag(enabled bool) {
 // PartialPayment: If the specified Amount cannot be sent without spending more than SendMax,
 // reduce the received amount instead of failing outright. See Partial
 // Payments for more details.
-//
-// If enabled is true, the PartialPayment flag is set.
-// This flag is disabled by default.
-func (p *Payment) SetPartialPaymentFlag(enabled bool) {
-	if enabled {
-		p.Flags |= tfPartialPayment
-	} else {
-		p.Flags &= ^tfPartialPayment
-	}
+func (p *Payment) SetPartialPaymentFlag() {
+	p.Flags |= tfPartialPayment
 }
 
 // SetLimitQualityFlag sets the LimitQuality flag.
@@ -148,15 +134,8 @@ func (p *Payment) SetPartialPaymentFlag(enabled bool) {
 // LimitQuality: Only take paths where all the conversions have an input:output ratio that
 // is equal or better than the ratio of Amount:SendMax. See Limit Quality for
 // details.
-//
-// If enabled is true, the LimitQuality flag is set.
-// This flag is disabled by default.
-func (p *Payment) SetLimitQualityFlag(enabled bool) {
-	if enabled {
-		p.Flags |= tfLimitQuality
-	} else {
-		p.Flags &= ^tfLimitQuality
-	}
+func (p *Payment) SetLimitQualityFlag() {
+	p.Flags |= tfLimitQuality
 }
 
 // UnmarshalJSON unmarshals the Payment transaction from JSON.

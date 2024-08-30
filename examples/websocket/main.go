@@ -18,9 +18,9 @@ func main() {
 		Destination: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 		Amount:      types.XRPCurrencyAmount(100000),
 	}
-	payment.SetPartialPaymentFlag(true)
-	payment.SetLimitQualityFlag(true)
-	payment.SetRippleNotDirectFlag(true)
+	payment.SetPartialPaymentFlag()
+	payment.SetLimitQualityFlag()
+	payment.SetRippleNotDirectFlag()
 
 	paymentFlat := payment.Flatten()
 
