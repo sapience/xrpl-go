@@ -4,15 +4,14 @@ import (
 	"encoding/json"
 
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 )
 
 type SubmitResponse struct {
-	EngineResult             string             `json:"engine_result"`
-	EngineResultCode         int                `json:"engine_result_code"`
-	EngineResultMessage      string             `json:"engine_result_message"`
-	TxBlob                   string             `json:"tx_blob"`
-	Tx                       transactions.Tx    `json:"tx_json"`
+	EngineResult        string `json:"engine_result"`
+	EngineResultCode    int    `json:"engine_result_code"`
+	EngineResultMessage string `json:"engine_result_message"`
+	TxBlob              string `json:"tx_blob"`
+	// Tx                       transactions.Tx    `json:"tx_json"`
 	Accepted                 bool               `json:"accepted"`
 	AccountSequenceAvailable uint               `json:"account_sequence_available"`
 	AccountSequenceNext      uint               `json:"account_sequence_next"`
@@ -25,23 +24,23 @@ type SubmitResponse struct {
 }
 
 func (r *SubmitResponse) UnmarshalJSON(data []byte) error {
-	type sHelper struct {
-		EngineResult             string             `json:"engine_result"`
-		EngineResultCode         int                `json:"engine_result_code"`
-		EngineResultMessage      string             `json:"engine_result_message"`
-		TxBlob                   string             `json:"tx_blob"`
-		Tx                       json.RawMessage    `json:"tx_json"`
-		Accepted                 bool               `json:"accepted"`
-		AccountSequenceAvailable uint               `json:"account_sequence_available"`
-		AccountSequenceNext      uint               `json:"account_sequence_next"`
-		Applied                  bool               `json:"applied"`
-		Broadcast                bool               `json:"broadcast"`
-		Kept                     bool               `json:"kept"`
-		Queued                   bool               `json:"queued"`
-		OpenLedgerCost           string             `json:"open_ledger_cost"`
-		ValidatedLedgerIndex     common.LedgerIndex `json:"validated_ledger_index"`
-	}
-	var h sHelper
+	// type sHelper struct {
+	// 	EngineResult             string             `json:"engine_result"`
+	// 	EngineResultCode         int                `json:"engine_result_code"`
+	// 	EngineResultMessage      string             `json:"engine_result_message"`
+	// 	TxBlob                   string             `json:"tx_blob"`
+	// 	// Tx                       json.RawMessage    `json:"tx_json"`
+	// 	Accepted                 bool               `json:"accepted"`
+	// 	AccountSequenceAvailable uint               `json:"account_sequence_available"`
+	// 	AccountSequenceNext      uint               `json:"account_sequence_next"`
+	// 	Applied                  bool               `json:"applied"`
+	// 	Broadcast                bool               `json:"broadcast"`
+	// 	Kept                     bool               `json:"kept"`
+	// 	Queued                   bool               `json:"queued"`
+	// 	OpenLedgerCost           string             `json:"open_ledger_cost"`
+	// 	ValidatedLedgerIndex     common.LedgerIndex `json:"validated_ledger_index"`
+	// }
+	var h SubmitResponse
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
@@ -60,11 +59,11 @@ func (r *SubmitResponse) UnmarshalJSON(data []byte) error {
 		OpenLedgerCost:           h.OpenLedgerCost,
 		ValidatedLedgerIndex:     h.ValidatedLedgerIndex,
 	}
-	tx, err := transactions.UnmarshalTx(h.Tx)
-	if err != nil {
-		return err
-	}
-	r.Tx = tx
+	// tx, err := transactions.UnmarshalTx(h.Tx)
+	// if err != nil {
+	// 	return err
+	// }
+	// r.Tx = tx
 
 	return nil
 }

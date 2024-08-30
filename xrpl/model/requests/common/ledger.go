@@ -48,6 +48,10 @@ func (l LedgerIndex) Uint32() uint32 {
 	return uint32(l)
 }
 
+func (l LedgerIndex) Int() int {
+	return int(l)
+}
+
 type LedgerTitle string
 
 const (

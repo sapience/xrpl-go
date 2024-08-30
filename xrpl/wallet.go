@@ -126,6 +126,8 @@ func NewWalletFromMnemonic(mnemonic string) (*Wallet, error) {
 //
 // TODO: Refactor to accept a `Transaction` object instead of a map.
 func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
+	tx["SigningPubKey"] = w.PublicKey
+
 	encodedTx, _ := binarycodec.EncodeForSigning(tx)
 	hexTx, err := hex.DecodeString(encodedTx)
 	if err != nil {
