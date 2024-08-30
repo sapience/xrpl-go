@@ -6,8 +6,10 @@ import (
 	"errors"
 	"sync/atomic"
 
+	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/gorilla/websocket"
 )
 
@@ -70,24 +72,51 @@ func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLRespon
 	return &res, nil
 }
 
-func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (client.XRPLResponse, error) {
+func (c *WebsocketClient) SubmitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
+	res, err := c.SendRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var sr requests.SubmitResponse
+	err = res.GetResult(&sr)
+	if err != nil {
+		return nil, err
+	}
+	return &sr, nil
+}
+
+func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
+	tx, err := binarycodec.Decode(txBlob)
+	if err != nil {
+		return nil, err
+	}
+
+	_, okTxSig := tx["TxSignature"].(string)
+	_, okSigPubKey := tx["SigningPubKey"].(string)
+	signers, okSigners := tx["Signers"].([]transactions.Signer)
+
+	if okSigners {
+		for _, signer := range signers {
+			if signer.SignerData.SigningPubKey == "" && signer.SignerData.TxnSignature == "" {
+				return nil, errors.New("transaction is not signed")
+			}
+		}
+	} else if !okTxSig && !okSigPubKey {
+		return nil, errors.New("transaction is not signed")
+	}
+
 	submitRequest := &requests.SubmitRequest{
 		TxBlob:   txBlob,
 		FailHard: failHard,
 	}
 
-	// TODO: Check if txBlob is signed, will be part of another PR
-
-	response, error := c.SendRequest(submitRequest)
-
-	return response, error
+	return c.SubmitRequest(submitRequest)
 }
 
-/*
-Creates a new websocket client with cfg.
-
-This client will open and close a websocket connection for each request.
-*/
+// Creates a new websocket client with cfg.
+//
+// This client will open and close a websocket connection for each request.
 func NewWebsocketClient(cfg *WebsocketConfig) *WebsocketClient {
 	return &WebsocketClient{
 		cfg: cfg,
