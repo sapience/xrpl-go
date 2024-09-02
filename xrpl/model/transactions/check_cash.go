@@ -18,7 +18,7 @@ func (*CheckCash) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *CheckCash) Flatten() map[string]interface{} {
+func (s *CheckCash) Flatten() FlatTransaction {
 	return nil
 }
 

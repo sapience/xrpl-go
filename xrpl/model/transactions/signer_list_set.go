@@ -15,6 +15,6 @@ func (*SignerListSet) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *SignerListSet) Flatten() map[string]interface{} {
+func (s *SignerListSet) Flatten() FlatTransaction {
 	return nil
 }

@@ -40,7 +40,7 @@ func (*PaymentChannelClaim) TxType() TxType {
 }
 
 // Flatten returns a flattened map of the PaymentChannelClaim transaction.
-func (s *PaymentChannelClaim) Flatten() map[string]interface{} {
+func (s *PaymentChannelClaim) Flatten() FlatTransaction {
 	flattened := s.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "PaymentChannelClaim"

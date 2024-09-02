@@ -15,6 +15,6 @@ func (*AccountDelete) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *AccountDelete) Flatten() map[string]interface{} {
+func (s *AccountDelete) Flatten() FlatTransaction {
 	return nil
 }

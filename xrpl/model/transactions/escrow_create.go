@@ -19,6 +19,6 @@ func (*EscrowCreate) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *EscrowCreate) Flatten() map[string]interface{} {
+func (s *EscrowCreate) Flatten() FlatTransaction {
 	return nil
 }

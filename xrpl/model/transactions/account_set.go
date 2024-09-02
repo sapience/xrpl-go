@@ -55,7 +55,7 @@ func (*AccountSet) TxType() TxType {
 }
 
 // Flatten returns the flattened map of the AccountSet transaction.
-func (s *AccountSet) Flatten() map[string]interface{} {
+func (s *AccountSet) Flatten() FlatTransaction {
 	flattened := s.BaseTx.Flatten()
 
 	if s.ClearFlag != 0 {

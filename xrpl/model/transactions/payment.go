@@ -69,7 +69,7 @@ func (Payment) TxType() TxType {
 }
 
 // Flatten returns the flattened map of the Payment transaction.
-func (p *Payment) Flatten() map[string]interface{} {
+func (p *Payment) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := p.BaseTx.Flatten()
 

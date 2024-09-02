@@ -20,7 +20,7 @@ func (*NFTokenCreateOffer) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *NFTokenCreateOffer) Flatten() map[string]interface{} {
+func (s *NFTokenCreateOffer) Flatten() FlatTransaction {
 	return nil
 }
 
