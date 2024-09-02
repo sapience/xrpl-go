@@ -30,8 +30,8 @@ func IsBool(b interface{}) bool {
 	return ok
 }
 
-// IsMap checks if the given interface is a map.
-func IsMap(m interface{}) bool {
-	_, ok := m.(map[string]interface{})
-	return ok
+// IsMap checks if the given interface is a map and returns the map if it is.
+func IsMap(m interface{}) (map[string]interface{}, bool) {
+	result, ok := m.(map[string]interface{})
+	return result, ok
 }

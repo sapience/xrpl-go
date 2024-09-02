@@ -252,7 +252,7 @@ func TestIsMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsMap(tt.m); got != tt.want {
+			if _, got := IsMap(tt.m); got != tt.want {
 				t.Errorf("IsMap(%v) = %v, want %v", tt.m, got, tt.want)
 			}
 		})

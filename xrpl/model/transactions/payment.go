@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/validations"
+	"github.com/Peersyst/xrpl-go/xrpl/model/utils"
+	typeoffns "github.com/Peersyst/xrpl-go/xrpl/utils/typeof-fns"
 )
 
 // A Payment transaction represents a transfer of value from one account to another.
@@ -131,4 +134,35 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 	p.SendMax = max
 
 	return nil
+}
+
+// ValidatePayment validates the Payment struct and make sure all the fields are correct.
+func ValidatePayment(tx map[string]interface{}) {
+	validations.ValidateBaseTransaction(tx)
+
+	if _, ok := tx["Amount"]; !ok {
+		panic("Missing field Amount")
+	}
+
+	// IsAmount
+	if !utils.IsAmount(tx["Amount"]) {
+		panic("Invalid field Amount")
+	}
+
+	validations.ValidateRequiredField(tx, "Destination", typeoffns.IsString)
+	validations.ValidateOptionalField(tx, "DestinationTag", typeoffns.IsUint32)
+	validations.ValidateOptionalField(tx, "InvoiceId", typeoffns.IsString)
+
+	// Check if the field Paths is valid
+	if tx["Paths"] != nil {
+		if !utils.IsPaths(tx["Paths"].([][]map[string]interface{})) {
+			panic("Invalid field Paths")
+		}
+	}
+
+	validations.ValidateOptionalField(tx, "SendMax", utils.IsAmount)
+	validations.ValidateOptionalField(tx, "DeliverMin", utils.IsAmount)
+	validations.ValidateOptionalField(tx, "DeliverMax", utils.IsAmount)
+
+	// Check partial payment fields
 }

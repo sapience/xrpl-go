@@ -122,3 +122,54 @@ func TestIsSigner(t *testing.T) {
 		}
 	})
 }
+func TestIsIssuedCurrency(t *testing.T) {
+	t.Run("Valid IssuedCurrency object", func(t *testing.T) {
+		obj1 := map[string]interface{}{
+			"value":    "100",
+			"issuer":   "r1234567890",
+			"currency": "USD",
+		}
+		if !IsIssuedCurrency(obj1) {
+			t.Errorf("Expected IsIssuedCurrency to return true, but got false")
+		}
+	})
+
+	t.Run("IssuedCurrency object with missing fields", func(t *testing.T) {
+		obj2 := map[string]interface{}{
+			"value": "100",
+		}
+		if IsIssuedCurrency(obj2) {
+			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
+		}
+	})
+
+	t.Run("IssuedCurrency object with invalid field types", func(t *testing.T) {
+		obj3 := map[string]interface{}{
+			"value":    100,
+			"issuer":   12345,
+			"currency": 12345,
+		}
+		if IsIssuedCurrency(obj3) {
+			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
+		}
+	})
+
+	t.Run("IssuedCurrency object with extra fields", func(t *testing.T) {
+		obj4 := map[string]interface{}{
+			"value":    "100",
+			"issuer":   "r1234567890",
+			"currency": "USD",
+			"extra":    "extra field",
+		}
+		if IsIssuedCurrency(obj4) {
+			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
+		}
+	})
+
+	t.Run("Nil object", func(t *testing.T) {
+		obj5 := map[string]interface{}{}
+		if IsIssuedCurrency(obj5) {
+			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
+		}
+	})
+}

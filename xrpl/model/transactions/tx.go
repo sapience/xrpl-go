@@ -250,3 +250,12 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 	}
 	return tx, nil
 }
+
+func ValidateTx(tx map[string]interface{}) {
+	switch tx["TransactionType"] {
+	case "Payment":
+		ValidatePayment(tx)
+	default:
+		panic(fmt.Errorf("unsupported transaction type %s", tx["TransactionType"]))
+	}
+}
