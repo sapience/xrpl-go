@@ -27,7 +27,8 @@ func CurrencyStringToHex(input string) string {
 	return hexString
 }
 
-// CurrencyHexToString converts a non-standard currency hexadecimal representation to a string.
+// CurrencyHexToString converts a hexadecimal to a string.
+// This functions removes the null bytes from the string which come from the non-standard currency codes for the XRPL.
 // See https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes
 func CurrencyHexToString(input string) (string, error) {
 	// Convert the hexadecimal representation to bytes
