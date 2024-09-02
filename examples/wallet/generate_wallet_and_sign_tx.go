@@ -47,15 +47,6 @@ func main() {
 	fmt.Printf("Classic address: %s\n", walletFromSecret.ClassicAddress)
 	fmt.Printf("Seed: %s\n", walletFromSecret.Seed)
 
-	walletFromMnemonic, _ := xrpl.NewWalletFromMnemonic("monster march exile fee forget response seven push dragon oil clinic attack black miss craft surface patient stomach tank float cabbage visual image resource")
-
-	fmt.Println("\nWallet generated from mnemonic")
-
-	fmt.Printf("Private key: %s\n", walletFromMnemonic.PrivateKey)
-	fmt.Printf("Public 	key: %s\n", walletFromMnemonic.PublicKey)
-	fmt.Printf("Classic address: %s\n", walletFromMnemonic.ClassicAddress)
-	fmt.Printf("Seed: %s\n", walletFromMnemonic.Seed)
-
 	fmt.Println("\nSigning a transaction")
 
 	tx := transactions.Payment{
