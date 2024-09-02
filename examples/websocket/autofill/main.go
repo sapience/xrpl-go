@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	wsClient:= websocket.NewWebsocketClient(
+	wsClient := websocket.NewWebsocketClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233"),
 	)
@@ -19,7 +19,7 @@ func main() {
 		BaseTx: transactions.BaseTx{
 			Account: types.Address("rhKy9bFVTTZh7TAVvqnbULUZRdtH9dWZBr"),
 		},
-		Amount: types.XRPCurrencyAmount(100),
+		Amount:      types.XRPCurrencyAmount(100),
 		Destination: types.Address("rwMEfPmJSCauyu4N3XWEc3XKCMwi5uYQiW"),
 	}
 

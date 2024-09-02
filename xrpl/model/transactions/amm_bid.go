@@ -10,6 +10,6 @@ func (*AMMBid) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *AMMBid) Flatten() map[string]interface{} {
+func (s *AMMBid) Flatten() FlatTransaction {
 	return nil
 }

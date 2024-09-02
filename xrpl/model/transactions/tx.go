@@ -101,8 +101,8 @@ func (tx *BaseTx) TxType() TxType {
 	return tx.TransactionType
 }
 
-func (tx *BaseTx) Flatten() map[string]interface{} {
-	flattened := make(map[string]interface{})
+func (tx *BaseTx) Flatten() FlatTransaction {
+	flattened := make(FlatTransaction)
 
 	if tx.Account != "" {
 		flattened["Account"] = tx.Account.String()

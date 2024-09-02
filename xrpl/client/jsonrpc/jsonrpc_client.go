@@ -14,6 +14,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	jsonrpcmodels "github.com/Peersyst/xrpl-go/xrpl/client/jsonrpc/models"
 	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -131,7 +132,7 @@ func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (cli
 	return response, error
 }
 
-func (c *JsonRpcClient) Autofill(tx *map[string]interface{}) error {
+func (c *JsonRpcClient) Autofill(tx *transactions.FlatTransaction) error {
 	return errors.New("not implemented")
 }
 
