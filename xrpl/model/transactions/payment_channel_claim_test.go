@@ -84,4 +84,3 @@ func TestPaymentChannelClaimFlags(t *testing.T) {
 		})
 	}
 }
-

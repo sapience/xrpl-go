@@ -127,4 +127,3 @@ func TestAccountSetFlags(t *testing.T) {
 		})
 	}
 }
-

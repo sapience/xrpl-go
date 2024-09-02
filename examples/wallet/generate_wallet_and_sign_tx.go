@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	AccountSeed = "sEd7MgLAff94dLx91rVRByUbLrdSrdj"
+	AccountSeed        = "sEd7MgLAff94dLx91rVRByUbLrdSrdj"
 	DestinationAddress = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
-	Currency = "USD"
-	Value = "100"
-	Issuer = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
+	Currency           = "USD"
+	Value              = "100"
+	Issuer             = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
 )
 
 func main() {

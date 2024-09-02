@@ -64,7 +64,7 @@ type Payment struct {
 }
 
 // TxType returns the type of the transaction (Payment).
-func (*Payment) TxType() TxType {
+func (Payment) TxType() TxType {
 	return PaymentTx
 }
 
