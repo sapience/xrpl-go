@@ -80,4 +80,12 @@ func TestHexToString(t *testing.T) {
 		output, _ := CurrencyHexToString(hex)
 		assert.Equal(t, expectedOutput, output)
 	})
+
+	// test with invalid hex
+	t.Run("Invalid hex", func(t *testing.T) {
+		hex := "41424344G"
+
+		_, err := CurrencyHexToString(hex)
+		assert.Error(t, err)
+	})
 }
