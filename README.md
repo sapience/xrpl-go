@@ -1,4 +1,8 @@
-# xrpl-go
+# XRPL-GO
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/Peersyst/xrpl-go.svg)](https://pkg.go.dev/github.com/Peersyst/xrpl-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Peersyst/xrpl-go)](https://goreportcard.com/report/github.com/Peersyst/xrpl-go)
+
 
 The `xrpl-go` library provides a Go implementation for interacting with the XRP Ledger. From serialization to signing transactions, the library allows users to work with the most
 complex elements of the XRP Ledger. A full library of models for all transactions and core server rippled API objects are provided.
