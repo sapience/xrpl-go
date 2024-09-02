@@ -17,18 +17,17 @@ func ValidateBaseTransaction(tx map[string]interface{}) error {
 	ValidateOptionalField(tx, "Sequence", typeoffns.IsUint32)
 	ValidateOptionalField(tx, "AccountTxnID", typeoffns.IsString)
 	ValidateOptionalField(tx, "LastLedgerSequence", typeoffns.IsUint)
+	ValidateOptionalField(tx, "SourceTag", typeoffns.IsUint)
+	ValidateOptionalField(tx, "SigningPubKey", typeoffns.IsString)
+	ValidateOptionalField(tx, "TicketSequence", typeoffns.IsUint)
+	ValidateOptionalField(tx, "TxnSignature", typeoffns.IsString)
+	ValidateOptionalField(tx, "NetworkID", typeoffns.IsUint)
 
-	if tx["Memos"] != nil {
-		memos, ok := tx["Memos"].([]map[string]interface{})
-		if !ok {
-			return errors.New("BaseTransaction: invalid Memos")
-		}
-		for _, memo := range memos {
-			if !utils.IsMemo(memo) {
-				return errors.New("BaseTransaction: invalid Memos")
-			}
-		}
-	}
+	// memos
+	validateMemos(tx)
+
+	// signers
+	validateSigners(tx)
 
 	return nil
 }
@@ -56,6 +55,36 @@ func ValidateOptionalField(tx map[string]interface{}, paramName string, checkVal
 		if !checkValidity(value) {
 			transactionType, _ := tx["TransactionType"].(string)
 			return fmt.Errorf("%s: invalid field %s", transactionType, paramName)
+		}
+	}
+	return nil
+}
+
+func validateMemos(tx map[string]interface{}) error {
+	if tx["Memos"] != nil {
+		memos, ok := tx["Memos"].([]map[string]interface{})
+		if !ok {
+			return errors.New("BaseTransaction: invalid Memos")
+		}
+		for _, memo := range memos {
+			if !utils.IsMemo(memo) {
+				return errors.New("BaseTransaction: invalid Memos")
+			}
+		}
+	}
+	return nil
+}
+
+func validateSigners(tx map[string]interface{}) error {
+	if tx["Signers"] != nil {
+		signers, ok := tx["Signers"].([]map[string]interface{})
+		if !ok {
+			return errors.New("BaseTransaction: invalid Signers")
+		}
+		for _, signer := range signers {
+			if !utils.IsSigner(signer) {
+				return errors.New("BaseTransaction: invalid Signers")
+			}
 		}
 	}
 	return nil

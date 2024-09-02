@@ -40,3 +40,20 @@ func onlyHasFields(obj map[string]interface{}, fields []string) bool {
 	}
 	return true
 }
+
+const SIGNER_SIZE = 3
+
+// IsSigner checks if the given object is a valid Signer object.
+func IsSigner(obj map[string]interface{}) bool {
+	signer, ok := obj["Signer"].(map[string]interface{})
+	if !ok {
+		return false
+	}
+
+	size := len(objectfns.GetKeys(signer))
+	validAccount := signer["Account"] != nil && typeoffns.IsString(signer["Account"])
+	validTxnSignature := signer["TxnSignature"] != nil && typeoffns.IsString(signer["TxnSignature"])
+	validSigningPubKey := signer["SigningPubKey"] != nil && typeoffns.IsString(signer["SigningPubKey"])
+
+	return size == SIGNER_SIZE && validAccount && validTxnSignature && validSigningPubKey
+}
