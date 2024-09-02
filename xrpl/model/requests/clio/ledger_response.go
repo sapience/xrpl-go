@@ -16,7 +16,7 @@ type LedgerResponse struct {
 
 type ClioLedger struct {
 	AccountHash         string                         `json:"account_hash"`
-	AccountState        []ledger.LedgerObject          `json:"accountState,omitempty"`
+	AccountState        []ledger.FlatLedgerObject      `json:"accountState,omitempty"`
 	CloseFlags          int                            `json:"close_flags"`
 	CloseTime           uint                           `json:"close_time"`
 	CloseTimeHuman      string                         `json:"close_time_human"`

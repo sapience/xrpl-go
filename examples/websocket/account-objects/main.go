@@ -16,24 +16,23 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
+	
 	client := websocket.NewWebsocketClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 
-	accountInfo, _, err := client.GetAccountInfo(&account.AccountInfoRequest{
+	accountObjRes, err := client.GetAccountObjects(&account.AccountObjectsRequest{
 		Account: types.Address(wallet.GetAddress()),
-		SignerList: true,
 	})
-
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println("Account address: ", accountInfo.AccountData.Account)
-	fmt.Println("Account sequence: ", accountInfo.AccountData.Sequence)
-	fmt.Println("Account balance: ", accountInfo.AccountData.Balance)
+	fmt.Println("Account address: ", wallet.GetAddress())
+	for _, obj := range accountObjRes.AccountObjects {
+		fmt.Println("Object: ", obj)
+	}
 }

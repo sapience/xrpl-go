@@ -17,7 +17,7 @@ type LedgerResponse struct {
 
 type LedgerHeader struct {
 	AccountHash         string                         `json:"account_hash"`
-	AccountState        []ledger.LedgerObject          `json:"accountState,omitempty"`
+	AccountState        []ledger.FlatLedgerObject      `json:"accountState,omitempty"`
 	CloseFlags          int                            `json:"close_flags"`
 	CloseTime           int                            `json:"close_time"`
 	CloseTimeHuman      string                         `json:"close_time_human"`
