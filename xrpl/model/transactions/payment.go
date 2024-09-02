@@ -9,6 +9,32 @@ import (
 	typeoffns "github.com/Peersyst/xrpl-go/xrpl/utils/typeof-fns"
 )
 
+// PaymentFlags represents the flags for a payment transaction.
+type PaymentFlags uint
+
+const (
+	/**
+	 * Do not use the default path; only use paths included in the Paths field.
+	 * This is intended to force the transaction to take arbitrage opportunities.
+	 * Most clients do not need this.
+	 */
+	tfNoRippleDirect PaymentFlags = 0x00010000
+
+	/**
+	 * If the specified Amount cannot be sent without spending more than SendMax,
+	 * reduce the received amount instead of failing outright. See Partial
+	 * Payments for more details.
+	 */
+	tfPartialPayment PaymentFlags = 0x00020000
+
+	/**
+	 * Only take paths where all the conversions have an input:output ratio that
+	 * is equal or better than the ratio of Amount:SendMax. See Limit Quality for
+	 * details.
+	 */
+	tfLimitQuality PaymentFlags = 0x00040000
+)
+
 // A Payment transaction represents a transfer of value from one account to another.
 type Payment struct {
 	BaseTx
@@ -140,17 +166,23 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 func ValidatePayment(tx map[string]interface{}) {
 	validations.ValidateBaseTransaction(tx)
 
+	// Check if the field Amount is set
 	if _, ok := tx["Amount"]; !ok {
 		panic("Missing field Amount")
 	}
 
-	// IsAmount
+	// Check if the field Amount is valid
 	if !utils.IsAmount(tx["Amount"]) {
 		panic("Invalid field Amount")
 	}
 
+	// Check if the field Destination is set and valid
 	validations.ValidateRequiredField(tx, "Destination", typeoffns.IsString)
+
+	// Check if the field DestinationTag is valid
 	validations.ValidateOptionalField(tx, "DestinationTag", typeoffns.IsUint32)
+
+	// Check if the field InvoiceId is valid
 	validations.ValidateOptionalField(tx, "InvoiceId", typeoffns.IsString)
 
 	// Check if the field Paths is valid
@@ -160,9 +192,40 @@ func ValidatePayment(tx map[string]interface{}) {
 		}
 	}
 
+	// Check if the field SendMax is valid
 	validations.ValidateOptionalField(tx, "SendMax", utils.IsAmount)
-	validations.ValidateOptionalField(tx, "DeliverMin", utils.IsAmount)
+
+	// Check if the field DeliverMax is valid
 	validations.ValidateOptionalField(tx, "DeliverMax", utils.IsAmount)
 
+	// Check if the field DeliverMin is valid
+	validations.ValidateOptionalField(tx, "DeliverMin", utils.IsAmount)
+
 	// Check partial payment fields
+	checkPartialPayment(tx)
+}
+
+func checkPartialPayment(tx map[string]interface{}) {
+	// Check if DeliverMin is set
+	if _, ok := tx["DeliverMin"]; ok {
+		// Check if Flags flag is set
+		if _, ok := tx["Flags"]; !ok {
+			panic("Payment transaction: tfPartialPayment flag required with DeliverMin")
+		}
+
+		// Extract Flags
+		flagsField, isUint := (tx["Flags"]).(uint)
+		var isTfPartialPayment bool
+		if isUint {
+			isTfPartialPayment = utils.IsFlagEnabled(flagsField, uint(tfPartialPayment))
+		}
+
+		// TODO: check if tfPartialPayment is enabled if Flags is an object/map instead of a uint
+
+		if !isTfPartialPayment {
+			panic("Payment transaction: tfPartialPayment flag required with DeliverMin")
+		}
+
+		validations.ValidateOptionalField(tx, "DeliverMin", utils.IsAmount)
+	}
 }

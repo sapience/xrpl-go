@@ -180,7 +180,7 @@ func TestIsUint(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsUint(tt.num); got != tt.want {
+			if _, got := IsUint(tt.num); got != tt.want {
 				t.Errorf("IsUint(%v) = %v, want %v", tt.num, got, tt.want)
 			}
 		})
