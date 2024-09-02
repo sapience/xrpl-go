@@ -4,65 +4,6 @@ import (
 	"testing"
 )
 
-func TestIsMemo(t *testing.T) {
-	t.Run("Valid Memo object", func(t *testing.T) {
-		obj1 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "Hello World",
-				"MemoFormat": "text/plain",
-				"MemoType":   "general",
-			},
-		}
-		if !IsMemo(obj1) {
-			t.Errorf("Expected IsMemo to return true, but got false")
-		}
-	})
-
-	t.Run("Memo object with missing fields", func(t *testing.T) {
-		obj2 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData": "Hello World",
-			},
-		}
-		if !IsMemo(obj2) {
-			t.Errorf("Expected IsMemo to return true, but got false")
-		}
-	})
-
-	t.Run("Memo object with invalid field types", func(t *testing.T) {
-		obj3 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   12345,
-				"MemoFormat": 12345,
-				"MemoType":   12345,
-			},
-		}
-		if IsMemo(obj3) {
-			t.Errorf("Expected IsMemo to return false, but got true")
-		}
-	})
-
-	t.Run("Memo object with extra fields", func(t *testing.T) {
-		obj4 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "Hello World",
-				"MemoFormat": "text/plain",
-				"MemoType":   "general",
-				"ExtraField": "Extra Value",
-			},
-		}
-		if IsMemo(obj4) {
-			t.Errorf("Expected IsMemo to return false, but got true")
-		}
-	})
-
-	t.Run("Nil object", func(t *testing.T) {
-		obj5 := map[string]interface{}{}
-		if IsMemo(obj5) {
-			t.Errorf("Expected IsMemo to return false, but got true")
-		}
-	})
-}
 func TestIsSigner(t *testing.T) {
 	t.Run("Valid Signer object", func(t *testing.T) {
 		obj1 := map[string]interface{}{
@@ -171,5 +112,102 @@ func TestIsIssuedCurrency(t *testing.T) {
 		if IsIssuedCurrency(obj5) {
 			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
 		}
+	})
+}
+func TestIsMemo(t *testing.T) {
+	t.Run("Valid Memo object", func(t *testing.T) {
+		obj1 := map[string]interface{}{
+			"Memo": map[string]interface{}{
+				"MemoData":   "0123456789abcdef",
+				"MemoFormat": "abcdef0123456789",
+				"MemoType":   "abcdef0123456789",
+			},
+		}
+		if !IsMemo(obj1) {
+			t.Errorf("Expected IsMemo to return true, but got false")
+		}
+	})
+
+	t.Run("Memo object with missing fields", func(t *testing.T) {
+		obj2 := map[string]interface{}{
+			"Memo": map[string]interface{}{
+				"MemoData": "0123456789abcdef",
+			},
+		}
+		if !IsMemo(obj2) {
+			t.Errorf("Expected IsMemo to return true, but got false")
+		}
+	})
+
+	t.Run("Memo object with invalid field types", func(t *testing.T) {
+		obj3 := map[string]interface{}{
+			"Memo": map[string]interface{}{
+				"MemoData":   "0123456789abcdef",
+				"MemoFormat": 12345,
+				"MemoType":   12345,
+			},
+		}
+		if IsMemo(obj3) {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+
+	t.Run("Memo object with extra fields", func(t *testing.T) {
+		obj4 := map[string]interface{}{
+			"Memo": map[string]interface{}{
+				"MemoData":   "0123456789abcdef",
+				"MemoFormat": "abcdef0123456789",
+				"MemoType":   "abcdef0123456789",
+				"ExtraField": "Extra Value",
+			},
+		}
+		if IsMemo(obj4) {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+
+	t.Run("Nil object", func(t *testing.T) {
+		obj5 := map[string]interface{}{}
+		if IsMemo(obj5) {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+}
+func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
+	t.Run("No issued currency", func(t *testing.T) {
+		tx := map[string]interface{}{
+			"amount": "100",
+		}
+		CheckIssuedCurrencyIsNotXrp(tx)
+		// No panic expected
+	})
+
+	t.Run("Issued currency is not XRP", func(t *testing.T) {
+		tx := map[string]interface{}{
+			"amount": map[string]interface{}{
+				"value":    "100",
+				"issuer":   "r1234567890",
+				"currency": "USD",
+			},
+		}
+		CheckIssuedCurrencyIsNotXrp(tx)
+		// No panic expected
+	})
+
+	t.Run("Issued currency is XRP", func(t *testing.T) {
+		tx := map[string]interface{}{
+			"amount": map[string]interface{}{
+				"value":    "100",
+				"issuer":   "r1234567890",
+				"currency": "XRP",
+			},
+		}
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("Expected panic, but no panic occurred")
+			}
+		}()
+		CheckIssuedCurrencyIsNotXrp(tx)
+		// Panic expected
 	})
 }

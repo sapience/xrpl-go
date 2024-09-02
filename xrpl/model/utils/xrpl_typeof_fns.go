@@ -19,9 +19,24 @@ func IsMemo(obj map[string]interface{}) bool {
 	}
 
 	size := len(objectfns.GetKeys(memo))
-	validData := memo["MemoData"] == nil || typeoffns.IsString(memo["MemoData"])
-	validFormat := memo["MemoFormat"] == nil || typeoffns.IsString(memo["MemoFormat"])
-	validType := memo["MemoType"] == nil || typeoffns.IsString(memo["MemoType"])
+
+	// Check if MemoData is not a string or nil
+	if memo["MemoData"] != nil && !typeoffns.IsString(memo["MemoData"]) {
+		return false
+	}
+	validData := memo["MemoData"] == nil || typeoffns.IsHex(memo["MemoData"].(string))
+
+	// Check if MemoFormat is not a string or nil
+	if memo["MemoFormat"] != nil && !typeoffns.IsString(memo["MemoFormat"]) {
+		return false
+	}
+	validFormat := memo["MemoFormat"] == nil || typeoffns.IsHex(memo["MemoFormat"].(string))
+
+	// Check if MemoType is not a string or nil
+	if memo["MemoType"] != nil && !typeoffns.IsString(memo["MemoType"]) {
+		return false
+	}
+	validType := memo["MemoType"] == nil || typeoffns.IsHex(memo["MemoType"].(string))
 
 	return size >= 1 && size <= MEMO_SIZE && validData && validFormat && validType && onlyHasFields(memo, []string{"MemoFormat", "MemoData", "MemoType"})
 }
@@ -142,4 +157,22 @@ func IsPaths(paths [][]map[string]interface{}) bool {
 	}
 
 	return true
+}
+
+const STANDARD_CURRENCY_CODE_LEN = 3
+
+// CheckIssuedCurrencyIsNotXrp checks if the given transaction map does not have an issued currenc as XRP.
+func CheckIssuedCurrencyIsNotXrp(tx map[string]interface{}) {
+	keys := objectfns.GetKeys(tx)
+	for _, value := range keys {
+		// Check if the value is an issued currency
+		if result, ok := typeoffns.IsMap(tx[value]); ok && IsIssuedCurrency(result) {
+			// Check if the issued currency is XRP (which is incorrect)
+			currency := tx[value].(map[string]interface{})["currency"].(string)
+
+			if len(currency) == STANDARD_CURRENCY_CODE_LEN && currency == "XRP" {
+				panic("Cannot have an issued currency with a similar standard code as XRP.")
+			}
+		}
+	}
 }

@@ -10,6 +10,7 @@ import (
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/keypairs"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/tyler-smith/go-bip32"
 	"github.com/tyler-smith/go-bip39"
 )
@@ -127,6 +128,9 @@ func NewWalletFromMnemonic(mnemonic string) (*Wallet, error) {
 // TODO: Refactor to accept a `Transaction` object instead of a map.
 func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 	tx["SigningPubKey"] = w.PublicKey
+
+	// Validate the transaction fields
+	transactions.ValidateTx(tx)
 
 	encodedTx, _ := binarycodec.EncodeForSigning(tx)
 	hexTx, err := hex.DecodeString(encodedTx)

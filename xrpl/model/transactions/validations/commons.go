@@ -64,7 +64,7 @@ func validateMemos(tx map[string]interface{}) {
 		}
 		for _, memo := range memos {
 			if !utils.IsMemo(memo) {
-				panic("BaseTransaction: invalid Memos")
+				panic("BaseTransaction: invalid Memos. A memo can only have hexadecimals values. See https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field")
 			}
 		}
 	}

@@ -1,5 +1,7 @@
 package typeoffns
 
+import "regexp"
+
 // IsString checks if the given interface is a string.
 func IsString(str interface{}) bool {
 	_, ok := str.(string)
@@ -34,4 +36,11 @@ func IsBool(b interface{}) bool {
 func IsMap(m interface{}) (map[string]interface{}, bool) {
 	result, ok := m.(map[string]interface{})
 	return result, ok
+}
+
+// IsValidHex checks if the given string is a valid hexadecimal string.
+func IsHex(s string) bool {
+	// Define a regular expression for a valid hexadecimal string
+	var validHexPattern = regexp.MustCompile(`^[0-9a-fA-F]+$`)
+	return validHexPattern.MatchString(s)
 }
