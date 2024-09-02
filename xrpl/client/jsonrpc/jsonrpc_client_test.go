@@ -11,9 +11,9 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	jsonrpcmodels "github.com/Peersyst/xrpl-go/xrpl/client/jsonrpc/models"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/common"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/utility"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/utility"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"
 )

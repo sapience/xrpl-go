@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 )
 
 type Account interface {

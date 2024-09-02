@@ -6,7 +6,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/client"
 	jsonrpcclient "github.com/Peersyst/xrpl-go/xrpl/client/jsonrpc"
-	"github.com/Peersyst/xrpl-go/xrpl/model/client/account"
+	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 )
 
 func main() {
