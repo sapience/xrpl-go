@@ -6,32 +6,78 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStringToHex(t *testing.T) {
-	token := "ABCD"
+func TestCurrencyStringToHex(t *testing.T) {
+	// Test with token length = 0
+	t.Run("Empty token", func(t *testing.T) {
+		token := ""
 
-	// Test with tokenFormat set to false
-	expectedOutput := "41424344"
-	output := StringToHex(token, false)
-	assert.Equal(t, expectedOutput, output)
+		expectedOutput := ""
+		output := CurrencyStringToHex(token)
+		assert.Equal(t, expectedOutput, output)
+	})
 
-	// Test with tokenFormat set to true
-	expectedOutput = "41424344" + "00000000000000000000000000000000"
-	output = StringToHex(token, true)
-	assert.Equal(t, expectedOutput, output)
+	// Test with token length = 1
+	t.Run("Single character token", func(t *testing.T) {
+		token := "A"
+
+		expectedOutput := "A"
+		output := CurrencyStringToHex(token)
+		assert.Equal(t, expectedOutput, output)
+	})
+
+	// Test with token length = 2
+	t.Run("Two character token", func(t *testing.T) {
+		token := "AB"
+
+		expectedOutput := "AB"
+		output := CurrencyStringToHex(token)
+		assert.Equal(t, expectedOutput, output)
+	})
+
+	// Test with token length = 3
+	t.Run("Three character token", func(t *testing.T) {
+		token := "ABC"
+
+		expectedOutput := "ABC"
+		output := CurrencyStringToHex(token)
+		assert.Equal(t, expectedOutput, output)
+	})
+
+	// Test with token length > 3
+	t.Run("Long token", func(t *testing.T) {
+		token := "ABCDE"
+
+		expectedOutput := "4142434445" + "000000000000000000000000000000"
+		output := CurrencyStringToHex(token)
+		assert.Equal(t, expectedOutput, output)
+	})
 }
 
 func TestHexToString(t *testing.T) {
 	// test decoding a hex with the Nonstandard Currency Codes
-	hex := "41424344" + "00000000000000000000000000000000"
+	t.Run("Hex with Nonstandard Currency Codes", func(t *testing.T) {
+		hex := "41424344" + "00000000000000000000000000000000"
 
-	expectedOutput := "ABCD"
-	output, _ := HexToString(hex)
-	assert.Equal(t, expectedOutput, output)
+		expectedOutput := "ABCD"
+		output, _ := CurrencyHexToString(hex)
+		assert.Equal(t, expectedOutput, output)
+	})
 
 	// test decoding a hex without the Nonstandard Currency Codes
-	hex = "41424344"
+	t.Run("Hex without Nonstandard Currency Codes", func(t *testing.T) {
+		hex := "41424344"
 
-	expectedOutput = "ABCD"
-	output, _ = HexToString(hex)
-	assert.Equal(t, expectedOutput, output)
+		expectedOutput := "ABCD"
+		output, _ := CurrencyHexToString(hex)
+		assert.Equal(t, expectedOutput, output)
+	})
+
+	// test decoding an empty hex
+	t.Run("Empty Hex", func(t *testing.T) {
+		hex := ""
+
+		expectedOutput := ""
+		output, _ := CurrencyHexToString(hex)
+		assert.Equal(t, expectedOutput, output)
+	})
 }

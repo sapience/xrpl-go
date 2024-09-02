@@ -5,27 +5,31 @@ import (
 	"strings"
 )
 
-// StringToHex converts a string to a hexadecimal representation.
-// If isNonStandardCurrency is true, the hexadecimal representation is padded
-// with trailing zeros up to a length of 40 characters. This is to support the non-standard currency codes for the XRPL.
+// CurrencyStringToHex converts a string to a hexadecimal representation
+// with trailing zeros up to a length of 40 characters.
+// This is to support the non-standard currency codes for the XRPL.
 // See https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes
-func StringToHex(input string, isNonStandardCurrency bool) string {
+func CurrencyStringToHex(input string) string {
+	// non-standard currency codes are for currencies with more than 3 characters
+	if len(input) <= 3 {
+		return input
+	}
+
 	// Convert the string to bytes
 	bytes := []byte(input)
 
 	// Convert bytes to hexadecimal representation
 	hexString := hex.EncodeToString(bytes)
 
-	if isNonStandardCurrency {
-		// Pad end the hex string with trailing zeros up to a length of 40 characters
-		hexString = padEnd(hexString, 40, "0")
-	}
+	// Pad end the hex string with trailing zeros up to a length of 40 characters
+	hexString = padEnd(hexString, 40, "0")
 
 	return hexString
 }
 
-// HexToString converts a hexadecimal representation to a string.
-func HexToString(input string) (string, error) {
+// CurrencyHexToString converts a non-standard currency hexadecimal representation to a string.
+// See https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes
+func CurrencyHexToString(input string) (string, error) {
 	// Convert the hexadecimal representation to bytes
 	bytes, err := hex.DecodeString(input)
 	if err != nil {
