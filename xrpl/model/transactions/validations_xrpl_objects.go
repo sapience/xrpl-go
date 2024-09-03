@@ -70,7 +70,7 @@ func IsAmount(amount interface{}) bool {
 		return true
 	}
 
-	amt, ok := amount.(FlatTransaction)
+	amt, ok := amount.(map[string]interface{})
 	if !ok {
 		return false
 	}
@@ -85,7 +85,7 @@ func IsAmount(amount interface{}) bool {
 const ISSUED_CURRENCY_SIZE = 3
 
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
-func IsIssuedCurrency(input FlatTransaction) bool {
+func IsIssuedCurrency(input map[string]interface{}) bool {
 	return len(maputils.GetKeys(input)) == ISSUED_CURRENCY_SIZE &&
 		typecheck.IsString(input["value"]) &&
 		typecheck.IsString(input["issuer"]) &&
@@ -153,15 +153,15 @@ func IsPaths(paths [][]map[string]interface{}) bool {
 const STANDARD_CURRENCY_CODE_LEN = 3
 
 // CheckIssuedCurrencyIsNotXrp checks if the given transaction map does not have an issued currenc as XRP.
-func CheckIssuedCurrencyIsNotXrp(tx FlatTransaction) {
+func CheckIssuedCurrencyIsNotXrp(tx map[string]interface{}) {
 	keys := maputils.GetKeys(tx)
 	for _, value := range keys {
-		result, isFlatTxn := (tx[value]).(FlatTransaction)
+		result, isFlatTxn := (tx[value]).(map[string]interface{})
 
 		// Check if the value is an issued currency
 		if isFlatTxn && IsIssuedCurrency(result) {
 			// Check if the issued currency is XRP (which is incorrect)
-			currency := tx[value].(FlatTransaction)["currency"].(string)
+			currency := tx[value].(map[string]interface{})["currency"].(string)
 
 			if len(currency) == STANDARD_CURRENCY_CODE_LEN && currency == "XRP" {
 				panic("Cannot have an issued currency with a similar standard code as XRP.")

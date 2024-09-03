@@ -38,7 +38,7 @@ func IsBool(b interface{}) bool {
 	return ok
 }
 
-// IsValidHex checks if the given string is a valid hexadecimal string.
+// IsHex checks if the given string is a valid hexadecimal string.
 func IsHex(s string) bool {
 	// Define a regular expression for a valid hexadecimal string
 	var validHexPattern = regexp.MustCompile(`^[0-9a-fA-F]+$`)
