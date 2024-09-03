@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
-	"github.com/Peersyst/xrpl-go/xrpl/model/utils"
 )
 
 // TODO: Refactor to use a single interface for all transaction types
@@ -252,9 +251,9 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 	return tx, nil
 }
 
-func ValidateTx(tx map[string]interface{}) {
+func ValidateTx(tx FlatTransaction) {
 	// Check in the case it is an issued currency, that the currency is not XRP
-	utils.CheckIssuedCurrencyIsNotXrp(tx)
+	CheckIssuedCurrencyIsNotXrp(tx)
 
 	// Validate transaction fields
 	switch tx["TransactionType"] {

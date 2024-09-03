@@ -1,4 +1,4 @@
-package utils
+package transactions
 
 import (
 	objectfns "github.com/Peersyst/xrpl-go/xrpl/utils/object-fns"
@@ -8,7 +8,7 @@ import (
 const MEMO_SIZE = 3
 
 // IsMemo checks if the given object is a valid Memo object.
-func IsMemo(obj map[string]interface{}) bool {
+func IsMemo(obj FlatTransaction) bool {
 	if obj == nil {
 		return false
 	}

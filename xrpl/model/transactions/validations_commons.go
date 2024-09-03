@@ -1,13 +1,12 @@
-package validations
+package transactions
 
 import (
 	"fmt"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/utils"
 	typeoffns "github.com/Peersyst/xrpl-go/xrpl/utils/typeof-fns"
 )
 
-func ValidateBaseTransaction(tx map[string]interface{}) error {
+func ValidateBaseTransaction(tx FlatTransaction) error {
 	ValidateRequiredField(tx, "TransactionType", typeoffns.IsString)
 	ValidateRequiredField(tx, "Account", typeoffns.IsString)
 
@@ -31,7 +30,7 @@ func ValidateBaseTransaction(tx map[string]interface{}) error {
 	return nil
 }
 
-func ValidateRequiredField(tx map[string]interface{}, field string, checkValidity func(interface{}) bool) {
+func ValidateRequiredField(tx FlatTransaction, field string, checkValidity func(interface{}) bool) {
 	// Check if the field is present in the transaction map.
 	if _, ok := tx[field]; !ok {
 		panic(field + " is missing")
@@ -45,7 +44,7 @@ func ValidateRequiredField(tx map[string]interface{}, field string, checkValidit
 }
 
 // ValidateOptionalField validates an optional field in the transaction map.
-func ValidateOptionalField(tx map[string]interface{}, paramName string, checkValidity func(interface{}) bool) {
+func ValidateOptionalField(tx FlatTransaction, paramName string, checkValidity func(interface{}) bool) {
 	// Check if the field is present in the transaction map.
 	if value, ok := tx[paramName]; ok {
 		// Check if the field is valid.
@@ -56,28 +55,28 @@ func ValidateOptionalField(tx map[string]interface{}, paramName string, checkVal
 	}
 }
 
-func validateMemos(tx map[string]interface{}) {
+func validateMemos(tx FlatTransaction) {
 	if tx["Memos"] != nil {
-		memos, ok := tx["Memos"].([]map[string]interface{})
+		memos, ok := tx["Memos"].([]FlatTransaction)
 		if !ok {
 			panic("BaseTransaction: invalid Memos")
 		}
 		for _, memo := range memos {
-			if !utils.IsMemo(memo) {
+			if !IsMemo(memo) {
 				panic("BaseTransaction: invalid Memos. A memo can only have hexadecimals values. See https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field")
 			}
 		}
 	}
 }
 
-func validateSigners(tx map[string]interface{}) {
+func validateSigners(tx FlatTransaction) {
 	if tx["Signers"] != nil {
-		signers, ok := tx["Signers"].([]map[string]interface{})
+		signers, ok := tx["Signers"].([]FlatTransaction)
 		if !ok {
 			panic("BaseTransaction: invalid Signers")
 		}
 		for _, signer := range signers {
-			if !utils.IsSigner(signer) {
+			if !IsSigner(signer) {
 				panic("BaseTransaction: invalid Signers")
 			}
 		}
