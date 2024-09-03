@@ -16,7 +16,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	
+
 	client := websocket.NewWebsocketClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 
+	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/client/websocket"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
@@ -15,19 +17,47 @@ func main() {
 			WithHost("wss://s.altnet.rippletest.net:51233"),
 	)
 
+	wallet, err := xrpl.NewWalletFromSeed("sEdSMVV4dJ1JbdBxmakRR4Puu3XVZz2", "")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	receiverWallet, err := xrpl.NewWalletFromSeed("sEd7d8Ci9nevdLCeUMctF3uGXp9WQqJ", "")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	payment := transactions.Payment{
 		BaseTx: transactions.BaseTx{
-			Account: types.Address("rhKy9bFVTTZh7TAVvqnbULUZRdtH9dWZBr"),
+			Account: types.Address(wallet.GetAddress()),
+			Memos: []transactions.MemoWrapper{
+				{
+					Memo: transactions.Memo{
+						MemoData:   hex.EncodeToString([]byte("Hello, World!")),
+						MemoFormat: hex.EncodeToString([]byte("text/plain")),
+						MemoType:   hex.EncodeToString([]byte("message")),
+					},
+				},
+				{
+					Memo: transactions.Memo{
+						MemoData:   hex.EncodeToString([]byte("Hello, World 2!")),
+						MemoFormat: hex.EncodeToString([]byte("text/plain")),
+						MemoType:   hex.EncodeToString([]byte("message 2")),
+					},
+				},
+			},
 		},
-		Amount:      types.XRPCurrencyAmount(100),
-		Destination: types.Address("rwMEfPmJSCauyu4N3XWEc3XKCMwi5uYQiW"),
+		Destination: types.Address(receiverWallet.GetAddress()),
+		Amount:      types.XRPCurrencyAmount(100000000),
 	}
 
 	tx := payment.Flatten()
 
 	fmt.Println("Transaction before autofill", tx)
 
-	err := wsClient.Autofill(&tx)
+	err = wsClient.Autofill(&tx)
 	if err != nil {
 		panic(err)
 	}
