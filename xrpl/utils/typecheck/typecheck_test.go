@@ -1,4 +1,4 @@
-package typeoffns
+package typecheck
 
 import "testing"
 
@@ -222,42 +222,7 @@ func TestIsBool(t *testing.T) {
 		})
 	}
 }
-func TestIsMap(t *testing.T) {
-	tests := []struct {
-		name string
-		m    interface{}
-		want bool
-	}{
-		{
-			name: "Valid map",
-			m:    map[string]interface{}{},
-			want: true,
-		},
-		{
-			name: "Invalid map",
-			m:    42,
-			want: false,
-		},
-		{
-			name: "Invalid map",
-			m:    "map",
-			want: false,
-		},
-		{
-			name: "Invalid map",
-			m:    nil,
-			want: false,
-		},
-	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if _, got := IsMap(tt.m); got != tt.want {
-				t.Errorf("IsMap(%v) = %v, want %v", tt.m, got, tt.want)
-			}
-		})
-	}
-}
 func TestIsHex(t *testing.T) {
 	tests := []struct {
 		name string

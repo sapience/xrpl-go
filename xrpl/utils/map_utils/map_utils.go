@@ -1,4 +1,4 @@
-package objectfns
+package maputils
 
 // GetKeys returns the keys of the given map.
 func GetKeys(m map[string]interface{}) []string {

@@ -1,4 +1,4 @@
-package typeoffns
+package typecheck
 
 import "regexp"
 
@@ -36,12 +36,6 @@ func IsInt(num interface{}) bool {
 func IsBool(b interface{}) bool {
 	_, ok := b.(bool)
 	return ok
-}
-
-// IsMap checks if the given interface is a map and returns the map if it is.
-func IsMap(m interface{}) (map[string]interface{}, bool) {
-	result, ok := m.(map[string]interface{})
-	return result, ok
 }
 
 // IsValidHex checks if the given string is a valid hexadecimal string.

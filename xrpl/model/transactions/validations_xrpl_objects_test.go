@@ -117,7 +117,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 
 func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 	t.Run("No issued currency", func(t *testing.T) {
-		tx := map[string]interface{}{
+		tx := FlatTransaction{
 			"amount": "100",
 		}
 		CheckIssuedCurrencyIsNotXrp(tx)
@@ -125,7 +125,7 @@ func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 	})
 
 	t.Run("Issued currency is not XRP", func(t *testing.T) {
-		tx := map[string]interface{}{
+		tx := FlatTransaction{
 			"amount": map[string]interface{}{
 				"value":    "100",
 				"issuer":   "r1234567890",
@@ -137,8 +137,8 @@ func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 	})
 
 	t.Run("Issued currency is XRP", func(t *testing.T) {
-		tx := map[string]interface{}{
-			"amount": map[string]interface{}{
+		tx := FlatTransaction{
+			"amount": FlatTransaction{
 				"value":    "100",
 				"issuer":   "r1234567890",
 				"currency": "XRP",

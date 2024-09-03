@@ -5,7 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 	"github.com/Peersyst/xrpl-go/xrpl/model/utils"
-	typeoffns "github.com/Peersyst/xrpl-go/xrpl/utils/typeof-fns"
+	"github.com/Peersyst/xrpl-go/xrpl/utils/typecheck"
 )
 
 // PaymentFlags represents the flags for a payment transaction.
@@ -202,13 +202,13 @@ func ValidatePayment(tx FlatTransaction) {
 	}
 
 	// Check if the field Destination is set and valid
-	ValidateRequiredField(tx, "Destination", typeoffns.IsString)
+	ValidateRequiredField(tx, "Destination", typecheck.IsString)
 
 	// Check if the field DestinationTag is valid
-	ValidateOptionalField(tx, "DestinationTag", typeoffns.IsUint32)
+	ValidateOptionalField(tx, "DestinationTag", typecheck.IsUint32)
 
 	// Check if the field InvoiceId is valid
-	ValidateOptionalField(tx, "InvoiceId", typeoffns.IsString)
+	ValidateOptionalField(tx, "InvoiceId", typecheck.IsString)
 
 	// Check if the field Paths is valid
 	if tx["Paths"] != nil {

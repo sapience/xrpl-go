@@ -3,23 +3,23 @@ package transactions
 import (
 	"fmt"
 
-	typeoffns "github.com/Peersyst/xrpl-go/xrpl/utils/typeof-fns"
+	"github.com/Peersyst/xrpl-go/xrpl/utils/typecheck"
 )
 
 func ValidateBaseTransaction(tx FlatTransaction) error {
-	ValidateRequiredField(tx, "TransactionType", typeoffns.IsString)
-	ValidateRequiredField(tx, "Account", typeoffns.IsString)
+	ValidateRequiredField(tx, "TransactionType", typecheck.IsString)
+	ValidateRequiredField(tx, "Account", typecheck.IsString)
 
 	// optional fields
-	ValidateOptionalField(tx, "Fee", typeoffns.IsString)
-	ValidateOptionalField(tx, "Sequence", typeoffns.IsInt)
-	ValidateOptionalField(tx, "AccountTxnID", typeoffns.IsString)
-	ValidateOptionalField(tx, "LastLedgerSequence", typeoffns.IsInt)
-	ValidateOptionalField(tx, "SourceTag", typeoffns.IsInt)
-	ValidateOptionalField(tx, "SigningPubKey", typeoffns.IsString)
-	ValidateOptionalField(tx, "TicketSequence", typeoffns.IsInt)
-	ValidateOptionalField(tx, "TxnSignature", typeoffns.IsString)
-	ValidateOptionalField(tx, "NetworkID", typeoffns.IsInt)
+	ValidateOptionalField(tx, "Fee", typecheck.IsString)
+	ValidateOptionalField(tx, "Sequence", typecheck.IsInt)
+	ValidateOptionalField(tx, "AccountTxnID", typecheck.IsString)
+	ValidateOptionalField(tx, "LastLedgerSequence", typecheck.IsInt)
+	ValidateOptionalField(tx, "SourceTag", typecheck.IsInt)
+	ValidateOptionalField(tx, "SigningPubKey", typecheck.IsString)
+	ValidateOptionalField(tx, "TicketSequence", typecheck.IsInt)
+	ValidateOptionalField(tx, "TxnSignature", typecheck.IsString)
+	ValidateOptionalField(tx, "NetworkID", typecheck.IsInt)
 
 	// memos
 	validateMemos(tx)
