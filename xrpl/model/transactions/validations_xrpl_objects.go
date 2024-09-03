@@ -8,34 +8,23 @@ import (
 const MEMO_SIZE = 3
 
 // IsMemo checks if the given object is a valid Memo object.
-func IsMemo(obj FlatTransaction) bool {
-	if obj == nil {
+func IsMemo(obj FlatMemoWrapper) bool {
+	// Check if the object is not nil and if it has a Memo field.
+	if obj == nil || obj["Memo"] == nil {
 		return false
 	}
 
-	memo, ok := obj["Memo"].(map[string]interface{})
-	if !ok {
+	// Check if the Memo field is a map.
+	memo, isFlatMemo := obj["Memo"].(FlatMemo)
+	if !isFlatMemo {
 		return false
 	}
 
+	// Get the size of the Memo object.
 	size := len(objectfns.GetKeys(memo))
 
-	// Check if MemoData is not a string or nil
-	if memo["MemoData"] != nil && !typeoffns.IsString(memo["MemoData"]) {
-		return false
-	}
 	validData := memo["MemoData"] == nil || typeoffns.IsHex(memo["MemoData"].(string))
-
-	// Check if MemoFormat is not a string or nil
-	if memo["MemoFormat"] != nil && !typeoffns.IsString(memo["MemoFormat"]) {
-		return false
-	}
 	validFormat := memo["MemoFormat"] == nil || typeoffns.IsHex(memo["MemoFormat"].(string))
-
-	// Check if MemoType is not a string or nil
-	if memo["MemoType"] != nil && !typeoffns.IsString(memo["MemoType"]) {
-		return false
-	}
 	validType := memo["MemoType"] == nil || typeoffns.IsHex(memo["MemoType"].(string))
 
 	return size >= 1 && size <= MEMO_SIZE && validData && validFormat && validType && onlyHasFields(memo, []string{"MemoFormat", "MemoData", "MemoType"})

@@ -114,42 +114,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 		}
 	})
 }
-func TestIsMemo(t *testing.T) {
-	t.Run("Valid Memo object", func(t *testing.T) {
-		obj1 := MemoWrapper{
-			Memo: Memo{
-				MemoData:   "0123456789abcdef",
-				MemoFormat: "abcdef0123456789",
-				MemoType:   "abcdef0123456789",
-			},
-		}
-		if !IsMemo(obj1) {
-			t.Errorf("Expected IsMemo to return true, but got false")
-		}
-	})
 
-	t.Run("Memo object with missing fields", func(t *testing.T) {
-		obj2 := MemoWrapper{
-			Memo: Memo{
-				MemoData: "0123456789abcdef",
-			},
-		}
-		if !IsMemo(obj2) {
-			t.Errorf("Expected IsMemo to return true, but got false")
-		}
-	})
-
-	t.Run("Memo object with non hex value", func(t *testing.T) {
-		obj3 := MemoWrapper{
-			Memo: Memo{
-				MemoData: "123",
-			},
-		}
-		if IsMemo(obj3) {
-			t.Errorf("Expected IsMemo to return false, but got true")
-		}
-	})
-}
 func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 	t.Run("No issued currency", func(t *testing.T) {
 		tx := map[string]interface{}{
@@ -186,5 +151,63 @@ func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 		}()
 		CheckIssuedCurrencyIsNotXrp(tx)
 		// Panic expected
+	})
+}
+func TestIsMemo(t *testing.T) {
+	t.Run("Valid Memo object with all fields", func(t *testing.T) {
+		obj := FlatMemoWrapper{
+			"Memo": FlatMemo{
+				"MemoData":   "0123456789abcdef",
+				"MemoFormat": "abcdef0123456789",
+				"MemoType":   "abcdef0123456789",
+			},
+		}
+		if !IsMemo(obj) {
+			t.Errorf("Expected IsMemo to return true, but got false")
+		}
+	})
+
+	t.Run("Memo object with missing fields", func(t *testing.T) {
+		obj := FlatMemoWrapper{
+			"Memo": FlatMemo{
+				"MemoData": "0123456789abcdef",
+			},
+		}
+		if !IsMemo(obj) {
+			t.Errorf("Expected IsMemo to return true, but got false")
+		}
+	})
+
+	t.Run("Memo object with non hex values", func(t *testing.T) {
+		obj := FlatMemoWrapper{
+			"Memo": FlatMemo{
+				"MemoData":   "bob",
+				"MemoFormat": "alice",
+			},
+		}
+		if IsMemo(obj) {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+
+	t.Run("Memo object with extra fields", func(t *testing.T) {
+		obj := FlatMemoWrapper{
+			"Memo": FlatMemo{
+				"MemoData":   "0123456789abcdef",
+				"MemoFormat": "abcdef0123456789",
+				"MemoType":   "abcdef0123456789",
+				"ExtraField": "Extra Value",
+			},
+		}
+		if IsMemo(obj) {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+
+	t.Run("Empty object", func(t *testing.T) {
+		obj := FlatMemoWrapper{}
+		if IsMemo(obj) {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
 	})
 }
