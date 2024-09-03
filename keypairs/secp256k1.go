@@ -11,7 +11,7 @@ import (
 	"github.com/btcsuite/btcd/btcec/v2"
 )
 
-var _ CryptoImplementation = (*secp256k1Alg)(nil) 
+var _ CryptoImplementation = (*secp256k1Alg)(nil)
 
 type secp256k1Alg struct{}
 
@@ -20,7 +20,7 @@ func deriveScalar(bytes []byte, discrim *big.Int) *big.Int {
 	order := btcec.S256().N
 	for i := 0; i <= 0xffffffff; i++ {
 		hash := sha512.New()
-		
+
 		hash.Write(bytes)
 
 		if discrim != nil {
@@ -72,7 +72,7 @@ func (c *secp256k1Alg) deriveKeypair(seed []byte, validator bool) (string, strin
 	private := formatKey(privKeyBytes)
 
 	_, pubKey := btcec.PrivKeyFromBytes(privKeyBytes)
-	
+
 	pubKeyBytes := pubKey.SerializeCompressed()
 	public := formatKey(pubKeyBytes)
 
@@ -90,13 +90,33 @@ func (c *secp256k1Alg) sign(msg, privKey string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
-	return strings.ToUpper(hex.EncodeToString(sig[:64])), nil
+
+	parsedSig, err := DERHexFromSig(hex.EncodeToString(sig[:32]), hex.EncodeToString(sig[32:64]))
+	if err != nil {
+		return "", err
+	}
+	return strings.ToUpper(parsedSig), nil
 }
 
 func (c *secp256k1Alg) validate(msg, pubkey, sig string) bool {
-	pubkeyBytes := deformatKey(pubkey)
-	signatureBytes := deformatKey(sig)
+	// Decode the signature from DERHex to a hex string
+	parsedSig, err := DERHexToSig(sig)
+	if err != nil {
+		return false
+	}
 
-	return secp256k1.VerifySignature(pubkeyBytes, []byte(msg), signatureBytes)
+	// Decode the hex string to a byte slice
+	parsedSigBytes, err := hex.DecodeString(parsedSig)
+	if err != nil {
+		return false
+	}
+
+	// Hash the message
+	hash := Sha512Half([]byte(msg))
+
+	// Decode the pubkey from hex to a byte slice
+	pubkeyBytes := deformatKey(pubkey)
+
+	// Verify the signature
+	return secp256k1.VerifySignature(pubkeyBytes, hash, parsedSigBytes)
 }
