@@ -2,13 +2,40 @@ package keypairs
 
 import (
 	"crypto/sha512"
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/big"
+	"strings"
 
+	"github.com/Peersyst/xrpl-go/pkg/secp256k1"
 	"github.com/btcsuite/btcd/btcec/v2"
+
+	"golang.org/x/crypto/sha3"
 )
 
-// var _ CryptoImplementation = (*secp256k1Alg)(nil)
+var _ CryptoImplementation = (*secp256k1Alg)(nil) 
+
+// Keccak256 calculates and returns the Keccak256 hash of the input data.
+func Keccak256(data ...[]byte) []byte {
+	b := make([]byte, 32)
+	d := sha3.NewLegacyKeccak256()
+	for _, b := range data {
+		d.Write(b)
+	}
+	d.Sum(b)
+	return b
+}
+
+func Keccak256Hash(data ...[]byte) (h [32]byte) {
+	d := sha3.NewLegacyKeccak256()
+	for _, b := range data {
+		d.Write(b)
+	}
+	d.Sum(h[:])
+	return h
+}
+
 
 type secp256k1Alg struct{}
 
@@ -78,7 +105,24 @@ func (c *secp256k1Alg) deriveKeypair(seed []byte, validator bool) (string, strin
 }
 
 func (c *secp256k1Alg) sign(msg, privKey string) (string, error) {
-	return "", nil
+	if len(privKey) == 66 {
+		privKey = privKey[2:]
+	}
+	fmt.Println("privKey", privKey)
+	privKeyBytes, err := hex.DecodeString(privKey)
+	if err != nil {
+		return "", err
+	}
+	// Convert msg to hex
+	msgHex := hex.EncodeToString([]byte(msg))
+	hash := Keccak256Hash([]byte(msgHex))
+
+	sig, err := secp256k1.Sign(hash[:], privKeyBytes)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.ToUpper(hex.EncodeToString(sig)), nil
 }
 
 func (c *secp256k1Alg) validate(msg, pubkey, sig string) bool {

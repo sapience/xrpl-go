@@ -68,3 +68,23 @@ func TestSecp256k1_deriveKeypair(t *testing.T) {
 		})
 	}
 }
+
+
+func TestSecp256k1_sign(t *testing.T) {
+
+	secp256k1 := secp256k1Alg{}
+	seed, _, err := addresscodec.DecodeSeed("sntbkd2DsouBx8BAdJdi35p1HRw6h")
+	if err != nil {
+		t.Fatal(err)
+	}
+	privKey, _, _ := secp256k1.deriveKeypair(seed, false)
+	signature, err := secp256k1.sign("Hello World", privKey)
+	
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	if signature != "3045022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64" {
+		t.Errorf("invalid signature %s", signature)
+	}
+}
