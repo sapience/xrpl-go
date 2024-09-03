@@ -11,15 +11,15 @@ func ValidateBaseTransaction(tx FlatTransaction) error {
 	ValidateRequiredField(tx, "Account", typeoffns.IsString)
 
 	// optional fields
-	ValidateOptionalField(tx, "Fee", typeoffns.IsUint64)
-	ValidateOptionalField(tx, "Sequence", typeoffns.IsUint32)
+	ValidateOptionalField(tx, "Fee", typeoffns.IsString)
+	ValidateOptionalField(tx, "Sequence", typeoffns.IsInt)
 	ValidateOptionalField(tx, "AccountTxnID", typeoffns.IsString)
-	ValidateOptionalField(tx, "LastLedgerSequence", typeoffns.IsUint)
-	ValidateOptionalField(tx, "SourceTag", typeoffns.IsUint)
+	ValidateOptionalField(tx, "LastLedgerSequence", typeoffns.IsInt)
+	ValidateOptionalField(tx, "SourceTag", typeoffns.IsInt)
 	ValidateOptionalField(tx, "SigningPubKey", typeoffns.IsString)
-	ValidateOptionalField(tx, "TicketSequence", typeoffns.IsUint)
+	ValidateOptionalField(tx, "TicketSequence", typeoffns.IsInt)
 	ValidateOptionalField(tx, "TxnSignature", typeoffns.IsString)
-	ValidateOptionalField(tx, "NetworkID", typeoffns.IsUint)
+	ValidateOptionalField(tx, "NetworkID", typeoffns.IsInt)
 
 	// memos
 	validateMemos(tx)

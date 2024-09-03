@@ -299,3 +299,39 @@ func TestIsHex(t *testing.T) {
 		})
 	}
 }
+func TestIsInt(t *testing.T) {
+	tests := []struct {
+		name string
+		num  interface{}
+		want bool
+	}{
+		{
+			name: "Valid int",
+			num:  42,
+			want: true,
+		},
+		{
+			name: "Invalid int",
+			num:  3.14,
+			want: false,
+		},
+		{
+			name: "Invalid int",
+			num:  "42",
+			want: false,
+		},
+		{
+			name: "Invalid int",
+			num:  nil,
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsInt(tt.num); got != tt.want {
+				t.Errorf("IsInt(%v) = %v, want %v", tt.num, got, tt.want)
+			}
+		})
+	}
+}

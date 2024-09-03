@@ -20,9 +20,15 @@ func IsUint64(num interface{}) bool {
 	return ok
 }
 
-// IsInt checks if the given interface is an int.
+// IsUint checks if the given interface is a uint.
 func IsUint(num interface{}) bool {
 	_, ok := num.(uint)
+	return ok
+}
+
+// IsInt checks if the given interface is an int.
+func IsInt(num interface{}) bool {
+	_, ok := num.(int)
 	return ok
 }
 
