@@ -88,3 +88,44 @@ func TestSecp256k1_sign(t *testing.T) {
 		t.Errorf("invalid signature %s", signature)
 	}
 }
+
+func TestSecp256k1_validate(t *testing.T) {
+	secp256k1 := secp256k1Alg{}
+	seed, _, err := addresscodec.DecodeSeed("sntbkd2DsouBx8BAdJdi35p1HRw6h")
+	if err != nil {
+		t.Fatal(err)
+	}
+	privKey, pubKey, _ := secp256k1.deriveKeypair(seed, false)
+	message := "Hello World"
+	signature, err := secp256k1.sign(message, privKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Test valid signature
+	isValid := secp256k1.validate(message, pubKey, signature)
+	if !isValid {
+		t.Error("Expected signature to be valid, but it was not")
+	}
+
+	// Test invalid signature (modified message)
+	isValid = secp256k1.validate("Hello World!", pubKey, signature)
+	if isValid {
+		t.Error("Expected signature to be invalid with modified message, but it was valid")
+	}
+
+	// Test invalid signature (modified signature)
+	invalidSignature := signature[:len(signature)-1] + "0"
+	isValid = secp256k1.validate(message, pubKey, invalidSignature)
+	if isValid {
+		t.Error("Expected signature to be invalid with modified signature, but it was valid")
+	}
+
+	// Test invalid signature (wrong public key)
+	wrongSeed, _, _ := addresscodec.DecodeSeed("snoPBrXtMeMyMHUVTgbuqAfg1SUTb")
+	_, wrongPubKey, _ := secp256k1.deriveKeypair(wrongSeed, false)
+	isValid = secp256k1.validate(message, wrongPubKey, signature)
+	if isValid {
+		t.Error("Expected signature to be invalid with wrong public key, but it was valid")
+	}
+}
