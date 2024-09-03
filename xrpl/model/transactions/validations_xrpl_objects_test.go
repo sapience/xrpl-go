@@ -116,11 +116,11 @@ func TestIsIssuedCurrency(t *testing.T) {
 }
 func TestIsMemo(t *testing.T) {
 	t.Run("Valid Memo object", func(t *testing.T) {
-		obj1 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "0123456789abcdef",
-				"MemoFormat": "abcdef0123456789",
-				"MemoType":   "abcdef0123456789",
+		obj1 := MemoWrapper{
+			Memo: Memo{
+				MemoData:   "0123456789abcdef",
+				MemoFormat: "abcdef0123456789",
+				MemoType:   "abcdef0123456789",
 			},
 		}
 		if !IsMemo(obj1) {
@@ -129,9 +129,9 @@ func TestIsMemo(t *testing.T) {
 	})
 
 	t.Run("Memo object with missing fields", func(t *testing.T) {
-		obj2 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData": "0123456789abcdef",
+		obj2 := MemoWrapper{
+			Memo: Memo{
+				MemoData: "0123456789abcdef",
 			},
 		}
 		if !IsMemo(obj2) {
@@ -139,36 +139,13 @@ func TestIsMemo(t *testing.T) {
 		}
 	})
 
-	t.Run("Memo object with invalid field types", func(t *testing.T) {
-		obj3 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "0123456789abcdef",
-				"MemoFormat": 12345,
-				"MemoType":   12345,
+	t.Run("Memo object with non hex value", func(t *testing.T) {
+		obj3 := MemoWrapper{
+			Memo: Memo{
+				MemoData: "123",
 			},
 		}
 		if IsMemo(obj3) {
-			t.Errorf("Expected IsMemo to return false, but got true")
-		}
-	})
-
-	t.Run("Memo object with extra fields", func(t *testing.T) {
-		obj4 := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "0123456789abcdef",
-				"MemoFormat": "abcdef0123456789",
-				"MemoType":   "abcdef0123456789",
-				"ExtraField": "Extra Value",
-			},
-		}
-		if IsMemo(obj4) {
-			t.Errorf("Expected IsMemo to return false, but got true")
-		}
-	})
-
-	t.Run("Nil object", func(t *testing.T) {
-		obj5 := map[string]interface{}{}
-		if IsMemo(obj5) {
 			t.Errorf("Expected IsMemo to return false, but got true")
 		}
 	})

@@ -57,7 +57,7 @@ func ValidateOptionalField(tx FlatTransaction, paramName string, checkValidity f
 
 func validateMemos(tx FlatTransaction) {
 	if tx["Memos"] != nil {
-		memos, ok := tx["Memos"].([]FlatTransaction)
+		memos, ok := tx["Memos"].([]MemoWrapper)
 		if !ok {
 			panic("BaseTransaction: invalid Memos")
 		}
