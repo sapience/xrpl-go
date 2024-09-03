@@ -24,7 +24,7 @@ func main() {
 	)
 
 	accountInfo, _, err := client.GetAccountInfo(&account.AccountInfoRequest{
-		Account: types.Address(wallet.GetAddress()),
+		Account:    types.Address(wallet.GetAddress()),
 		SignerList: true,
 	})
 
