@@ -14,6 +14,6 @@ func (*SetRegularKey) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *SetRegularKey) Flatten() map[string]interface{} {
+func (s *SetRegularKey) Flatten() FlatTransaction {
 	return nil
 }

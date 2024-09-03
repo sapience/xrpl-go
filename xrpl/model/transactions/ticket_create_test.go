@@ -55,7 +55,7 @@ func TestTicketCreateFlatten(t *testing.T) {
 
 	flattened := s.Flatten()
 
-	expected := map[string]interface{}{
+	expected := FlatTransaction{
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "TicketCreate",
 		"Fee":             "10",

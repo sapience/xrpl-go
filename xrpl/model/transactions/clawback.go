@@ -27,7 +27,7 @@ func (*Clawback) TxType() TxType {
 	return ClawbackTx
 }
 
-func (s *Clawback) Flatten() map[string]interface{} {
+func (s *Clawback) Flatten() FlatTransaction {
 	flattened := s.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "Clawback"

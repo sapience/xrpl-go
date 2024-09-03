@@ -6,6 +6,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -41,7 +42,7 @@ func (m *mockClient) SubmitTransactionBlob(tx string, failHard bool) (XRPLRespon
 	return args.Get(0).(XRPLResponse), args.Error(1)
 }
 
-func (m *mockClient) Autofill(tx *map[string]interface{}) error {
+func (m *mockClient) Autofill(tx *transactions.FlatTransaction) error {
 	m.Called(tx)
 	return nil
 }

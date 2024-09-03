@@ -44,7 +44,7 @@ func (*TrustSet) TxType() TxType {
 }
 
 // Flatten returns a flattened map of the TrustSet transaction.
-func (t *TrustSet) Flatten() map[string]interface{} {
+func (t *TrustSet) Flatten() FlatTransaction {
 	flattened := t.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "TrustSet"

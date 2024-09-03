@@ -9,6 +9,6 @@ func (*AMMWithdraw) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *AMMWithdraw) Flatten() map[string]interface{} {
+func (s *AMMWithdraw) Flatten() FlatTransaction {
 	return nil
 }

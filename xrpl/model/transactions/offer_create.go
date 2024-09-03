@@ -19,7 +19,7 @@ func (*OfferCreate) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *OfferCreate) Flatten() map[string]interface{} {
+func (s *OfferCreate) Flatten() FlatTransaction {
 	return nil
 }
 

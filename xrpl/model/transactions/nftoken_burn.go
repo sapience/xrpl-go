@@ -15,6 +15,6 @@ func (*NFTokenBurn) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *NFTokenBurn) Flatten() map[string]interface{} {
+func (s *NFTokenBurn) Flatten() FlatTransaction {
 	return nil
 }

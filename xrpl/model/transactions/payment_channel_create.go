@@ -19,6 +19,6 @@ func (*PaymentChannelCreate) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *PaymentChannelCreate) Flatten() map[string]interface{} {
+func (s *PaymentChannelCreate) Flatten() FlatTransaction {
 	return nil
 }

@@ -48,7 +48,7 @@ func NewClient(host string) *client.XRPLClient {
 	return client.NewXRPLClient(wcl)
 }
 
-func (c *WebsocketClient) Autofill(tx *map[string]interface{}) error {
+func (c *WebsocketClient) Autofill(tx *transactions.FlatTransaction) error {
 	if err := c.setValidTransactionAddresses(tx); err != nil {
 		return err
 	}

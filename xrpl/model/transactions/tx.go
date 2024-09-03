@@ -101,8 +101,8 @@ func (tx *BaseTx) TxType() TxType {
 	return tx.TransactionType
 }
 
-func (tx *BaseTx) Flatten() map[string]interface{} {
-	flattened := make(map[string]interface{})
+func (tx *BaseTx) Flatten() FlatTransaction {
+	flattened := make(FlatTransaction)
 
 	if tx.Account != "" {
 		flattened["Account"] = tx.Account.String()
@@ -126,7 +126,14 @@ func (tx *BaseTx) Flatten() map[string]interface{} {
 		flattened["LastLedgerSequence"] = tx.LastLedgerSequence
 	}
 	if len(tx.Memos) > 0 {
-		flattened["Memos"] = tx.Memos
+		flattenedMemos := make([]FlatMemoWrapper, 0)
+		for _, memo := range tx.Memos {
+			flattenedMemo := memo.Flatten()
+			if flattenedMemo != nil {
+				flattenedMemos = append(flattenedMemos, flattenedMemo)
+			}
+		}
+		flattened["Memos"] = flattenedMemos
 	}
 	if tx.NetworkId != 0 {
 		flattened["NetworkId"] = tx.NetworkId
