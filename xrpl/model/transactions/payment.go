@@ -8,9 +8,6 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/utils/typecheck"
 )
 
-// PaymentFlags represents the flags for a payment transaction.
-type PaymentFlags uint
-
 const (
 	// Do not use the default path; only use paths included in the Paths field.
 	// This is intended to force the transaction to take arbitrage opportunities.
