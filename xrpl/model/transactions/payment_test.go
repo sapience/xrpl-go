@@ -158,4 +158,3 @@ func TestPaymentFlags(t *testing.T) {
 		})
 	}
 }
-

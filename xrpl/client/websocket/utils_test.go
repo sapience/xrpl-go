@@ -160,7 +160,7 @@ func TestWebsocketClient_validateTransactionAddress(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ws.validateTransactionAddress(&tt.tx, tt.addressField, tt.tagField)
-			
+
 			if tt.expectedErr != nil {
 				if !errors.Is(err, tt.expectedErr) {
 					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
@@ -168,7 +168,7 @@ func TestWebsocketClient_validateTransactionAddress(t *testing.T) {
 			} else if err != nil {
 				t.Errorf("Unexpected error: %v", err)
 			}
-			
+
 			if !reflect.DeepEqual(tt.expected, tt.tx) {
 				t.Errorf("Expected %v, but got %v", tt.expected, tt.tx)
 			}
@@ -218,7 +218,7 @@ func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ws.setValidTransactionAddresses(&tt.tx)
-			
+
 			if tt.expectedErr != nil {
 				if !errors.Is(err, tt.expectedErr) {
 					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
@@ -226,7 +226,7 @@ func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
 			} else if err != nil {
 				t.Errorf("Unexpected error: %v", err)
 			}
-			
+
 			if !reflect.DeepEqual(tt.expected, tt.tx) {
 				t.Errorf("Expected %v, but got %v", tt.expected, tt.tx)
 			}
@@ -265,8 +265,8 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "Missing Account",
-			tx:   map[string]interface{}{},
+			name:           "Missing Account",
+			tx:             map[string]interface{}{},
 			serverMessages: []map[string]any{},
 			expected:       map[string]interface{}{},
 			expectedErr:    errors.New("missing Account in transaction"),
@@ -285,7 +285,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 				}
 			})
 			defer s.Close()
-			
+
 			url, _ := test.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
@@ -296,7 +296,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 			err := cl.setTransactionNextValidSequenceNumber(&tt.tx)
 
 			if tt.expectedErr != nil {
-				if !reflect.DeepEqual(err.Error(), tt.expectedErr.Error())  {
+				if !reflect.DeepEqual(err.Error(), tt.expectedErr.Error()) {
 					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
 				}
 			} else {
@@ -320,15 +320,14 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 	}
 }
 
-
 func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 	tests := []struct {
-		name            string
-		tx              map[string]interface{}
-		serverMessages  []map[string]any
-		expectedFee     string
-		expectedErr     error
-		feeCushion 		float32
+		name           string
+		tx             map[string]interface{}
+		serverMessages []map[string]any
+		expectedFee    string
+		expectedErr    error
+		feeCushion     float32
 	}{
 		{
 			name: "Basic fee calculation",
@@ -350,7 +349,7 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 			},
 			expectedFee: "10",
 			expectedErr: nil,
-			feeCushion: 1,
+			feeCushion:  1,
 		},
 		{
 			name: "Fee calculation with high load factor",
@@ -372,7 +371,7 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 			},
 			expectedFee: "10000",
 			expectedErr: nil,
-			feeCushion: 1,
+			feeCushion:  1,
 		},
 		{
 			name: "Fee calculation with max fee limit",
@@ -394,7 +393,7 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 			},
 			expectedFee: "2000000",
 			expectedErr: nil,
-			feeCushion: 1,
+			feeCushion:  1,
 		},
 	}
 
@@ -410,13 +409,13 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 				}
 			})
 			defer s.Close()
-			
+
 			url, _ := test.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
-					host: url,
+					host:       url,
 					feeCushion: tt.feeCushion,
-					maxFeeXRP: DEFAULT_MAX_FEE_XRP,
+					maxFeeXRP:  DEFAULT_MAX_FEE_XRP,
 				},
 			}
 
@@ -440,11 +439,11 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 
 func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 	tests := []struct {
-		name            string
-		serverMessages  []map[string]any
-		tx              map[string]interface{}
-		expectedTx      map[string]interface{}
-		expectedErr     error
+		name           string
+		serverMessages []map[string]any
+		tx             map[string]interface{}
+		expectedTx     map[string]interface{}
+		expectedErr    error
 	}{
 		{
 			name: "Successfully set LastLedgerSequence",
@@ -456,9 +455,9 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 					},
 				},
 			},
-			tx:              map[string]interface{}{},
-			expectedTx:      map[string]interface{}{"LastLedgerSequence": int(1000 + LEDGER_OFFSET)},
-			expectedErr:     nil,
+			tx:          map[string]interface{}{},
+			expectedTx:  map[string]interface{}{"LastLedgerSequence": int(1000 + LEDGER_OFFSET)},
+			expectedErr: nil,
 		},
 	}
 
@@ -474,7 +473,7 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 				}
 			})
 			defer s.Close()
-			
+
 			url, _ := test.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
@@ -501,10 +500,10 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 
 func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 	tests := []struct {
-		name            string
-		address         types.Address
-		serverMessages  []map[string]any
-		expectedErr     error
+		name           string
+		address        types.Address
+		serverMessages []map[string]any
+		expectedErr    error
 	}{
 		{
 			name:    "No blockers",
@@ -513,11 +512,11 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 				{
 					"id": 1,
 					"result": map[string]any{
-						"account":          "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-						"account_objects":  []any{},
-						"ledger_hash":      "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A651",
-						"ledger_index":     30,
-						"validated":        true,
+						"account":         "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+						"account_objects": []any{},
+						"ledger_hash":     "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A651",
+						"ledger_index":    30,
+						"validated":       true,
 					},
 				},
 			},
@@ -537,7 +536,7 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 				}
 			})
 			defer s.Close()
-			
+
 			url, _ := test.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
@@ -600,13 +599,13 @@ func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 			err := c.setTransactionFlags(&tt.tx)
 
 			if (err != nil) != tt.wantErr {
-				
+
 				t.Errorf("setTransactionFlags() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if !tt.wantErr {
-				flags, ok := tt.tx["Flags"];
+				flags, ok := tt.tx["Flags"]
 				if !ok && tt.expected != 0 {
 					t.Errorf("setTransactionFlags() got = %v (type %T), want %v (type %T)", flags, flags, tt.expected, tt.expected)
 				}
