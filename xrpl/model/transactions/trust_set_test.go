@@ -70,8 +70,8 @@ func TestTrustSetFlatten(t *testing.T) {
 	}
 
 	flattened := s.Flatten()
-	
-	expected := map[string]interface{}{
+
+	expected := FlatTransaction{
 		"Account":            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType":    "TrustSet",
 		"Fee":                "12",
@@ -87,7 +87,7 @@ func TestTrustSetFlatten(t *testing.T) {
 
 	// Existing DeepEqual check
 	if !reflect.DeepEqual(flattened, expected) {
-	    t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
+		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
 	}
 }
 

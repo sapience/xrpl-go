@@ -14,6 +14,6 @@ func (*CheckCancel) TxType() TxType {
 	return CheckCancelTx
 }
 
-func (s *CheckCancel) Flatten() map[string]interface{} {
+func (s *CheckCancel) Flatten() FlatTransaction {
 	return nil
 }

@@ -9,6 +9,6 @@ func (*AMMCreate) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *AMMCreate) Flatten() map[string]interface{} {
+func (s *AMMCreate) Flatten() FlatTransaction {
 	return nil
 }

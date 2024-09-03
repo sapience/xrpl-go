@@ -68,7 +68,7 @@ func TestPaymentFlatten(t *testing.T) {
 
 	flattened := s.Flatten()
 
-	expected := map[string]interface{}{
+	expected := FlatTransaction{
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "Payment",
 		"Fee":             "1000",
@@ -158,4 +158,3 @@ func TestPaymentFlags(t *testing.T) {
 		})
 	}
 }
-

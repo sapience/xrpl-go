@@ -28,12 +28,11 @@ func main() {
 	client := websocket.NewWebsocketClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
-			WithFaucetProvider(faucet.NewTestnetFaucetProvider(),
-		),
+			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 
 	balance, err := client.GetXrpBalance(wallet.GetAddress())
-	
+
 	if err != nil || balance == "0" {
 		fmt.Println("Balance: 0")
 		fmt.Println("Funding wallet")
@@ -45,7 +44,7 @@ func main() {
 	}
 
 	balance, _ = client.GetXrpBalance(wallet.GetAddress())
-	
+
 	fmt.Println("Balance: ", balance)
 
 	amount, err := utils.XrpToDrops("1")
@@ -93,7 +92,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("	Transaction engine result:", response.EngineResult)
-	fmt.Println("	Transaction accepted:", response.Accepted)
-	fmt.Println("	Transaction tx:", response.Tx["hash"])
+	fmt.Println("Transaction engine result:", response.EngineResult)
+	fmt.Println("Transaction accepted:", response.Accepted)
+	fmt.Println("Transaction hash:", response.Tx["hash"])
 }

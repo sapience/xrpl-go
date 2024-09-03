@@ -14,6 +14,6 @@ func (*NFTokenCancelOffer) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *NFTokenCancelOffer) Flatten() map[string]interface{} {
+func (s *NFTokenCancelOffer) Flatten() FlatTransaction {
 	return nil
 }

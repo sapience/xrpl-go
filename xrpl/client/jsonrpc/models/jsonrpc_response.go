@@ -2,6 +2,7 @@ package jsonrpcmodels
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/client"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -12,7 +13,7 @@ type JsonRpcResponse struct {
 	Forwarded bool                         `json:"forwarded,omitempty"`
 }
 
-type AnyJson map[string]interface{}
+type AnyJson transactions.FlatTransaction
 
 type ApiWarning struct {
 	Id      int         `json:"id"`
