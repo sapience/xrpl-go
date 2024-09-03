@@ -1,8 +1,10 @@
 package client
 
+import "github.com/Peersyst/xrpl-go/xrpl/model/transactions"
+
 type Client interface {
 	SendRequest(req XRPLRequest) (XRPLResponse, error)
-	Autofill(tx *map[string]interface{}) error
+	Autofill(tx *transactions.FlatTransaction) error
 }
 
 type XRPLClient struct {

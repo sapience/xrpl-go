@@ -10,6 +10,6 @@ func (*OfferCancel) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *OfferCancel) Flatten() map[string]interface{} {
+func (s *OfferCancel) Flatten() FlatTransaction {
 	return nil
 }

@@ -68,7 +68,7 @@ func TestPaymentFlatten(t *testing.T) {
 
 	flattened := s.Flatten()
 
-	expected := map[string]interface{}{
+	expected := FlatTransaction{
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "Payment",
 		"Fee":             "1000",
@@ -83,5 +83,78 @@ func TestPaymentFlatten(t *testing.T) {
 
 	if !reflect.DeepEqual(flattened, expected) {
 		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
+	}
+}
+
+func TestPaymentFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*Payment)
+		expected uint
+	}{
+		{
+			name: "SetRippleNotDirectFlag",
+			setter: func(p *Payment) {
+				p.SetRippleNotDirectFlag()
+			},
+			expected: tfRippleNotDirect,
+		},
+		{
+			name: "SetPartialPaymentFlag",
+			setter: func(p *Payment) {
+				p.SetPartialPaymentFlag()
+			},
+			expected: tfPartialPayment,
+		},
+		{
+			name: "SetLimitQualityFlag",
+			setter: func(p *Payment) {
+				p.SetLimitQualityFlag()
+			},
+			expected: tfLimitQuality,
+		},
+		{
+			name: "SetRippleNotDirectFlag and SetPartialPaymentFlag",
+			setter: func(p *Payment) {
+				p.SetRippleNotDirectFlag()
+				p.SetPartialPaymentFlag()
+			},
+			expected: tfRippleNotDirect | tfPartialPayment,
+		},
+		{
+			name: "SetRippleNotDirectFlag and SetLimitQualityFlag",
+			setter: func(p *Payment) {
+				p.SetRippleNotDirectFlag()
+				p.SetLimitQualityFlag()
+			},
+			expected: tfRippleNotDirect | tfLimitQuality,
+		},
+		{
+			name: "SetPartialPaymentFlag and SetLimitQualityFlag",
+			setter: func(p *Payment) {
+				p.SetPartialPaymentFlag()
+				p.SetLimitQualityFlag()
+			},
+			expected: tfPartialPayment | tfLimitQuality,
+		},
+		{
+			name: "All flags",
+			setter: func(p *Payment) {
+				p.SetRippleNotDirectFlag()
+				p.SetPartialPaymentFlag()
+				p.SetLimitQualityFlag()
+			},
+			expected: tfRippleNotDirect | tfPartialPayment | tfLimitQuality,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Payment{}
+			tt.setter(p)
+			if p.Flags != tt.expected {
+				t.Errorf("Expected Flags to be %d, got %d", tt.expected, p.Flags)
+			}
+		})
 	}
 }

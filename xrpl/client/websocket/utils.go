@@ -10,6 +10,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/server"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 	"github.com/Peersyst/xrpl-go/xrpl/utils"
 	"github.com/mitchellh/mapstructure"
@@ -36,14 +37,14 @@ func (c *WebsocketClient) getClassicAccountAndTag(address string) (string, uint3
 	return address, 0
 }
 
-func (c *WebsocketClient) convertTransactionAddressToClassicAddress(tx *map[string]interface{}, fieldName string) {
+func (c *WebsocketClient) convertTransactionAddressToClassicAddress(tx *transactions.FlatTransaction, fieldName string) {
 	if address, ok := (*tx)[fieldName].(string); ok {
 		classicAddress, _ := c.getClassicAccountAndTag(address)
 		(*tx)[fieldName] = classicAddress
 	}
 }
 
-func (c *WebsocketClient) validateTransactionAddress(tx *map[string]interface{}, addressField, tagField string) error {
+func (c *WebsocketClient) validateTransactionAddress(tx *transactions.FlatTransaction, addressField, tagField string) error {
 	classicAddress, tag := c.getClassicAccountAndTag((*tx)[addressField].(string))
 	(*tx)[addressField] = classicAddress
 
@@ -58,7 +59,7 @@ func (c *WebsocketClient) validateTransactionAddress(tx *map[string]interface{},
 }
 
 // Sets valid addresses for the transaction.
-func (c *WebsocketClient) setValidTransactionAddresses(tx *map[string]interface{}) error {
+func (c *WebsocketClient) setValidTransactionAddresses(tx *transactions.FlatTransaction) error {
 	// Validate if "Account" address is an xAddress
 	if err := c.validateTransactionAddress(tx, "Account", "SourceTag"); err != nil {
 		return err
@@ -82,7 +83,7 @@ func (c *WebsocketClient) setValidTransactionAddresses(tx *map[string]interface{
 }
 
 // Sets the next valid sequence number for a given transaction.
-func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *map[string]interface{}) error {
+func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *transactions.FlatTransaction) error {
 	if _, ok := (*tx)["Account"].(string); !ok {
 		return errors.New("missing Account in transaction")
 	}
@@ -132,7 +133,7 @@ func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) {
 // Calculates the fee per transaction type.
 //
 // TODO: Add fee support for `EscrowFinish` `AccountDelete`, `AMMCreate`, and multisigned transactions.
-func (c *WebsocketClient) calculateFeePerTransactionType(tx *map[string]interface{}) error {
+func (c *WebsocketClient) calculateFeePerTransactionType(tx *transactions.FlatTransaction) error {
 	fee, err := c.getFeeXrp(c.cfg.feeCushion)
 	if err != nil {
 		return err
@@ -150,7 +151,7 @@ func (c *WebsocketClient) calculateFeePerTransactionType(tx *map[string]interfac
 
 // Sets the latest validated ledger sequence for the transaction.
 // Modifies the `LastLedgerSequence` field in the tx.
-func (c *WebsocketClient) setLastLedgerSequence(tx *map[string]interface{}) error {
+func (c *WebsocketClient) setLastLedgerSequence(tx *transactions.FlatTransaction) error {
 	index, err := c.GetLedgerIndex()
 	if err != nil {
 		return err
@@ -178,7 +179,7 @@ func (c *WebsocketClient) checkAccountDeleteBlockers(address types.Address) erro
 	return nil
 }
 
-func (c *WebsocketClient) checkPaymentAmounts(tx *map[string]interface{}) error {
+func (c *WebsocketClient) checkPaymentAmounts(tx *transactions.FlatTransaction) error {
 	if _, ok := (*tx)["DeliverMax"]; ok {
 		if _, ok := (*tx)["Amount"]; !ok {
 			(*tx)["Amount"] = (*tx)["DeliverMax"]
@@ -192,39 +193,19 @@ func (c *WebsocketClient) checkPaymentAmounts(tx *map[string]interface{}) error 
 }
 
 // Sets a transaction's flags to its numeric representation.
-// TODO: Add flag support for AccountSet, AMMDeposit, AMMWithdraw,
-// NFTTOkenCreateOffer, NFTokenMint, OfferCreate, PaymentChannelClaim,
-// Payment, TrustSet, XChainModifyBridge (not supported).
-func (c *WebsocketClient) setTransactionFlags(tx *map[string]interface{}) error {
+// TODO: Add flag support for AMMDeposit, AMMWithdraw,
+// NFTTOkenCreateOffer, NFTokenMint, OfferCreate, XChainModifyBridge (not supported).
+func (c *WebsocketClient) setTransactionFlags(tx *transactions.FlatTransaction) error {
 	flags, ok := (*tx)["Flags"].(uint32)
 	if !ok && flags > 0 {
 		(*tx)["Flags"] = int(0)
 		return nil
 	}
 
-	txType, ok := (*tx)["TransactionType"].(string)
+	_, ok = (*tx)["TransactionType"].(string)
 	if !ok {
 		return errors.New("transaction type is missing in transaction")
 	}
 
-	switch txType {
-	default:
-		// TODO: Add missing flag support
-		// - AccountSet
-		// - AMMDeposit
-		// - AMMWithdraw
-		// - NFTokenCreateOffer
-		// - NFTokenMint
-		// - OfferCreate
-		// - PaymentChannelClaim
-		// - Payment
-		// - TrustSet
-		// - XChainModifyBridge (XChainBridge not supported)
-		if flags > 0 {
-			return nil
-		} else {
-			(*tx)["Flags"] = int(0)
-		}
-	}
 	return nil
 }

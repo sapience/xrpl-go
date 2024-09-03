@@ -15,6 +15,6 @@ func (*EscrowCancel) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *EscrowCancel) Flatten() map[string]interface{} {
+func (s *EscrowCancel) Flatten() FlatTransaction {
 	return nil
 }

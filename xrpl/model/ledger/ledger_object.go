@@ -26,6 +26,12 @@ const (
 	TicketEntry            LedgerEntryType = "Ticket"
 )
 
+type FlatLedgerObject map[string]interface{}
+
+func (f FlatLedgerObject) EntryType() LedgerEntryType {
+	return LedgerEntryType(f["LedgerEntryType"].(string))
+}
+
 type LedgerObject interface {
 	EntryType() LedgerEntryType
 }

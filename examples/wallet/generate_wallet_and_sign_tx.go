@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	AccountSeed = "sEd7MgLAff94dLx91rVRByUbLrdSrdj"
+	AccountSeed        = "sEd7MgLAff94dLx91rVRByUbLrdSrdj"
 	DestinationAddress = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
-	Currency = "USD"
-	Value = "100"
-	Issuer = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
+	Currency           = "USD"
+	Value              = "100"
+	Issuer             = "rDwvihpE48E48F8rvNrqTb2UGWv62xqYTg"
 )
 
 func main() {
@@ -46,15 +46,6 @@ func main() {
 	fmt.Printf("Public 	key: %s\n", walletFromSecret.PublicKey)
 	fmt.Printf("Classic address: %s\n", walletFromSecret.ClassicAddress)
 	fmt.Printf("Seed: %s\n", walletFromSecret.Seed)
-
-	walletFromMnemonic, _ := xrpl.NewWalletFromMnemonic("monster march exile fee forget response seven push dragon oil clinic attack black miss craft surface patient stomach tank float cabbage visual image resource")
-
-	fmt.Println("\nWallet generated from mnemonic")
-
-	fmt.Printf("Private key: %s\n", walletFromMnemonic.PrivateKey)
-	fmt.Printf("Public 	key: %s\n", walletFromMnemonic.PublicKey)
-	fmt.Printf("Classic address: %s\n", walletFromMnemonic.ClassicAddress)
-	fmt.Printf("Seed: %s\n", walletFromMnemonic.Seed)
 
 	fmt.Println("\nSigning a transaction")
 

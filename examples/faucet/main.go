@@ -62,7 +62,7 @@ func main() {
 	}
 
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
-	
+
 	fmt.Println("Funding wallet", wallet.ClassicAddress)
 	err = devnetClient.FundWallet(&wallet)
 	if err != nil {

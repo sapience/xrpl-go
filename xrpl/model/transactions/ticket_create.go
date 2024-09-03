@@ -14,7 +14,7 @@ func (*TicketCreate) TxType() TxType {
 	return TicketCreateTx
 }
 
-func (t *TicketCreate) Flatten() map[string]interface{} {
+func (t *TicketCreate) Flatten() FlatTransaction {
 	flattened := t.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "TicketCreate"

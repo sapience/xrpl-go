@@ -15,6 +15,6 @@ func (*DepositPreauth) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *DepositPreauth) Flatten() map[string]interface{} {
+func (s *DepositPreauth) Flatten() FlatTransaction {
 	return nil
 }

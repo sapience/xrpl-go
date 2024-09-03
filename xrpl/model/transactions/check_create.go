@@ -20,7 +20,7 @@ func (*CheckCreate) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *CheckCreate) Flatten() map[string]interface{} {
+func (s *CheckCreate) Flatten() FlatTransaction {
 	return nil
 }
 

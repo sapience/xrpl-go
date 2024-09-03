@@ -9,6 +9,6 @@ func (*AMMVote) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *AMMVote) Flatten() map[string]interface{} {
+func (s *AMMVote) Flatten() FlatTransaction {
 	return nil
 }
