@@ -89,44 +89,32 @@ func parseInt(data []byte) (*big.Int, []byte, error) {
 // It takes a single parameter:
 // - hexSignature: A DER-encoded signature as a hex string
 // It returns the concatenated r and s hex strings and an error if any occurred during the process.
-func DERHexToSig(hexSignature string) (string, error) {
+func DERHexToSig(hexSignature string) ([]byte, []byte, error) {
 	data, err := hex.DecodeString(hexSignature)
 	if err != nil {
-		return "", fmt.Errorf("invalid hex string: %v", err)
+		return nil, nil, fmt.Errorf("invalid hex string: %v", err)
 	}
 
 	if len(data) < 2 || data[0] != 0x30 {
-		return "", errors.New("invalid signature tag")
+		return nil, nil, errors.New("invalid signature tag")
 	}
 	if int(data[1]) != len(data)-2 {
-		return "", errors.New("invalid signature: incorrect length")
+		return nil, nil, errors.New("invalid signature: incorrect length")
 	}
 
 	r, sBytes, err := parseInt(data[2:])
 	if err != nil {
-		return "", errors.New("invalid signature: incorrect length")
+		return nil, nil, errors.New("invalid signature: incorrect length")
 	}
 
 	s, leftover, err := parseInt(sBytes)
 	if err != nil {
-		return "", errors.New("invalid signature: incorrect length")
+		return nil, nil, errors.New("invalid signature: incorrect length")
 	}
 
 	if len(leftover) > 0 {
-		return "", errors.New("invalid signature: left bytes after parsing")
+		return nil, nil, errors.New("invalid signature: left bytes after parsing")
 	}
 
-	// Convert r and s to hex strings
-	rHex := fmt.Sprintf("%x", r)
-	sHex := fmt.Sprintf("%x", s)
-
-	// Ensure even length by adding leading zero if necessary
-	if len(rHex)%2 != 0 {
-		rHex = "0" + rHex
-	}
-	if len(sHex)%2 != 0 {
-		sHex = "0" + sHex
-	}
-
-	return rHex + sHex, nil
+	return r.Bytes(), s.Bytes(), nil
 }

@@ -2,13 +2,13 @@ package keypairs
 
 import (
 	"crypto/sha512"
-	"encoding/hex"
 	"errors"
 	"math/big"
 	"strings"
 
-	"github.com/Peersyst/xrpl-go/pkg/secp256k1"
 	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
+	ecdsa "github.com/decred/dcrd/dcrec/secp256k1/v4/ecdsa"
 )
 
 var _ CryptoImplementation = (*secp256k1Alg)(nil)
@@ -81,17 +81,21 @@ func (c *secp256k1Alg) deriveKeypair(seed []byte, validator bool) (string, strin
 }
 
 func (c *secp256k1Alg) sign(msg, privKey string) (string, error) {
+	if len(privKey) != 64 && len(privKey) != 66 {
+		return "", errors.New("invalid private key")
+	}
+	if len(msg) == 0 {
+		return "", errors.New("message is required")
+	}
+
 	if len(privKey) == 66 {
 		privKey = privKey[2:]
 	}
 	key := deformatKey(privKey)
-	hash := Sha512Half([]byte(msg))
-	sig, err := secp256k1.Sign(hash, key)
-	if err != nil {
-		return "", err
-	}
+	secpPrivKey := secp256k1.PrivKeyFromBytes(key)
+	sig := ecdsa.Sign(secpPrivKey, Sha512Half([]byte(msg)))
 
-	parsedSig, err := DERHexFromSig(hex.EncodeToString(sig[:32]), hex.EncodeToString(sig[32:64]))
+	parsedSig, err := DERHexFromSig(sig.R().String(), sig.S().String())
 	if err != nil {
 		return "", err
 	}
@@ -100,17 +104,24 @@ func (c *secp256k1Alg) sign(msg, privKey string) (string, error) {
 
 func (c *secp256k1Alg) validate(msg, pubkey, sig string) bool {
 	// Decode the signature from DERHex to a hex string
-	parsedSig, err := DERHexToSig(sig)
+	r, s, err := DERHexToSig(sig)
 	if err != nil {
 		return false
 	}
 
-	// Decode the hex string to a byte slice
-	parsedSigBytes, err := hex.DecodeString(parsedSig)
-	if err != nil {
-		return false
-	}
+	// Convert r and s slices to [32]byte arrays
+	var rBytes, sBytes [32]byte
 
+	copy(rBytes[32-len(r):], r)
+	copy(sBytes[32-len(s):], s)
+
+	ecdsaR := &secp256k1.ModNScalar{}
+	ecdsaS := &secp256k1.ModNScalar{}
+
+	ecdsaR.SetBytes(&rBytes)
+	ecdsaS.SetBytes(&sBytes)
+
+	parsedSig := ecdsa.NewSignature(ecdsaR, ecdsaS)
 	// Hash the message
 	hash := Sha512Half([]byte(msg))
 
@@ -118,5 +129,9 @@ func (c *secp256k1Alg) validate(msg, pubkey, sig string) bool {
 	pubkeyBytes := deformatKey(pubkey)
 
 	// Verify the signature
-	return secp256k1.VerifySignature(pubkeyBytes, hash, parsedSigBytes)
+	pubKey, err := secp256k1.ParsePubKey(pubkeyBytes)
+	if err != nil {
+		return false
+	}
+	return parsedSig.Verify(hash, pubKey)
 }

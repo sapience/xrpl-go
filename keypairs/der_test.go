@@ -1,6 +1,7 @@
 package keypairs
 
 import (
+	"encoding/hex"
 	"strings"
 	"testing"
 )
@@ -14,34 +15,38 @@ func BenchmarkDERHexToSig(b *testing.B) {
 
 func TestDERHexToSig(t *testing.T) {
 	testCases := []struct {
-		name          string
-		hexSignature  string
-		expectedRSHex string
-		expectError   bool
+		name         string
+		hexSignature string
+		expectedR    string
+		expectedS    string
+		expectError  bool
 	}{
 		{
-			name:          "Valid DER signature",
-			hexSignature:  "3045022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
-			expectedRSHex: strings.ToLower("E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C82976186FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64"),
-			expectError:   false,
+			name:         "Valid DER signature",
+			hexSignature: "3045022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
+			expectedR:    "E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C8297618",
+			expectedS:    "6FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
+			expectError:  false,
 		},
 		{
-			name:          "Invalid hex string",
-			hexSignature:  "invalid",
-			expectedRSHex: "",
-			expectError:   true,
+			name:         "Invalid hex string",
+			hexSignature: "invalid",
+			expectedR:    "",
+			expectedS:    "",
+			expectError:  true,
 		},
 		{
-			name:          "Invalid signature tag",
-			hexSignature:  "3145022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
-			expectedRSHex: "",
-			expectError:   true,
+			name:         "Invalid signature tag",
+			hexSignature: "3145022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
+			expectedR:    "",
+			expectedS:    "",
+			expectError:  true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := DERHexToSig(tc.hexSignature)
+			r, s, err := DERHexToSig(tc.hexSignature)
 
 			if tc.expectError {
 				if err == nil {
@@ -51,8 +56,11 @@ func TestDERHexToSig(t *testing.T) {
 				if err != nil {
 					t.Errorf("Unexpected error: %v", err)
 				}
-				if result != tc.expectedRSHex {
-					t.Errorf("Expected %s, but got %s", tc.expectedRSHex, result)
+				if hex.EncodeToString(r) != strings.ToLower(tc.expectedR) {
+					t.Errorf("Expected R %s, but got %s", tc.expectedR, hex.EncodeToString(r))
+				}
+				if hex.EncodeToString(s) != strings.ToLower(tc.expectedS) {
+					t.Errorf("Expected S %s, but got %s", tc.expectedS, hex.EncodeToString(s))
 				}
 			}
 		})
