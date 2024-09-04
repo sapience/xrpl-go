@@ -187,7 +187,12 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
 func ValidatePayment(tx FlatTransaction) error {
-	ValidateBaseTransaction(tx)
+	var err error
+
+	err = ValidateBaseTransaction(tx)
+	if err != nil {
+		return err
+	}
 
 	// Check if the field Amount is set
 	if _, ok := tx["Amount"]; !ok {
@@ -198,8 +203,6 @@ func ValidatePayment(tx FlatTransaction) error {
 	if !IsAmount(tx["Amount"]) {
 		return errors.New("invalid field Amount")
 	}
-
-	var err error
 
 	// Check if the field Destination is set and valid
 	err = ValidateRequiredField(tx, "Destination", typecheck.IsString)
