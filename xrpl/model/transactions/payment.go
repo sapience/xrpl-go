@@ -93,7 +93,7 @@ func (p *Payment) Flatten() FlatTransaction {
 	}
 
 	if p.DestinationTag != 0 {
-		flattened["DestinationTag"] = p.DestinationTag
+		flattened["DestinationTag"] = int(p.DestinationTag)
 	}
 
 	if p.InvoiceID != "" {
