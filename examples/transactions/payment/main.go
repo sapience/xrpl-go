@@ -39,7 +39,7 @@ func main() {
 			Issuer:   "r9cZA1mLK5R5AmHZiRd6CCe83ACaut34Mf",
 			Value:    "100",
 		},
-		Destination: "r9cZA1mLK5R5AmHZiRd6CCe83ACaut34Mf",
+		Destination:    "r9cZA1mLK5R5AmHZiRd6CCe83ACaut34Mf",
 		DestinationTag: 100,
 	}
 
