@@ -9,9 +9,6 @@ import (
 )
 
 // DERHexFromSig converts r and s hex strings to a DER-encoded signature hex string.
-// It takes two parameters:
-// - rHex: A hex string representing the r value of the signature
-// - sHex: A hex string representing the s value of the signature
 // It returns the DER-encoded signature as a hex string and an error if any occurred during the process.
 func DERHexFromSig(rHex, sHex string) (string, error) {
 	// Helper function to add leading zero if first byte has negative bit enabled
@@ -66,10 +63,8 @@ func DERHexFromSig(rHex, sHex string) (string, error) {
 }
 
 // parseInt parses an integer from DER-encoded data.
-// It takes a byte slice as input and returns:
-// - A *big.Int representing the parsed integer
-// - A byte slice containing the remaining data after parsing
-// - An error if any occurred during parsing
+// It returns a *big.Int representing the parsed integer, a byte slice containing the remaining data after parsing,
+// and an error if any occurred during parsing.
 func parseInt(data []byte) (*big.Int, []byte, error) {
 	if len(data) < 2 {
 		return nil, nil, errors.New("invalid DER: not enough data")
@@ -85,10 +80,8 @@ func parseInt(data []byte) (*big.Int, []byte, error) {
 	return number, data[2+length:], nil
 }
 
-// DERHexToSig converts a DER-encoded signature hex string to r and s hex strings.
-// It takes a single parameter:
-// - hexSignature: A DER-encoded signature as a hex string
-// It returns the concatenated r and s hex strings and an error if any occurred during the process.
+// DERHexToSig converts a DER-encoded signature hex string to r and s byte slices.
+// It returns the r and s byte slices and an error if any occurred during the process.
 func DERHexToSig(hexSignature string) ([]byte, []byte, error) {
 	data, err := hex.DecodeString(hexSignature)
 	if err != nil {
