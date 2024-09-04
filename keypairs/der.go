@@ -33,11 +33,11 @@ func DERHexFromSig(rHex, sHex string) (string, error) {
 	// Convert hex strings to big.Int
 	r, ok := new(big.Int).SetString(rHex, 16)
 	if !ok {
-		return "", fmt.Errorf("invalid r hex string: %s", rHex)
+		return "", errors.New("invalid r hex string: " + rHex)
 	}
 	s, ok := new(big.Int).SetString(sHex, 16)
 	if !ok {
-		return "", fmt.Errorf("invalid s hex string: %s", sHex)
+		return "", errors.New("invalid s hex string: " + sHex)
 	}
 
 	// Convert r and s to sliced hex strings
