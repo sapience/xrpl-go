@@ -3,7 +3,7 @@ package transactions
 import (
 	"fmt"
 
-	"github.com/Peersyst/xrpl-go/xrpl/utils/typecheck"
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 )
 
 func ValidateBaseTransaction(tx FlatTransaction) error {

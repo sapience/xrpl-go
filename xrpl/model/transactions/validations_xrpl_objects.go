@@ -3,8 +3,8 @@ package transactions
 import (
 	"errors"
 
-	maputils "github.com/Peersyst/xrpl-go/xrpl/utils/map_utils"
-	"github.com/Peersyst/xrpl-go/xrpl/utils/typecheck"
+	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 )
 
 const MEMO_SIZE = 3

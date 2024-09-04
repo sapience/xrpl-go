@@ -125,7 +125,10 @@ func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 	tx["SigningPubKey"] = w.PublicKey
 
 	// Validate the transaction fields
-	transactions.ValidateTx(tx)
+	err := transactions.ValidateTx(tx)
+	if err != nil {
+		return "", "", err
+	}
 
 	encodedTx, _ := binarycodec.EncodeForSigning(tx)
 	hexTx, err := hex.DecodeString(encodedTx)

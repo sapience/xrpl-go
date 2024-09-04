@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 	"github.com/Peersyst/xrpl-go/xrpl/model/utils"
-	"github.com/Peersyst/xrpl-go/xrpl/utils/typecheck"
 )
 
 const (
