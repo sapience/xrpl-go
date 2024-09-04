@@ -120,7 +120,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["AccountTxnID"] = tx.AccountTxnID
 	}
 	if tx.Flags != 0 {
-		flattened["Flags"] = tx.Flags
+		flattened["Flags"] = int(tx.Flags)
 	}
 	if tx.LastLedgerSequence != 0 {
 		flattened["LastLedgerSequence"] = tx.LastLedgerSequence
