@@ -120,8 +120,10 @@ func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 		tx := map[string]interface{}{
 			"amount": "100",
 		}
-		CheckIssuedCurrencyIsNotXrp(tx)
-		// No panic expected
+		err := CheckIssuedCurrencyIsNotXrp(tx)
+		if err != nil {
+			t.Errorf("Expected no error, but got: %v", err)
+		}
 	})
 
 	t.Run("Issued currency is not XRP", func(t *testing.T) {
@@ -132,8 +134,10 @@ func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 				"currency": "USD",
 			},
 		}
-		CheckIssuedCurrencyIsNotXrp(tx)
-		// No panic expected
+		err := CheckIssuedCurrencyIsNotXrp(tx)
+		if err != nil {
+			t.Errorf("Expected no error, but got: %v", err)
+		}
 	})
 
 	t.Run("Issued currency is XRP", func(t *testing.T) {
@@ -144,15 +148,15 @@ func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 				"currency": "XRP",
 			},
 		}
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("Expected panic, but no panic occurred")
-			}
-		}()
-		CheckIssuedCurrencyIsNotXrp(tx)
-		// Panic expected
+		err := CheckIssuedCurrencyIsNotXrp(tx)
+		if err == nil {
+			t.Errorf("Expected an error, but got nil")
+		} else if err.Error() != "cannot have an issued currency with a similar standard code as XRP" {
+			t.Errorf("Expected error message: 'cannot have an issued currency with a similar standard code as XRP', but got: %v", err.Error())
+		}
 	})
 }
+
 func TestIsMemo(t *testing.T) {
 	t.Run("Valid Memo object with all fields", func(t *testing.T) {
 		obj := FlatMemoWrapper{

@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	"errors"
+
 	maputils "github.com/Peersyst/xrpl-go/xrpl/utils/map_utils"
 	"github.com/Peersyst/xrpl-go/xrpl/utils/typecheck"
 )
@@ -153,7 +155,7 @@ func IsPaths(paths [][]map[string]interface{}) bool {
 const STANDARD_CURRENCY_CODE_LEN = 3
 
 // CheckIssuedCurrencyIsNotXrp checks if the given transaction map does not have an issued currenc as XRP.
-func CheckIssuedCurrencyIsNotXrp(tx map[string]interface{}) {
+func CheckIssuedCurrencyIsNotXrp(tx map[string]interface{}) error {
 	keys := maputils.GetKeys(tx)
 	for _, value := range keys {
 		result, isFlatTxn := (tx[value]).(map[string]interface{})
@@ -164,8 +166,10 @@ func CheckIssuedCurrencyIsNotXrp(tx map[string]interface{}) {
 			currency := tx[value].(map[string]interface{})["currency"].(string)
 
 			if len(currency) == STANDARD_CURRENCY_CODE_LEN && currency == "XRP" {
-				panic("Cannot have an issued currency with a similar standard code as XRP.")
+				return errors.New("cannot have an issued currency with a similar standard code as XRP")
 			}
 		}
 	}
+
+	return nil
 }
