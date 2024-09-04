@@ -126,7 +126,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["LastLedgerSequence"] = tx.LastLedgerSequence
 	}
 	if len(tx.Memos) > 0 {
-		flattenedMemos := make([]FlatMemoWrapper, 0)
+		flattenedMemos := make([]any, 0)
 		for _, memo := range tx.Memos {
 			flattenedMemo := memo.Flatten()
 			if flattenedMemo != nil {

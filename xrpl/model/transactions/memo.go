@@ -4,27 +4,23 @@ type MemoWrapper struct {
 	Memo Memo
 }
 
-type FlatMemoWrapper map[string]interface{}
-
 type Memo struct {
 	MemoData   string `json:",omitempty"`
 	MemoFormat string `json:",omitempty"`
 	MemoType   string `json:",omitempty"`
 }
 
-type FlatMemo map[string]interface{}
-
-func (mw *MemoWrapper) Flatten() FlatMemoWrapper {
+func (mw *MemoWrapper) Flatten() map[string]interface{} {
 	if mw.Memo != (Memo{}) {
-		flattened := make(FlatMemoWrapper)
+		flattened := make(map[string]interface{})
 		flattened["Memo"] = mw.Memo.Flatten()
 		return flattened
 	}
 	return nil
 }
 
-func (m *Memo) Flatten() FlatMemo {
-	flattened := make(FlatMemo)
+func (m *Memo) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
 
 	if m.MemoData != "" {
 		flattened["MemoData"] = m.MemoData

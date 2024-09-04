@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strconv"
 
@@ -62,6 +63,22 @@ func main() {
 	payment := transactions.Payment{
 		BaseTx: transactions.BaseTx{
 			Account: types.Address(wallet.GetAddress()),
+			Memos: []transactions.MemoWrapper{
+				{
+					Memo: transactions.Memo{
+						MemoData:   hex.EncodeToString([]byte("Hello, World!")),
+						MemoFormat: hex.EncodeToString([]byte("plain")),
+						MemoType:   hex.EncodeToString([]byte("message")),
+					},
+				},
+				{
+					Memo: transactions.Memo{
+						MemoData:   hex.EncodeToString([]byte("Hello, World 2!")),
+						MemoFormat: hex.EncodeToString([]byte("text/plain")),
+						MemoType:   hex.EncodeToString([]byte("message2")),
+					},
+				},
+			},
 		},
 		Destination: types.Address(receiverWallet.GetAddress()),
 		Amount:      types.XRPCurrencyAmount(amountUint),

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
@@ -52,6 +53,22 @@ func main() {
 	tx := transactions.Payment{
 		BaseTx: transactions.BaseTx{
 			Account: types.Address(wallet.ClassicAddress),
+			Memos: []transactions.MemoWrapper{
+				{
+					Memo: transactions.Memo{
+						MemoData:   hex.EncodeToString([]byte("Hello, World!")),
+						MemoFormat: hex.EncodeToString([]byte("text/plain")),
+						MemoType:   hex.EncodeToString([]byte("message")),
+					},
+				},
+				{
+					Memo: transactions.Memo{
+						MemoData:   hex.EncodeToString([]byte("Hello, World 2!")),
+						MemoFormat: hex.EncodeToString([]byte("text/plain")),
+						MemoType:   hex.EncodeToString([]byte("message2")),
+					},
+				},
+			},
 		},
 		Amount: types.IssuedCurrencyAmount{
 			Issuer:   Issuer,
