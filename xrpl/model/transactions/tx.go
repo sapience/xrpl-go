@@ -139,7 +139,14 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["NetworkId"] = tx.NetworkId
 	}
 	if len(tx.Signers) > 0 {
-		flattened["Signers"] = tx.Signers
+		flattenedSigners := make([]FlatSigner, 0)
+		for _, signer := range tx.Signers {
+			flattenedSigner := signer.Flatten()
+			if flattenedSigner != nil {
+				flattenedSigners = append(flattenedSigners, flattenedSigner)
+			}
+		}
+		flattened["Signers"] = flattenedSigners
 	}
 	if tx.SourceTag != 0 {
 		flattened["SourceTag"] = tx.SourceTag
