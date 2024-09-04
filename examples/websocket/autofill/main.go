@@ -32,6 +32,22 @@ func main() {
 	payment := transactions.Payment{
 		BaseTx: transactions.BaseTx{
 			Account: types.Address(wallet.GetAddress()),
+			Signers: []transactions.Signer{
+				{
+					SignerData: transactions.SignerData{
+						Account:       types.Address(wallet.GetAddress()),
+						SigningPubKey: wallet.PublicKey,
+						TxnSignature:  "",
+					},
+				},
+				{
+					SignerData: transactions.SignerData{
+						Account:       types.Address(wallet.GetAddress()),
+						SigningPubKey: wallet.PublicKey,
+						TxnSignature:  "",
+					},
+				},
+			},
 			Memos: []transactions.MemoWrapper{
 				{
 					Memo: transactions.Memo{
