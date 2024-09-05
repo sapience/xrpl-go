@@ -42,7 +42,7 @@ func main() {
 		fmt.Printf("❌ Error funding cold wallet: %s\n", err)
 		return
 	}
-	fmt.Println("✅ Cold wallet funded!")
+	fmt.Println("💸 Cold wallet funded!")
 
 	hotWallet, err := xrpl.NewWallet(addresscodec.ED25519)
 	if err != nil {
@@ -54,7 +54,7 @@ func main() {
 		fmt.Printf("❌ Error funding hot wallet: %s\n", err)
 		return
 	}
-	fmt.Println("✅ Hot wallet funded!")
+	fmt.Println("💸 Hot wallet funded!")
 
 	customerOneWallet, err := xrpl.NewWallet(addresscodec.ED25519)
 	if err != nil {
@@ -66,7 +66,7 @@ func main() {
 		fmt.Printf("❌ Error funding customer one wallet: %s\n", err)
 		return
 	}
-	fmt.Println("✅ Customer one wallet funded!")
+	fmt.Println("💸 Customer one wallet funded!")
 	fmt.Println()
 
 	fmt.Println("✅ Wallets setup complete!")
@@ -89,12 +89,9 @@ func main() {
 	}
 
 	coldWalletAccountSet.SetAsfDefaultRipple()
-	coldWalletAccountSet.SetAsfAllowTrustLineClawback()
 	coldWalletAccountSet.SetDisallowXRP()
 
-	coldWalletAccountSet.ClearAsfNoFreeze()
 	coldWalletAccountSet.SetRequireDestTag()
-	coldWalletAccountSet.SetAsfDefaultRipple()
 
 	flattenedTx := coldWalletAccountSet.Flatten()
 
@@ -491,51 +488,6 @@ func main() {
 	}
 
 	fmt.Println("✅ Tokens sent from hot wallet to customer one!")
-	fmt.Printf("🌐 Hash: %s\n", response.Tx["hash"])
-	fmt.Println()
-
-	//
-	// Claw back tokens from customer one
-	//
-	fmt.Println("⏳ Clawing back tokens from customer one...")
-
-	coldWalletClawback := &transactions.Clawback{
-		BaseTx: transactions.BaseTx{
-			Account: types.Address(coldWallet.ClassicAddress),
-		},
-		Amount: types.IssuedCurrencyAmount{
-			Currency: currencyCode,
-			Issuer:   types.Address(customerOneWallet.ClassicAddress),
-			Value:    "50",
-		},
-	}
-
-	flattenedTx = coldWalletClawback.Flatten()
-	err = client.Autofill(&flattenedTx)
-	if err != nil {
-		fmt.Printf("❌ Error autofilling transaction: %s\n", err)
-		return
-	}
-
-	txBlob, _, err = coldWallet.Sign(flattenedTx)
-	if err != nil {
-		fmt.Printf("❌ Error signing transaction: %s\n", err)
-		return
-	}
-
-	response, err = client.SubmitTransactionBlob(txBlob, false)
-	if err != nil {
-		fmt.Printf("❌ Error submitting transaction: %s\n", err)
-		return
-	}
-
-	if response.EngineResult != "tesSUCCESS" {
-		fmt.Println("❌ Tokens not clawed back from customer one!", response.EngineResult)
-		fmt.Println()
-		return
-	}
-
-	fmt.Println("✅ Tokens clawed back from customer one!")
 	fmt.Printf("🌐 Hash: %s\n", response.Tx["hash"])
 	fmt.Println()
 }
