@@ -104,7 +104,7 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	flattened["TransactionType"] = "AccountSet"
 
 	if s.ClearFlag != 0 {
-		flattened["ClearFlag"] = s.ClearFlag
+		flattened["ClearFlag"] = int(s.ClearFlag)
 	}
 	if s.Domain != "" {
 		flattened["Domain"] = s.Domain
@@ -172,9 +172,19 @@ func (s *AccountSet) SetAsfRequireDest() {
 	s.SetFlag = asfRequireDest
 }
 
+// ClearAsfRequireDest clears the require destination tag flag.
+func (s *AccountSet) ClearAsfRequireDest() {
+	s.ClearFlag = asfRequireDest
+}
+
 // SetAsfRequireAuth sets the require authorization flag.
 func (s *AccountSet) SetAsfRequireAuth() {
 	s.SetFlag = asfRequireAuth
+}
+
+// ClearAsfRequireAuth clears the require authorization flag.
+func (s *AccountSet) ClearAsfRequireAuth() {
+	s.ClearFlag = asfRequireAuth
 }
 
 // SetAsfDisallowXRP sets the disallow XRP flag.
@@ -182,9 +192,19 @@ func (s *AccountSet) SetAsfDisallowXRP() {
 	s.SetFlag = asfDisallowXRP
 }
 
+// ClearAsfDisallowXRP clears the disallow XRP flag.
+func (s *AccountSet) ClearAsfDisallowXRP() {
+	s.ClearFlag = asfDisallowXRP
+}
+
 // SetAsfDisableMaster sets the disable master key flag.
 func (s *AccountSet) SetAsfDisableMaster() {
 	s.SetFlag = asfDisableMaster
+}
+
+// ClearAsfDisableMaster clears the disable master key flag.
+func (s *AccountSet) ClearAsfDisableMaster() {
+	s.ClearFlag = asfDisableMaster
 }
 
 // SetAsfAccountTxnID sets the account transaction ID flag.
@@ -192,9 +212,19 @@ func (s *AccountSet) SetAsfAccountTxnID() {
 	s.SetFlag = asfAccountTxnID
 }
 
+// ClearAsfAccountTxnID clears the account transaction ID flag.
+func (s *AccountSet) ClearAsfAccountTxnID() {
+	s.ClearFlag = asfAccountTxnID
+}
+
 // SetAsfNoFreeze sets the no freeze flag.
 func (s *AccountSet) SetAsfNoFreeze() {
 	s.SetFlag = asfNoFreeze
+}
+
+// ClearAsfNoFreeze clears the no freeze flag.
+func (s *AccountSet) ClearAsfNoFreeze() {
+	s.ClearFlag = asfNoFreeze
 }
 
 // SetAsfGlobalFreeze sets the global freeze flag.
@@ -202,9 +232,19 @@ func (s *AccountSet) SetAsfGlobalFreeze() {
 	s.SetFlag = asfGlobalFreeze
 }
 
+// ClearAsfGlobalFreeze clears the global freeze flag.
+func (s *AccountSet) ClearAsfGlobalFreeze() {
+	s.ClearFlag = asfGlobalFreeze
+}
+
 // SetAsfDefaultRipple sets the default ripple flag.
 func (s *AccountSet) SetAsfDefaultRipple() {
 	s.SetFlag = asfDefaultRipple
+}
+
+// ClearAsfDefaultRipple clears the default ripple flag.
+func (s *AccountSet) ClearAsfDefaultRipple() {
+	s.ClearFlag = asfDefaultRipple
 }
 
 // SetAsfDepositAuth sets the deposit authorization flag.
@@ -212,9 +252,19 @@ func (s *AccountSet) SetAsfDepositAuth() {
 	s.SetFlag = asfDepositAuth
 }
 
+// ClearAsfDepositAuth clears the deposit authorization flag.
+func (s *AccountSet) ClearAsfDepositAuth() {
+	s.ClearFlag = asfDepositAuth
+}
+
 // SetAsfAuthorizedNFTokenMinter sets the authorized NFToken minter flag.
 func (s *AccountSet) SetAsfAuthorizedNFTokenMinter() {
 	s.SetFlag = asfAuthorizedNFTokenMinter
+}
+
+// ClearAsfAuthorizedNFTokenMinter clears the authorized NFToken minter flag.
+func (s *AccountSet) ClearAsfAuthorizedNFTokenMinter() {
+	s.ClearFlag = asfAuthorizedNFTokenMinter
 }
 
 // SetAsfDisallowIncomingNFTokenOffer sets the disallow incoming NFToken offer flag.
@@ -222,9 +272,19 @@ func (s *AccountSet) SetAsfDisallowIncomingNFTokenOffer() {
 	s.SetFlag = asfDisallowIncomingNFTokenOffer
 }
 
+// ClearAsfDisallowIncomingNFTokenOffer clears the disallow incoming NFToken offer flag.
+func (s *AccountSet) ClearAsfDisallowIncomingNFTokenOffer() {
+	s.ClearFlag = asfDisallowIncomingNFTokenOffer
+}
+
 // SetAsfDisallowIncomingCheck sets the disallow incoming check flag.
 func (s *AccountSet) SetAsfDisallowIncomingCheck() {
 	s.SetFlag = asfDisallowIncomingCheck
+}
+
+// ClearAsfDisallowIncomingCheck clears the disallow incoming check flag.
+func (s *AccountSet) ClearAsfDisallowIncomingCheck() {
+	s.ClearFlag = asfDisallowIncomingCheck
 }
 
 // SetAsfDisallowIncomingPayChan sets the disallow incoming payment channel flag.
@@ -232,12 +292,27 @@ func (s *AccountSet) SetAsfDisallowIncomingPayChan() {
 	s.SetFlag = asfDisallowIncomingPayChan
 }
 
+// ClearAsfDisallowIncomingPayChan clears the disallow incoming payment channel flag.
+func (s *AccountSet) ClearAsfDisallowIncomingPayChan() {
+	s.ClearFlag = asfDisallowIncomingPayChan
+}
+
 // SetAsfDisallowIncomingTrustLine sets the disallow incoming trust line flag.
 func (s *AccountSet) SetAsfDisallowIncomingTrustLine() {
 	s.SetFlag = asfDisallowIncomingTrustLine
 }
 
+// ClearAsfDisallowIncomingTrustLine clears the disallow incoming trust line flag.
+func (s *AccountSet) ClearAsfDisallowIncomingTrustLine() {
+	s.ClearFlag = asfDisallowIncomingTrustLine
+}
+
 // SetAsfAllowTrustLineClawback sets the allow trust line clawback flag.
 func (s *AccountSet) SetAsfAllowTrustLineClawback() {
 	s.SetFlag = asfAllowTrustLineClawback
+}
+
+// ClearAsfAllowTrustLineClawback clears the allow trust line clawback flag.
+func (s *AccountSet) ClearAsfAllowTrustLineClawback() {
+	s.ClearFlag = asfAllowTrustLineClawback
 }
