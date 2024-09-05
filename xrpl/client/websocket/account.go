@@ -56,3 +56,16 @@ func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
 
 	return xrpBalance, nil
 }
+
+func (c *WebsocketClient) GetAccountLines(req *account.AccountLinesRequest) (*account.AccountLinesResponse, error) {
+	res, err := c.SendRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	var acr account.AccountLinesResponse
+	err = res.GetResult(&acr)
+	if err != nil {
+		return nil, err
+	}
+	return &acr, nil
+}

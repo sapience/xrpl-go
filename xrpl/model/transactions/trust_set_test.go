@@ -75,7 +75,7 @@ func TestTrustSetFlatten(t *testing.T) {
 		"Account":            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType":    "TrustSet",
 		"Fee":                "12",
-		"Flags":              uint(262144),
+		"Flags":              int(262144),
 		"Sequence":           uint(12),
 		"LastLedgerSequence": uint(8007750),
 		"LimitAmount": map[string]interface{}{

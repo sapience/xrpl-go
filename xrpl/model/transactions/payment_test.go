@@ -72,7 +72,7 @@ func TestPaymentFlatten(t *testing.T) {
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "Payment",
 		"Fee":             "1000",
-		"Flags":           uint(262144),
+		"Flags":           int(262144),
 		"Amount": map[string]interface{}{
 			"issuer":   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 			"currency": "USD",
