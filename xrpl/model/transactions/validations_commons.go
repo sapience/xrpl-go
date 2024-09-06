@@ -14,7 +14,10 @@ func ValidateBaseTransaction(tx FlatTransaction) error {
 		return err
 	}
 
-	ValidateRequiredField(tx, "Account", typecheck.IsString)
+	err = ValidateRequiredField(tx, "Account", typecheck.IsString)
+	if err != nil {
+		return err
+	}
 
 	// optional fields
 	err = ValidateOptionalField(tx, "Fee", typecheck.IsString)
@@ -110,12 +113,12 @@ func ValidateOptionalField(tx FlatTransaction, paramName string, checkValidity f
 func validateMemos(tx FlatTransaction) error {
 	// Check if the field Memos is set
 	if tx["Memos"] != nil {
-		flatMemoWrappers, ok := tx["Memos"].([]FlatMemoWrapper)
+		memos, ok := tx["Memos"].([]map[string]interface{})
 		if !ok {
-			return fmt.Errorf("BaseTransaction: invalid Memos conversion to []FlatMemoWrapper")
+			return fmt.Errorf("BaseTransaction: invalid Memos conversion to []map[string]interface{}")
 		}
 		// loop through each memo and validate it
-		for _, memo := range flatMemoWrappers {
+		for _, memo := range memos {
 			if !IsMemo(memo) {
 				return fmt.Errorf("BaseTransaction: invalid Memos. A memo can only have hexadecimals values. See https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field")
 			}

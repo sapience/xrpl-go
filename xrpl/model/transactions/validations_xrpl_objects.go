@@ -15,15 +15,15 @@ const (
 )
 
 // IsMemo checks if the given object is a valid Memo object.
-func IsMemo(obj FlatMemoWrapper) bool {
+func IsMemo(obj map[string]interface{}) bool {
 	// Check if the object is not nil and if it has a Memo field.
 	if obj == nil || obj["Memo"] == nil {
 		return false
 	}
 
 	// Check if the Memo field is a map.
-	memo, isFlatMemo := obj["Memo"].(FlatMemo)
-	if !isFlatMemo {
+	memo, isMap := obj["Memo"].(map[string]interface{})
+	if !isMap {
 		return false
 	}
 
