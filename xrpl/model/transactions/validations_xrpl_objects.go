@@ -7,7 +7,12 @@ import (
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 )
 
-const MEMO_SIZE = 3
+const (
+	MEMO_SIZE                  = 3
+	SIGNER_SIZE                = 3
+	ISSUED_CURRENCY_SIZE       = 3
+	STANDARD_CURRENCY_CODE_LEN = 3
+)
 
 // IsMemo checks if the given object is a valid Memo object.
 func IsMemo(obj FlatMemoWrapper) bool {
@@ -47,8 +52,6 @@ func onlyHasFields(obj map[string]interface{}, fields []string) bool {
 	return true
 }
 
-const SIGNER_SIZE = 3
-
 // IsSigner checks if the given object is a valid Signer object.
 func IsSigner(obj map[string]interface{}) bool {
 	signer, ok := obj["Signer"].(map[string]interface{})
@@ -83,8 +86,6 @@ func IsAmount(amount interface{}) bool {
 
 	return false
 }
-
-const ISSUED_CURRENCY_SIZE = 3
 
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
 func IsIssuedCurrency(input map[string]interface{}) bool {
@@ -151,8 +152,6 @@ func IsPaths(paths [][]map[string]interface{}) bool {
 
 	return true
 }
-
-const STANDARD_CURRENCY_CODE_LEN = 3
 
 // CheckIssuedCurrencyIsNotXrp checks if the given transaction map does not have an issued currenc as XRP.
 func CheckIssuedCurrencyIsNotXrp(tx map[string]interface{}) error {
