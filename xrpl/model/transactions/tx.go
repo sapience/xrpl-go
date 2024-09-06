@@ -264,3 +264,26 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 	}
 	return tx, nil
 }
+
+func ValidateTx(tx FlatTransaction) error {
+	var err error
+
+	// Check in the case it is an issued currency, that the currency is not XRP
+	err = CheckIssuedCurrencyIsNotXrp(tx)
+	if err != nil {
+		return err
+	}
+
+	// Validate transaction fields
+	switch tx["TransactionType"] {
+	case "Payment":
+		err = ValidatePayment(tx)
+		if err != nil {
+			return err
+		}
+	default:
+		return (fmt.Errorf("unsupported transaction type %s", tx["TransactionType"]))
+	}
+
+	return nil
+}

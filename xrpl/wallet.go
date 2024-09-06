@@ -7,6 +7,7 @@ import (
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/keypairs"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 )
 
 // A utility for deriving a wallet composed of a keypair (publicKey/privateKey).
@@ -122,6 +123,12 @@ func NewWalletFromSecret(seed string) (Wallet, error) {
 // TODO: Refactor to accept a `Transaction` object instead of a map.
 func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 	tx["SigningPubKey"] = w.PublicKey
+
+	// Validate the transaction fields
+	err := transactions.ValidateTx(tx)
+	if err != nil {
+		return "", "", err
+	}
 
 	encodedTx, _ := binarycodec.EncodeForSigning(tx)
 	hexTx, err := hex.DecodeString(encodedTx)
