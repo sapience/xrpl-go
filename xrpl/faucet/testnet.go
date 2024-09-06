@@ -12,8 +12,6 @@ const (
 	TESTNET_FAUCET_PATH = "/accounts"
 )
 
-var _ FaucetProvider = (*TestnetFaucetProvider)(nil)
-
 // TestnetFaucetProvider implements the FaucetProvider interface for the XRPL Testnet.
 // It provides functionality to interact with the Testnet faucet for funding wallets.
 type TestnetFaucetProvider struct {

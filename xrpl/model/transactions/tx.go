@@ -120,13 +120,13 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["AccountTxnID"] = tx.AccountTxnID
 	}
 	if tx.Flags != 0 {
-		flattened["Flags"] = tx.Flags
+		flattened["Flags"] = int(tx.Flags)
 	}
 	if tx.LastLedgerSequence != 0 {
 		flattened["LastLedgerSequence"] = tx.LastLedgerSequence
 	}
 	if len(tx.Memos) > 0 {
-		flattenedMemos := make([]FlatMemoWrapper, 0)
+		flattenedMemos := make([]any, 0)
 		for _, memo := range tx.Memos {
 			flattenedMemo := memo.Flatten()
 			if flattenedMemo != nil {
@@ -263,4 +263,27 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 		return nil, err
 	}
 	return tx, nil
+}
+
+func ValidateTx(tx FlatTransaction) error {
+	var err error
+
+	// Check in the case it is an issued currency, that the currency is not XRP
+	err = CheckIssuedCurrencyIsNotXrp(tx)
+	if err != nil {
+		return err
+	}
+
+	// Validate transaction fields
+	switch tx["TransactionType"] {
+	case "Payment":
+		err = ValidatePayment(tx)
+		if err != nil {
+			return err
+		}
+	default:
+		return (fmt.Errorf("unsupported transaction type %s", tx["TransactionType"]))
+	}
+
+	return nil
 }

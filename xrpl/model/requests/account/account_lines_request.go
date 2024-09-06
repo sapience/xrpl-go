@@ -20,6 +20,10 @@ func (*AccountLinesRequest) Method() string {
 	return "account_lines"
 }
 
+func (*AccountLinesRequest) Validate() error {
+	return nil
+}
+
 func (r *AccountLinesRequest) UnmarshalJSON(data []byte) error {
 	type alrHelper struct {
 		Account     types.Address     `json:"account"`
