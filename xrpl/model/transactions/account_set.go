@@ -1,6 +1,9 @@
 package transactions
 
 import (
+	"errors"
+
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
@@ -315,4 +318,73 @@ func (s *AccountSet) SetAsfAllowTrustLineClawback() {
 // ClearAsfAllowTrustLineClawback clears the allow trust line clawback flag.
 func (s *AccountSet) ClearAsfAllowTrustLineClawback() {
 	s.ClearFlag = asfAllowTrustLineClawback
+}
+
+const MIN_TICK_SIZE = 3
+const MAX_TICK_SIZE = 15
+
+// Validate the AccountSet transaction fields.
+func ValidateAccountSet(tx FlatTransaction) error {
+	// validate the base transaction
+	err := ValidateBaseTransaction(tx)
+	if err != nil {
+		return err
+	}
+
+	// check ClearFlag is defined
+	if _, ok := tx["ClearFlag"]; ok {
+		// check if ClearFlag is a number
+		if !typecheck.IsUint(tx["ClearFlag"]) {
+			return errors.New("AccountSet: ClearFlag must be a number")
+		}
+	}
+
+	// check Domain is defined and a string
+	if _, ok := tx["Domain"]; ok {
+		if !typecheck.IsString(tx["Domain"]) {
+			return errors.New("AccountSet: Domain must be a string")
+		}
+	}
+
+	// check EmailHash is defined and a hash128/string
+	if _, ok := tx["EmailHash"]; ok {
+		if !typecheck.IsString(tx["EmailHash"]) {
+			return errors.New("AccountSet: EmailHash must be a Hash128")
+		}
+	}
+
+	// check MessageKey is defined and a string
+	if _, ok := tx["MessageKey"]; ok {
+		if !typecheck.IsString(tx["MessageKey"]) {
+			return errors.New("AccountSet: MessageKey must be a string")
+		}
+	}
+
+	// check SetFlag is defined and a number
+	if _, ok := tx["SetFlag"]; ok {
+		if !typecheck.IsUint(tx["SetFlag"]) {
+			return errors.New("AccountSet: SetFlag must be a number")
+		}
+	}
+
+	// check TransferRate is defined and a number
+	if _, ok := tx["TransferRate"]; ok {
+		if !typecheck.IsUint(tx["TransferRate"]) {
+			return errors.New("AccountSet: TransferRate must be a number")
+		}
+	}
+
+	// check TickSize is defined and a number
+	if _, ok := tx["TickSize"]; ok {
+		if !typecheck.IsUint(tx["TickSize"]) {
+			return errors.New("AccountSet: TickSize must be a number")
+		}
+
+		// check if TickSize is within the valid range and different from 0
+		if tx["TickSize"].(uint) != 0 && (tx["TickSize"].(uint) < MIN_TICK_SIZE || tx["TickSize"].(uint) > MAX_TICK_SIZE) {
+			return errors.New("AccountSet: TickSize must be between 3 and 15")
+		}
+	}
+
+	return nil
 }
