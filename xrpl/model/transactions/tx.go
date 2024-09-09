@@ -291,6 +291,11 @@ func ValidateTx(tx FlatTransaction) error {
 		if err != nil {
 			return err
 		}
+	case "AccountSet":
+		err = ValidateAccountSet(tx)
+		if err != nil {
+			return err
+		}
 	default:
 		return (fmt.Errorf("unsupported transaction type %s", tx["TransactionType"]))
 	}
