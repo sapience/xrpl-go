@@ -276,13 +276,8 @@ func ValidateTx(tx FlatTransaction) error {
 
 	// Validate transaction fields
 	switch tx["TransactionType"] {
-	case "Payment":
-		err = ValidatePayment(tx)
-		if err != nil {
-			return err
-		}
-	case "TrustSet":
-		err = ValidateTrustSet(tx)
+	case "AccountSet":
+		err = ValidateAccountSet(tx)
 		if err != nil {
 			return err
 		}
@@ -291,8 +286,13 @@ func ValidateTx(tx FlatTransaction) error {
 		if err != nil {
 			return err
 		}
-	case "AccountSet":
-		err = ValidateAccountSet(tx)
+	case "Payment":
+		err = ValidatePayment(tx)
+		if err != nil {
+			return err
+		}
+	case "TrustSet":
+		err = ValidateTrustSet(tx)
 		if err != nil {
 			return err
 		}
