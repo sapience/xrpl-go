@@ -365,6 +365,11 @@ func ValidateAccountSet(tx FlatTransaction) error {
 		if !typecheck.IsUint(tx["SetFlag"]) {
 			return errors.New("AccountSet: SetFlag must be a number")
 		}
+
+		// check if SetFlag is within the valid range
+		if tx["SetFlag"].(uint) < asfRequireDest || tx["SetFlag"].(uint) > asfAllowTrustLineClawback {
+			return errors.New("AccountSet: SetFlag must be between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+		}
 	}
 
 	// check TransferRate is defined and a number
