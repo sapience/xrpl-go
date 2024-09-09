@@ -10,7 +10,7 @@ func TestOnlyHasFields(t *testing.T) {
 			"field3": "value3",
 		}
 		fields := []string{"field1", "field2", "field3"}
-		if !OnlyHasFields(obj, fields) {
+		if !ObjectOnlyHasFields(obj, fields) {
 			t.Errorf("Expected OnlyHasFields to return true, but got false")
 		}
 	})
@@ -21,7 +21,7 @@ func TestOnlyHasFields(t *testing.T) {
 			"field2": "value2",
 		}
 		fields := []string{"field1", "field2", "field3"}
-		if !OnlyHasFields(obj, fields) {
+		if !ObjectOnlyHasFields(obj, fields) {
 			t.Errorf("Expected OnlyHasFields to return true, but got false")
 		}
 	})
@@ -34,7 +34,7 @@ func TestOnlyHasFields(t *testing.T) {
 			"field4": "value4",
 		}
 		fields := []string{"field1", "field2", "field3"}
-		if OnlyHasFields(obj, fields) {
+		if ObjectOnlyHasFields(obj, fields) {
 			t.Errorf("Expected OnlyHasFields to return false, but got true")
 		}
 	})
@@ -42,7 +42,7 @@ func TestOnlyHasFields(t *testing.T) {
 	t.Run("Object has no fields", func(t *testing.T) {
 		obj := map[string]interface{}{}
 		fields := []string{"field1", "field2", "field3"}
-		if OnlyHasFields(obj, fields) {
+		if ObjectOnlyHasFields(obj, fields) {
 			t.Errorf("Expected OnlyHasFields to return false, but got true")
 		}
 	})
@@ -50,7 +50,7 @@ func TestOnlyHasFields(t *testing.T) {
 	t.Run("Empty object and empty fields", func(t *testing.T) {
 		obj := map[string]interface{}{}
 		fields := []string{}
-		if !OnlyHasFields(obj, fields) {
+		if !ObjectOnlyHasFields(obj, fields) {
 			t.Errorf("Expected OnlyHasFields to return true, but got false")
 		}
 	})

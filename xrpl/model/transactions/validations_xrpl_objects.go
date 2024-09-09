@@ -5,6 +5,7 @@ import (
 
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	"github.com/Peersyst/xrpl-go/xrpl/utils"
 )
 
 const (
@@ -34,22 +35,7 @@ func IsMemo(obj map[string]interface{}) bool {
 	validFormat := memo["MemoFormat"] == nil || typecheck.IsHex(memo["MemoFormat"].(string))
 	validType := memo["MemoType"] == nil || typecheck.IsHex(memo["MemoType"].(string))
 
-	return size >= 1 && size <= MEMO_SIZE && validData && validFormat && validType && onlyHasFields(memo, []string{"MemoFormat", "MemoData", "MemoType"})
-}
-
-// onlyHasFields checks if the given object has only the specified fields or a subset of them.
-func onlyHasFields(obj map[string]interface{}, fields []string) bool {
-	fieldSet := make(map[string]struct{}, len(fields))
-	for _, field := range fields {
-		fieldSet[field] = struct{}{}
-	}
-
-	for key := range obj {
-		if _, ok := fieldSet[key]; !ok {
-			return false
-		}
-	}
-	return true
+	return size >= 1 && size <= MEMO_SIZE && validData && validFormat && validType && utils.ObjectOnlyHasFields(memo, []string{"MemoFormat", "MemoData", "MemoType"})
 }
 
 // IsSigner checks if the given object is a valid Signer object.

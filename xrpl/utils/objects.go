@@ -1,7 +1,7 @@
 package utils
 
 // OnlyHasFields checks if the given object has only the specified fields or a subset of them.
-func OnlyHasFields(obj map[string]interface{}, fields []string) bool {
+func ObjectOnlyHasFields(obj map[string]interface{}, fields []string) bool {
 	// if obj is nil, return false
 	if obj == nil {
 		return false
