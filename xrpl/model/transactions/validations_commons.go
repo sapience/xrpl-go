@@ -131,7 +131,7 @@ func validateMemos(tx FlatTransaction) error {
 // validateSigners validates the Signers field in the transaction map.
 func validateSigners(tx FlatTransaction) error {
 	if tx["Signers"] != nil {
-		signers, ok := tx["Signers"].([]FlatTransaction)
+		signers, ok := tx["Signers"].([]FlatSigner)
 		if !ok {
 			return fmt.Errorf("BaseTransaction: invalid Signers")
 		}
