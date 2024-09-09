@@ -286,6 +286,11 @@ func ValidateTx(tx FlatTransaction) error {
 		if err != nil {
 			return err
 		}
+	case "Clawback":
+		err = ValidateClawback(tx)
+		if err != nil {
+			return err
+		}
 	default:
 		return (fmt.Errorf("unsupported transaction type %s", tx["TransactionType"]))
 	}

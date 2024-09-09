@@ -2,6 +2,7 @@ package transactions
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
@@ -69,6 +70,34 @@ func (c *Clawback) UnmarshalJSON(data []byte) error {
 
 	// Assign the unmarshaled CurrencyAmount to the Clawback struct
 	c.Amount = amount
+
+	return nil
+}
+
+func ValidateClawback(tx FlatTransaction) error {
+	// validate the base transaction
+	err := ValidateBaseTransaction(tx)
+	if err != nil {
+		return err
+	}
+
+	// check if the field Amount is set
+	if _, ok := tx["Amount"]; !ok {
+		return errors.New("Clawback: missing field Amount")
+	}
+
+	// check if the Amount is a valid currency amount
+	if !IsIssuedCurrency(tx["Amount"]) {
+		return errors.New("Clawback: invalid Amount")
+	}
+
+	// convert the Amount to a map
+	amount := tx["Amount"].(map[string]interface{})
+
+	// check if Account is not the same as the issuer
+	if tx["Account"] == amount["Issuer"] {
+		return errors.New("Clawback: invalid holder Account")
+	}
 
 	return nil
 }

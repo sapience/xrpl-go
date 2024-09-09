@@ -113,6 +113,13 @@ func TestIsIssuedCurrency(t *testing.T) {
 			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
 		}
 	})
+
+	t.Run("A number", func(t *testing.T) {
+		obj6 := 5
+		if IsIssuedCurrency(obj6) {
+			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
+		}
+	})
 }
 
 func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {

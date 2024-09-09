@@ -44,3 +44,9 @@ func IsHex(s string) bool {
 	var validHexPattern = regexp.MustCompile(`^[0-9a-fA-F]+$`)
 	return validHexPattern.MatchString(s)
 }
+
+// IsMap checks if the given interface is a map.
+func IsMap(m interface{}) bool {
+	_, ok := m.(map[string]interface{})
+	return ok
+}

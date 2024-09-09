@@ -300,3 +300,39 @@ func TestIsInt(t *testing.T) {
 		})
 	}
 }
+func TestIsMap(t *testing.T) {
+	tests := []struct {
+		name string
+		m    interface{}
+		want bool
+	}{
+		{
+			name: "Valid map",
+			m:    map[string]interface{}{"key": "value"},
+			want: true,
+		},
+		{
+			name: "Invalid map",
+			m:    "not a map",
+			want: false,
+		},
+		{
+			name: "Empty map",
+			m:    map[string]interface{}{},
+			want: true,
+		},
+		{
+			name: "Nil map",
+			m:    nil,
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsMap(tt.m); got != tt.want {
+				t.Errorf("IsMap(%v) = %v, want %v", tt.m, got, tt.want)
+			}
+		})
+	}
+}
