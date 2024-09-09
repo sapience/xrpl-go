@@ -2,7 +2,9 @@ package transactions
 
 import (
 	"encoding/json"
+	"errors"
 
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
@@ -120,6 +122,41 @@ func (t *TrustSet) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.LimitAmount = limit
+
+	return nil
+}
+
+// ValidateTrustSet validates the TrustSet transaction.
+func ValidateTrustSet(tx FlatTransaction) error {
+	err := ValidateBaseTransaction(tx)
+	if err != nil {
+		return err
+	}
+
+	// Check if the field LimitAmount is set
+	if _, ok := tx["LimitAmount"]; !ok {
+		return errors.New("TrustSet: missing field LimitAmount")
+	}
+
+	if !IsAmount(tx["LimitAmount"]) {
+		return errors.New("TrustSet: invalid LimitAmount")
+	}
+
+	// If QualityIn is defined
+	if _, ok := tx["QualityIn"]; ok {
+		// Check if QualityIn is a number
+		if !typecheck.IsUint(tx["QualityIn"]) {
+			return errors.New("TrustSet: QualityIn must be a number")
+		}
+	}
+
+	// If QualityOut is defined
+	if _, ok := tx["QualityOut"]; ok {
+		// Check if QualityOut is a number
+		if !typecheck.IsUint(tx["QualityOut"]) {
+			return errors.New("TrustSet: QualityOut must be a number")
+		}
+	}
 
 	return nil
 }
