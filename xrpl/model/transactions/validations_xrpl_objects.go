@@ -62,6 +62,7 @@ func IsAmount(amount interface{}) bool {
 	}
 
 	amt, ok := amount.(map[string]interface{})
+
 	if !ok {
 		return false
 	}
@@ -81,10 +82,13 @@ func IsIssuedCurrency(input interface{}) bool {
 		return false
 	}
 
-	return len(maputils.GetKeys(i)) == ISSUED_CURRENCY_SIZE &&
-		typecheck.IsString(i["value"]) &&
-		typecheck.IsString(i["issuer"]) &&
-		typecheck.IsString(i["currency"])
+	_, isValueString := i["value"].(string)
+	_, isIssuerString := i["issuer"].(string)
+	_, isCurrencyString := i["currency"].(string)
+
+	result := len(maputils.GetKeys(i)) == ISSUED_CURRENCY_SIZE && isValueString && isIssuerString && isCurrencyString
+
+	return result
 }
 
 // IsPathStep checks if the given map is a valid PathStep.

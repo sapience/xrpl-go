@@ -139,17 +139,17 @@ func (tx *TrustSet) Validate() (bool, error) {
 		return false, errors.New("trustSet: missing field LimitAmount")
 	}
 
-	if !IsAmount(tx.LimitAmount) {
+	if !IsAmount(tx.LimitAmount.Flatten()) {
 		return false, errors.New("trustSet: invalid LimitAmount")
 	}
 
 	// Check if QualityIn is a number
-	if tx.QualityIn != 0 && !typecheck.IsUint(tx.QualityIn) {
+	if tx.QualityIn != 0 && !typecheck.IsUint32(tx.QualityIn) {
 		return false, errors.New("trustSet: QualityIn must be a number")
 	}
 
 	// Check if QualityOut is a number
-	if tx.QualityOut != 0 && !typecheck.IsUint(tx.QualityOut) {
+	if tx.QualityOut != 0 && !typecheck.IsUint32(tx.QualityOut) {
 		return false, errors.New("trustSet: QualityOut must be a number")
 	}
 

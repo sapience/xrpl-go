@@ -109,7 +109,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["Account"] = tx.Account.String()
 	}
 	if tx.TransactionType != "" {
-		flattened["TransactionType"] = tx.TransactionType
+		flattened["TransactionType"] = tx.TransactionType.String()
 	}
 	if tx.Fee != 0 {
 		flattened["Fee"] = tx.Fee.String()
@@ -291,7 +291,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "Sequence", typecheck.IsInt)
+	err = ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
 	if err != nil {
 		return false, err
 	}
@@ -301,12 +301,12 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsInt)
+	err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsUint)
 	if err != nil {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsInt)
+	err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsUint)
 	if err != nil {
 		return false, err
 	}
@@ -316,7 +316,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsInt)
+	err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsUint)
 	if err != nil {
 		return false, err
 	}
@@ -326,7 +326,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsInt)
+	err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsUint)
 	if err != nil {
 		return false, err
 	}
