@@ -1,6 +1,9 @@
 package typecheck
 
-import "regexp"
+import (
+	"regexp"
+	"strconv"
+)
 
 // IsString checks if the given interface is a string.
 func IsString(str interface{}) bool {
@@ -43,4 +46,10 @@ func IsHex(s string) bool {
 	// Define a regular expression for a valid hexadecimal string
 	var validHexPattern = regexp.MustCompile(`^[0-9a-fA-F]+$`)
 	return validHexPattern.MatchString(s)
+}
+
+// Checks if the given string is a valid number.
+func IsFloat(s string) bool {
+	_, err := strconv.ParseFloat(s, 64)
+	return err == nil
 }
