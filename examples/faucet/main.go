@@ -5,8 +5,8 @@ import (
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl"
-	"github.com/Peersyst/xrpl-go/xrpl/client/websocket"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
+	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
 func main() {
