@@ -83,12 +83,12 @@ func ValidateClawback(tx FlatTransaction) error {
 
 	// check if the field Amount is set
 	if _, ok := tx["Amount"]; !ok {
-		return errors.New("Clawback: missing field Amount")
+		return errors.New("clawback: missing field Amount")
 	}
 
 	// check if the Amount is a valid currency amount
 	if !IsIssuedCurrency(tx["Amount"]) {
-		return errors.New("Clawback: invalid Amount")
+		return errors.New("clawback: invalid Amount")
 	}
 
 	// convert the Amount to a map
@@ -96,7 +96,7 @@ func ValidateClawback(tx FlatTransaction) error {
 
 	// check if Account is not the same as the issuer
 	if tx["Account"] == amount["Issuer"] {
-		return errors.New("Clawback: invalid holder Account")
+		return errors.New("clawback: invalid holder Account")
 	}
 
 	return nil
