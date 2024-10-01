@@ -135,18 +135,18 @@ func ValidateTrustSet(tx FlatTransaction) error {
 
 	// Check if the field LimitAmount is set
 	if _, ok := tx["LimitAmount"]; !ok {
-		return errors.New("TrustSet: missing field LimitAmount")
+		return errors.New("trustSet: missing field LimitAmount")
 	}
 
 	if !IsAmount(tx["LimitAmount"]) {
-		return errors.New("TrustSet: invalid LimitAmount")
+		return errors.New("trustSet: invalid LimitAmount")
 	}
 
 	// If QualityIn is defined
 	if _, ok := tx["QualityIn"]; ok {
 		// Check if QualityIn is a number
 		if !typecheck.IsUint(tx["QualityIn"]) {
-			return errors.New("TrustSet: QualityIn must be a number")
+			return errors.New("trustSet: QualityIn must be a number")
 		}
 	}
 
@@ -154,7 +154,7 @@ func ValidateTrustSet(tx FlatTransaction) error {
 	if _, ok := tx["QualityOut"]; ok {
 		// Check if QualityOut is a number
 		if !typecheck.IsUint(tx["QualityOut"]) {
-			return errors.New("TrustSet: QualityOut must be a number")
+			return errors.New("trustSet: QualityOut must be a number")
 		}
 	}
 
