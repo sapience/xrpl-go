@@ -265,14 +265,12 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 	return tx, nil
 }
 
-func ValidateTx(tx FlatTransaction) error {
-	var err error
-
+func (tx *BaseTx) Validate() (bool, error) {
 	// Check in the case it is an issued currency, that the currency is not XRP
-	err = CheckIssuedCurrencyIsNotXrp(tx)
+	err := CheckIssuedCurrencyIsNotXrp(tx.Flatten())
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	return nil
+	return true, nil
 }
