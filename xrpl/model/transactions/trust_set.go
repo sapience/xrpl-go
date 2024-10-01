@@ -142,8 +142,6 @@ func (tx *TrustSet) Validate() (bool, error) {
 		return false, errors.New("trustSet: invalid LimitAmount")
 	}
 
-	// Check if the field QualityIn is set
-
 	// Check if QualityIn is a number
 	if tx.QualityIn != 0 && !typecheck.IsUint(tx.QualityIn) {
 		return false, errors.New("trustSet: QualityIn must be a number")
