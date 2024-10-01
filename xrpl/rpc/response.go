@@ -40,6 +40,6 @@ func (r JsonRpcResponse) GetResult(v any) error {
 	return nil
 }
 
-type XRPLResponse interface {
+type JsonRpcXRPLResponse interface {
 	GetResult(v any) error
 }

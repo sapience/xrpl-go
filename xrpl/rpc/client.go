@@ -37,7 +37,7 @@ func NewJsonRpcClient(cfg *JsonRpcConfig) *JsonRpcClient {
 }
 
 // satisfy the Client interface
-func (c *JsonRpcClient) SendRequest(reqParams XRPLRequest) (XRPLResponse, error) {
+func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLResponse, error) {
 
 	err := reqParams.Validate()
 	if err != nil {
@@ -110,7 +110,7 @@ func (c *JsonRpcClient) SendRequest(reqParams XRPLRequest) (XRPLResponse, error)
 	return &jr, nil
 }
 
-func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (XRPLResponse, error) {
+func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (JsonRpcXRPLResponse, error) {
 	submitRequest := &requests.SubmitRequest{
 		TxBlob:   txBlob,
 		FailHard: failHard,
@@ -129,7 +129,7 @@ func (c *JsonRpcClient) Autofill(tx *transactions.FlatTransaction) error {
 
 // CreateRequest formats the parameters and method name ready for sending request
 // Params will have been serialised if required and added to request struct before being passed to this method
-func CreateRequest(reqParams XRPLRequest) ([]byte, error) {
+func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) {
 
 	var body JsonRpcRequest
 

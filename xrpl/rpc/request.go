@@ -5,7 +5,7 @@ type JsonRpcRequest struct {
 	Params [1]interface{} `json:"params,omitempty"`
 }
 
-type XRPLRequest interface {
+type JsonRpcXRPLRequest interface {
 	Method() string
 	Validate() error
 }
