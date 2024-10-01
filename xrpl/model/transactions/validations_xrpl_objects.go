@@ -81,11 +81,11 @@ func IsIssuedCurrency(input interface{}) bool {
 		return false
 	}
 
-	_, isValueString := i["value"].(string)
+	value, isValueString := i["value"].(string)
 	_, isIssuerString := i["issuer"].(string)
 	_, isCurrencyString := i["currency"].(string)
 
-	result := len(maputils.GetKeys(i)) == ISSUED_CURRENCY_SIZE && isValueString && isIssuerString && isCurrencyString
+	result := len(maputils.GetKeys(i)) == ISSUED_CURRENCY_SIZE && isValueString && isIssuerString && isCurrencyString && typecheck.IsFloat(value)
 
 	return result
 }

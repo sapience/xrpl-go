@@ -89,3 +89,90 @@ func TestClawbackFlatten(t *testing.T) {
 		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
 	}
 }
+func TestClawbackValidate(t *testing.T) {
+	// Valid Clawback transaction
+	validClawback := Clawback{
+		BaseTx: BaseTx{
+			Account:         "abcdef",
+			TransactionType: ClawbackTx,
+			Fee:             types.XRPCurrencyAmount(1),
+			Sequence:        1234,
+			SigningPubKey:   "ghijk",
+			TxnSignature:    "A1B2C3D4E5F6",
+		},
+		Amount: types.IssuedCurrencyAmount{
+			Issuer:   "def",
+			Currency: "USD",
+			Value:    "1",
+		},
+	}
+
+	valid, err := validClawback.Validate()
+	if err != nil {
+		t.Errorf("Validation failed for valid Clawback transaction: %s", err.Error())
+	}
+	if !valid {
+		t.Error("Validation should pass for valid Clawback transaction")
+	}
+
+	// Clawback transaction with missing Amount field
+	missingAmount := Clawback{
+		BaseTx: BaseTx{
+			Account:         "abcdef",
+			TransactionType: ClawbackTx,
+			Fee:             types.XRPCurrencyAmount(1),
+			Sequence:        1234,
+			SigningPubKey:   "ghijk",
+			TxnSignature:    "A1B2C3D4E5F6",
+		},
+	}
+
+	valid, err = missingAmount.Validate()
+	if err == nil || valid {
+		t.Error("Validation should fail for Clawback transaction with missing Amount field")
+	}
+
+	// Clawback transaction with invalid Amount
+	invalidAmount := Clawback{
+		BaseTx: BaseTx{
+			Account:         "abcdef",
+			TransactionType: ClawbackTx,
+			Fee:             types.XRPCurrencyAmount(1),
+			Sequence:        1234,
+			SigningPubKey:   "ghijk",
+			TxnSignature:    "A1B2C3D4E5F6",
+		},
+		Amount: types.IssuedCurrencyAmount{
+			Issuer:   "def",
+			Currency: "USD",
+			Value:    "invalid",
+		},
+	}
+
+	valid, err = invalidAmount.Validate()
+	if err == nil || valid {
+		t.Error("Validation should fail for Clawback transaction with invalid Amount")
+	}
+
+	// Clawback transaction with Account same as the issuer
+	invalidAccount := Clawback{
+		BaseTx: BaseTx{
+			Account:         "abcdef",
+			TransactionType: ClawbackTx,
+			Fee:             types.XRPCurrencyAmount(1),
+			Sequence:        1234,
+			SigningPubKey:   "ghijk",
+			TxnSignature:    "A1B2C3D4E5F6",
+		},
+		Amount: types.IssuedCurrencyAmount{
+			Issuer:   "abcdef",
+			Currency: "USD",
+			Value:    "1",
+		},
+	}
+
+	valid, err = invalidAccount.Validate()
+	if err == nil || valid {
+		t.Error("Validation should fail for Clawback transaction with Account same as the issuer")
+	}
+}
