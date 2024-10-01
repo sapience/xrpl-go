@@ -336,47 +336,47 @@ func (s *AccountSet) Validate() (bool, error) {
 
 	// check ClearFlag is defined
 	if !typecheck.IsUint(s.ClearFlag) {
-		return false, errors.New("AccountSet: ClearFlag must be a number")
+		return false, errors.New("accountSet: ClearFlag must be a number")
 	}
 
 	// check Domain is defined and a string
 	if !typecheck.IsString(s.Domain) {
-		return false, errors.New("AccountSet: Domain must be a string")
+		return false, errors.New("accountSet: Domain must be a string")
 	}
 
 	// check EmailHash is defined and a hash128/string
 	if !typecheck.IsString(s.EmailHash) {
-		return false, errors.New("AccountSet: EmailHash must be a Hash128")
+		return false, errors.New("accountSet: EmailHash must be a Hash128")
 	}
 
 	// check MessageKey is defined and a string
 	if !typecheck.IsString(s.MessageKey) {
-		return false, errors.New("AccountSet: MessageKey must be a string")
+		return false, errors.New("accountSet: MessageKey must be a string")
 	}
 
 	// check SetFlag is defined and a number
 	if !typecheck.IsUint(s.SetFlag) {
-		return false, errors.New("AccountSet: SetFlag must be a number")
+		return false, errors.New("accountSet: SetFlag must be a number")
 	}
 
 	// check if SetFlag is within the valid range
 	if s.SetFlag < asfRequireDest || s.SetFlag > asfAllowTrustLineClawback {
-		return false, errors.New("AccountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+		return false, errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
 	}
 
 	// check TransferRate is defined and a number
 	if !typecheck.IsUint(s.TransferRate) {
-		return false, errors.New("AccountSet: TransferRate must be a number")
+		return false, errors.New("accountSet: TransferRate must be a number")
 	}
 
 	// check TickSize is defined and a number
 	if !typecheck.IsUint(s.TickSize) {
-		return false, errors.New("AccountSet: TickSize must be a number")
+		return false, errors.New("accountSet: TickSize must be a number")
 	}
 
 	// check if TickSize is within the valid range
 	if s.TickSize < MIN_TICK_SIZE || s.TickSize > MAX_TICK_SIZE {
-		return false, errors.New("AccountSet: TickSize must be between 3 and 15")
+		return false, errors.New("accountSet: TickSize must be between 3 and 15")
 	}
 
 	return true, nil
