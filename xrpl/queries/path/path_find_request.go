@@ -16,11 +16,11 @@ const (
 )
 
 type PathFindRequest struct {
-	Subcommand         PathSubCommand          `json:"subcommand"`
-	SourceAccount      types.Address           `json:"source_account,omitempty"`
-	DestinationAccount types.Address           `json:"destination_account,omitempty"`
-	DestinationAmount  types.CurrencyAmount    `json:"destination_amount,omitempty"`
-	SendMax            types.CurrencyAmount    `json:"send_max,omitempty"`
+	Subcommand         PathSubCommand         `json:"subcommand"`
+	SourceAccount      types.Address          `json:"source_account,omitempty"`
+	DestinationAccount types.Address          `json:"destination_account,omitempty"`
+	DestinationAmount  types.CurrencyAmount   `json:"destination_amount,omitempty"`
+	SendMax            types.CurrencyAmount   `json:"send_max,omitempty"`
 	Paths              []transaction.PathStep `json:"paths,omitempty"`
 }
 
@@ -30,11 +30,11 @@ func (*PathFindRequest) Method() string {
 
 func (r *PathFindRequest) UnmarshalJSON(data []byte) error {
 	type pfrHelper struct {
-		Subcommand         PathSubCommand          `json:"subcommand"`
-		SourceAccount      types.Address           `json:"source_account,omitempty"`
-		DestinationAccount types.Address           `json:"destination_account,omitempty"`
-		DestinationAmount  json.RawMessage         `json:"destination_amount,omitempty"`
-		SendMax            json.RawMessage         `json:"send_max,omitempty"`
+		Subcommand         PathSubCommand         `json:"subcommand"`
+		SourceAccount      types.Address          `json:"source_account,omitempty"`
+		DestinationAccount types.Address          `json:"destination_account,omitempty"`
+		DestinationAmount  json.RawMessage        `json:"destination_amount,omitempty"`
+		SendMax            json.RawMessage        `json:"send_max,omitempty"`
 		Paths              []transaction.PathStep `json:"paths,omitempty"`
 	}
 	var h pfrHelper

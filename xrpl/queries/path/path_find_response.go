@@ -51,15 +51,15 @@ func (r *PathFindResponse) UnmarshalJSON(data []byte) error {
 
 type PathAlternative struct {
 	PathsComputed     [][]transaction.PathStep `json:"paths_computed"`
-	SourceAmount      types.CurrencyAmount      `json:"source_amount"`
-	DestinationAmount types.CurrencyAmount      `json:"destination_amount,omitempty"`
+	SourceAmount      types.CurrencyAmount     `json:"source_amount"`
+	DestinationAmount types.CurrencyAmount     `json:"destination_amount,omitempty"`
 }
 
 func (p *PathAlternative) UnmarshalJSON(data []byte) error {
 	type paHelper struct {
 		PathsComputed     [][]transaction.PathStep `json:"paths_computed"`
-		SourceAmount      json.RawMessage           `json:"source_amount"`
-		DestinationAmount json.RawMessage           `json:"destination_amount,omitempty"`
+		SourceAmount      json.RawMessage          `json:"source_amount"`
+		DestinationAmount json.RawMessage          `json:"destination_amount,omitempty"`
 	}
 	var h paHelper
 	if err := json.Unmarshal(data, &h); err != nil {
