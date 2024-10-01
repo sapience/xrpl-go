@@ -1,6 +1,6 @@
 package websocket
 
-type XRPLRequest interface {
+type WebsocketXRPLRequest interface {
 	Method() string
 	Validate() error
 }

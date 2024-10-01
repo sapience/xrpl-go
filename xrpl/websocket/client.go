@@ -100,7 +100,7 @@ func (c *WebsocketClient) FundWallet(wallet *xrpl.Wallet) error {
 	return nil
 }
 
-func (c *WebsocketClient) sendRequest(req XRPLRequest) (XRPLResponse, error) {
+func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLResponse, error) {
 	err := req.Validate()
 	if err != nil {
 		return nil, err

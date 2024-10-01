@@ -13,8 +13,8 @@ import (
 func TestSendRequest(t *testing.T) {
 	tt := []struct {
 		description    string
-		req            XRPLRequest
-		res            XRPLResponse
+		req            WebsocketXRPLRequest
+		res            WebsocketXRPLResponse
 		expectedErr    error
 		serverMessages []map[string]any
 	}{

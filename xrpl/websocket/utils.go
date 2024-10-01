@@ -15,7 +15,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func (c *WebsocketClient) formatRequest(req XRPLRequest, id int, marker any) ([]byte, error) {
+func (c *WebsocketClient) formatRequest(req WebsocketXRPLRequest, id int, marker any) ([]byte, error) {
 	m := make(map[string]any)
 	m["id"] = id
 	m["command"] = req.Method()

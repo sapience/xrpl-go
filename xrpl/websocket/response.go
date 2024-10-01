@@ -6,7 +6,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type XRPLResponse interface {
+type WebsocketXRPLResponse interface {
 	GetResult(v any) error
 }
 

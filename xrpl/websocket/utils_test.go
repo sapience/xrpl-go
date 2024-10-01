@@ -19,7 +19,7 @@ func TestWebsocketClient_formatRequest(t *testing.T) {
 	ws := &WebsocketClient{}
 	tt := []struct {
 		description string
-		req         XRPLRequest
+		req         WebsocketXRPLRequest
 		id          int
 		marker      any
 		expected    string
