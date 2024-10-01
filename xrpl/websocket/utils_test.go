@@ -102,7 +102,7 @@ func TestWebsocketClient_convertTransactionAddressToClassicAddress(t *testing.T)
 				"Amount": "1000000",
 			},
 			fieldName: "Destination",
-				expected: transaction.FlatTransaction{
+			expected: transaction.FlatTransaction{
 				"Amount": "1000000",
 			},
 		},
