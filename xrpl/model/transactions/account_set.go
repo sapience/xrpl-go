@@ -320,6 +320,9 @@ func (s *AccountSet) ClearAsfAllowTrustLineClawback() {
 	s.ClearFlag = asfAllowTrustLineClawback
 }
 
+// Tick size to use for offers involving a currency issued by this address.
+// The exchange rates of those offers is rounded to this many significant digits.
+// Valid values are 3 to 15 inclusive, or 0 to disable.
 const MIN_TICK_SIZE = 3
 const MAX_TICK_SIZE = 15
 
