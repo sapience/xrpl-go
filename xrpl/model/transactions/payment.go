@@ -189,6 +189,7 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 func (tx *Payment) Validate() error {
 	flattenTx := tx.Flatten()
 
+	// Validate the base transaction
 	_, err := tx.BaseTx.Validate()
 	if err != nil {
 		return err

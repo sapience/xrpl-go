@@ -128,6 +128,7 @@ func (t *TrustSet) UnmarshalJSON(data []byte) error {
 
 // Validates the TrustSet transaction.
 func (tx *TrustSet) Validate() (bool, error) {
+	// Validate the base transaction
 	_, err := tx.BaseTx.Validate()
 	if err != nil {
 		return false, err

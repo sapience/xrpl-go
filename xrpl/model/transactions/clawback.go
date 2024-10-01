@@ -76,7 +76,7 @@ func (c *Clawback) UnmarshalJSON(data []byte) error {
 
 func (c *Clawback) Validate() error {
 	// validate the base transaction
-	err := ValidateBaseTransaction(c.BaseTx.Flatten())
+	_, err := c.BaseTx.Validate()
 	if err != nil {
 		return err
 	}

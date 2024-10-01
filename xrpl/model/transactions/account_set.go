@@ -329,10 +329,10 @@ const MAX_TICK_SIZE = 15
 // Validate the AccountSet transaction fields.
 func (s *AccountSet) Validate() (bool, error) {
 	// validate the base transaction
-	// err := s.BaseTx.Validate()
-	// if err != nil {
-	// 	return err
-	// }
+	_, err := s.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
 
 	// check ClearFlag is defined
 	if !typecheck.IsUint(s.ClearFlag) {
