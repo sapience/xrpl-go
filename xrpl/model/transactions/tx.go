@@ -267,13 +267,13 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 }
 
 func (tx *BaseTx) Validate() (bool, error) {
+	flattenTx := tx.Flatten()
+
 	// Check in the case it is an issued currency, that the currency is not XRP
-	err := CheckIssuedCurrencyIsNotXrp(tx.Flatten())
+	err := CheckIssuedCurrencyIsNotXrp(flattenTx)
 	if err != nil {
 		return false, err
 	}
-
-	flattenTx := tx.Flatten()
 
 	err = ValidateRequiredField(flattenTx, "TransactionType", typecheck.IsString)
 	if err != nil {
