@@ -1,16 +1,21 @@
-package jsonrpcmodels
+package rpc
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/mitchellh/mapstructure"
 )
 
 type JsonRpcResponse struct {
-	Result    AnyJson                      `json:"result"`
-	Warning   string                       `json:"warning,omitempty"`
-	Warnings  []client.XRPLResponseWarning `json:"warnings,omitempty"`
-	Forwarded bool                         `json:"forwarded,omitempty"`
+	Result    AnyJson               `json:"result"`
+	Warning   string                `json:"warning,omitempty"`
+	Warnings  []XRPLResponseWarning `json:"warnings,omitempty"`
+	Forwarded bool                  `json:"forwarded,omitempty"`
+}
+
+type XRPLResponseWarning struct {
+	Id      int    `json:"id"`
+	Message string `json:"message"`
+	Details any    `json:"details,omitempty"`
 }
 
 type AnyJson transactions.FlatTransaction
@@ -33,4 +38,8 @@ func (r JsonRpcResponse) GetResult(v any) error {
 		return err
 	}
 	return nil
+}
+
+type XRPLResponse interface {
+	GetResult(v any) error
 }

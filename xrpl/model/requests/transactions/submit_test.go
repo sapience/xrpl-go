@@ -3,7 +3,7 @@ package transactions
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/test"
 )
 
 func TestSubmitRequest(t *testing.T) {

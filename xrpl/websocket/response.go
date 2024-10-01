@@ -3,11 +3,18 @@ package websocket
 import (
 	"fmt"
 
-	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/mitchellh/mapstructure"
 )
 
-var _ client.XRPLResponse = (*WebSocketClientXrplResponse)(nil)
+type XRPLResponse interface {
+	GetResult(v any) error
+}
+
+type XRPLResponseWarning struct {
+	Id      int    `json:"id"`
+	Message string `json:"message"`
+	Details any    `json:"details,omitempty"`
+}
 
 type ErrorWebsocketClientXrplResponse struct {
 	Type    string
@@ -19,15 +26,15 @@ func (e *ErrorWebsocketClientXrplResponse) Error() string {
 }
 
 type WebSocketClientXrplResponse struct {
-	ID        int                          `json:"id"`
-	Status    string                       `json:"status"`
-	Type      string                       `json:"type"`
-	Error     string                       `json:"error,omitempty"`
-	Result    map[string]any               `json:"result,omitempty"`
-	Value     map[string]any               `json:"value,omitempty"`
-	Warning   string                       `json:"warning,omitempty"`
-	Warnings  []client.XRPLResponseWarning `json:"warnings,omitempty"`
-	Forwarded bool                         `json:"forwarded,omitempty"`
+	ID        int                   `json:"id"`
+	Status    string                `json:"status"`
+	Type      string                `json:"type"`
+	Error     string                `json:"error,omitempty"`
+	Result    map[string]any        `json:"result,omitempty"`
+	Value     map[string]any        `json:"value,omitempty"`
+	Warning   string                `json:"warning,omitempty"`
+	Warnings  []XRPLResponseWarning `json:"warnings,omitempty"`
+	Forwarded bool                  `json:"forwarded,omitempty"`
 }
 
 func (r *WebSocketClientXrplResponse) GetResult(v any) error {
