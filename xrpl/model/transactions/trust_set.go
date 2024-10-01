@@ -126,37 +126,33 @@ func (t *TrustSet) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ValidateTrustSet validates the TrustSet transaction.
-func ValidateTrustSet(tx FlatTransaction) error {
-	err := ValidateBaseTransaction(tx)
+// Validates the TrustSet transaction.
+func (tx *TrustSet) Validate() (bool, error) {
+	err := ValidateBaseTransaction(tx.BaseTx.Flatten())
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Check if the field LimitAmount is set
-	if _, ok := tx["LimitAmount"]; !ok {
-		return errors.New("trustSet: missing field LimitAmount")
+	if tx.LimitAmount == nil {
+		return false, errors.New("trustSet: missing field LimitAmount")
 	}
 
-	if !IsAmount(tx["LimitAmount"]) {
-		return errors.New("trustSet: invalid LimitAmount")
+	if !IsAmount(tx.LimitAmount) {
+		return false, errors.New("trustSet: invalid LimitAmount")
 	}
 
-	// If QualityIn is defined
-	if _, ok := tx["QualityIn"]; ok {
-		// Check if QualityIn is a number
-		if !typecheck.IsUint(tx["QualityIn"]) {
-			return errors.New("trustSet: QualityIn must be a number")
-		}
+	// Check if the field QualityIn is set
+
+	// Check if QualityIn is a number
+	if tx.QualityIn != 0 && !typecheck.IsUint(tx.QualityIn) {
+		return false, errors.New("trustSet: QualityIn must be a number")
 	}
 
-	// If QualityOut is defined
-	if _, ok := tx["QualityOut"]; ok {
-		// Check if QualityOut is a number
-		if !typecheck.IsUint(tx["QualityOut"]) {
-			return errors.New("trustSet: QualityOut must be a number")
-		}
+	// Check if QualityOut is a number
+	if tx.QualityOut != 0 && !typecheck.IsUint(tx.QualityOut) {
+		return false, errors.New("trustSet: QualityOut must be a number")
 	}
 
-	return nil
+	return true, nil
 }
