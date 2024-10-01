@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
@@ -268,6 +269,76 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 func (tx *BaseTx) Validate() (bool, error) {
 	// Check in the case it is an issued currency, that the currency is not XRP
 	err := CheckIssuedCurrencyIsNotXrp(tx.Flatten())
+	if err != nil {
+		return false, err
+	}
+
+	flattenTx := tx.Flatten()
+
+	err = ValidateRequiredField(flattenTx, "TransactionType", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateRequiredField(flattenTx, "Account", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	// optional fields
+	err = ValidateOptionalField(flattenTx, "Fee", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "Sequence", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "AccountTxnID", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "SigningPubKey", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "TxnSignature", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	// memos
+	err = validateMemos(flattenTx)
+	if err != nil {
+		return false, err
+	}
+
+	// signers
+	err = validateSigners(flattenTx)
 	if err != nil {
 		return false, err
 	}
