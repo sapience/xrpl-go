@@ -1,4 +1,4 @@
-package jsonrpcclient
+package rpc
 
 import (
 	"bytes"
@@ -9,11 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Peersyst/xrpl-go/xrpl/client"
-	jsonrpcmodels "github.com/Peersyst/xrpl-go/xrpl/client/jsonrpc/models"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/utility"
+	"github.com/Peersyst/xrpl-go/xrpl/rpc/testutil"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,7 +21,7 @@ func TestJsonRpcClientCreation(t *testing.T) {
 
 	t.Run("Set config with valid port + ip", func(t *testing.T) {
 
-		cfg, _ := client.NewJsonRpcConfig("url")
+		cfg, _ := NewJsonRpcConfig("url")
 
 		jsonRpcClient := NewJsonRpcClient(cfg)
 
@@ -121,7 +120,7 @@ func TestCreateRequest(t *testing.T) {
 			LedgerIndex:        common.VALIDATED,
 		}
 
-		expetedBody := jsonrpcmodels.JsonRpcRequest{
+		expetedBody := JsonRpcRequest{
 			Method: "account_channels",
 			Params: [1]interface{}{req},
 		}
@@ -139,7 +138,7 @@ func TestCreateRequest(t *testing.T) {
 
 		var req *utility.PingRequest // params sent in as zero value struct
 
-		expetedBody := jsonrpcmodels.JsonRpcRequest{
+		expetedBody := JsonRpcRequest{
 			Method: "ping",
 		}
 		expectedRequestBytes, _ := jsoniter.Marshal(expetedBody)
@@ -157,7 +156,7 @@ func TestCreateRequest(t *testing.T) {
 
 		req := &utility.PingRequest{} // means params get set an empty object
 
-		expetedBody := jsonrpcmodels.JsonRpcRequest{
+		expetedBody := JsonRpcRequest{
 			Method: "ping",
 		}
 		expectedRequestBytes, _ := jsoniter.Marshal(expetedBody)
@@ -181,13 +180,13 @@ func TestSendRequest(t *testing.T) {
 		}
 		var capturedRequest *http.Request
 
-		mc := &mockClient{}
+		mc := &testutil.JsonRpcMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			capturedRequest = req
-			return mockResponse(`{}`, 200, mc)(req)
+			return testutil.MockResponse(`{}`, 200, mc)(req)
 		}
 
-		cfg, err := client.NewJsonRpcConfig("http://testnode/", client.WithHttpClient(mc))
+		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
 		assert.NoError(t, err)
 
 		jsonRpcClient := NewJsonRpcClient(cfg)
@@ -236,18 +235,18 @@ func TestSendRequest(t *testing.T) {
 			}]
 		  }`
 
-		mc := &mockClient{}
-		mc.DoFunc = mockResponse(response, 200, mc)
+		mc := &testutil.JsonRpcMockClient{}
+		mc.DoFunc = testutil.MockResponse(response, 200, mc)
 
-		cfg, err := client.NewJsonRpcConfig("http://testnode/", client.WithHttpClient(mc))
+		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
 		assert.NoError(t, err)
 
 		jsonRpcClient := NewJsonRpcClient(cfg)
 
 		xrplResponse, err := jsonRpcClient.SendRequest(req)
 
-		expectedXrplResponse := &jsonrpcmodels.JsonRpcResponse{
-			Result: jsonrpcmodels.AnyJson{
+		expectedXrplResponse := &JsonRpcResponse{
+			Result: AnyJson{
 				"account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				"channels": []any{
 					map[string]any{
@@ -266,7 +265,7 @@ func TestSendRequest(t *testing.T) {
 				"validated":    true,
 			},
 			Warning: "none",
-			Warnings: []client.XRPLResponseWarning{{
+			Warnings: []XRPLResponseWarning{{
 				Id:      1,
 				Message: "message",
 			},
@@ -309,10 +308,10 @@ func TestSendRequest(t *testing.T) {
 			}
 		}`
 
-		mc := &mockClient{}
-		mc.DoFunc = mockResponse(response, 200, mc)
+		mc := &testutil.JsonRpcMockClient{}
+		mc.DoFunc = testutil.MockResponse(response, 200, mc)
 
-		cfg, err := client.NewJsonRpcConfig("http://testnode/", client.WithHttpClient(mc))
+		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
 		assert.NoError(t, err)
 
 		jsonRpcClient := NewJsonRpcClient(cfg)
@@ -329,13 +328,13 @@ func TestSendRequest(t *testing.T) {
 		}
 		response := `Service Unavailable`
 
-		mc := &mockClient{}
+		mc := &testutil.JsonRpcMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			mc.RequestCount++
-			return mockResponse(response, 503, mc)(req)
+			return testutil.MockResponse(response, 503, mc)(req)
 		}
 
-		cfg, err := client.NewJsonRpcConfig("http://testnode/", client.WithHttpClient(mc))
+		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
 		assert.NoError(t, err)
 
 		jsonRpcClient := NewJsonRpcClient(cfg)
@@ -361,18 +360,18 @@ func TestSendRequest(t *testing.T) {
 				}
 			}`
 
-		mc := &mockClient{}
+		mc := &testutil.JsonRpcMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			if mc.RequestCount < 3 {
 				// Return 503 response for the first three requests
 				mc.RequestCount++
-				return mockResponse(`Service Unavailable`, 503, mc)(req)
+				return testutil.MockResponse(`Service Unavailable`, 503, mc)(req)
 			}
 			// Return 200 response for the fourth request
-			return mockResponse(sucessResponse, 200, mc)(req)
+			return testutil.MockResponse(sucessResponse, 200, mc)(req)
 		}
 
-		cfg, err := client.NewJsonRpcConfig("http://testnode/", client.WithHttpClient(mc))
+		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
 		assert.NoError(t, err)
 
 		jsonRpcClient := NewJsonRpcClient(cfg)
@@ -402,14 +401,14 @@ func TestSendRequest(t *testing.T) {
 			Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		}
 
-		mc := &mockClient{}
+		mc := &testutil.JsonRpcMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			// hit the timeout by not responding
 			time.Sleep(time.Second * 5)
 			return nil, errors.New("timeout")
 		}
 
-		cfg, err := client.NewJsonRpcConfig("http://testnode/", client.WithHttpClient(mc))
+		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
 		assert.NoError(t, err)
 
 		jsonRpcClient := NewJsonRpcClient(cfg)

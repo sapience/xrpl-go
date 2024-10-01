@@ -1,11 +1,10 @@
-package jsonrpcmodels
+package rpc
 
 import (
 	"encoding/json"
 	"strconv"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +19,7 @@ func TestGetResult(t *testing.T) {
 				"ledger_index": json.Number(strconv.FormatInt(71766343, 10)),
 			},
 			Warning: "none",
-			Warnings: []client.XRPLResponseWarning{{
+			Warnings: []XRPLResponseWarning{{
 				Id:      1,
 				Message: "message",
 			},
@@ -48,7 +47,7 @@ func TestGetResult(t *testing.T) {
 				"ledger_index": json.Number(strconv.FormatInt(71766343, 10)),
 			},
 			Warning: "none",
-			Warnings: []client.XRPLResponseWarning{{
+			Warnings: []XRPLResponseWarning{{
 				Id:      1,
 				Message: "message",
 			},

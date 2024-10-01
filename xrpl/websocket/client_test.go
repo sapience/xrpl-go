@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/test"
 	"github.com/gorilla/websocket"
@@ -14,8 +13,8 @@ import (
 func TestSendRequest(t *testing.T) {
 	tt := []struct {
 		description    string
-		req            client.XRPLRequest
-		res            client.XRPLResponse
+		req            WebsocketXRPLRequest
+		res            WebsocketXRPLResponse
 		expectedErr    error
 		serverMessages []map[string]any
 	}{
@@ -181,7 +180,7 @@ func TestSendRequest(t *testing.T) {
 				host: url,
 			}}
 
-			res, err := cl.SendRequest(tc.req)
+			res, err := cl.sendRequest(tc.req)
 
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
