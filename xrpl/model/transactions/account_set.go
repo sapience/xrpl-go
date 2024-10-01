@@ -327,72 +327,57 @@ const MIN_TICK_SIZE = 3
 const MAX_TICK_SIZE = 15
 
 // Validate the AccountSet transaction fields.
-func ValidateAccountSet(tx FlatTransaction) error {
+func (s *AccountSet) Validate() (bool, error) {
 	// validate the base transaction
-	err := ValidateBaseTransaction(tx)
-	if err != nil {
-		return err
-	}
+	// err := s.BaseTx.Validate()
+	// if err != nil {
+	// 	return err
+	// }
 
 	// check ClearFlag is defined
-	if _, ok := tx["ClearFlag"]; ok {
-		// check if ClearFlag is a number
-		if !typecheck.IsUint(tx["ClearFlag"]) {
-			return errors.New("AccountSet: ClearFlag must be a number")
-		}
+	if !typecheck.IsUint(s.ClearFlag) {
+		return false, errors.New("AccountSet: ClearFlag must be a number")
 	}
 
 	// check Domain is defined and a string
-	if _, ok := tx["Domain"]; ok {
-		if !typecheck.IsString(tx["Domain"]) {
-			return errors.New("AccountSet: Domain must be a string")
-		}
+	if !typecheck.IsString(s.Domain) {
+		return false, errors.New("AccountSet: Domain must be a string")
 	}
 
 	// check EmailHash is defined and a hash128/string
-	if _, ok := tx["EmailHash"]; ok {
-		if !typecheck.IsString(tx["EmailHash"]) {
-			return errors.New("AccountSet: EmailHash must be a Hash128")
-		}
+	if !typecheck.IsString(s.EmailHash) {
+		return false, errors.New("AccountSet: EmailHash must be a Hash128")
 	}
 
 	// check MessageKey is defined and a string
-	if _, ok := tx["MessageKey"]; ok {
-		if !typecheck.IsString(tx["MessageKey"]) {
-			return errors.New("AccountSet: MessageKey must be a string")
-		}
+	if !typecheck.IsString(s.MessageKey) {
+		return false, errors.New("AccountSet: MessageKey must be a string")
 	}
 
 	// check SetFlag is defined and a number
-	if _, ok := tx["SetFlag"]; ok {
-		if !typecheck.IsUint(tx["SetFlag"]) {
-			return errors.New("AccountSet: SetFlag must be a number")
-		}
+	if !typecheck.IsUint(s.SetFlag) {
+		return false, errors.New("AccountSet: SetFlag must be a number")
+	}
 
-		// check if SetFlag is within the valid range
-		if tx["SetFlag"].(uint) < asfRequireDest || tx["SetFlag"].(uint) > asfAllowTrustLineClawback {
-			return errors.New("AccountSet: SetFlag must be between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
-		}
+	// check if SetFlag is within the valid range
+	if s.SetFlag < asfRequireDest || s.SetFlag > asfAllowTrustLineClawback {
+		return false, errors.New("AccountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
 	}
 
 	// check TransferRate is defined and a number
-	if _, ok := tx["TransferRate"]; ok {
-		if !typecheck.IsUint(tx["TransferRate"]) {
-			return errors.New("AccountSet: TransferRate must be a number")
-		}
+	if !typecheck.IsUint(s.TransferRate) {
+		return false, errors.New("AccountSet: TransferRate must be a number")
 	}
 
 	// check TickSize is defined and a number
-	if _, ok := tx["TickSize"]; ok {
-		if !typecheck.IsUint(tx["TickSize"]) {
-			return errors.New("AccountSet: TickSize must be a number")
-		}
-
-		// check if TickSize is within the valid range and different from 0
-		if tx["TickSize"].(uint) != 0 && (tx["TickSize"].(uint) < MIN_TICK_SIZE || tx["TickSize"].(uint) > MAX_TICK_SIZE) {
-			return errors.New("AccountSet: TickSize must be between 3 and 15")
-		}
+	if !typecheck.IsUint(s.TickSize) {
+		return false, errors.New("AccountSet: TickSize must be a number")
 	}
 
-	return nil
+	// check if TickSize is within the valid range
+	if s.TickSize < MIN_TICK_SIZE || s.TickSize > MAX_TICK_SIZE {
+		return false, errors.New("AccountSet: TickSize must be between 3 and 15")
+	}
+
+	return true, nil
 }

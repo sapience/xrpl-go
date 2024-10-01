@@ -274,31 +274,5 @@ func ValidateTx(tx FlatTransaction) error {
 		return err
 	}
 
-	// Validate transaction fields
-	switch tx["TransactionType"] {
-	case "AccountSet":
-		err = ValidateAccountSet(tx)
-		if err != nil {
-			return err
-		}
-	case "Clawback":
-		err = ValidateClawback(tx)
-		if err != nil {
-			return err
-		}
-	case "Payment":
-		err = ValidatePayment(tx)
-		if err != nil {
-			return err
-		}
-	case "TrustSet":
-		err = ValidateTrustSet(tx)
-		if err != nil {
-			return err
-		}
-	default:
-		return (fmt.Errorf("unsupported transaction type %s", tx["TransactionType"]))
-	}
-
 	return nil
 }
