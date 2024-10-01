@@ -1,6 +1,6 @@
 package rpc
 
-import "github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
+import "github.com/Peersyst/xrpl-go/xrpl/queries/account"
 
 func (r *JsonRpcClient) GetAccountChannels(req *account.AccountChannelsRequest) (*account.AccountChannelsResponse, error) {
 	res, err := r.SendRequest(req)

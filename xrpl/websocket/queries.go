@@ -1,12 +1,12 @@
 package websocket
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/ledger"
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/server"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
-	"github.com/Peersyst/xrpl-go/xrpl/utils"
+	"github.com/Peersyst/xrpl-go/xrpl/currency"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/ledger"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 // GetAccountInfo retrieves information about an account on the XRP Ledger.
@@ -51,7 +51,7 @@ func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
 		return "", err
 	}
 
-	xrpBalance, err := utils.DropsToXrp(res.AccountData.Balance.String())
+	xrpBalance, err := currency.DropsToXrp(res.AccountData.Balance.String())
 	if err != nil {
 		return "", err
 	}

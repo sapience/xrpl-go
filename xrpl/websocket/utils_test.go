@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/require"
 )
@@ -82,27 +82,27 @@ func TestWebsocketClient_convertTransactionAddressToClassicAddress(t *testing.T)
 	ws := &WebsocketClient{}
 	tests := []struct {
 		name      string
-		tx        transactions.FlatTransaction
+		tx        transaction.FlatTransaction
 		fieldName string
-		expected  transactions.FlatTransaction
+		expected  transaction.FlatTransaction
 	}{
 		{
 			name: "No conversion for classic address",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Destination": "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 			},
 			fieldName: "Destination",
-			expected: transactions.FlatTransaction{
+			expected: transaction.FlatTransaction{
 				"Destination": "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 			},
 		},
 		{
 			name: "Field not present in transaction",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Amount": "1000000",
 			},
 			fieldName: "Destination",
-			expected: transactions.FlatTransaction{
+				expected: transaction.FlatTransaction{
 				"Amount": "1000000",
 			},
 		},
@@ -122,33 +122,33 @@ func TestWebsocketClient_validateTransactionAddress(t *testing.T) {
 	ws := &WebsocketClient{}
 	tests := []struct {
 		name         string
-		tx           transactions.FlatTransaction
+		tx           transaction.FlatTransaction
 		addressField string
 		tagField     string
-		expected     transactions.FlatTransaction
+		expected     transaction.FlatTransaction
 		expectedErr  error
 	}{
 		{
 			name: "Valid classic address without tag",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Account": "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 			},
 			addressField: "Account",
 			tagField:     "SourceTag",
-			expected: transactions.FlatTransaction{
+			expected: transaction.FlatTransaction{
 				"Account": "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 			},
 			expectedErr: nil,
 		},
 		{
 			name: "Valid classic address with tag",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Destination":    "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"DestinationTag": uint32(12345),
 			},
 			addressField: "Destination",
 			tagField:     "DestinationTag",
-			expected: transactions.FlatTransaction{
+			expected: transaction.FlatTransaction{
 				"Destination":    "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"DestinationTag": uint32(12345),
 			},
@@ -178,17 +178,17 @@ func TestWebsocketClient_validateTransactionAddress(t *testing.T) {
 func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
 	tests := []struct {
 		name        string
-		tx          transactions.FlatTransaction
-		expected    transactions.FlatTransaction
+		tx          transaction.FlatTransaction
+		expected    transaction.FlatTransaction
 		expectedErr error
 	}{
 		{
 			name: "Valid transaction with classic addresses",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Account":     "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
 			},
-			expected: transactions.FlatTransaction{
+			expected: transaction.FlatTransaction{
 				"Account":     "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
 			},
@@ -196,13 +196,13 @@ func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
 		},
 		{
 			name: "Transaction with additional address fields",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Account":     "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
 				"Owner":       "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"RegularKey":  "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 			},
-			expected: transactions.FlatTransaction{
+			expected: transaction.FlatTransaction{
 				"Account":     "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
 				"Owner":       "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
@@ -236,14 +236,14 @@ func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
 func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 	tests := []struct {
 		name           string
-		tx             transactions.FlatTransaction
+		tx             transaction.FlatTransaction
 		serverMessages []map[string]any
-		expected       transactions.FlatTransaction
+		expected       transaction.FlatTransaction
 		expectedErr    error
 	}{
 		{
 			name: "Valid transaction",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Account": "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 			},
 			serverMessages: []map[string]any{
@@ -257,7 +257,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 					},
 				},
 			},
-			expected: transactions.FlatTransaction{
+			expected: transaction.FlatTransaction{
 				"Account":  "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"Sequence": int(42),
 			},
@@ -265,9 +265,9 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 		},
 		{
 			name:           "Missing Account",
-			tx:             transactions.FlatTransaction{},
+			tx:             transaction.FlatTransaction{},
 			serverMessages: []map[string]any{},
-			expected:       transactions.FlatTransaction{},
+			expected:       transaction.FlatTransaction{},
 			expectedErr:    errors.New("missing Account in transaction"),
 		},
 	}
@@ -322,7 +322,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 	tests := []struct {
 		name           string
-		tx             transactions.FlatTransaction
+		tx             transaction.FlatTransaction
 		serverMessages []map[string]any
 		expectedFee    string
 		expectedErr    error
@@ -330,8 +330,8 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 	}{
 		{
 			name: "Basic fee calculation",
-			tx: transactions.FlatTransaction{
-				"TransactionType": transactions.PaymentTx,
+			tx: transaction.FlatTransaction{
+				"TransactionType": transaction.PaymentTx,
 			},
 			serverMessages: []map[string]any{
 				{
@@ -352,8 +352,8 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 		},
 		{
 			name: "Fee calculation with high load factor",
-			tx: transactions.FlatTransaction{
-				"TransactionType": transactions.PaymentTx,
+			tx: transaction.FlatTransaction{
+				"TransactionType": transaction.PaymentTx,
 			},
 			serverMessages: []map[string]any{
 				{
@@ -374,8 +374,8 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 		},
 		{
 			name: "Fee calculation with max fee limit",
-			tx: transactions.FlatTransaction{
-				"TransactionType": transactions.PaymentTx,
+			tx: transaction.FlatTransaction{
+				"TransactionType": transaction.PaymentTx,
 			},
 			serverMessages: []map[string]any{
 				{
@@ -440,8 +440,8 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 	tests := []struct {
 		name           string
 		serverMessages []map[string]any
-		tx             transactions.FlatTransaction
-		expectedTx     transactions.FlatTransaction
+		tx             transaction.FlatTransaction
+		expectedTx     transaction.FlatTransaction
 		expectedErr    error
 	}{
 		{
@@ -449,13 +449,13 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 			serverMessages: []map[string]any{
 				{
 					"id": 1,
-					"result": transactions.FlatTransaction{
+					"result": transaction.FlatTransaction{
 						"ledger_index": 1000,
 					},
 				},
 			},
-			tx:          transactions.FlatTransaction{},
-			expectedTx:  transactions.FlatTransaction{"LastLedgerSequence": int(1000 + LEDGER_OFFSET)},
+			tx:          transaction.FlatTransaction{},
+			expectedTx:  transaction.FlatTransaction{"LastLedgerSequence": int(1000 + LEDGER_OFFSET)},
 			expectedErr: nil,
 		},
 	}
@@ -561,22 +561,22 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 	tests := []struct {
 		name     string
-		tx       transactions.FlatTransaction
+		tx       transaction.FlatTransaction
 		expected uint32
 		wantErr  bool
 	}{
 		{
 			name: "No flags set",
-			tx: transactions.FlatTransaction{
-				"TransactionType": string(transactions.PaymentTx),
+			tx: transaction.FlatTransaction{
+				"TransactionType": string(transaction.PaymentTx),
 			},
 			expected: uint32(0),
 			wantErr:  false,
 		},
 		{
 			name: "Flags already set",
-			tx: transactions.FlatTransaction{
-				"TransactionType": string(transactions.PaymentTx),
+			tx: transaction.FlatTransaction{
+				"TransactionType": string(transaction.PaymentTx),
 				"Flags":           uint32(1),
 			},
 			expected: 1,
@@ -584,7 +584,7 @@ func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 		},
 		{
 			name: "Missing TransactionType",
-			tx: transactions.FlatTransaction{
+			tx: transaction.FlatTransaction{
 				"Flags": uint32(1),
 			},
 			expected: 0,

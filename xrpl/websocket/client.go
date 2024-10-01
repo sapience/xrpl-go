@@ -8,10 +8,10 @@ import (
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
+	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
 
-	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/gorilla/websocket"
 )
 

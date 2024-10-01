@@ -147,7 +147,7 @@ func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 		return "", "", err
 	}
 
-	txHash, err = hash.HashSignedTx(txBlob)
+	txHash, err = hash.HashTxBlob(txBlob)
 	if err != nil {
 		return "", "", err
 	}

@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -18,7 +18,7 @@ type XRPLResponseWarning struct {
 	Details any    `json:"details,omitempty"`
 }
 
-type AnyJson transactions.FlatTransaction
+type AnyJson transaction.FlatTransaction
 
 type ApiWarning struct {
 	Id      int         `json:"id"`
