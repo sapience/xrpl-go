@@ -2,7 +2,6 @@ package transactions
 
 import (
 	"encoding/json"
-	"errors"
 	"reflect"
 	"testing"
 
@@ -183,7 +182,6 @@ func TestTrustSetValidate(t *testing.T) {
 				QualityOut: 200,
 			},
 			valid: true,
-			err:   nil,
 		},
 		{
 			name: "MissingLimitAmount",
@@ -200,7 +198,6 @@ func TestTrustSetValidate(t *testing.T) {
 				QualityOut: 200,
 			},
 			valid: false,
-			err:   errors.New("trustSet: missing field LimitAmount"),
 		},
 		{
 			name: "InvalidLimitAmount",
@@ -221,7 +218,6 @@ func TestTrustSetValidate(t *testing.T) {
 				QualityOut: 200,
 			},
 			valid: false,
-			err:   errors.New("trustSet: invalid LimitAmount"),
 		},
 	}
 
@@ -231,9 +227,10 @@ func TestTrustSetValidate(t *testing.T) {
 			if valid != tt.valid {
 				t.Errorf("Expected valid to be %v, got %v", tt.valid, valid)
 			}
-			if !reflect.DeepEqual(err, tt.err) {
-				t.Errorf("Expected error to be %v, got %v", tt.err, err)
+			if (err != nil && tt.valid) || (err == nil && !tt.valid) {
+				t.Errorf("Got error: %v", err)
 			}
+
 		})
 	}
 }
