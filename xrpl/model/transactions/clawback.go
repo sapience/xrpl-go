@@ -74,28 +74,25 @@ func (c *Clawback) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func ValidateClawback(tx FlatTransaction) error {
+func (c *Clawback) Validate() error {
 	// validate the base transaction
-	err := ValidateBaseTransaction(tx)
+	err := ValidateBaseTransaction(c.BaseTx.Flatten())
 	if err != nil {
 		return err
 	}
 
 	// check if the field Amount is set
-	if _, ok := tx["Amount"]; !ok {
+	if c.Amount == nil {
 		return errors.New("clawback: missing field Amount")
 	}
 
 	// check if the Amount is a valid currency amount
-	if !IsIssuedCurrency(tx["Amount"]) {
+	if !IsIssuedCurrency(c.Amount.Flatten()) {
 		return errors.New("clawback: invalid Amount")
 	}
 
-	// convert the Amount to a map
-	amount := tx["Amount"].(map[string]interface{})
-
 	// check if Account is not the same as the issuer
-	if tx["Account"] == amount["Issuer"] {
+	if c.Account == c.Amount.Flatten().(map[string]interface{})["Issuer"] {
 		return errors.New("clawback: invalid holder Account")
 	}
 
