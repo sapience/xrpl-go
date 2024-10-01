@@ -75,13 +75,11 @@ func IsAmount(amount interface{}) bool {
 
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
 func IsIssuedCurrency(input interface{}) bool {
-	// Check if the input is a map.
-	if !typecheck.IsMap(input) {
+	// Type the input as a map.
+	i, ok := input.(map[string]interface{})
+	if !ok {
 		return false
 	}
-
-	// Type the input as a map.
-	i := input.(map[string]interface{})
 
 	return len(maputils.GetKeys(i)) == ISSUED_CURRENCY_SIZE &&
 		typecheck.IsString(i["value"]) &&
