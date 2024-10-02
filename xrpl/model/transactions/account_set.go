@@ -328,54 +328,34 @@ const MAX_TICK_SIZE = 15
 
 // Validate the AccountSet transaction fields.
 func (s *AccountSet) Validate() (bool, error) {
+	flatten := s.Flatten()
+
 	// validate the base transaction
 	_, err := s.BaseTx.Validate()
 	if err != nil {
 		return false, err
 	}
 
-	// check ClearFlag is defined
-	if !typecheck.IsUint(s.ClearFlag) {
-		return false, errors.New("accountSet: ClearFlag must be a number")
-	}
-
-	// check Domain is defined and a string
-	if !typecheck.IsString(s.Domain) {
-		return false, errors.New("accountSet: Domain must be a string")
-	}
-
-	// check EmailHash is defined and a hash128/string
-	if !typecheck.IsString(s.EmailHash) {
-		return false, errors.New("accountSet: EmailHash must be a Hash128")
-	}
-
-	// check MessageKey is defined and a string
-	if !typecheck.IsString(s.MessageKey) {
-		return false, errors.New("accountSet: MessageKey must be a string")
-	}
-
-	// check SetFlag is defined and a number
-	if !typecheck.IsUint(s.SetFlag) {
-		return false, errors.New("accountSet: SetFlag must be a number")
-	}
+	ValidateOptionalField(flatten, "ClearFlag", typecheck.IsUint)
+	ValidateOptionalField(flatten, "Domain", typecheck.IsString)
+	ValidateOptionalField(flatten, "EmailHash", typecheck.IsString)
+	ValidateOptionalField(flatten, "MessageKey", typecheck.IsString)
+	ValidateOptionalField(flatten, "SetFlag", typecheck.IsUint)
+	ValidateOptionalField(flatten, "TransferRate", typecheck.IsUint)
+	ValidateOptionalField(flatten, "TickSize", typecheck.IsUint)
+	ValidateOptionalField(flatten, "NFTokenMinter", typecheck.IsString)
+	ValidateOptionalField(flatten, "WalletLocator", typecheck.IsString)
+	ValidateOptionalField(flatten, "WalletSize", typecheck.IsUint)
 
 	// check if SetFlag is within the valid range
-	if s.SetFlag < asfRequireDest || s.SetFlag > asfAllowTrustLineClawback {
-		return false, errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
-	}
-
-	// check TransferRate is defined and a number
-	if !typecheck.IsUint(s.TransferRate) {
-		return false, errors.New("accountSet: TransferRate must be a number")
-	}
-
-	// check TickSize is defined and a number
-	if !typecheck.IsUint(s.TickSize) {
-		return false, errors.New("accountSet: TickSize must be a number")
+	if s.SetFlag != 0 {
+		if s.SetFlag < asfRequireDest || s.SetFlag > asfAllowTrustLineClawback {
+			return false, errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+		}
 	}
 
 	// check if TickSize is within the valid range
-	if s.TickSize < MIN_TICK_SIZE || s.TickSize > MAX_TICK_SIZE {
+	if s.TickSize != 0 && (s.TickSize < MIN_TICK_SIZE || s.TickSize > MAX_TICK_SIZE) {
 		return false, errors.New("accountSet: TickSize must be between 3 and 15")
 	}
 
