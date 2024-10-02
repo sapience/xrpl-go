@@ -3,7 +3,7 @@ package utility
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/test"
 )
 
 func TestRandomResponse(t *testing.T) {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl"
-	"github.com/Peersyst/xrpl-go/xrpl/client/websocket"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
 func main() {

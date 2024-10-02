@@ -8,7 +8,6 @@ import (
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl"
-	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 
 	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
@@ -20,8 +19,6 @@ const (
 	DEFAULT_FEE_CUSHION float32 = 1.2
 	DEFAULT_MAX_FEE_XRP float32 = 2
 )
-
-var _ client.Client = (*WebsocketClient)(nil)
 
 var ErrIncorrectId = errors.New("incorrect id")
 
@@ -38,14 +35,6 @@ func NewWebsocketClient(cfg WebsocketClientConfig) *WebsocketClient {
 	return &WebsocketClient{
 		cfg: cfg,
 	}
-}
-
-func NewClient(host string) *client.XRPLClient {
-	wcl := NewWebsocketClient(
-		NewWebsocketClientConfig().
-			WithHost(host),
-	)
-	return client.NewXRPLClient(wcl)
 }
 
 func (c *WebsocketClient) Autofill(tx *transactions.FlatTransaction) error {
@@ -111,7 +100,7 @@ func (c *WebsocketClient) FundWallet(wallet *xrpl.Wallet) error {
 	return nil
 }
 
-func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLResponse, error) {
+func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLResponse, error) {
 	err := req.Validate()
 	if err != nil {
 		return nil, err
@@ -119,6 +108,7 @@ func (c *WebsocketClient) SendRequest(req client.XRPLRequest) (client.XRPLRespon
 
 	id := c.idCounter.Add(1)
 
+	// TODO: Decouple connection
 	conn, _, err := websocket.DefaultDialer.Dial(c.cfg.host, nil)
 	if err != nil {
 		return nil, err
@@ -177,14 +167,14 @@ func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (*
 		return nil, errors.New("transaction must have a TxSignature or SigningPubKey set")
 	}
 
-	return c.SubmitRequest(&requests.SubmitRequest{
+	return c.submitRequest(&requests.SubmitRequest{
 		TxBlob:   txBlob,
 		FailHard: failHard,
 	})
 }
 
-func (c *WebsocketClient) SubmitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
-	res, err := c.SendRequest(req)
+func (c *WebsocketClient) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
+	res, err := c.sendRequest(req)
 	if err != nil {
 		return nil, err
 	}

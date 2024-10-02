@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/server"
@@ -16,7 +15,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func (c *WebsocketClient) formatRequest(req client.XRPLRequest, id int, marker any) ([]byte, error) {
+func (c *WebsocketClient) formatRequest(req WebsocketXRPLRequest, id int, marker any) ([]byte, error) {
 	m := make(map[string]any)
 	m["id"] = id
 	m["command"] = req.Method()
@@ -87,7 +86,7 @@ func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *transactions
 	if _, ok := (*tx)["Account"].(string); !ok {
 		return errors.New("missing Account in transaction")
 	}
-	res, _, err := c.GetAccountInfo(&account.AccountInfoRequest{
+	res, err := c.GetAccountInfo(&account.AccountInfoRequest{
 		Account:     types.Address((*tx)["Account"].(string)),
 		LedgerIndex: common.LedgerTitle("current"),
 	})
@@ -124,10 +123,10 @@ func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) {
 	}
 
 	// Round fee to NUM_DECIMAL_PLACES
-	roundedFee := float32(math.Round(float64(fee)*math.Pow10(client.NUM_DECIMAL_PLACES))) / float32(math.Pow10(client.NUM_DECIMAL_PLACES))
+	roundedFee := float32(math.Round(float64(fee)*math.Pow10(int(utils.MAX_FRACTION_LENGTH)))) / float32(math.Pow10(int(utils.MAX_FRACTION_LENGTH)))
 
 	// Convert the rounded fee back to a string with NUM_DECIMAL_PLACES
-	return fmt.Sprintf("%.*f", client.NUM_DECIMAL_PLACES, roundedFee), nil
+	return fmt.Sprintf("%.*f", utils.MAX_FRACTION_LENGTH, roundedFee), nil
 }
 
 // Calculates the fee per transaction type.
