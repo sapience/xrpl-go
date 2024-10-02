@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestLedgerDataRequest(t *testing.T) {
@@ -18,7 +18,7 @@ func TestLedgerDataRequest(t *testing.T) {
 	"binary": true,
 	"limit": 5
 }`
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

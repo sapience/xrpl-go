@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -18,7 +18,7 @@ func TestNFTokenSellOffersRequest(t *testing.T) {
 	"nft_id": "00090000D0B007439B080E9B05BF62403911301A7B1F0CFAA048C0A200000007",
 	"ledger_index": "validated"
 }`
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -47,7 +47,7 @@ func TestNFTokenSellOffersResponse(t *testing.T) {
 		}
 	]
 }`
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

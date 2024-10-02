@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/ledger"
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -32,7 +32,7 @@ func TestBookOffersRequest(t *testing.T) {
 	"taker": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -141,7 +141,7 @@ func TestBookOffersResponse(t *testing.T) {
 		}
 	]
 }`
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

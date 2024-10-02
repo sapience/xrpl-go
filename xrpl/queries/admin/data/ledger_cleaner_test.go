@@ -3,7 +3,7 @@ package data
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestLedgerCleanerRequest(t *testing.T) {
@@ -21,7 +21,7 @@ func TestLedgerCleanerRequest(t *testing.T) {
 	"stop": true
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -35,7 +35,7 @@ func TestLedgerCleanerResponse(t *testing.T) {
 	"message": "Cleaner configured"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

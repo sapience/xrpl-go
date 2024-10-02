@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestCanDeleteRequest(t *testing.T) {
@@ -16,7 +16,7 @@ func TestCanDeleteRequest(t *testing.T) {
 	"can_delete": "current"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -25,7 +25,7 @@ func TestCanDeleteRequestEmpty(t *testing.T) {
 
 	j := `{}`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -38,7 +38,7 @@ func TestCanDeleteResponse(t *testing.T) {
 	"can_delete": 54321
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

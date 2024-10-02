@@ -3,7 +3,7 @@ package data
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestCrawlShardsRequest(t *testing.T) {
@@ -17,7 +17,7 @@ func TestCrawlShardsRequest(t *testing.T) {
 	"limit": 1
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -51,7 +51,7 @@ func TestCrawlShardsResponse(t *testing.T) {
 	]
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

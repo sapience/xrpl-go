@@ -3,7 +3,7 @@ package ledger
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -34,7 +34,7 @@ func TestOfferDirectoryNode(t *testing.T) {
 	"TakerPaysIssuer": "5BBC0F22F61D9224A110650CFE21CC0C4BE13098"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -62,7 +62,7 @@ func TestOwnerDirectoryNode(t *testing.T) {
 	"RootIndex": "193C591BF62482468422313F9D3274B5927CA80B4DD3707E42015DD609E39C94"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

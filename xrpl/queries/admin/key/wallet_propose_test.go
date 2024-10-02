@@ -3,7 +3,7 @@ package key
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestWalletProposeRequest(t *testing.T) {
@@ -17,7 +17,7 @@ func TestWalletProposeRequest(t *testing.T) {
 	"seed": "snoPBrXtMeMyMHUVTgbuqAfg1SUTb"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -41,7 +41,7 @@ func TestWalletProposeResponse(t *testing.T) {
 	"public_key_hex": "0330E7FC9D56BB25D6893BA3F317AE5BCF33B3291BD63DB32654A313222F7FD020"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

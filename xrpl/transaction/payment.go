@@ -6,7 +6,6 @@ import (
 
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-	"github.com/Peersyst/xrpl-go/xrpl/utils"
 )
 
 const (
@@ -268,7 +267,7 @@ func checkPartialPayment(tx FlatTransaction) error {
 		flagsField, isUint := (tx["Flags"]).(uint)
 		var isTfPartialPayment bool
 		if isUint {
-			isTfPartialPayment = utils.IsFlagEnabled(flagsField, uint(tfPartialPayment))
+			isTfPartialPayment = IsFlagEnabled(flagsField, uint(tfPartialPayment))
 		}
 
 		// TODO: check if tfPartialPayment is enabled if/when Flags is an object/map instead of a uint

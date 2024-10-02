@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/websocket/testutil"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/require"
 )
@@ -165,7 +165,7 @@ func TestSendRequest(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
-			ws := &test.MockWebSocketServer{Msgs: tc.serverMessages}
+			ws := &testutil.MockWebSocketServer{Msgs: tc.serverMessages}
 			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
 				for _, m := range tc.serverMessages {
 					err := c.WriteJSON(m)
@@ -175,7 +175,7 @@ func TestSendRequest(t *testing.T) {
 				}
 			})
 			defer s.Close()
-			url, _ := test.ConvertHttpToWS(s.URL)
+			url, _ := testutil.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{cfg: WebsocketClientConfig{
 				host: url,
 			}}

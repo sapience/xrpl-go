@@ -3,7 +3,7 @@ package ledger
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 // Ledger closed request does not have any fields to test
@@ -17,7 +17,7 @@ func TestLedgerClosedResponse(t *testing.T) {
 	"ledger_hash": "abc",
 	"ledger_index": 123
 }`
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

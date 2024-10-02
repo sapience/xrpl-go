@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
-	"github.com/Peersyst/xrpl-go/xrpl/test"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/websocket/testutil"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/gorilla/websocket"
@@ -274,7 +274,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ws := &test.MockWebSocketServer{Msgs: tt.serverMessages}
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
 			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
 				for _, m := range tt.serverMessages {
 					err := c.WriteJSON(m)
@@ -285,7 +285,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := test.ConvertHttpToWS(s.URL)
+			url, _ := testutil.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
 					host: url,
@@ -398,7 +398,7 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ws := &test.MockWebSocketServer{Msgs: tt.serverMessages}
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
 			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
 				for _, m := range tt.serverMessages {
 					err := c.WriteJSON(m)
@@ -409,7 +409,7 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := test.ConvertHttpToWS(s.URL)
+			url, _ := testutil.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
 					host:       url,
@@ -462,7 +462,7 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ws := &test.MockWebSocketServer{Msgs: tt.serverMessages}
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
 			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
 				for _, m := range tt.serverMessages {
 					err := c.WriteJSON(m)
@@ -473,7 +473,7 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := test.ConvertHttpToWS(s.URL)
+			url, _ := testutil.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
 					host: url,
@@ -525,7 +525,7 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ws := &test.MockWebSocketServer{Msgs: tt.serverMessages}
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
 			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
 				for _, m := range tt.serverMessages {
 					err := c.WriteJSON(m)
@@ -536,7 +536,7 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := test.ConvertHttpToWS(s.URL)
+			url, _ := testutil.ConvertHttpToWS(s.URL)
 			cl := &WebsocketClient{
 				cfg: WebsocketClientConfig{
 					host: url,

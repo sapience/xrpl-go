@@ -3,7 +3,7 @@ package clio
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestServerInfoResponseLocalhost(t *testing.T) {
@@ -392,7 +392,7 @@ func TestServerInfoResponseLocalhost(t *testing.T) {
 	"validated": true
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -447,7 +447,7 @@ func TestServerInfoResponseRemote(t *testing.T) {
 	"validated": true,
 	"status": "success"
 }`
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

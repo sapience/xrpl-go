@@ -3,7 +3,7 @@ package peer
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestPeerReservationsListResponse(t *testing.T) {
@@ -31,7 +31,7 @@ func TestPeerReservationsListResponse(t *testing.T) {
 	]
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

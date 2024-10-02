@@ -3,7 +3,7 @@ package key
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestValidationCreateRequest(t *testing.T) {
@@ -14,7 +14,7 @@ func TestValidationCreateRequest(t *testing.T) {
 	j := `{
 	"secret": "abc"
 }`
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -32,7 +32,7 @@ func TestValidationCreateResponse(t *testing.T) {
 	"validation_seed": "ssZkdwURFMBXenJPbrpE14b6noJSu"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 

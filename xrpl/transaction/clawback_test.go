@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -41,7 +41,7 @@ func TestClawbackTransaction(t *testing.T) {
 	}
 }`
 
-	if err := test.SerializeAndDeserialize(t, clawbackTx, clawbackJSON); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, clawbackTx, clawbackJSON); err != nil {
 		t.Error(err)
 	}
 

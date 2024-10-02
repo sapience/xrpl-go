@@ -3,7 +3,7 @@ package server
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/test"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
 
 func TestFeeResponse(t *testing.T) {
@@ -47,7 +47,7 @@ func TestFeeResponse(t *testing.T) {
 	"max_queue_size": "480"
 }`
 
-	if err := test.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
