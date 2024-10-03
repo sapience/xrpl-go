@@ -47,16 +47,12 @@ func validateMemos(memoWrapper []MemoWrapper) error {
 }
 
 // validateSigners validates the Signers field in the transaction map.
-func validateSigners(tx FlatTransaction) error {
-	if tx["Signers"] != nil {
-		signers, ok := tx["Signers"].([]FlatSigner)
-		if !ok {
-			return fmt.Errorf("BaseTransaction: invalid Signers")
-		}
-		for _, signer := range signers {
-			if !IsSigner(signer) {
-				return fmt.Errorf("BaseTransaction: invalid Signers")
-			}
+func validateSigners(signers []Signer) error {
+	// loop through each signer and validate it
+	for _, signer := range signers {
+		isSigner, err := IsSigner(signer.SignerData)
+		if !isSigner {
+			return err
 		}
 	}
 

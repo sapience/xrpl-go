@@ -6,59 +6,31 @@ import (
 
 func TestIsSigner(t *testing.T) {
 	t.Run("Valid Signer object", func(t *testing.T) {
-		obj1 := map[string]interface{}{
-			"Signer": map[string]interface{}{
-				"Account":       "r1234567890",
-				"TxnSignature":  "0123456789abcdef",
-				"SigningPubKey": "abcdef0123456789",
-			},
+		validSigner := SignerData{
+			Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+			TxnSignature:  "0123456789abcdef",
+			SigningPubKey: "abcdef0123456789",
 		}
-		if !IsSigner(obj1) {
-			t.Errorf("Expected IsSigner to return true, but got false")
+
+		if ok, err := IsSigner(validSigner); !ok {
+			t.Errorf("Expected IsSigner to return true, but got false with error: %v", err)
 		}
 	})
 
 	t.Run("Signer object with missing fields", func(t *testing.T) {
-		obj2 := map[string]interface{}{
-			"Signer": map[string]interface{}{
-				"Account": "r1234567890",
-			},
+		invalidSigner := SignerData{
+			Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+			SigningPubKey: "abcdef0123456789",
 		}
-		if IsSigner(obj2) {
-			t.Errorf("Expected IsSigner to return false, but got true")
-		}
-	})
 
-	t.Run("Signer object with invalid field types", func(t *testing.T) {
-		obj3 := map[string]interface{}{
-			"Signer": map[string]interface{}{
-				"Account":       12345,
-				"TxnSignature":  12345,
-				"SigningPubKey": 12345,
-			},
-		}
-		if IsSigner(obj3) {
-			t.Errorf("Expected IsSigner to return false, but got true")
-		}
-	})
-
-	t.Run("Signer object with extra fields", func(t *testing.T) {
-		obj4 := map[string]interface{}{
-			"Signer": map[string]interface{}{
-				"Account":       "r1234567890",
-				"TxnSignature":  "0123456789abcdef",
-				"SigningPubKey": "abcdef0123456789",
-				"ExtraField":    "Extra Value",
-			},
-		}
-		if IsSigner(obj4) {
+		if ok, _ := IsSigner(invalidSigner); ok {
 			t.Errorf("Expected IsSigner to return false, but got true")
 		}
 	})
 
 	t.Run("Nil object", func(t *testing.T) {
-		obj5 := map[string]interface{}{}
-		if IsSigner(obj5) {
+		invalidSigner := SignerData{}
+		if ok, _ := IsSigner(invalidSigner); ok {
 			t.Errorf("Expected IsSigner to return false, but got true")
 		}
 	})

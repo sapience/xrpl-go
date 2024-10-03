@@ -24,44 +24,55 @@ func IsMemo(memo Memo) (bool, error) {
 	size := len(maputils.GetKeys(memo.Flatten()))
 
 	if size == 0 {
-		return false, errors.New("Memo object should have at least one field, MemoData, MemoFormat or MemoType")
+		return false, errors.New("memo object should have at least one field, MemoData, MemoFormat or MemoType")
 	}
 
 	if size > MEMO_SIZE {
-		return false, errors.New("Memo object should have at most three fields, MemoData, MemoFormat and MemoType")
+		return false, errors.New("memo object should have at most three fields, MemoData, MemoFormat and MemoType")
 	}
 
 	validData := memo.MemoData == "" || typecheck.IsHex(memo.MemoData)
 	if !validData {
-		return false, errors.New("MemoData should be a hexadecimal string")
+		return false, errors.New("memoData should be a hexadecimal string")
 	}
 
 	validFormat := memo.MemoFormat == "" || typecheck.IsHex(memo.MemoFormat)
 	if !validFormat {
-		return false, errors.New("MemoFormat should be a hexadecimal string")
+		return false, errors.New("memoFormat should be a hexadecimal string")
 	}
 
 	validType := memo.MemoType == "" || typecheck.IsHex(memo.MemoType)
 	if !validType {
-		return false, errors.New("MemoType should be a hexadecimal string")
+		return false, errors.New("memoType should be a hexadecimal string")
 	}
 
 	return true, nil
 }
 
 // IsSigner checks if the given object is a valid Signer object.
-func IsSigner(obj map[string]interface{}) bool {
-	signer, ok := obj["Signer"].(map[string]interface{})
-	if !ok {
-		return false
+func IsSigner(signerData SignerData) (bool, error) {
+	size := len(maputils.GetKeys(signerData.Flatten()))
+	if size != SIGNER_SIZE {
+		return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")
 	}
 
-	size := len(maputils.GetKeys(signer))
-	validAccount := signer["Account"] != nil && typecheck.IsString(signer["Account"])
-	validTxnSignature := signer["TxnSignature"] != nil && typecheck.IsString(signer["TxnSignature"])
-	validSigningPubKey := signer["SigningPubKey"] != nil && typecheck.IsString(signer["SigningPubKey"])
+	// TODO: Update to check if the account is valid when the "isAccount" function exists
+	validAccount := signerData.Account != "" && typecheck.IsString(signerData.Account.String())
+	if !validAccount {
+		return false, errors.New("signers: Account should be a string")
+	}
 
-	return size == SIGNER_SIZE && validAccount && validTxnSignature && validSigningPubKey
+	validTxnSignature := signerData.TxnSignature != "" && typecheck.IsString(signerData.TxnSignature)
+	if !validTxnSignature {
+		return false, errors.New("signers: TxnSignature should be a string")
+	}
+
+	validSigningPubKey := signerData.SigningPubKey != "" && typecheck.IsString(signerData.SigningPubKey)
+	if !validSigningPubKey {
+		return false, errors.New("signers: SigningPubKey should be a string")
+	}
+
+	return true, nil
 
 }
 
