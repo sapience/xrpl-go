@@ -91,7 +91,6 @@ func getCryptoImplementation(alg addresscodec.CryptoAlgorithm) CryptoImplementat
 }
 
 func getCryptoImplementationFromKey(k string) CryptoImplementation {
-	fmt.Println("getCryptoImplementationFromKey", k, len(k))
 	switch deformatKey(k)[0] {
 	case addresscodec.ED25519:
 		return &ed25519Alg{}
