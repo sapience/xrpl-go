@@ -139,7 +139,7 @@ func (tx *TrustSet) Validate() (bool, error) {
 		return false, errors.New("trustSet: missing field LimitAmount")
 	}
 
-	if !IsAmount(tx.LimitAmount.Flatten()) {
+	if !IsAmount(tx.LimitAmount) {
 		return false, errors.New("trustSet: invalid LimitAmount")
 	}
 

@@ -2,6 +2,8 @@ package transactions
 
 import (
 	"testing"
+
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
 func TestIsSigner(t *testing.T) {
@@ -37,101 +39,29 @@ func TestIsSigner(t *testing.T) {
 }
 func TestIsIssuedCurrency(t *testing.T) {
 	t.Run("Valid IssuedCurrency object", func(t *testing.T) {
-		obj1 := map[string]interface{}{
-			"value":    "100",
-			"issuer":   "r1234567890",
-			"currency": "USD",
+		obj1 := types.IssuedCurrencyAmount{
+			Value:    "100",
+			Issuer:   "r1234567890",
+			Currency: "USD",
 		}
-		if !IsIssuedCurrency(obj1) {
-			t.Errorf("Expected IsIssuedCurrency to return true, but got false")
+		if ok, err := IsIssuedCurrency(obj1); !ok {
+			t.Errorf("Expected IsIssuedCurrency to return true, but got false with error: %v", err)
 		}
 	})
 
 	t.Run("IssuedCurrency object with missing fields", func(t *testing.T) {
-		obj2 := map[string]interface{}{
-			"value": "100",
+		invalid := types.IssuedCurrencyAmount{
+			Value: "100",
 		}
-		if IsIssuedCurrency(obj2) {
+		if ok, _ := IsIssuedCurrency(invalid); ok {
 			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
 		}
 	})
 
-	t.Run("IssuedCurrency object with invalid field types", func(t *testing.T) {
-		obj3 := map[string]interface{}{
-			"value":    100,
-			"issuer":   12345,
-			"currency": 12345,
-		}
-		if IsIssuedCurrency(obj3) {
+	t.Run("Empty object", func(t *testing.T) {
+		invalid := types.IssuedCurrencyAmount{}
+		if ok, _ := IsIssuedCurrency(invalid); ok {
 			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
-		}
-	})
-
-	t.Run("IssuedCurrency object with extra fields", func(t *testing.T) {
-		obj4 := map[string]interface{}{
-			"value":    "100",
-			"issuer":   "r1234567890",
-			"currency": "USD",
-			"extra":    "extra field",
-		}
-		if IsIssuedCurrency(obj4) {
-			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
-		}
-	})
-
-	t.Run("Nil object", func(t *testing.T) {
-		obj5 := map[string]interface{}{}
-		if IsIssuedCurrency(obj5) {
-			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
-		}
-	})
-
-	t.Run("A number", func(t *testing.T) {
-		obj6 := 5
-		if IsIssuedCurrency(obj6) {
-			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
-		}
-	})
-}
-
-func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
-	t.Run("No issued currency", func(t *testing.T) {
-		tx := map[string]interface{}{
-			"amount": "100",
-		}
-		err := CheckIssuedCurrencyIsNotXrp(tx)
-		if err != nil {
-			t.Errorf("Expected no error, but got: %v", err)
-		}
-	})
-
-	t.Run("Issued currency is not XRP", func(t *testing.T) {
-		tx := map[string]interface{}{
-			"amount": map[string]interface{}{
-				"value":    "100",
-				"issuer":   "r1234567890",
-				"currency": "USD",
-			},
-		}
-		err := CheckIssuedCurrencyIsNotXrp(tx)
-		if err != nil {
-			t.Errorf("Expected no error, but got: %v", err)
-		}
-	})
-
-	t.Run("Issued currency is XRP", func(t *testing.T) {
-		tx := map[string]interface{}{
-			"amount": map[string]interface{}{
-				"value":    "100",
-				"issuer":   "r1234567890",
-				"currency": "XRP",
-			},
-		}
-		err := CheckIssuedCurrencyIsNotXrp(tx)
-		if err == nil {
-			t.Errorf("Expected an error, but got nil")
-		} else if err.Error() != "cannot have an issued currency with a similar standard code as XRP" {
-			t.Errorf("Expected error message: 'cannot have an issued currency with a similar standard code as XRP', but got: %v", err.Error())
 		}
 	})
 }

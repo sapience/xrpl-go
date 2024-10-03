@@ -5,6 +5,7 @@ import (
 
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
 )
 
 const (
@@ -12,8 +13,9 @@ const (
 	// It is presented as an array of objects. Each object has only one field, Memo,
 	// which in turn contains another object with one or more of the following fields:
 	// MemoData, MemoFormat, and MemoType. https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field
-	MEMO_SIZE                  = 3
-	SIGNER_SIZE                = 3
+	MEMO_SIZE   = 3
+	SIGNER_SIZE = 3
+	// For a token, must have the following fields: currency, issuer, value. https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-currency-amounts
 	ISSUED_CURRENCY_SIZE       = 3
 	STANDARD_CURRENCY_CODE_LEN = 3
 )
@@ -78,18 +80,15 @@ func IsSigner(signerData SignerData) (bool, error) {
 
 // IsAmount checks if the given object is a valid Amount object.
 // It is a string for an XRP amount or a map for an IssuedCurrency amount.
-func IsAmount(amount interface{}) bool {
-	if typecheck.IsString(amount) {
+func IsAmount(amount types.CurrencyAmount) bool {
+	if amount == nil {
+		return false
+	}
+	if amount.Kind() == types.XRP {
 		return true
 	}
 
-	amt, ok := amount.(map[string]interface{})
-
-	if !ok {
-		return false
-	}
-
-	if IsIssuedCurrency(amt) {
+	if ok, _ := IsIssuedCurrency(amount); ok {
 		return true
 	}
 
@@ -97,19 +96,23 @@ func IsAmount(amount interface{}) bool {
 }
 
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
-func IsIssuedCurrency(input interface{}) bool {
-	i, isMap := input.(map[string]interface{})
-	if !isMap {
-		return false
+func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
+	if input.Kind() == types.XRP {
+		return false, errors.New("an issued currency cannot be of type XRP")
 	}
 
-	value, isValueString := i["value"].(string)
-	_, isIssuerString := i["issuer"].(string)
-	_, isCurrencyString := i["currency"].(string)
+	issuedAmount, _ := input.(types.IssuedCurrencyAmount)
+	if issuedAmount.Currency == "" {
+		return false, errors.New("currency field is required for an issued currency")
+	}
+	if issuedAmount.Currency == "XRP" {
+		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
+	}
+	if !typecheck.IsFloat(issuedAmount.Value) {
+		return false, errors.New("value field should be a valid number")
+	}
 
-	result := len(maputils.GetKeys(i)) == ISSUED_CURRENCY_SIZE && isValueString && isIssuerString && isCurrencyString && typecheck.IsFloat(value)
-
-	return result
+	return true, nil
 }
 
 // IsPathStep checks if the given map is a valid PathStep.
@@ -168,24 +171,4 @@ func IsPaths(paths [][]map[string]interface{}) bool {
 	}
 
 	return true
-}
-
-// CheckIssuedCurrencyIsNotXrp checks if the given transaction map does not have an issued currenc as XRP.
-func CheckIssuedCurrencyIsNotXrp(tx map[string]interface{}) error {
-	keys := maputils.GetKeys(tx)
-	for _, value := range keys {
-		result, isFlatTxn := (tx[value]).(map[string]interface{})
-
-		// Check if the value is an issued currency
-		if isFlatTxn && IsIssuedCurrency(result) {
-			// Check if the issued currency is XRP (which is incorrect)
-			currency := tx[value].(map[string]interface{})["currency"].(string)
-
-			if len(currency) == STANDARD_CURRENCY_CODE_LEN && currency == "XRP" {
-				return errors.New("cannot have an issued currency with a similar standard code as XRP")
-			}
-		}
-	}
-
-	return nil
 }

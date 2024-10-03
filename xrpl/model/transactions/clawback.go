@@ -88,7 +88,7 @@ func (c *Clawback) Validate() (bool, error) {
 	}
 
 	// check if the Amount is a valid currency amount
-	if !IsIssuedCurrency(c.Amount.Flatten()) {
+	if ok, _ := IsIssuedCurrency(c.Amount); !ok {
 		return false, errors.New("clawback: invalid Amount")
 	}
 

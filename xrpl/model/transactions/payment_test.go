@@ -158,3 +158,152 @@ func TestPaymentFlags(t *testing.T) {
 		})
 	}
 }
+func TestPaymentValidate(t *testing.T) {
+	tests := []struct {
+		name    string
+		payment Payment
+		isValid bool
+	}{
+		{
+			name: "Valid Payment",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           262144,
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					Currency: "USD",
+					Value:    "1",
+				},
+				Destination: "hij",
+			},
+			isValid: true,
+		},
+		{
+			name: "Missing Amount",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           262144,
+				},
+				Destination: "hij",
+			},
+			isValid: false,
+		},
+		{
+			name: "Invalid Amount",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           262144,
+				},
+				Amount:      types.XRPCurrencyAmount(0),
+				Destination: "hij",
+			},
+			isValid: false,
+		},
+		{
+			name: "Invalid Destination",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           262144,
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Issuer:   "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
+					Currency: "USD",
+					Value:    "1",
+				},
+				Destination: "",
+			},
+			isValid: false,
+		},
+		{
+			name: "Invalid Paths",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           262144,
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Issuer:   "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj",
+					Currency: "USD",
+					Value:    "1",
+				},
+				Destination: "hij",
+				Paths: [][]PathStep{
+					{
+						{Account: "invalid"},
+					},
+				},
+			},
+			isValid: false,
+		},
+		{
+			name: "Valid Partial Payment",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           tfPartialPayment,
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Issuer:   "r3EeETxLb1JwmN2xWuZZdKrrEkqw7qgeYf",
+					Currency: "USD",
+					Value:    "1",
+				},
+				Destination: "hij",
+				DeliverMin: types.IssuedCurrencyAmount{
+					Issuer:   "r3EeETxLb1JwmN2xWuZZdKrrEkqw7qgeYf",
+					Currency: "USD",
+					Value:    "0.5",
+				},
+			},
+			isValid: true,
+		},
+		{
+			name: "Invalid Partial Payment without Flag",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "r3EeETxLb1JwmN2xWuZZdKrrEkqw7qgeYf",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           0,
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Issuer:   "ra2ASKcVifxurMgUpTnb59mGDAf7JSVyzh",
+					Currency: "USD",
+					Value:    "1",
+				},
+				Destination: "hij",
+				DeliverMin: types.IssuedCurrencyAmount{
+					Issuer:   "ra2ASKcVifxurMgUpTnb59mGDAf7JSVyzh",
+					Currency: "USD",
+					Value:    "0.5",
+				},
+			},
+			isValid: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ok, err := tt.payment.Validate()
+			if ok != tt.isValid {
+				t.Errorf("Expected valid=%v, got %v, with error: %s", tt.isValid, ok, err)
+			}
+		})
+	}
+}
