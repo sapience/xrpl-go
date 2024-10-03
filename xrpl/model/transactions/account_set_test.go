@@ -137,7 +137,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			name: "Valid AccountSet",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -158,7 +158,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			name: "Valid AccountSet without options, just the commons fields",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -172,7 +172,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			name: "Invalid AccountSet with high SetFlag",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -187,7 +187,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			name: "Invalid AccountSet with low TickSize",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -202,7 +202,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			name: "Invalid AccountSet with high TickSize",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -214,10 +214,10 @@ func TestAccountSet_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			name: "Invalid AccountSet TickSize set to 0 to disable it",
+			name: "Valid AccountSet TickSize set to 0 to disable it",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
