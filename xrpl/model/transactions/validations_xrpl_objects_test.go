@@ -166,58 +166,45 @@ func TestCheckIssuedCurrencyIsNotXrp(t *testing.T) {
 
 func TestIsMemo(t *testing.T) {
 	t.Run("Valid Memo object with all fields", func(t *testing.T) {
-		obj := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "0123456789abcdef",
-				"MemoFormat": "abcdef0123456789",
-				"MemoType":   "abcdef0123456789",
-			},
+		obj := Memo{
+			MemoData:   "0123456789abcdef",
+			MemoFormat: "abcdef0123456789",
+			MemoType:   "abcdef0123456789",
 		}
-		if !IsMemo(obj) {
+
+		ok, _ := IsMemo(obj)
+
+		if !(ok) {
 			t.Errorf("Expected IsMemo to return true, but got false")
 		}
 	})
 
-	t.Run("Memo object with missing fields", func(t *testing.T) {
-		obj := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData": "0123456789abcdef",
-			},
+	t.Run("Valid memo object with missing fields", func(t *testing.T) {
+		obj := Memo{
+			MemoData: "0123456789abcdef",
 		}
-		if !IsMemo(obj) {
-			t.Errorf("Expected IsMemo to return true, but got false")
+
+		ok, err := IsMemo(obj)
+
+		if !ok {
+			t.Errorf("Expected IsMemo to return true, but got false with error: %v", err)
 		}
 	})
 
 	t.Run("Memo object with non hex values", func(t *testing.T) {
-		obj := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "bob",
-				"MemoFormat": "alice",
-			},
+		obj := Memo{
+			MemoData:   "bob",
+			MemoFormat: "alice",
 		}
-		if IsMemo(obj) {
-			t.Errorf("Expected IsMemo to return false, but got true")
-		}
-	})
 
-	t.Run("Memo object with extra fields", func(t *testing.T) {
-		obj := map[string]interface{}{
-			"Memo": map[string]interface{}{
-				"MemoData":   "0123456789abcdef",
-				"MemoFormat": "abcdef0123456789",
-				"MemoType":   "abcdef0123456789",
-				"ExtraField": "Extra Value",
-			},
-		}
-		if IsMemo(obj) {
+		if ok, _ := IsMemo(obj); ok {
 			t.Errorf("Expected IsMemo to return false, but got true")
 		}
 	})
 
 	t.Run("Empty object", func(t *testing.T) {
-		obj := map[string]interface{}{}
-		if IsMemo(obj) {
+		obj := Memo{}
+		if ok, _ := IsMemo(obj); ok {
 			t.Errorf("Expected IsMemo to return false, but got true")
 		}
 	})

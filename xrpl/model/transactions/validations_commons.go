@@ -34,18 +34,12 @@ func ValidateOptionalField(tx FlatTransaction, paramName string, checkValidity f
 }
 
 // validateMemos validates the Memos field in the transaction map.
-func validateMemos(tx FlatTransaction) error {
-	// Check if the field Memos is set
-	if tx["Memos"] != nil {
-		memos, ok := tx["Memos"].([]map[string]interface{})
-		if !ok {
-			return fmt.Errorf("BaseTransaction: invalid Memos conversion to []map[string]interface{}")
-		}
-		// loop through each memo and validate it
-		for _, memo := range memos {
-			if !IsMemo(memo) {
-				return fmt.Errorf("BaseTransaction: invalid Memos. A memo can only have hexadecimals values. See https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field")
-			}
+func validateMemos(memoWrapper []MemoWrapper) error {
+	// loop through each memo and validate it
+	for _, memo := range memoWrapper {
+		isMemo, err := IsMemo(memo.Memo)
+		if !isMemo {
+			return err
 		}
 	}
 

@@ -5,10 +5,13 @@ import (
 
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
-	"github.com/Peersyst/xrpl-go/xrpl/utils"
 )
 
 const (
+	// The Memos field includes arbitrary messaging data with the transaction.
+	// It is presented as an array of objects. Each object has only one field, Memo,
+	// which in turn contains another object with one or more of the following fields:
+	// MemoData, MemoFormat, and MemoType. https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field
 	MEMO_SIZE                  = 3
 	SIGNER_SIZE                = 3
 	ISSUED_CURRENCY_SIZE       = 3
@@ -16,26 +19,34 @@ const (
 )
 
 // IsMemo checks if the given object is a valid Memo object.
-func IsMemo(obj map[string]interface{}) bool {
-	// Check if the object is not nil and if it has a Memo field.
-	if obj == nil || obj["Memo"] == nil {
-		return false
-	}
-
-	// Check if the Memo field is a map.
-	memo, isMap := obj["Memo"].(map[string]interface{})
-	if !isMap {
-		return false
-	}
-
+func IsMemo(memo Memo) (bool, error) {
 	// Get the size of the Memo object.
-	size := len(maputils.GetKeys(memo))
+	size := len(maputils.GetKeys(memo.Flatten()))
 
-	validData := memo["MemoData"] == nil || typecheck.IsHex(memo["MemoData"].(string))
-	validFormat := memo["MemoFormat"] == nil || typecheck.IsHex(memo["MemoFormat"].(string))
-	validType := memo["MemoType"] == nil || typecheck.IsHex(memo["MemoType"].(string))
+	if size == 0 {
+		return false, errors.New("Memo object should have at least one field, MemoData, MemoFormat or MemoType")
+	}
 
-	return size >= 1 && size <= MEMO_SIZE && validData && validFormat && validType && utils.ObjectOnlyHasFields(memo, []string{"MemoFormat", "MemoData", "MemoType"})
+	if size > MEMO_SIZE {
+		return false, errors.New("Memo object should have at most three fields, MemoData, MemoFormat and MemoType")
+	}
+
+	validData := memo.MemoData == "" || typecheck.IsHex(memo.MemoData)
+	if !validData {
+		return false, errors.New("MemoData should be a hexadecimal string")
+	}
+
+	validFormat := memo.MemoFormat == "" || typecheck.IsHex(memo.MemoFormat)
+	if !validFormat {
+		return false, errors.New("MemoFormat should be a hexadecimal string")
+	}
+
+	validType := memo.MemoType == "" || typecheck.IsHex(memo.MemoType)
+	if !validType {
+		return false, errors.New("MemoType should be a hexadecimal string")
+	}
+
+	return true, nil
 }
 
 // IsSigner checks if the given object is a valid Signer object.
