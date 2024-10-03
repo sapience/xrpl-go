@@ -118,7 +118,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["Sequence"] = tx.Sequence
 	}
 	if tx.AccountTxnID != "" {
-		flattened["AccountTxnID"] = tx.AccountTxnID
+		flattened["AccountTxnID"] = tx.AccountTxnID.String()
 	}
 	if tx.Flags != 0 {
 		flattened["Flags"] = int(tx.Flags)
@@ -332,13 +332,13 @@ func (tx *BaseTx) Validate() (bool, error) {
 	}
 
 	// memos
-	err = validateMemos(flattenTx)
+	err = validateMemos(tx.Memos)
 	if err != nil {
 		return false, err
 	}
 
 	// signers
-	err = validateSigners(flattenTx)
+	err = validateSigners(tx.Signers)
 	if err != nil {
 		return false, err
 	}
