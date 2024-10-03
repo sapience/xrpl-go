@@ -28,6 +28,8 @@ const (
 	NodePublicKeyPrefix = 0x1C
 	// ED25519 prefix - value is 237
 	ED25519Prefix = 0xED
+	// SECP256K1 prefix - value is 0
+	SECP256K1Prefix = 0x00
 )
 
 type CryptoAlgorithm uint8
@@ -35,7 +37,7 @@ type CryptoAlgorithm uint8
 const (
 	Undefined CryptoAlgorithm = iota
 	ED25519                   = ED25519Prefix
-	SECP256K1                 = FamilySeedPrefix
+	SECP256K1                 = SECP256K1Prefix
 )
 
 func (c CryptoAlgorithm) String() string {
