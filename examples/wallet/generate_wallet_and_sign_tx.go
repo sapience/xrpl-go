@@ -105,7 +105,7 @@ func main() {
 	mnemonicTx := transactions.Payment{
 		BaseTx: transactions.BaseTx{
 			TransactionType: "Payment",
-			Account: types.Address(mnemonicWallet.ClassicAddress),
+			Account:         types.Address(mnemonicWallet.ClassicAddress),
 		},
 		Amount: types.IssuedCurrencyAmount{
 			Issuer:   Issuer,

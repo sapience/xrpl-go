@@ -104,21 +104,21 @@ func TestNewWalletFromMnemonic(t *testing.T) {
 		ClassicAddress string
 	}{
 		{
-			Mnemonic: "midnight help already frost arena force omit physical please dwarf envelope royal dice surge eight often muscle tired blast begin waste fat rescue debate",
-			PublicKey: "028E831F16FD85ABEDA7577B6F4F26500FAB80AEA54B8A89EEC6FA44BCC7AF5678",
-			PrivateKey: "00C503FC86436D384F37F946E8DE3B8D9B4D09961424B7ABEF47DEE229A499D557",
+			Mnemonic:       "midnight help already frost arena force omit physical please dwarf envelope royal dice surge eight often muscle tired blast begin waste fat rescue debate",
+			PublicKey:      "028E831F16FD85ABEDA7577B6F4F26500FAB80AEA54B8A89EEC6FA44BCC7AF5678",
+			PrivateKey:     "00C503FC86436D384F37F946E8DE3B8D9B4D09961424B7ABEF47DEE229A499D557",
 			ClassicAddress: "rpa9S5fRbS2ZAf2cdFGtezhGYgom1iD4yh",
 		},
 		{
-			Mnemonic: "honey tip lunch empower omit invite nuclear tent brother sadness still exercise odor harbor alcohol huge wait swamp vessel tired swallow supreme silk spawn",
-			PublicKey: "038D4EA460687B0FF43E95D9CB56E439AC2C65D890C9FD8B553FF24997C5F91D9A",
-			PrivateKey: "00C2C6F996F5FAD5168CAAAD6E58E518641A41E8E164A6FADC540F52D728E2A4AB",
+			Mnemonic:       "honey tip lunch empower omit invite nuclear tent brother sadness still exercise odor harbor alcohol huge wait swamp vessel tired swallow supreme silk spawn",
+			PublicKey:      "038D4EA460687B0FF43E95D9CB56E439AC2C65D890C9FD8B553FF24997C5F91D9A",
+			PrivateKey:     "00C2C6F996F5FAD5168CAAAD6E58E518641A41E8E164A6FADC540F52D728E2A4AB",
 			ClassicAddress: "rPdkbYi6ok7HFpbRo6CSxeDUg951tVdA1m",
 		},
 		{
-			Mnemonic: "hen toe quarter robust elevator badge coconut all place desk pen school topic life seminar run salute paddle hurdle impact push amount oblige citizen",
-			PublicKey: "0388AE366DF0D8819760B82319C7A04CA06CC1D49EB5D41ED8DA0C8903DE8FF812",
-			PrivateKey: "001CBDDCA87FB57FB5A9D96ECE29D5710DA8421891F40CFA2262120DBB61E5050D",
+			Mnemonic:       "hen toe quarter robust elevator badge coconut all place desk pen school topic life seminar run salute paddle hurdle impact push amount oblige citizen",
+			PublicKey:      "0388AE366DF0D8819760B82319C7A04CA06CC1D49EB5D41ED8DA0C8903DE8FF812",
+			PrivateKey:     "001CBDDCA87FB57FB5A9D96ECE29D5710DA8421891F40CFA2262120DBB61E5050D",
 			ClassicAddress: "rsKbuMTkzR5HU96j8pdGsSuzmZEiZ6mKh5",
 		},
 	}

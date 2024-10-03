@@ -36,9 +36,9 @@ type CryptoAlgorithm uint8
 
 const (
 	// Undefined is the default value for the CryptoAlgorithm type (max uint8 value).
-	Undefined CryptoAlgorithm = 64 
+	Undefined CryptoAlgorithm = 64
 	ED25519                   = ED25519Prefix
-	SECP256K1                 = SECP256K1Prefix 
+	SECP256K1                 = SECP256K1Prefix
 )
 
 func (c CryptoAlgorithm) String() string {
