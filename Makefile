@@ -5,9 +5,29 @@ lint:
 	@golangci-lint run
 	@echo "Linting complete!"
 
-test:
+test-all:
 	@echo "Running Go tests..."
 	@go test -v $(shell go list ./... | grep -v /faucet | grep -v /examples)
+	@echo "Tests complete!"
+
+test-binary-codec:
+	@echo "Running Go tests for binary codec package..."
+	@go test -v ./codec/binary/...
+	@echo "Tests complete!"
+
+test-address-codec:
+	@echo "Running Go tests for address codec package..."
+	@go test -v ./codec/address/...
+	@echo "Tests complete!"
+
+test-keypairs:
+	@echo "Running Go tests for keypairs package..."
+	@go test -v ./keypairs/...
+	@echo "Tests complete!"
+
+test-xrpl:
+	@echo "Running Go tests for xrpl package..."
+	@go test -v ./xrpl/...
 	@echo "Tests complete!"
 
 test-ci:
