@@ -26,4 +26,4 @@ jobs:
     - name: Run linter
       run: docker run --rm xrpl-go-ci:latest sh -c "make lint"
     - name: Run tests
-      run: docker run --rm xrpl-go-ci:latest sh -c "make test"
+      run: docker run --rm xrpl-go-ci:latest sh -c "make test-ci"
