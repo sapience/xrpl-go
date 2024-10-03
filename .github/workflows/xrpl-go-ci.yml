@@ -3,7 +3,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main, 'v*' ]
+    branches: [ '**' ]
 jobs:
   build:
     name: Lint and Test
