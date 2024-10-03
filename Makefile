@@ -12,12 +12,12 @@ test-all:
 
 test-binary-codec:
 	@echo "Running Go tests for binary codec package..."
-	@go test -v ./codec/binary/...
+	@go test -v ./binary-codec/...
 	@echo "Tests complete!"
 
 test-address-codec:
 	@echo "Running Go tests for address codec package..."
-	@go test -v ./codec/address/...
+	@go test -v ./address-codec/...
 	@echo "Tests complete!"
 
 test-keypairs:
