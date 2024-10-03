@@ -144,31 +144,55 @@ func IsPathStep(pathStep map[string]interface{}) bool {
 	return false
 }
 
-// IsPath checks if the given slice of maps is a valid Path.
-func IsPath(path []map[string]interface{}) bool {
+// IsPath checks if the given pathstep is valid.
+func IsPath(path []PathStep) (bool, error) {
 	for _, pathStep := range path {
-		if !IsPathStep(pathStep) {
-			return false
+
+		hasAccount := pathStep.Account != ""
+		hasCurrency := pathStep.Currency != ""
+		hasIssuer := pathStep.Issuer != ""
+
+		/**
+		In summary, the following combination of fields are valid, optionally with type, type_hex, or both:
+
+		- account by itself
+		- currency by itself
+		- currency and issuer as long as the currency is not XRP
+		- issuer by itself
+
+		Any other use of account, currency, and issuer fields in a path step is invalid.
+
+		https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications
+		*/
+		if (hasAccount && !hasCurrency && !hasIssuer) || (hasCurrency && !hasAccount && !hasIssuer) || (hasIssuer && !hasAccount && !hasCurrency) {
+			return true, nil
 		}
+
+		if hasIssuer && hasCurrency && pathStep.Currency != "XRP" {
+			return true, nil
+		}
+
+		return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
+
 	}
-	return true
+	return true, nil
 }
 
 // IsPaths checks if the given slice of slices of maps is a valid Paths.
-func IsPaths(paths [][]map[string]interface{}) bool {
-	if len(paths) == 0 {
-		return false
+func IsPaths(pathsteps [][]PathStep) (bool, error) {
+	if len(pathsteps) == 0 {
+		return false, errors.New("paths should have at least one path")
 	}
 
-	for _, path := range paths {
+	for _, path := range pathsteps {
 		if len(path) == 0 {
-			return false
+			return false, errors.New("path should have at least one path step")
 		}
 
-		if !IsPath(path) {
-			return false
+		if ok, err := IsPath(path); !ok {
+			return false, err
 		}
 	}
 
-	return true
+	return true, nil
 }

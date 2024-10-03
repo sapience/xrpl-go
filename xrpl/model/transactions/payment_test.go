@@ -64,25 +64,74 @@ func TestPaymentFlatten(t *testing.T) {
 			Value:    "1",
 		},
 		Destination: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+		Paths: [][]PathStep{
+			{
+				{
+					Account: "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj",
+				},
+				{
+					Account: "ra8mAnaRqoxijPayDcyneRjcD45Bo2DNnM",
+				},
+			},
+			{
+				{
+					Currency: "USD",
+					Issuer:   "rEFowZFH6y4A6PwuzmAx6cFXsAkr8JiHiS",
+				},
+			},
+		},
 	}
 
 	flattened := s.Flatten()
 
-	expected := FlatTransaction{
-		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+	expected := `{
+		"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "Payment",
-		"Fee":             "1000",
-		"Flags":           int(262144),
-		"Amount": map[string]interface{}{
-			"issuer":   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+		"Fee": "1000",
+		"Flags": 262144,
+		"Amount": {
+			"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 			"currency": "USD",
-			"value":    "1",
+			"value": "1"
 		},
 		"Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+		"Paths": [
+			[
+				{
+					"account": "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj"
+				},
+				{
+					"account": "ra8mAnaRqoxijPayDcyneRjcD45Bo2DNnM"
+				}
+			],
+			[
+				{
+					"currency": "USD",
+					"issuer": "rEFowZFH6y4A6PwuzmAx6cFXsAkr8JiHiS"
+				}
+			]
+		]
+	}`
+
+	// Convert flattened to JSON
+	flattenedJSON, err := json.Marshal(flattened)
+	if err != nil {
+		t.Errorf("Error marshaling payment flattened, error: %v", err)
 	}
 
-	if !reflect.DeepEqual(flattened, expected) {
-		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
+	// Normalize expected JSON
+	var expectedMap map[string]interface{}
+	if err := json.Unmarshal([]byte(expected), &expectedMap); err != nil {
+		t.Errorf("Error unmarshaling expected, error: %v", err)
+	}
+	expectedJSON, err := json.Marshal(expectedMap)
+	if err != nil {
+		t.Errorf("Error marshaling expected payment object: %v", err)
+	}
+
+	// Compare JSON strings
+	if string(flattenedJSON) != string(expectedJSON) {
+		t.Errorf("The flattened and expected Payment JSON are not equal.\nGot: %v\nExpected: %v", string(flattenedJSON), string(expectedJSON))
 	}
 }
 

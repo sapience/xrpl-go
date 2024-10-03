@@ -104,7 +104,18 @@ func (p *Payment) Flatten() FlatTransaction {
 	}
 
 	if len(p.Paths) > 0 {
-		flattened["Paths"] = p.Paths
+		flattenedPaths := make([][]interface{}, 0)
+		for _, path := range p.Paths {
+			flattenedPath := make([]interface{}, 0)
+			for _, step := range path {
+				flattenedStep := step.Flatten()
+				if flattenedStep != nil {
+					flattenedPath = append(flattenedPath, flattenedStep)
+				}
+			}
+			flattenedPaths = append(flattenedPaths, flattenedPath)
+		}
+		flattened["Paths"] = flattenedPaths
 	}
 
 	if p.SendMax != nil {
@@ -225,8 +236,8 @@ func (tx *Payment) Validate() (bool, error) {
 
 	// Check if the field Paths is valid
 	if tx.Paths != nil {
-		if !IsPaths(flattenTx["Paths"].([][]map[string]interface{})) {
-			return false, errors.New("invalid field Paths")
+		if ok, err := IsPaths(tx.Paths); !ok {
+			return false, err
 		}
 	}
 
