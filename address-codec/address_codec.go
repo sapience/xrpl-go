@@ -35,9 +35,10 @@ const (
 type CryptoAlgorithm uint8
 
 const (
-	Undefined CryptoAlgorithm = iota
+	// Undefined is the default value for the CryptoAlgorithm type (max uint8 value).
+	Undefined CryptoAlgorithm = 64 
 	ED25519                   = ED25519Prefix
-	SECP256K1                 = SECP256K1Prefix
+	SECP256K1                 = SECP256K1Prefix 
 )
 
 func (c CryptoAlgorithm) String() string {
@@ -152,7 +153,7 @@ func EncodeSeed(entropy []byte, encodingType CryptoAlgorithm) (string, error) {
 		prefix := []byte{0x01, 0xe1, 0x4b}
 		return Encode(entropy, prefix, FamilySeedLength), nil
 	case SECP256K1:
-		prefix := []byte{SECP256K1}
+		prefix := []byte{FamilySeedPrefix}
 		return Encode(entropy, prefix, FamilySeedLength), nil
 	default:
 		return "", errors.New("encoding type must be `ed25519` or `secp256k1`")
