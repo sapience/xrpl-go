@@ -3,7 +3,7 @@ package path
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/ledger"
+	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )

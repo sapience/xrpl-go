@@ -1,7 +1,7 @@
 package account
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/ledger"
+	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
