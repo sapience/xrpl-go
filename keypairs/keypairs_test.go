@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
+	"github.com/Peersyst/xrpl-go/pkg/random"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,35 +14,35 @@ func TestGenerateEncodeSeed(t *testing.T) {
 	tt := []struct {
 		description string
 		entropy     string
-		algorithm   addresscodec.CryptoAlgorithm
+		algorithm   CryptoImplementation
 		expected    string
 		expectedErr error
 	}{
 		{
 			description: "Empty entropy should generate random seed (ED25519)",
 			entropy:     "",
-			algorithm:   addresscodec.ED25519,
+			algorithm:   crypto.ED25519(),
 			expected:    "sEdTjrdnJaPE2NNjmavQqXQdrf71NiH",
 			expectedErr: nil,
 		},
 		{
 			description: "Entropy defined and above family seed length (ED25519)",
 			entropy:     "setPasswordOverLen16",
-			algorithm:   addresscodec.ED25519,
+			algorithm:   crypto.ED25519(),
 			expected:    "sEdTuXdrgQobjDidph2oMDN36jGZX2U",
 			expectedErr: nil,
 		},
 		{
 			description: "Empty entropy should generate random seed (SECP256K1)",
 			entropy:     "",
-			algorithm:   addresscodec.SECP256K1,
+			algorithm:   crypto.SECP256K1(),
 			expected:    "sh3pdwcaoo7vt5rtrEZJ7a75LnDo3",
 			expectedErr: nil,
 		},
 		{
 			description: "Entropy defined and above family seed length (SECP256K1)",
 			entropy:     "setPasswordOverLen16",
-			algorithm:   addresscodec.SECP256K1,
+			algorithm:   crypto.SECP256K1(),
 			expected:    "shJYdazRN9dvWbGqCehzHcBKWBaFR",
 			expectedErr: nil,
 		},
@@ -51,8 +52,8 @@ func TestGenerateEncodeSeed(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			if tc.entropy == "" {
 				fb := bytes.NewBuffer([]byte("fakeRandomString"))
-				tr := randomizer{
-					fb,
+				tr := random.Randomizer{
+					Reader: fb,
 				}
 				r = tr
 			}
@@ -101,32 +102,6 @@ func TestDeriveKeypair(t *testing.T) {
 				require.Equal(t, tc.pubKey, pub)
 				require.Equal(t, tc.privKey, priv)
 			}
-		})
-	}
-}
-
-func TestGetCryptoImplementation(t *testing.T) {
-	tt := []struct {
-		description string
-		input       addresscodec.CryptoAlgorithm
-		expected    CryptoImplementation
-	}{
-		{
-			description: "Return ed25519 implementation - ED25519",
-			input:       addresscodec.ED25519,
-			expected:    &ed25519Alg{},
-		},
-		{
-			description: "Not a valid crypto implementation",
-			input:       addresscodec.Undefined,
-			expected:    nil,
-		},
-	}
-
-	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
-			actual := getCryptoImplementation(tc.input)
-			require.Equal(t, tc.expected, actual)
 		})
 	}
 }
