@@ -128,7 +128,7 @@ func (s *AccountSet) Flatten() FlatTransaction {
 		flattened["TransferRate"] = int(s.TransferRate)
 	}
 	if s.TickSize != 0 {
-		flattened["TickSize"] = s.TickSize
+		flattened["TickSize"] = int(s.TickSize)
 	}
 	if s.WalletLocator != "" {
 		flattened["WalletLocator"] = s.WalletLocator.String()
@@ -336,16 +336,55 @@ func (s *AccountSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	ValidateOptionalField(flatten, "ClearFlag", typecheck.IsUint)
-	ValidateOptionalField(flatten, "Domain", typecheck.IsString)
-	ValidateOptionalField(flatten, "EmailHash", typecheck.IsString)
-	ValidateOptionalField(flatten, "MessageKey", typecheck.IsString)
-	ValidateOptionalField(flatten, "SetFlag", typecheck.IsUint)
-	ValidateOptionalField(flatten, "TransferRate", typecheck.IsUint)
-	ValidateOptionalField(flatten, "TickSize", typecheck.IsUint)
-	ValidateOptionalField(flatten, "NFTokenMinter", typecheck.IsString)
-	ValidateOptionalField(flatten, "WalletLocator", typecheck.IsString)
-	ValidateOptionalField(flatten, "WalletSize", typecheck.IsUint)
+	err = ValidateOptionalField(flatten, "ClearFlag", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "Domain", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "EmailHash", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "MessageKey", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "SetFlag", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "TransferRate", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "TickSize", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "NFTokenMinter", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "WalletLocator", typecheck.IsString)
+	if err != nil {
+		return false, err
+	}
+
+	err = ValidateOptionalField(flatten, "WalletSize", typecheck.IsInt)
+	if err != nil {
+		return false, err
+	}
 
 	// check if SetFlag is within the valid range
 	if s.SetFlag != 0 {
