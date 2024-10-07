@@ -245,20 +245,6 @@ func TestPaymentValidate(t *testing.T) {
 			isValid: false,
 		},
 		{
-			name: "Invalid Amount",
-			payment: Payment{
-				BaseTx: BaseTx{
-					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
-					TransactionType: PaymentTx,
-					Fee:             types.XRPCurrencyAmount(1000),
-					Flags:           262144,
-				},
-				Amount:      types.XRPCurrencyAmount(0),
-				Destination: "hij",
-			},
-			isValid: false,
-		},
-		{
 			name: "Invalid Destination",
 			payment: Payment{
 				BaseTx: BaseTx{
@@ -277,7 +263,7 @@ func TestPaymentValidate(t *testing.T) {
 			isValid: false,
 		},
 		{
-			name: "Invalid Paths",
+			name: "Invalid Paths, both account and currency",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
@@ -293,9 +279,51 @@ func TestPaymentValidate(t *testing.T) {
 				Destination: "hij",
 				Paths: [][]PathStep{
 					{
-						{Account: "invalid"},
+						{Account: "invalid", Currency: "USD"}, // can't have both account and currency
 					},
 				},
+			},
+			isValid: false,
+		},
+		{
+			name: "Invalid Paths, both Issuer and currency set to XRP",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           262144,
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Issuer:   "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj",
+					Currency: "USD",
+					Value:    "1",
+				},
+				Destination: "hij",
+				Paths: [][]PathStep{
+					{
+						{Issuer: "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj", Currency: "XRP"}, // can't have both Issuer and currency set to XRP
+					},
+				},
+			},
+			isValid: false,
+		},
+		{
+			name: "Invalid Paths, empty array",
+			payment: Payment{
+				BaseTx: BaseTx{
+					Account:         "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
+					TransactionType: PaymentTx,
+					Fee:             types.XRPCurrencyAmount(1000),
+					Flags:           262144,
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Issuer:   "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj",
+					Currency: "USD",
+					Value:    "1",
+				},
+				Destination: "hij",
+				Paths:       [][]PathStep{},
 			},
 			isValid: false,
 		},

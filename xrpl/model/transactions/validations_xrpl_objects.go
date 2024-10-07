@@ -166,13 +166,11 @@ func IsPath(path []PathStep) (bool, error) {
 		*/
 		if (hasAccount && !hasCurrency && !hasIssuer) || (hasCurrency && !hasAccount && !hasIssuer) || (hasIssuer && !hasAccount && !hasCurrency) {
 			return true, nil
-		}
-
-		if hasIssuer && hasCurrency && pathStep.Currency != "XRP" {
+		} else if hasIssuer && hasCurrency && pathStep.Currency != "XRP" {
 			return true, nil
+		} else {
+			return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
 		}
-
-		return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
 
 	}
 	return true, nil
