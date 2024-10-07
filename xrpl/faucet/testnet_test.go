@@ -3,7 +3,7 @@ package faucet
 import (
 	"testing"
 
-	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl"
 )
 
@@ -16,7 +16,7 @@ func TestTestnetFaucetProvider_FundWallet(t *testing.T) {
 	provider := NewTestnetFaucetProvider()
 
 	// Test wallet address
-	testWallet, err := xrpl.NewWallet(addresscodec.ED25519)
+	testWallet, err := xrpl.NewWallet(crypto.ED25519())
 	if err != nil {
 		t.Errorf("Wallet creation error: %v", err)
 	}
