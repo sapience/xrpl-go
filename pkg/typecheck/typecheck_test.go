@@ -300,59 +300,60 @@ func TestIsInt(t *testing.T) {
 		})
 	}
 }
-func TestIsFloat(t *testing.T) {
+
+func TestIsFloat64(t *testing.T) {
 	tests := []struct {
 		name string
 		s    string
 		want bool
 	}{
 		{
-			name: "Valid float",
-			s:    "3.14",
+			name: "Valid float64",
+			s:    "3.141592653589793",
 			want: true,
 		},
 		{
-			name: "Valid float (integer)",
-			s:    "30",
+			name: "Valid float64 (integer)",
+			s:    "42",
 			want: true,
 		},
 		{
-			name: "Valid negative float",
-			s:    "-30",
+			name: "Valid negative float64",
+			s:    "-42.0",
 			want: true,
 		},
 		{
-			name: "Valid float with leading zero",
-			s:    "0.123",
+			name: "Valid float64 with leading zero",
+			s:    "0.123456789",
 			want: true,
 		},
 		{
-			name: "Valid negative float",
-			s:    "-3.14",
+			name: "Valid negative float64",
+			s:    "-3.141592653589793",
 			want: true,
 		},
 		{
-			name: "Invalid float with multiple decimal points",
+			name: "Invalid float64 with multiple decimal points",
 			s:    "3.14.15",
 			want: false,
 		},
 		{
-			name: "Invalid float with non-numeric characters",
+			name: "Invalid float64 with non-numeric characters",
 			s:    "3.14abc",
 			want: false,
 		},
 		{
-			name: "Valid float with leading plus sign",
-			s:    "+3.14",
+			name: "Valid float64 with leading plus sign",
+			s:    "+3.141592653589793",
 			want: true,
 		},
 		{
-			name: "Invalid float with leading minus sign",
+			name: "Invalid float64 with leading minus sign",
 			s:    "-",
 			want: false,
 		},
 		{
-			name: "Invalid float with empty string",
+			name: "Invalid float64 with empty string",
 			s:    "",
 			want: false,
 		},
@@ -360,8 +361,74 @@ func TestIsFloat(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsFloat(tt.s); got != tt.want {
-				t.Errorf("isFloat(%q) = %v, want %v", tt.s, got, tt.want)
+			if got := IsFloat64(tt.s); got != tt.want {
+				t.Errorf("IsFloat64(%q) = %v, want %v", tt.s, got, tt.want)
+			}
+		})
+	}
+}
+func TestIsFloat32(t *testing.T) {
+	tests := []struct {
+		name string
+		s    string
+		want bool
+	}{
+		{
+			name: "Valid float32",
+			s:    "3.14159",
+			want: true,
+		},
+		{
+			name: "Valid float32 (integer)",
+			s:    "42",
+			want: true,
+		},
+		{
+			name: "Valid negative float32",
+			s:    "-42.0",
+			want: true,
+		},
+		{
+			name: "Valid float32 with leading zero",
+			s:    "0.123456",
+			want: true,
+		},
+		{
+			name: "Valid negative float32",
+			s:    "-3.14159",
+			want: true,
+		},
+		{
+			name: "Invalid float32 with multiple decimal points",
+			s:    "3.14.15",
+			want: false,
+		},
+		{
+			name: "Invalid float32 with non-numeric characters",
+			s:    "3.14abc",
+			want: false,
+		},
+		{
+			name: "Valid float32 with leading plus sign",
+			s:    "+3.14159",
+			want: true,
+		},
+		{
+			name: "Invalid float32 with leading minus sign",
+			s:    "-",
+			want: false,
+		},
+		{
+			name: "Invalid float32 with empty string",
+			s:    "",
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsFloat32(tt.s); got != tt.want {
+				t.Errorf("IsFloat32(%q) = %v, want %v", tt.s, got, tt.want)
 			}
 		})
 	}

@@ -48,8 +48,14 @@ func IsHex(s string) bool {
 	return validHexPattern.MatchString(s)
 }
 
-// Checks if the given string is a valid number.
-func IsFloat(s string) bool {
+// Checks if the given string is a valid number (Float32).
+func IsFloat32(s string) bool {
+	_, err := strconv.ParseFloat(s, 32)
+	return err == nil
+}
+
+// Checks if the given string is a valid number (Float64).
+func IsFloat64(s string) bool {
 	_, err := strconv.ParseFloat(s, 64)
 	return err == nil
 }

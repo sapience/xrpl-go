@@ -108,7 +108,7 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	if issuedAmount.Currency == "XRP" {
 		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
 	}
-	if !typecheck.IsFloat(issuedAmount.Value) {
+	if !typecheck.IsFloat32(issuedAmount.Value) {
 		return false, errors.New("value field should be a valid number")
 	}
 
