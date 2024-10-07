@@ -10,10 +10,10 @@ import (
 	"github.com/Peersyst/xrpl-go/keypairs"
 )
 
-// HashSignedTx hashes a signed transaction blob
+// HashTxBlob hashes a signed transaction blob
 // It takes a transaction blob and returns the hash of the signed transaction.
 // It returns an error if the transaction blob is invalid.
-func HashSignedTx(txBlob string) (string, error) {
+func HashTxBlob(txBlob string) (string, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return "", err

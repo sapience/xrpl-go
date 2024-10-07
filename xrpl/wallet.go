@@ -2,11 +2,16 @@ package xrpl
 
 import (
 	"encoding/hex"
+	"errors"
+	"fmt"
+	"strings"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/keypairs"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
+	"github.com/tyler-smith/go-bip32"
+	"github.com/tyler-smith/go-bip39"
 )
 
 // A utility for deriving a wallet composed of a keypair (publicKey/privateKey).
@@ -65,55 +70,55 @@ func NewWalletFromSecret(seed string) (Wallet, error) {
 
 // // Derives a wallet from a bip39 or RFC1751 mnemonic (Defaults to bip39).
 // // Returns a Wallet object. If an error occurs, it will be returned.
-// func NewWalletFromMnemonic(mnemonic string) (*Wallet, error) {
-// 	// Validate the mnemonic
-// 	if !bip39.IsMnemonicValid(mnemonic) {
-// 		return nil, errors.New("invalid mnemonic")
-// 	}
+func NewWalletFromMnemonic(mnemonic string) (*Wallet, error) {
+	// Validate the mnemonic
+	if !bip39.IsMnemonicValid(mnemonic) {
+		return nil, errors.New("invalid mnemonic")
+	}
 
-// 	// Generate seed from mnemonic
-// 	seed := bip39.NewSeed(mnemonic, "")
+	// Generate seed from mnemonic
+	seed := bip39.NewSeed(mnemonic, "")
 
-// 	// Derive the master key
-// 	masterKey, err := bip32.NewMasterKey(seed)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	// Derive the master key
+	masterKey, err := bip32.NewMasterKey(seed)
+	if err != nil {
+		return nil, err
+	}
 
-// 	// Derive the key using the path m/44'/144'/0'/0/0
-// 	path := []uint32{
-// 		44 + bip32.FirstHardenedChild,
-// 		144 + bip32.FirstHardenedChild,
-// 		bip32.FirstHardenedChild,
-// 		0,
-// 		0,
-// 	}
+	// Derive the key using the path m/44'/144'/0'/0/0
+	path := []uint32{
+		44 + bip32.FirstHardenedChild,
+		144 + bip32.FirstHardenedChild,
+		bip32.FirstHardenedChild,
+		0,
+		0,
+	}
 
-// 	key := masterKey
-// 	for _, childNum := range path {
-// 		key, err = key.NewChildKey(childNum)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 	}
+	key := masterKey
+	for _, childNum := range path {
+		key, err = key.NewChildKey(childNum)
+		if err != nil {
+			return nil, err
+		}
+	}
 
-// 	// Convert the private key to the format expected by the XRPL library
-// 	privKey := strings.ToUpper(hex.EncodeToString(key.Key))
-// 	pubKey := strings.ToUpper(hex.EncodeToString(key.PublicKey().Key))
+	// Convert the private key to the format expected by the XRPL library
+	privKey := strings.ToUpper(hex.EncodeToString(key.Key))
+	pubKey := strings.ToUpper(hex.EncodeToString(key.PublicKey().Key))
 
-// 	// Derive classic address
-// 	classicAddr, err := keypairs.DeriveClassicAddress(pubKey)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	// Derive classic address
+	classicAddr, err := keypairs.DeriveClassicAddress(pubKey)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &Wallet{
-// 		PublicKey:      pubKey,
-// 		PrivateKey:     fmt.Sprintf("00%s", privKey),
-// 		ClassicAddress: classicAddr,
-// 		Seed:           "", // We don't have the seed in this case
-// 	}, nil
-// }
+	return &Wallet{
+		PublicKey:      pubKey,
+		PrivateKey:     fmt.Sprintf("00%s", privKey),
+		ClassicAddress: classicAddr,
+		Seed:           "", // We don't have the seed in this case
+	}, nil
+}
 
 // Signs a transaction offline.
 // In order for a transaction to be validated, it must be signed by the account sending the transaction to prove
@@ -147,7 +152,7 @@ func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 		return "", "", err
 	}
 
-	txHash, err = hash.HashSignedTx(txBlob)
+	txHash, err = hash.HashTxBlob(txBlob)
 	if err != nil {
 		return "", "", err
 	}
