@@ -153,7 +153,7 @@ func IsPath(path []PathStep) (bool, error) {
 		hasIssuer := pathStep.Issuer != ""
 
 		/**
-		In summary, the following combination of fields are valid, optionally with type, type_hex, or both:
+		In summary, the following combination of fields are valid, optionally with type, type_hex, or both (but these two are deprecated):
 
 		- account by itself
 		- currency by itself
