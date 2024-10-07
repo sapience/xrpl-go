@@ -11,7 +11,6 @@ import (
 // ERRORS
 // -------------------------------------------------------------------------------------------------
 
-
 type CryptoImplementationError struct{}
 
 func (e *CryptoImplementationError) Error() string {
@@ -37,4 +36,3 @@ func getCryptoImplementationFromKey(k string) CryptoImplementation {
 	}
 	return nil
 }
-
