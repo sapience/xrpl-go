@@ -1,17 +1,15 @@
-package keypairs
+package crypto
 
 import (
 	"testing"
 
-	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/stretchr/testify/require"
 )
 
 func TestED25519DeriveKeypair(t *testing.T) {
-	e := &ed25519Alg{}
 	tt := []struct {
 		description string
-		seed        string
+		seedBytes   []byte
 		validator   bool
 		expPubKey   string
 		expPrivKey  string
@@ -19,7 +17,7 @@ func TestED25519DeriveKeypair(t *testing.T) {
 	}{
 		{
 			description: "Successfully derive keypair",
-			seed:        "sEdTjrdnJaPE2NNjmavQqXQdrf71NiH",
+			seedBytes:   []byte{102, 97, 107, 101, 82, 97, 110, 100, 111, 109, 83, 116, 114, 105, 110, 103},
 			validator:   false,
 			expPubKey:   "ED4924A9045FE5ED8B22BAA7B6229A72A287CCF3EA287AADD3A032A24C0F008FA6",
 			expPrivKey:  "EDBB3ECA8985E1484FA6A28C4B30FB0042A2CC5DF3EC8DC37B5F3D126DDFD3CA14",
@@ -27,7 +25,7 @@ func TestED25519DeriveKeypair(t *testing.T) {
 		},
 		{
 			description: "Error if validator is set to true",
-			seed:        "sEdTjrdnJaPE2NNjmavQqXQdrf71NiH",
+			seedBytes:   []byte{102, 97, 107, 101, 82, 97, 110, 100, 111, 109, 83, 116, 114, 105, 110, 103},
 			validator:   true,
 			expPubKey:   "",
 			expPrivKey:  "",
@@ -37,8 +35,7 @@ func TestED25519DeriveKeypair(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
-			ds, _, _ := addresscodec.DecodeSeed(tc.seed)
-			priv, pub, err := e.deriveKeypair(ds, tc.validator)
+			priv, pub, err := ED25519().DeriveKeypair(tc.seedBytes, tc.validator)
 			if tc.expErr != nil {
 				require.Zero(t, pub)
 				require.Zero(t, priv)
@@ -52,7 +49,6 @@ func TestED25519DeriveKeypair(t *testing.T) {
 }
 
 func TestED25519Sign(t *testing.T) {
-	e := &ed25519Alg{}
 	tt := []struct {
 		description  string
 		inputMsg     string
@@ -85,7 +81,7 @@ func TestED25519Sign(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
-			actual, err := e.sign(tc.inputMsg, tc.inputPrivKey)
+			actual, err := ED25519().Sign(tc.inputMsg, tc.inputPrivKey)
 
 			if tc.expectedErr != nil {
 				require.Zero(t, actual)
@@ -99,7 +95,6 @@ func TestED25519Sign(t *testing.T) {
 }
 
 func TestED25519Validate(t *testing.T) {
-	e := &ed25519Alg{}
 	tt := []struct {
 		description string
 		inputMsg    string
@@ -125,7 +120,7 @@ func TestED25519Validate(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
-			actual := e.validate(tc.inputMsg, tc.inputPubKey, tc.inputSig)
+			actual := ED25519().Validate(tc.inputMsg, tc.inputPubKey, tc.inputSig)
 			require.Equal(t, tc.expected, actual)
 		})
 	}

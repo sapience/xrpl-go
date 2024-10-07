@@ -5,8 +5,6 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"strings"
-
-	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 )
 
 const (
@@ -38,10 +36,10 @@ func (c ed25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool
 	if err != nil {
 		return "", "", err
 	}
-	pubKey = append([]byte{addresscodec.ED25519}, pubKey...)
+	pubKey = append([]byte{c.prefix}, pubKey...)
 	public := strings.ToUpper(hex.EncodeToString(pubKey))
-	privKey = append([]byte{addresscodec.ED25519}, privKey...)
-	private := strings.ToUpper(hex.EncodeToString(privKey[:32+len([]byte{addresscodec.ED25519})]))
+	privKey = append([]byte{c.prefix}, privKey...)
+	private := strings.ToUpper(hex.EncodeToString(privKey[:32+len([]byte{c.prefix})]))
 	return private, public, nil
 }
 
