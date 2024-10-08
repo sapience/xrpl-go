@@ -1,7 +1,8 @@
-package keypairs
+package crypto
 
 import (
 	"crypto/sha512"
+	"encoding/hex"
 	"errors"
 	"math/big"
 	"strings"
@@ -11,11 +12,31 @@ import (
 	ecdsa "github.com/decred/dcrd/dcrec/secp256k1/v4/ecdsa"
 )
 
-var _ CryptoImplementation = (*secp256k1Alg)(nil)
+const (
+	// SECP256K1 prefix - value is 0
+	secp256K1Prefix = 0x00
+	// SECP256K1 family seed prefix - value is 33
+	secp256K1FamilySeedPrefix = 0x21
+)
 
-type secp256k1Alg struct{}
+type secp256K1CryptoAlgorithm CryptoAlgorithm
 
-func deriveScalar(bytes []byte, discrim *big.Int) *big.Int {
+func SECP256K1() secp256K1CryptoAlgorithm {
+	return secp256K1CryptoAlgorithm{
+		prefix:           secp256K1Prefix,
+		familySeedPrefix: secp256K1FamilySeedPrefix,
+	}
+}
+
+func (c secp256K1CryptoAlgorithm) Prefix() byte {
+	return c.prefix
+}
+
+func (c secp256K1CryptoAlgorithm) FamilySeedPrefix() byte {
+	return c.familySeedPrefix
+}
+
+func (c secp256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *big.Int {
 
 	order := btcec.S256().N
 	for i := 0; i <= 0xffffffff; i++ {
@@ -52,11 +73,11 @@ func deriveScalar(bytes []byte, discrim *big.Int) *big.Int {
 	panic("impossible unicorn ;)")
 }
 
-func (c *secp256k1Alg) deriveKeypair(seed []byte, validator bool) (string, string, error) {
+func (c secp256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (string, string, error) {
 	curve := btcec.S256()
 	order := curve.N
 
-	privateGen := deriveScalar(seed, nil)
+	privateGen := c.deriveScalar(seed, nil)
 
 	if validator {
 		return "", "", errors.New("validator keypair derivation not supported")
@@ -64,23 +85,21 @@ func (c *secp256k1Alg) deriveKeypair(seed []byte, validator bool) (string, strin
 
 	rootPrivateKey, _ := btcec.PrivKeyFromBytes(privateGen.Bytes())
 
-	derivatedScalar := deriveScalar(rootPrivateKey.PubKey().SerializeCompressed(), big.NewInt(0))
+	derivatedScalar := c.deriveScalar(rootPrivateKey.PubKey().SerializeCompressed(), big.NewInt(0))
 	scalarWithPrivateGen := derivatedScalar.Add(derivatedScalar, privateGen)
 	privateKey := scalarWithPrivateGen.Mod(scalarWithPrivateGen, order)
 
 	privKeyBytes := privateKey.Bytes()
-	private := formatKey(privKeyBytes)
+	private := strings.ToUpper(hex.EncodeToString(privKeyBytes))
 
 	_, pubKey := btcec.PrivKeyFromBytes(privKeyBytes)
 
 	pubKeyBytes := pubKey.SerializeCompressed()
-	public := formatKey(pubKeyBytes)
 
-	private = "00" + private
-	return private, public, nil
+	return "00" + private, strings.ToUpper(hex.EncodeToString(pubKeyBytes)), nil
 }
 
-func (c *secp256k1Alg) sign(msg, privKey string) (string, error) {
+func (c secp256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	if len(privKey) != 64 && len(privKey) != 66 {
 		return "", errors.New("invalid private key")
 	}
@@ -91,7 +110,11 @@ func (c *secp256k1Alg) sign(msg, privKey string) (string, error) {
 	if len(privKey) == 66 {
 		privKey = privKey[2:]
 	}
-	key := deformatKey(privKey)
+	key, err := hex.DecodeString(privKey)
+	if err != nil {
+		return "", err
+	}
+
 	secpPrivKey := secp256k1.PrivKeyFromBytes(key)
 	sig := ecdsa.Sign(secpPrivKey, Sha512Half([]byte(msg)))
 
@@ -102,7 +125,7 @@ func (c *secp256k1Alg) sign(msg, privKey string) (string, error) {
 	return strings.ToUpper(parsedSig), nil
 }
 
-func (c *secp256k1Alg) validate(msg, pubkey, sig string) bool {
+func (c secp256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 	// Decode the signature from DERHex to a hex string
 	r, s, err := DERHexToSig(sig)
 	if err != nil {
@@ -126,7 +149,10 @@ func (c *secp256k1Alg) validate(msg, pubkey, sig string) bool {
 	hash := Sha512Half([]byte(msg))
 
 	// Decode the pubkey from hex to a byte slice
-	pubkeyBytes := deformatKey(pubkey)
+	pubkeyBytes, err := hex.DecodeString(pubkey)
+	if err != nil {
+		return false
+	}
 
 	// Verify the signature
 	pubKey, err := secp256k1.ParsePubKey(pubkeyBytes)
