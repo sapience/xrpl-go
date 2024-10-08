@@ -26,7 +26,7 @@ type Wallet struct {
 
 // Creates a new random Wallet. In order to make this a valid account on ledger, you must
 // Send XRP to it.
-func NewWallet(alg addresscodec.CryptoAlgorithm) (Wallet, error) {
+func NewWallet(alg addresscodec.CryptoImplementation) (Wallet, error) {
 	seed, err := keypairs.GenerateSeed("", alg)
 	if err != nil {
 		return Wallet{}, err

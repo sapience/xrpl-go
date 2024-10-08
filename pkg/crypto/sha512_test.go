@@ -1,4 +1,4 @@
-package keypairs
+package crypto
 
 import (
 	"testing"
