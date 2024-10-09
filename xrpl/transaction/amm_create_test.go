@@ -94,25 +94,9 @@ func TestAMMCreateFlatten(t *testing.T) {
 		"TradingFee":      10
 	}`
 
-	// Convert flattened to JSON
-	flattenedJSON, err := json.Marshal(flattened)
+	err := testutil.CompareFlattenAndExpected(flattened, []byte(expected))
 	if err != nil {
-		t.Errorf("Error marshaling payment flattened, error: %v", err)
-	}
-
-	// Normalize expected JSON
-	var expectedMap map[string]interface{}
-	if err := json.Unmarshal([]byte(expected), &expectedMap); err != nil {
-		t.Errorf("Error unmarshaling expected, error: %v", err)
-	}
-	expectedJSON, err := json.Marshal(expectedMap)
-	if err != nil {
-		t.Errorf("Error marshaling expected payment object: %v", err)
-	}
-
-	// Compare JSON strings
-	if string(flattenedJSON) != string(expectedJSON) {
-		t.Errorf("The flattened and expected Payment JSON are not equal.\nGot:      %v\nExpected: %v", string(flattenedJSON), string(expectedJSON))
+		t.Error(err)
 	}
 }
 func TestAMMCreateValidate(t *testing.T) {
