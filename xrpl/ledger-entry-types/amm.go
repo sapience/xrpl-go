@@ -7,6 +7,7 @@ import (
 )
 
 type AMM struct {
+	LedgerEntryCommonFields
 	// The address of the special account that holds this AMM's assets.
 	Account types.Address
 	// The definition for one of the two assets this AMM holds. In JSON, this is an object with currency and issuer fields.
@@ -21,7 +22,11 @@ type AMM struct {
 	// The percentage fee to be charged for trades against this AMM instance, in units of 1/100,000. The maximum value is 1000, for a 1% fee.
 	TradingFee uint16
 	// A list of vote objects, representing votes on the pool's trading fee.
-	VoteSlots []VoteEntry `json:",omitempty"`
+	VoteSlots []VoteSlots `json:",omitempty"`
+}
+
+func (*AMM) EntryType() LedgerEntryType {
+	return AMMEntry
 }
 
 func (a *AMM) UnmarshalJSON(data []byte) error {
@@ -32,7 +37,7 @@ func (a *AMM) UnmarshalJSON(data []byte) error {
 		AuctionSlot    AuctionSlot
 		LPTokenBalance json.RawMessage
 		TradingFee     uint16
-		VoteSlots      []VoteEntry
+		VoteSlots      []VoteSlots
 	}
 	var h ammHelper
 	var err error
@@ -61,22 +66,8 @@ func (a *AMM) UnmarshalJSON(data []byte) error {
 // ---------------------------------------------
 
 type Asset struct {
-	Currency string
-	Issuer   types.Address
-}
-
-func (a *Asset) Flatten() map[string]interface{} {
-	var flattened = make(map[string]interface{})
-
-	if a.Currency != "" {
-		flattened["Currency"] = a.Currency
-	}
-
-	if a.Issuer != "" {
-		flattened["Issuer"] = a.Issuer.String()
-	}
-
-	return flattened
+	Currency string        `json:"currency"`
+	Issuer   types.Address `json:"issuer,omitempty"`
 }
 
 // ---------------------------------------------
@@ -128,41 +119,6 @@ func (s *AuctionSlot) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Flatten converts the AuctionSlot struct into a map with string keys and interface{} values.
-// It includes non-zero and non-nil fields from the AuctionSlot struct.
-func (a AuctionSlot) Flatten() map[string]interface{} {
-	var flattened = make(map[string]interface{})
-
-	if a.Account != "" {
-		flattened["Account"] = a.Account.String()
-	}
-
-	if a.DiscountedFee != 0 {
-		flattened["DiscountedFee"] = a.DiscountedFee
-	}
-
-	if a.Price != nil {
-		flattened["Price"] = a.Price.Flatten()
-	}
-
-	if a.Expiration != 0 {
-		flattened["Expiration"] = a.Expiration
-	}
-
-	if len(a.AuthAccounts) > 0 {
-		flattenedAuthAccounts := make([]interface{}, 0)
-		for _, authAccount := range a.AuthAccounts {
-			flattenedAuthAccount := authAccount.Flatten()
-			if flattenedAuthAccount != nil {
-				flattenedAuthAccounts = append(flattenedAuthAccounts, flattenedAuthAccount)
-			}
-		}
-		flattened["AuthAccounts"] = flattenedAuthAccounts
-	}
-
-	return flattened
-}
-
 // ---------------------------------------------
 // AuthAccounts Object
 // ---------------------------------------------
@@ -176,18 +132,16 @@ type AuthAccount struct {
 	Account types.Address
 }
 
-func (a AuthAccounts) Flatten() map[string]interface{} {
-	var flattened = make(map[string]interface{})
+// ---------------------------------------------
+// VoteSlots / Vote Entry Objects
+// ---------------------------------------------
 
-	if a.AuthAccount.Account != "" {
-		flattened["Account"] = a.AuthAccount.Account.String()
-	}
-
-	return flattened
+type VoteSlots struct {
+	VoteEntry VoteEntry
 }
 
 type VoteEntry struct {
-	Account     types.Address
-	TradingFee  uint
-	VoteWeither uint
+	Account    types.Address
+	TradingFee uint
+	VoteWeight uint
 }
