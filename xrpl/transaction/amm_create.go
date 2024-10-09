@@ -2,9 +2,14 @@ package transaction
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
+
+// The maximum value is 1000, indicating a 1% fee. The minimum value is 0. https://xrpl.org/docs/references/protocol/transactions/types/ammcreate#ammcreate-fields
+const AMM_MAX_TRADING_FEE = 1000
 
 type AMMCreate struct {
 	BaseTx
@@ -72,4 +77,33 @@ func (s *AMMCreate) Flatten() FlatTransaction {
 	flattened["TradingFee"] = s.TradingFee
 
 	return flattened
+}
+
+func (a *AMMCreate) Validate() (bool, error) {
+	_, err := a.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if a.Amount == nil {
+		return false, errors.New("missing field Amount")
+	}
+
+	if !IsAmount(a.Amount) {
+		return false, errors.New("invalid field Amount")
+	}
+
+	if a.Amount2 == nil {
+		return false, errors.New("missing field Amount2")
+	}
+
+	if !IsAmount(a.Amount2) {
+		return false, errors.New("invalid field Amount2")
+	}
+
+	if a.TradingFee > AMM_MAX_TRADING_FEE {
+		return false, fmt.Errorf("trading fee is too high, max value is %d", AMM_MAX_TRADING_FEE)
+	}
+
+	return true, nil
 }
