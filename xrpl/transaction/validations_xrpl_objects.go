@@ -113,7 +113,7 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	// Check if the value is a valid positive number
 	value, err := strconv.ParseFloat(issuedAmount.Value, 64)
 	if err != nil || value < 0 {
-		return false, errors.New("value field should be a valid number")
+		return false, errors.New("value field should be a valid positive number")
 	}
 
 	return true, nil
