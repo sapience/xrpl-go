@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -85,20 +84,12 @@ func (a *AMMCreate) Validate() (bool, error) {
 		return false, err
 	}
 
-	if a.Amount == nil {
-		return false, errors.New("missing field Amount")
+	if ok, err := IsAmount(IsAmountProps{amount: a.Amount, fieldName: "Amount"}); !ok {
+		return false, err
 	}
 
-	if !IsAmount(a.Amount) {
-		return false, errors.New("invalid field Amount")
-	}
-
-	if a.Amount2 == nil {
-		return false, errors.New("missing field Amount2")
-	}
-
-	if !IsAmount(a.Amount2) {
-		return false, errors.New("invalid field Amount2")
+	if ok, err := IsAmount(IsAmountProps{amount: a.Amount2, fieldName: "Amount2"}); !ok {
+		return false, err
 	}
 
 	if a.TradingFee > AMM_MAX_TRADING_FEE {
