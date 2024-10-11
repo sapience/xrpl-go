@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
@@ -79,21 +80,27 @@ func IsSigner(signerData SignerData) (bool, error) {
 
 }
 
+type IsAmountProps struct {
+	amount    types.CurrencyAmount
+	fieldName string
+}
+
 // IsAmount checks if the given object is a valid Amount object.
 // It is a string for an XRP amount or a map for an IssuedCurrency amount.
-func IsAmount(amount types.CurrencyAmount) bool {
-	if amount == nil {
-		return false
-	}
-	if amount.Kind() == types.XRP {
-		return true
+func IsAmount(props IsAmountProps) (bool, error) {
+	if props.amount == nil {
+		return false, fmt.Errorf("missing field %s", props.fieldName)
 	}
 
-	if ok, _ := IsIssuedCurrency(amount); ok {
-		return true
+	if props.amount.Kind() == types.XRP {
+		return true, nil
 	}
 
-	return false
+	if ok, err := IsIssuedCurrency(props.amount); !ok {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
