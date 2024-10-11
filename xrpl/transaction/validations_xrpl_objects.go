@@ -81,22 +81,22 @@ func IsSigner(signerData SignerData) (bool, error) {
 }
 
 type IsAmountProps struct {
-	amount    types.CurrencyAmount
+	field     types.CurrencyAmount
 	fieldName string
 }
 
 // IsAmount checks if the given object is a valid Amount object.
 // It is a string for an XRP amount or a map for an IssuedCurrency amount.
 func IsAmount(props IsAmountProps) (bool, error) {
-	if props.amount == nil {
+	if props.field == nil {
 		return false, fmt.Errorf("missing field %s", props.fieldName)
 	}
 
-	if props.amount.Kind() == types.XRP {
+	if props.field.Kind() == types.XRP {
 		return true, nil
 	}
 
-	if ok, err := IsIssuedCurrency(props.amount); !ok {
+	if ok, err := IsIssuedCurrency(props.field); !ok {
 		return false, err
 	}
 
