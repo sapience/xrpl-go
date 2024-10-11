@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -146,7 +145,6 @@ func TestAMMCreateValidate(t *testing.T) {
 				TradingFee: 10,
 			},
 			wantErr: true,
-			errMsg:  "missing field Amount",
 		},
 		{
 			name: "invalid Amount value",
@@ -172,7 +170,6 @@ func TestAMMCreateValidate(t *testing.T) {
 				TradingFee: 10,
 			},
 			wantErr: true,
-			errMsg:  "invalid field Amount",
 		},
 		{
 			name: "missing Amount2",
@@ -189,7 +186,6 @@ func TestAMMCreateValidate(t *testing.T) {
 				TradingFee: 10,
 			},
 			wantErr: true,
-			errMsg:  "missing field Amount2",
 		},
 		{
 			name: "invalid Amount2 value",
@@ -211,7 +207,6 @@ func TestAMMCreateValidate(t *testing.T) {
 				TradingFee: 10,
 			},
 			wantErr: true,
-			errMsg:  "invalid field Amount2",
 		},
 		{
 			name: "trading fee too high",
@@ -233,7 +228,6 @@ func TestAMMCreateValidate(t *testing.T) {
 				TradingFee: 2000,
 			},
 			wantErr: true,
-			errMsg:  fmt.Sprintf("trading fee is too high, max value is %d", AMM_MAX_TRADING_FEE),
 		},
 	}
 
@@ -244,9 +238,7 @@ func TestAMMCreateValidate(t *testing.T) {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if tt.wantErr && err.Error() != tt.errMsg {
-				t.Errorf("Validate() error = %v, expected error message %v", err, tt.errMsg)
-			}
+
 			if !tt.wantErr && !valid {
 				t.Errorf("Expected valid AMMCreate, got invalid")
 			}

@@ -84,11 +84,11 @@ func (a *AMMCreate) Validate() (bool, error) {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountProps{amount: a.Amount, fieldName: "Amount"}); !ok {
+	if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: true}); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountProps{amount: a.Amount2, fieldName: "Amount2"}); !ok {
+	if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount2", isFieldRequired: true}); !ok {
 		return false, err
 	}
 
