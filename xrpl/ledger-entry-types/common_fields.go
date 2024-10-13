@@ -8,8 +8,7 @@ type LedgerEntryCommonFields struct {
 	// The unique ID for this ledger entry.
 	// In JSON, this field is represented with different names depending on the context and API method.
 	// (Note, even though this is specified as "optional" in the code, every ledger entry should have one unless it's legacy data from very early in the XRP Ledger's history.)
-	Index       types.Hash256 `json:"index,omitempty"`
-	LedgerIndex types.Hash256 `json:",omitempty"`
+	Index types.Hash256 `json:"index,omitempty"`
 	// The type of ledger entry. Valid ledger entry types include AccountRoot, Offer, RippleState, and others.
 	LedgerEntryType string `json:",omitempty"`
 	// Set of bit-flags for this ledger entry.
