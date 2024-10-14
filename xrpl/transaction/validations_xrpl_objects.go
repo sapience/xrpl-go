@@ -2,6 +2,8 @@ package transaction
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -78,21 +80,33 @@ func IsSigner(signerData SignerData) (bool, error) {
 
 }
 
+type IsAmountArgs struct {
+	field           types.CurrencyAmount
+	fieldName       string
+	isFieldRequired bool
+}
+
 // IsAmount checks if the given object is a valid Amount object.
 // It is a string for an XRP amount or a map for an IssuedCurrency amount.
-func IsAmount(amount types.CurrencyAmount) bool {
-	if amount == nil {
-		return false
-	}
-	if amount.Kind() == types.XRP {
-		return true
+func IsAmount(props IsAmountArgs) (bool, error) {
+	if props.isFieldRequired && props.field == nil {
+		return false, fmt.Errorf("missing field %s", props.fieldName)
 	}
 
-	if ok, _ := IsIssuedCurrency(amount); ok {
-		return true
+	if !props.isFieldRequired && props.field == nil {
+		// no need to check further properties on a nil field, will create a panic with tests otherwise
+		return true, nil
 	}
 
-	return false
+	if props.field.Kind() == types.XRP {
+		return true, nil
+	}
+
+	if ok, err := IsIssuedCurrency(props.field); !ok {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
@@ -108,8 +122,11 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	if issuedAmount.Currency == "XRP" {
 		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
 	}
-	if !typecheck.IsFloat32(issuedAmount.Value) {
-		return false, errors.New("value field should be a valid number")
+
+	// Check if the value is a valid positive number
+	value, err := strconv.ParseFloat(issuedAmount.Value, 64)
+	if err != nil || value < 0 {
+		return false, errors.New("value field should be a valid positive number")
 	}
 
 	return true, nil
