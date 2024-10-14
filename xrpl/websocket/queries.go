@@ -59,6 +59,9 @@ func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
 	return xrpBalance, nil
 }
 
+// GetAccountLines retrieves the lines associated with an account on the XRP Ledger.
+// It takes an AccountLinesRequest as input and returns an AccountLinesResponse,
+// along with any error encountered.
 func (c *WebsocketClient) GetAccountLines(req *account.AccountLinesRequest) (*account.AccountLinesResponse, error) {
 	res, err := c.sendRequest(req)
 	if err != nil {
@@ -73,20 +76,20 @@ func (c *WebsocketClient) GetAccountLines(req *account.AccountLinesRequest) (*ac
 }
 
 // Returns the index of the most recently validated ledger.
-func (c *WebsocketClient) GetLedgerIndex() (*common.LedgerIndex, error) {
+func (c *WebsocketClient) GetLedgerIndex() (common.LedgerIndex, error) {
 	res, err := c.sendRequest(&ledger.LedgerRequest{
 		LedgerIndex: common.LedgerTitle("validated"),
 	})
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	var lr ledger.LedgerResponse
 	err = res.GetResult(&lr)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	return &lr.LedgerIndex, err
+	return lr.LedgerIndex, err
 }
 
 // GetServerInfo retrieves information about the server.
