@@ -6,6 +6,8 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// An AMM ledger entry describes a single Automated Market Maker (AMM) instance.
+// This is always paired with a special AccountRoot entry. https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/accountroot#special-amm-accountroot-entries
 type AMM struct {
 	LedgerEntryCommonFields
 	// The address of the special account that holds this AMM's assets.
@@ -23,6 +25,68 @@ type AMM struct {
 	TradingFee uint16
 	// A list of vote objects, representing votes on the pool's trading fee.
 	VoteSlots []VoteSlots `json:",omitempty"`
+}
+
+// ---------------------------------------------
+// Asset Object
+// ---------------------------------------------
+
+// The definition for one of the two assets the AMM holds.
+// In JSON, this is an object with currency and issuer fields.
+type Asset struct {
+	Currency string        `json:"currency"`
+	Issuer   types.Address `json:"issuer,omitempty"`
+}
+
+// ---------------------------------------------
+// Auction Slot Object
+// ---------------------------------------------
+
+// A liquidity provider can bid LP Tokens to claim the auction slot to receive a discount on the trading fee for a 24-hour period.
+// The LP tokens that were bid are returned to the AMM.
+type AuctionSlot struct {
+	// The current owner of this auction slot.
+	Account types.Address
+	// A list of at most 4 additional accounts that are authorized to trade at the discounted fee for this AMM instance.
+	AuthAccounts []AuthAccounts `json:",omitempty"`
+	// The trading fee to be charged to the auction owner, in the same format as TradingFee. Normally, this is 1/10 of the normal fee for this AMM.
+	DiscountedFee uint32
+	// The amount the auction owner paid to win this slot, in LP Tokens.
+	Price types.CurrencyAmount
+	// The time when this slot expires, in seconds since the Ripple Epoch. https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-time.
+	Expiration uint32
+}
+
+// ---------------------------------------------
+// AuthAccounts Object
+// ---------------------------------------------
+
+// A list of up to 4 additional accounts that you allow to trade at the discounted fee.
+// This cannot include the address of the transaction sender.
+type AuthAccounts struct {
+	AuthAccount AuthAccount
+}
+
+// An additional account that you allow to trade at the discounted fee.
+type AuthAccount struct {
+	// Authorized account to trade at the discounted fee for this AMM instance.
+	Account types.Address
+}
+
+// ---------------------------------------------
+// VoteSlots / Vote Entry Objects
+// ---------------------------------------------
+
+// Each entry in the vote_slots array represents one liquidity provider's vote to set the trading fee.
+type VoteSlots struct {
+	VoteEntry VoteEntry
+}
+
+// Represents one liquidity provider's vote to set the trading fee.
+type VoteEntry struct {
+	Account    types.Address
+	TradingFee uint
+	VoteWeight uint
 }
 
 func (*AMM) EntryType() LedgerEntryType {
@@ -61,32 +125,6 @@ func (a *AMM) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ---------------------------------------------
-// Asset Object
-// ---------------------------------------------
-
-type Asset struct {
-	Currency string        `json:"currency"`
-	Issuer   types.Address `json:"issuer,omitempty"`
-}
-
-// ---------------------------------------------
-// Auction Slot Object
-// ---------------------------------------------
-
-type AuctionSlot struct {
-	// The current owner of this auction slot.
-	Account types.Address
-	// A list of at most 4 additional accounts that are authorized to trade at the discounted fee for this AMM instance.
-	AuthAccounts []AuthAccounts `json:",omitempty"`
-	// The trading fee to be charged to the auction owner, in the same format as TradingFee. Normally, this is 1/10 of the normal fee for this AMM.
-	DiscountedFee uint32
-	// The amount the auction owner paid to win this slot, in LP Tokens.
-	Price types.CurrencyAmount
-	// The time when this slot expires, in seconds since the Ripple Epoch. https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-time.
-	Expiration uint32
-}
-
 // UnmarshalJSON is a custom JSON unmarshaler for the AuctionSlot struct.
 // It decodes JSON data into an AuctionSlot instance, handling the nested
 // structure and converting the Price field using a custom unmarshal function.
@@ -117,31 +155,4 @@ func (s *AuctionSlot) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	return nil
-}
-
-// ---------------------------------------------
-// AuthAccounts Object
-// ---------------------------------------------
-
-type AuthAccounts struct {
-	AuthAccount AuthAccount
-}
-
-type AuthAccount struct {
-	// Authorized account to trade at the discounted fee for this AMM instance.
-	Account types.Address
-}
-
-// ---------------------------------------------
-// VoteSlots / Vote Entry Objects
-// ---------------------------------------------
-
-type VoteSlots struct {
-	VoteEntry VoteEntry
-}
-
-type VoteEntry struct {
-	Account    types.Address
-	TradingFee uint
-	VoteWeight uint
 }
