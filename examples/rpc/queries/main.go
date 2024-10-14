@@ -8,10 +8,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 )
 
-func main() {
 
+func main() {
+	fmt.Println("Starting JSON RPC client")
 	// init new config object with desired node address
-	cfg, err := rpc.NewJsonRpcConfig("http://testnode/")
+	cfg, err := rpc.NewJsonRpcConfig("https://s.altnet.rippletest.net:51234/")
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -20,10 +21,14 @@ func main() {
 	client := rpc.NewJsonRpcClient(cfg)
 
 	// call the desired method
-	var req *account.AccountChannelsRequest
-	ac, err := client.GetAccountChannels(req)
+	req := &account.AccountInfoRequest{
+		Account: "rPUK1iYbtS6LP9sA2jbUDHtTnbnQqLBnac",
+	}
+	
+	fmt.Println("Sending GetAccountInfo request")
+	ac, err := client.GetAccountInfo(req)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Printf("Results mapped to struct: %v\n", ac)
+	fmt.Printf("GetAccountInfo response: %v\n", ac)
 }
