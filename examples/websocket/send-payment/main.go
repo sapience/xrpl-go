@@ -101,7 +101,7 @@ func main() {
 	}
 
 	fmt.Println("Transaction signed")
-	fmt.Println("Transaction submitted\n")
+	fmt.Println("Transaction submitted")
 
 	response, err := client.SubmitTransactionBlob(txBlob, true)
 	if err != nil {
