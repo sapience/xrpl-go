@@ -139,8 +139,8 @@ func (tx *TrustSet) Validate() (bool, error) {
 		return false, errors.New("trustSet: missing field LimitAmount")
 	}
 
-	if !IsAmount(tx.LimitAmount) {
-		return false, errors.New("trustSet: invalid LimitAmount")
+	if ok, err := IsAmount(IsAmountArgs{field: tx.LimitAmount, fieldName: "LimitAmount", isFieldRequired: true}); !ok {
+		return false, err
 	}
 
 	// Check if QualityIn is a number
