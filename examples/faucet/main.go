@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
@@ -19,7 +19,7 @@ func main() {
 		WithFaucetProvider(testnetFaucet)
 	testnetClient := websocket.NewWebsocketClient(testnetClientCfg)
 
-	wallet, err := xrpl.NewWallet(addresscodec.ED25519)
+	wallet, err := xrpl.NewWallet(crypto.ED25519())
 	if err != nil {
 		fmt.Println(err)
 		return

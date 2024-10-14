@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
-	"github.com/Peersyst/xrpl-go/keypairs"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
 // HashTxBlob hashes a signed transaction blob
@@ -40,5 +40,5 @@ func HashTxBlob(txBlob string) (string, error) {
 		return "", err
 	}
 
-	return strings.ToUpper(hex.EncodeToString(keypairs.Sha512Half(payload))), nil
+	return strings.ToUpper(hex.EncodeToString(crypto.Sha512Half(payload))), nil
 }

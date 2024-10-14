@@ -12,7 +12,6 @@ import (
 	"time"
 
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -116,15 +115,9 @@ func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (Jso
 		FailHard: failHard,
 	}
 
-	// TODO: Check if txBlob is signed, will be part of another PR
-
 	response, error := c.SendRequest(submitRequest)
 
 	return response, error
-}
-
-func (c *JsonRpcClient) Autofill(tx *transaction.FlatTransaction) error {
-	return errors.New("not implemented")
 }
 
 // CreateRequest formats the parameters and method name ready for sending request
