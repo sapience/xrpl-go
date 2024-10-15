@@ -152,3 +152,189 @@ func TestAMMBidFlatten(t *testing.T) {
 		t.Error(err)
 	}
 }
+func TestAMMBidValidate(t *testing.T) {
+	tests := []struct {
+		name    string
+		ammBid  AMMBid
+		wantErr bool
+	}{
+		{
+			name: "Valid AMMBid",
+			ammBid: AMMBid{
+				BaseTx: BaseTx{
+					Account:         "abcdef",
+					TransactionType: AMMBidTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Asset:  ledger.Asset{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ"},
+				Asset2: ledger.Asset{Currency: "XRP"},
+				BidMin: types.XRPCurrencyAmount(100),
+				BidMax: types.IssuedCurrencyAmount{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ", Value: "200"},
+				AuthAccounts: []ledger.AuthAccounts{
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Invalid AMMBid with more than 4 AuthAccounts",
+			ammBid: AMMBid{
+				BaseTx: BaseTx{
+					Account:         "abcdef",
+					TransactionType: AMMBidTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Asset:  ledger.Asset{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ"},
+				Asset2: ledger.Asset{Currency: "XRP"},
+				BidMin: types.XRPCurrencyAmount(100),
+				BidMax: types.IssuedCurrencyAmount{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ", Value: "200"},
+				AuthAccounts: []ledger.AuthAccounts{
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcA",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcB",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcC",
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid AMMBid with invalid Asset, currency empty",
+			ammBid: AMMBid{
+				BaseTx: BaseTx{
+					Account:         "abcdef",
+					TransactionType: AMMBidTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Asset:  ledger.Asset{Currency: "", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ"},
+				Asset2: ledger.Asset{Currency: "XRP"},
+				BidMin: types.XRPCurrencyAmount(100),
+				BidMax: types.IssuedCurrencyAmount{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ", Value: "200"},
+				AuthAccounts: []ledger.AuthAccounts{
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE",
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid AMMBid with invalid Asset, issuer empty with currency non empty",
+			ammBid: AMMBid{
+				BaseTx: BaseTx{
+					Account:         "abcdef",
+					TransactionType: AMMBidTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Asset:  ledger.Asset{Currency: "USD", Issuer: ""},
+				Asset2: ledger.Asset{Currency: "XRP"},
+				BidMin: types.XRPCurrencyAmount(100),
+				BidMax: types.IssuedCurrencyAmount{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ", Value: "200"},
+				AuthAccounts: []ledger.AuthAccounts{
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE",
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid AMMBid with invalid Asset and Asset2, two XRP assets",
+			ammBid: AMMBid{
+				BaseTx: BaseTx{
+					Account:         "abcdef",
+					TransactionType: AMMBidTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Asset:  ledger.Asset{Currency: "XRP"},
+				Asset2: ledger.Asset{Currency: "XRP"},
+				BidMin: types.XRPCurrencyAmount(100),
+				BidMax: types.IssuedCurrencyAmount{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ", Value: "200"},
+				AuthAccounts: []ledger.AuthAccounts{
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE",
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.ammBid.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("AMMBid.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if valid != !tt.wantErr {
+				t.Errorf("AMMBid.Validate() = %v, want %v", valid, !tt.wantErr)
+			}
+		})
+	}
+}

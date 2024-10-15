@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"encoding/json"
+	"errors"
 
 	ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -76,9 +77,7 @@ func (p *AMMBid) UnmarshalJSON(data []byte) error {
 	p.BidMin = bidMin
 	p.BidMax = bidMax
 
-	for _, authAccount := range h.AuthAccounts {
-		authAccounts = append(authAccounts, authAccount)
-	}
+	authAccounts = append(authAccounts, h.AuthAccounts...)
 
 	p.AuthAccounts = authAccounts
 
@@ -115,4 +114,46 @@ func (a *AMMBid) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+func (a *AMMBid) Validate() (bool, error) {
+	_, err := a.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset2); !ok {
+		return false, err
+	}
+
+	if a.Asset.Currency == "XRP" && a.Asset2.Currency == "XRP" {
+		return false, errors.New("at least one of the assets must be non-XRP")
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.BidMin, fieldName: "BidMin", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.BidMax, fieldName: "BidMax", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	if ok, err := validateAuthAccounts(a.AuthAccounts); !ok {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// Validate the AuthAccounts field.
+func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) {
+	if len(authAccounts) > 4 {
+		return false, errors.New("authAccounts: AuthAccounts should have at most 4 fields")
+	}
+
+	return true, nil
 }

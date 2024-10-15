@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -226,6 +227,14 @@ func IsAsset(asset ledger.Asset) (bool, error) {
 
 	if asset.Currency == "" {
 		return false, errors.New("currency field is required for an asset")
+	}
+
+	if strings.ToUpper(asset.Currency) == "XRP" && asset.Issuer == "" {
+		return true, nil
+	}
+
+	if asset.Currency != "" && asset.Issuer == "" {
+		return false, errors.New("issuer field is required for an asset")
 	}
 
 	return true, nil
