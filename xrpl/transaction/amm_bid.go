@@ -152,7 +152,7 @@ func (a *AMMBid) Validate() (bool, error) {
 // Validate the AuthAccounts field.
 func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) {
 	if len(authAccounts) > 4 {
-		return false, errors.New("authAccounts: AuthAccounts should have at most 4 fields")
+		return false, errors.New("authAccounts: AuthAccounts should have at most 4 AuthAccount objects")
 	}
 
 	// TODO: check that the AuthAccount 'Account' field is a valid XRP address when this function is available
