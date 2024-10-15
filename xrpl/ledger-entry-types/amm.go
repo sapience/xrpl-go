@@ -61,7 +61,6 @@ func UnmarshalAsset(data []byte) (Asset, error) {
 		return Asset{}, err
 	}
 	return i, nil
-
 }
 
 // ---------------------------------------------

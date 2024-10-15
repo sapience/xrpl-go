@@ -141,3 +141,54 @@ func TestAssetFlatten(t *testing.T) {
 		t.Error(err)
 	}
 }
+func TestUnmarshalAsset(t *testing.T) {
+	tests := []struct {
+		name    string
+		json    string
+		want    Asset
+		wantErr bool
+	}{
+		{
+			name: "Valid Asset with Issuer",
+			json: `{"currency": "USD", "issuer": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm"}`,
+			want: Asset{
+				Currency: "USD",
+				Issuer:   "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+			},
+			wantErr: false,
+		},
+		{
+			name: "Valid Asset without Issuer and XRP Currency",
+			json: `{"currency": "XRP"}`,
+			want: Asset{
+				Currency: "XRP",
+			},
+			wantErr: false,
+		},
+		{
+			name:    "Empty JSON",
+			json:    `{}`,
+			want:    Asset{},
+			wantErr: false,
+		},
+		{
+			name:    "Invalid JSON",
+			json:    `{"currency": "USD", "issuer": 12345}`,
+			want:    Asset{},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := UnmarshalAsset([]byte(tt.json))
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UnmarshalAsset() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && got != tt.want {
+				t.Errorf("UnmarshalAsset() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
