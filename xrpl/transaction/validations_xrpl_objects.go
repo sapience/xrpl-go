@@ -7,6 +7,7 @@ import (
 
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -20,6 +21,8 @@ const (
 	// For a token, must have the following fields: currency, issuer, value. https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-currency-amounts
 	ISSUED_CURRENCY_SIZE       = 3
 	STANDARD_CURRENCY_CODE_LEN = 3
+	// The maximum number of fields for an Asset, either "currency" alone (for XRP) or "currency" and "issuer" together.
+	ASSET_MAX_SIZE = 2
 )
 
 // IsMemo checks if the given object is a valid Memo object.
@@ -207,6 +210,22 @@ func IsPaths(pathsteps [][]PathStep) (bool, error) {
 		if ok, err := IsPath(path); !ok {
 			return false, err
 		}
+	}
+
+	return true, nil
+}
+
+// IsAsset checks if the given object is a valid Asset object.
+func IsAsset(asset ledger.Asset) (bool, error) {
+	// Get the size of the Asset object.
+	lenKeys := len(maputils.GetKeys(asset.Flatten()))
+
+	if lenKeys == 0 || lenKeys > ASSET_MAX_SIZE {
+		return false, errors.New("asset object should have at least one field 'currency', or two fields 'currency' and 'issuer'")
+	}
+
+	if asset.Currency == "" {
+		return false, errors.New("currency field is required for an asset")
 	}
 
 	return true, nil

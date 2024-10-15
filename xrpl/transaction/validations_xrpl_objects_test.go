@@ -3,6 +3,7 @@ package transaction
 import (
 	"testing"
 
+	ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -108,6 +109,58 @@ func TestIsMemo(t *testing.T) {
 		obj := Memo{}
 		if ok, _ := IsMemo(obj); ok {
 			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+}
+func TestIsAsset(t *testing.T) {
+	t.Run("Valid Asset object with currency only", func(t *testing.T) {
+		obj := ledger.Asset{
+			Currency: "USD",
+		}
+
+		ok, err := IsAsset(obj)
+
+		if !ok {
+			t.Errorf("Expected IsAsset to return true, but got false with error: %v", err)
+		}
+	})
+
+	t.Run("Valid Asset object with currency and issuer", func(t *testing.T) {
+		obj := ledger.Asset{
+			Currency: "USD",
+			Issuer:   "r1234567890",
+		}
+
+		ok, err := IsAsset(obj)
+
+		if !ok {
+			t.Errorf("Expected IsAsset to return true, but got false with error: %v", err)
+		}
+	})
+
+	t.Run("Asset object with missing currency", func(t *testing.T) {
+		obj := ledger.Asset{
+			Issuer: "r1234567890",
+		}
+
+		ok, err := IsAsset(obj)
+
+		if ok {
+			t.Errorf("Expected IsAsset to return false, but got true")
+		} else if err == nil {
+			t.Errorf("Expected an error, but got nil")
+		}
+	})
+
+	t.Run("Empty Asset object", func(t *testing.T) {
+		obj := ledger.Asset{}
+
+		ok, err := IsAsset(obj)
+
+		if ok {
+			t.Errorf("Expected IsAsset to return false, but got true")
+		} else if err == nil {
+			t.Errorf("Expected an error, but got nil")
 		}
 	})
 }
