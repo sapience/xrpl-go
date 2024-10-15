@@ -112,3 +112,32 @@ func TestAmm(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestAssetFlatten(t *testing.T) {
+	asset := Asset{
+		Currency: "USD",
+		Issuer:   "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+	}
+
+	json := `{
+	"currency": "USD",
+	"issuer": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm"
+}`
+
+	if err := testutil.CompareFlattenAndExpected(asset.Flatten(), []byte(json)); err != nil {
+		t.Error(err)
+	}
+
+	// 2nd test with issuer empty
+	asset2 := Asset{
+		Currency: "XRP",
+	}
+
+	json2 := `{
+	"currency": "XRP"
+}`
+
+	if err := testutil.CompareFlattenAndExpected(asset2.Flatten(), []byte(json2)); err != nil {
+		t.Error(err)
+	}
+}
