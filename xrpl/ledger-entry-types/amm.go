@@ -38,6 +38,30 @@ type Asset struct {
 	Issuer   types.Address `json:"issuer,omitempty"`
 }
 
+func (a *Asset) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
+
+	if a.Issuer != "" {
+		flattened["issuer"] = a.Issuer
+	}
+
+	flattened["currency"] = a.Currency
+
+	return flattened
+}
+
+func UnmarshalAsset(data []byte) (Asset, error) {
+	if len(data) == 0 {
+		return Asset{}, nil
+	}
+	var i Asset
+	if err := json.Unmarshal(data, &i); err != nil {
+		return Asset{}, err
+	}
+	return i, nil
+
+}
+
 // ---------------------------------------------
 // Auction Slot Object
 // ---------------------------------------------
@@ -67,10 +91,22 @@ type AuthAccounts struct {
 	AuthAccount AuthAccount
 }
 
+func (a *AuthAccounts) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
+	flattened["AuthAccount"] = a.AuthAccount.Flatten()
+	return flattened
+}
+
 // An additional account that you allow to trade at the discounted fee.
 type AuthAccount struct {
 	// Authorized account to trade at the discounted fee for this AMM instance.
 	Account types.Address
+}
+
+func (a *AuthAccount) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
+	flattened["Account"] = a.Account
+	return flattened
 }
 
 // ---------------------------------------------
