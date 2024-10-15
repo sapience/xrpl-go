@@ -155,5 +155,7 @@ func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) {
 		return false, errors.New("authAccounts: AuthAccounts should have at most 4 fields")
 	}
 
+	// TODO: check that the AuthAccount 'Account' field is a valid XRP address when this function is available
+
 	return true, nil
 }
