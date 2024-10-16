@@ -14,7 +14,7 @@ import (
 // xchain bridge objectis not valid.
 type ErrNotValidXChainBridge struct{}
 
-// Error returns the error message. 
+// Error returns the error message.
 func (e *ErrNotValidXChainBridge) Error() string {
 	return "not a valid xchain bridge"
 }
@@ -27,7 +27,7 @@ func (e *ErrReadBytes) Error() string {
 	return "read bytes error"
 }
 
-// ErrDecodeClassicAddress is an error that occurs 
+// ErrDecodeClassicAddress is an error that occurs
 // when trying to decode a classic address.
 type ErrDecodeClassicAddress struct{}
 
