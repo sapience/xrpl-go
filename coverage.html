@@ -99,13 +99,13 @@
 				
 				<option value="file21">github.com/Peersyst/xrpl-go/binary-codec/types/st_object.go (80.0%)</option>
 				
-				<option value="file22">github.com/Peersyst/xrpl-go/binary-codec/types/uint16.go (81.2%)</option>
+				<option value="file22">github.com/Peersyst/xrpl-go/binary-codec/types/uint16.go (84.2%)</option>
 				
 				<option value="file23">github.com/Peersyst/xrpl-go/binary-codec/types/uint32.go (77.8%)</option>
 				
 				<option value="file24">github.com/Peersyst/xrpl-go/binary-codec/types/uint64.go (59.3%)</option>
 				
-				<option value="file25">github.com/Peersyst/xrpl-go/binary-codec/types/uint8.go (61.1%)</option>
+				<option value="file25">github.com/Peersyst/xrpl-go/binary-codec/types/uint8.go (94.4%)</option>
 				
 				<option value="file26">github.com/Peersyst/xrpl-go/binary-codec/types/vector256.go (31.6%)</option>
 				
@@ -2862,10 +2862,18 @@ func enumToStr(fieldType string, value any) (any, error) <span class="cov8" titl
 import (
         "bytes"
         "encoding/binary"
+        "errors"
 
         "github.com/Peersyst/xrpl-go/binary-codec/definitions"
         "github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
+
+const MinUint16 uint16 = 0
+const MaxUint16 uint16 = ^uint16(0)
+
+func IsUint16(value int) bool <span class="cov8" title="1">{
+        return value &gt;= int(MinUint16) &amp;&amp; value &lt;= int(MaxUint16)
+}</span>
 
 // UInt16 represents a 16-bit unsigned integer.
 type UInt16 struct{}
@@ -2887,7 +2895,13 @@ func (u *UInt16) FromJson(value any) ([]byte, error) <span class="cov8" title="1
         }
 
         <span class="cov8" title="1">buf := new(bytes.Buffer)
-        err := binary.Write(buf, binary.BigEndian, uint16(value.(int)))
+
+        if !IsUint16(value.(int)) </span><span class="cov0" title="0">{
+                return nil, errors.New("uint16: value out of range")
+        }</span>
+
+
+        <span class="cov8" title="1">err := binary.Write(buf, binary.BigEndian, uint16(value.(int)))
 
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -2900,7 +2914,7 @@ func (u *UInt16) FromJson(value any) ([]byte, error) <span class="cov8" title="1
 // a 16-bit unsigned integer. If the parsing fails, an error is returned.
 func (u *UInt16) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(2)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">return int(binary.BigEndian.Uint16(b)), nil</span>
@@ -3034,12 +3048,12 @@ type UInt8 struct{}
 // If the input value is a string, it's assumed to be a transaction result name, and the method will
 // attempt to convert it into a transaction result type code. If the conversion fails, an error is returned.
 func (u *UInt8) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
-        if s, ok := value.(string); ok </span><span class="cov0" title="0">{
+        if s, ok := value.(string); ok </span><span class="cov8" title="1">{
                 tc, err := definitions.Get().GetTransactionResultTypeCodeByTransactionResultName(s)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">value = tc</span>
+                <span class="cov8" title="1">value = tc</span>
         }
 
         <span class="cov8" title="1">var intValue int
@@ -3047,7 +3061,7 @@ func (u *UInt8) FromJson(value any) ([]byte, error) <span class="cov8" title="1"
         switch v := value.(type) </span>{
         case int:<span class="cov8" title="1">
                 intValue = v</span>
-        case int32:<span class="cov0" title="0">
+        case int32:<span class="cov8" title="1">
                 intValue = int(v)</span>
         }
 
@@ -3064,7 +3078,7 @@ func (u *UInt8) FromJson(value any) ([]byte, error) <span class="cov8" title="1"
 // an 8-bit unsigned integer. If the parsing fails, an error is returned.
 func (u *UInt8) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(1)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">return int(b[0]), nil</span>
@@ -4890,6 +4904,7 @@ func (o *Offer) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
+// A PriceData object represents the price information for a token pair.
 type PriceData struct {
         // The primary asset in a trading pair. Any valid identifier, such as a stock symbol,
         // bond CUSIP, or currency code is allowed.
