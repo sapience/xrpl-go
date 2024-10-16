@@ -14,7 +14,7 @@ type Issue struct{}
 
 // FromJson parses a classic address string and returns the corresponding AccountID byte slice.
 // It uses the addresscodec package to decode the classic address.
-// If the input is not a valid classic address, it returns an error.	
+// If the input is not a valid classic address, it returns an error.
 func (i *Issue) FromJson(json any) ([]byte, error) {
 	_, accountID, err := addresscodec.DecodeClassicAddressToAccountID(json.(string))
 
