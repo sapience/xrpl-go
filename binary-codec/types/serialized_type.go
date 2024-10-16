@@ -49,6 +49,8 @@ func GetSerializedType(t string) SerializedType {
 		return &STArray{}
 	case "PathSet":
 		return &PathSet{}
+	case "XChainBridge":
+		return &XChainBridge{}
 	}
 	return nil
 }
