@@ -33,10 +33,6 @@ func IsMemo(memo Memo) (bool, error) {
 		return false, errors.New("memo object should have at least one field, MemoData, MemoFormat or MemoType")
 	}
 
-	if size > MEMO_SIZE {
-		return false, errors.New("memo object should have at most three fields, MemoData, MemoFormat and MemoType")
-	}
-
 	validData := memo.MemoData == "" || typecheck.IsHex(memo.MemoData)
 	if !validData {
 		return false, errors.New("memoData should be a hexadecimal string")
