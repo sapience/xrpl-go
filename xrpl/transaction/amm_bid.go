@@ -11,6 +11,41 @@ import (
 // If you are outbid before 24 hours have passed, you are refunded part of the cost of your bid based on how much time remains.
 // If the AMM's trading fee is zero, you can still bid, but the auction slot provides no benefit unless the trading fee changes.
 // You bid using the AMM's LP Tokens; the amount of a winning bid is returned to the AMM, decreasing the outstanding balance of LP Tokens.
+// https://xrpl.org/docs/references/protocol/transactions/types/ammbid
+//
+// Example:
+//
+//	{
+//	    "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//	    "Asset" : {
+//	        "currency" : "XRP"
+//	    },
+//	    "Asset2" : {
+//	        "currency" : "TST",
+//	        "issuer" : "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+//	    },
+//	    "AuthAccounts" : [
+//	        {
+//	          "AuthAccount" : {
+//	              "Account" : "rMKXGCbJ5d8LbrqthdG46q3f969MVK2Qeg"
+//	          }
+//	        },
+//	        {
+//	          "AuthAccount" : {
+//	              "Account" : "rBepJuTLFJt3WmtLXYAxSjtBWAeQxVbncv"
+//	          }
+//	        }
+//	    ],
+//	    "BidMax" : {
+//	        "currency" : "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
+//	        "issuer" : "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
+//	        "value" : "100"
+//	    },
+//	    "Fee" : "10",
+//	    "Flags" : 2147483648,
+//	    "Sequence" : 9,
+//	    "TransactionType" : "AMMBid"
+//	}
 type AMMBid struct {
 	BaseTx
 	// The definition for one of the assets in the AMM's pool. In JSON, this is an object with currency and issuer fields (omit issuer for XRP).
