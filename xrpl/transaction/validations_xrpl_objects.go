@@ -119,18 +119,18 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 		return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
 	}
 
-	if issuedAmount.Currency == "" {
+	if strings.TrimSpace(issuedAmount.Currency) == "" {
 		return false, errors.New("currency field is required for an issued currency")
 	}
-	if issuedAmount.Currency == "XRP" {
+	if strings.ToUpper(issuedAmount.Currency) == "XRP" {
 		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
 	}
 
-	if issuedAmount.Issuer == "" {
-		return false, errors.New("issuer field is required for an issued currency")
+	if !addresscodec.IsValidClassicAddress(issuedAmount.Issuer.String()) {
+		return false, errors.New("issuer field is not a valid XRPL classic address")
 	}
 
-	if issuedAmount.Value == "" {
+	if strings.TrimSpace(issuedAmount.Value) == "" {
 		return false, errors.New("value field is required for an issued currency")
 	}
 

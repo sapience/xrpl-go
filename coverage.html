@@ -409,7 +409,7 @@
 				
 				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (73.4%)</option>
+				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (78.7%)</option>
 				
 				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
@@ -10435,7 +10435,7 @@ func IsAmount(props IsAmountArgs) (bool, error) <span class="cov8" title="1">{
 
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
 func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) <span class="cov8" title="1">{
-        if input.Kind() == types.XRP </span><span class="cov0" title="0">{
+        if input.Kind() == types.XRP </span><span class="cov8" title="1">{
                 return false, errors.New("an issued currency cannot be of type XRP")
         }</span>
 
@@ -10447,18 +10447,18 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) <span class="cov
                 return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
         }</span>
 
-        <span class="cov8" title="1">if issuedAmount.Currency == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if strings.TrimSpace(issuedAmount.Currency) == "" </span><span class="cov8" title="1">{
                 return false, errors.New("currency field is required for an issued currency")
         }</span>
-        <span class="cov8" title="1">if issuedAmount.Currency == "XRP" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if strings.ToUpper(issuedAmount.Currency) == "XRP" </span><span class="cov8" title="1">{
                 return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
         }</span>
 
-        <span class="cov8" title="1">if issuedAmount.Issuer == "" </span><span class="cov0" title="0">{
-                return false, errors.New("issuer field is required for an issued currency")
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(issuedAmount.Issuer.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("issuer field is not a valid XRPL classic address")
         }</span>
 
-        <span class="cov8" title="1">if issuedAmount.Value == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if strings.TrimSpace(issuedAmount.Value) == "" </span><span class="cov8" title="1">{
                 return false, errors.New("value field is required for an issued currency")
         }</span>
 

@@ -84,17 +84,22 @@ func TestIsSigner(t *testing.T) {
 func TestIsIssuedCurrency(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    types.IssuedCurrencyAmount
+		input    types.CurrencyAmount
 		expected bool
 	}{
 		{
 			name: "Valid IssuedCurrency object",
 			input: types.IssuedCurrencyAmount{
 				Value:    "100",
-				Issuer:   "r1234567890",
+				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				Currency: "USD",
 			},
 			expected: true,
+		},
+		{
+			name:     "Invalid IssuedCurrency object",
+			input:    types.XRPCurrencyAmount(100), // should be non XRP
+			expected: false,
 		},
 		{
 			name: "IssuedCurrency object with missing currency and issuer fields",
@@ -113,7 +118,43 @@ func TestIsIssuedCurrency(t *testing.T) {
 		{
 			name: "IssuedCurrency object with missing currency and value fields",
 			input: types.IssuedCurrencyAmount{
-				Issuer: "r1234567890",
+				Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+			},
+			expected: false,
+		},
+		{
+			name: "IssuedCurrency object with empty currency",
+			input: types.IssuedCurrencyAmount{
+				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+				Currency: "   ",
+				Value:    "100",
+			},
+			expected: false,
+		},
+		{
+			name: "IssuedCurrency object with XRP currency",
+			input: types.IssuedCurrencyAmount{
+				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+				Currency: "XRp", // will be uppercased during validation
+				Value:    "100",
+			},
+			expected: false,
+		},
+		{
+			name: "IssuedCurrency object with empty value",
+			input: types.IssuedCurrencyAmount{
+				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+				Currency: "USD",
+				Value:    "  ",
+			},
+			expected: false,
+		},
+		{
+			name: "IssuedCurrency object with invalid issuer",
+			input: types.IssuedCurrencyAmount{
+				Issuer:   "invalid",
+				Currency: "USD",
+				Value:    "100",
 			},
 			expected: false,
 		},
