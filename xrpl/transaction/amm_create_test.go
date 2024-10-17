@@ -50,6 +50,7 @@ func TestAMMCreateFlatten(t *testing.T) {
 		t.Error(err)
 	}
 }
+
 func TestAMMCreateValidate(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -61,7 +62,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			name: "valid AMMCreate",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMCreateTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -79,10 +80,30 @@ func TestAMMCreateValidate(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "Invalid BaseTx for AMMCreate, missing Account",
+			amm: AMMCreate{
+				BaseTx: BaseTx{
+					TransactionType: AMMCreateTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Amount: types.XRPCurrencyAmount(100),
+				Amount2: types.IssuedCurrencyAmount{
+					Currency: "USD",
+					Value:    "200",
+					Issuer:   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ",
+				},
+				TradingFee: 10,
+			},
+			wantErr: true,
+		},
+		{
 			name: "missing Amount",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMCreateTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -102,7 +123,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			name: "invalid Amount value",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMCreateTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -127,7 +148,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			name: "missing Amount2",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMCreateTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -143,7 +164,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			name: "invalid Amount2 value",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMCreateTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -164,7 +185,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			name: "trading fee too high",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMCreateTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,

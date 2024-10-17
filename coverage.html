@@ -329,7 +329,7 @@
 				
 				<option value="file136">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_bid.go (100.0%)</option>
 				
-				<option value="file137">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_create.go (85.7%)</option>
+				<option value="file137">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_create.go (100.0%)</option>
 				
 				<option value="file138">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_delete.go (100.0%)</option>
 				
@@ -397,7 +397,7 @@
 				
 				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (73.0%)</option>
 				
-				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (83.1%)</option>
+				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (82.4%)</option>
 				
 				<option value="file172">github.com/Peersyst/xrpl-go/xrpl/transaction/tx_type.go (100.0%)</option>
 				
@@ -8131,7 +8131,6 @@ func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) <spa
 		<pre class="file" id="file137" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "fmt"
 
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -8150,43 +8149,9 @@ type AMMCreate struct {
         TradingFee uint16
 }
 
-func (*AMMCreate) TxType() TxType <span class="cov0" title="0">{
+func (*AMMCreate) TxType() TxType <span class="cov8" title="1">{
         return AMMCreateTx
 }</span>
-
-// UnmarshalJSON unmarshals the Payment transaction from JSON.
-func (p *AMMCreate) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type pHelper struct {
-                BaseTx
-                Amount     json.RawMessage
-                Amount2    json.RawMessage
-                TradingFee uint16
-        }
-        var h pHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*p = AMMCreate{
-                BaseTx:     h.BaseTx,
-                TradingFee: h.TradingFee,
-        }
-        var amount, amount2 types.CurrencyAmount
-        var err error
-
-        amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">amount2, err = types.UnmarshalCurrencyAmount(h.Amount2)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        <span class="cov8" title="1">p.Amount = amount
-        p.Amount2 = amount2
-
-        return nil</span>
-}
 
 func (s *AMMCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
         // Add BaseTx fields
@@ -8210,7 +8175,7 @@ func (s *AMMCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
 
 func (a *AMMCreate) Validate() (bool, error) <span class="cov8" title="1">{
         _, err := a.BaseTx.Validate()
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
@@ -9968,7 +9933,7 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) <span class="cov8" title="1">
         switch txType.TransactionType </span>{
         case AMMBidTx:<span class="cov0" title="0">
                 tx = &amp;AMMBid{}</span>
-        case AMMCreateTx:<span class="cov8" title="1">
+        case AMMCreateTx:<span class="cov0" title="0">
                 tx = &amp;AMMCreate{}</span>
         case AMMDepositTx:<span class="cov8" title="1">
                 tx = &amp;AMMDeposit{}</span>
