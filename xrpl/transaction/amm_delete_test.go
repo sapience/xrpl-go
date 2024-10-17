@@ -13,6 +13,7 @@ func TestAMMDelete_TxType(t *testing.T) {
 	tx := &AMMDelete{}
 	assert.Equal(t, AMMDeleteTx, tx.TxType())
 }
+
 func TestAMMDelete_Flatten(t *testing.T) {
 	tx := &AMMDelete{
 		BaseTx: BaseTx{
