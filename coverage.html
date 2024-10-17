@@ -141,7 +141,7 @@
 				
 				<option value="file42">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/amendments.go (0.0%)</option>
 				
-				<option value="file43">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/amm.go (69.2%)</option>
+				<option value="file43">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/amm.go (100.0%)</option>
 				
 				<option value="file44">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/check.go (0.0%)</option>
 				
@@ -4108,8 +4108,6 @@ type Majority struct {
 		<pre class="file" id="file43" style="display: none">package ledger
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -4159,17 +4157,6 @@ func (a *Asset) Flatten() map[string]interface{} <span class="cov8" title="1">{
         <span class="cov8" title="1">return flattened</span>
 }
 
-func UnmarshalAsset(data []byte) (Asset, error) <span class="cov8" title="1">{
-        if len(data) == 0 </span><span class="cov0" title="0">{
-                return Asset{}, nil
-        }</span>
-        <span class="cov8" title="1">var i Asset
-        if err := json.Unmarshal(data, &amp;i); err != nil </span><span class="cov8" title="1">{
-                return Asset{}, err
-        }</span>
-        <span class="cov8" title="1">return i, nil</span>
-}
-
 // ---------------------------------------------
 // Auction Slot Object
 // ---------------------------------------------
@@ -4199,7 +4186,7 @@ type AuthAccounts struct {
         AuthAccount AuthAccount
 }
 
-func (a *AuthAccounts) Flatten() map[string]interface{} <span class="cov0" title="0">{
+func (a *AuthAccounts) Flatten() map[string]interface{} <span class="cov8" title="1">{
         flattened := make(map[string]interface{})
         flattened["AuthAccount"] = a.AuthAccount.Flatten()
         return flattened
@@ -4211,7 +4198,7 @@ type AuthAccount struct {
         Account types.Address
 }
 
-func (a *AuthAccount) Flatten() map[string]interface{} <span class="cov0" title="0">{
+func (a *AuthAccount) Flatten() map[string]interface{} <span class="cov8" title="1">{
         flattened := make(map[string]interface{})
         flattened["Account"] = a.Account
         return flattened
@@ -4233,73 +4220,9 @@ type VoteEntry struct {
         VoteWeight uint
 }
 
-func (*AMM) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*AMM) EntryType() LedgerEntryType <span class="cov8" title="1">{
         return AMMEntry
 }</span>
-
-func (a *AMM) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type ammHelper struct {
-                Asset          Asset
-                Asset2         Asset
-                Account        types.Address
-                AuctionSlot    AuctionSlot
-                LPTokenBalance json.RawMessage
-                TradingFee     uint16
-                VoteSlots      []VoteSlots
-        }
-        var h ammHelper
-        var err error
-        if err = json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*a = AMM{
-                Asset:       h.Asset,
-                Asset2:      h.Asset2,
-                Account:     h.Account,
-                AuctionSlot: h.AuctionSlot,
-                TradingFee:  h.TradingFee,
-                VoteSlots:   h.VoteSlots,
-        }
-
-        a.LPTokenBalance, err = types.UnmarshalCurrencyAmount(h.LPTokenBalance)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        <span class="cov8" title="1">return nil</span>
-}
-
-// UnmarshalJSON is a custom JSON unmarshaler for the AuctionSlot struct.
-// It decodes JSON data into an AuctionSlot instance, handling the nested
-// structure and converting the Price field using a custom unmarshal function.
-// If the JSON data cannot be unmarshaled into the expected structure,
-// or if the Price field cannot be converted, an error is returned.
-func (s *AuctionSlot) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type aasHelper struct {
-                Account       types.Address
-                AuthAccounts  []AuthAccounts
-                DiscountedFee uint32
-                Price         json.RawMessage
-                Expiration    uint32
-        }
-        var h aasHelper
-        var err error
-        if err = json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*s = AuctionSlot{
-                Account:       h.Account,
-                AuthAccounts:  h.AuthAccounts,
-                DiscountedFee: h.DiscountedFee,
-                Expiration:    h.Expiration,
-        }
-
-        s.Price, err = types.UnmarshalCurrencyAmount(h.Price)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">return nil</span>
-}
 </pre>
 		
 		<pre class="file" id="file44" style="display: none">package ledger

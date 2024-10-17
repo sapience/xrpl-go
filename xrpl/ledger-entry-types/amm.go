@@ -1,8 +1,6 @@
 package ledger
 
 import (
-	"encoding/json"
-
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -50,17 +48,6 @@ func (a *Asset) Flatten() map[string]interface{} {
 	}
 
 	return flattened
-}
-
-func UnmarshalAsset(data []byte) (Asset, error) {
-	if len(data) == 0 {
-		return Asset{}, nil
-	}
-	var i Asset
-	if err := json.Unmarshal(data, &i); err != nil {
-		return Asset{}, err
-	}
-	return i, nil
 }
 
 // ---------------------------------------------
@@ -128,68 +115,4 @@ type VoteEntry struct {
 
 func (*AMM) EntryType() LedgerEntryType {
 	return AMMEntry
-}
-
-func (a *AMM) UnmarshalJSON(data []byte) error {
-	type ammHelper struct {
-		Asset          Asset
-		Asset2         Asset
-		Account        types.Address
-		AuctionSlot    AuctionSlot
-		LPTokenBalance json.RawMessage
-		TradingFee     uint16
-		VoteSlots      []VoteSlots
-	}
-	var h ammHelper
-	var err error
-	if err = json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*a = AMM{
-		Asset:       h.Asset,
-		Asset2:      h.Asset2,
-		Account:     h.Account,
-		AuctionSlot: h.AuctionSlot,
-		TradingFee:  h.TradingFee,
-		VoteSlots:   h.VoteSlots,
-	}
-
-	a.LPTokenBalance, err = types.UnmarshalCurrencyAmount(h.LPTokenBalance)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// UnmarshalJSON is a custom JSON unmarshaler for the AuctionSlot struct.
-// It decodes JSON data into an AuctionSlot instance, handling the nested
-// structure and converting the Price field using a custom unmarshal function.
-// If the JSON data cannot be unmarshaled into the expected structure,
-// or if the Price field cannot be converted, an error is returned.
-func (s *AuctionSlot) UnmarshalJSON(data []byte) error {
-	type aasHelper struct {
-		Account       types.Address
-		AuthAccounts  []AuthAccounts
-		DiscountedFee uint32
-		Price         json.RawMessage
-		Expiration    uint32
-	}
-	var h aasHelper
-	var err error
-	if err = json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*s = AuctionSlot{
-		Account:       h.Account,
-		AuthAccounts:  h.AuthAccounts,
-		DiscountedFee: h.DiscountedFee,
-		Expiration:    h.Expiration,
-	}
-
-	s.Price, err = types.UnmarshalCurrencyAmount(h.Price)
-	if err != nil {
-		return err
-	}
-	return nil
 }
