@@ -117,10 +117,32 @@ func TestIsMemo(t *testing.T) {
 		}
 	})
 
-	t.Run("Memo object with non hex values", func(t *testing.T) {
+	t.Run("Memo object with MemoData non hex value", func(t *testing.T) {
 		obj := Memo{
-			MemoData:   "bob",
-			MemoFormat: "alice",
+			MemoData: "bob",
+		}
+
+		if ok, _ := IsMemo(obj); ok {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+
+	t.Run("Memo object with MemoFormat non hex value", func(t *testing.T) {
+		obj := Memo{
+			MemoData:   "0123456789abcdef",
+			MemoFormat: "non-hex",
+		}
+
+		if ok, _ := IsMemo(obj); ok {
+			t.Errorf("Expected IsMemo to return false, but got true")
+		}
+	})
+
+	t.Run("Memo object with MemoType non hex value", func(t *testing.T) {
+		obj := Memo{
+			MemoData:   "0123456789abcdef",
+			MemoFormat: "0123456789abcdef",
+			MemoType:   "non-hex",
 		}
 
 		if ok, _ := IsMemo(obj); ok {

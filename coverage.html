@@ -409,7 +409,7 @@
 				
 				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (68.4%)</option>
+				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (70.8%)</option>
 				
 				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
@@ -10361,22 +10361,18 @@ func IsMemo(memo Memo) (bool, error) <span class="cov8" title="1">{
                 return false, errors.New("memo object should have at least one field, MemoData, MemoFormat or MemoType")
         }</span>
 
-        <span class="cov8" title="1">if size &gt; MEMO_SIZE </span><span class="cov0" title="0">{
-                return false, errors.New("memo object should have at most three fields, MemoData, MemoFormat and MemoType")
-        }</span>
-
         <span class="cov8" title="1">validData := memo.MemoData == "" || typecheck.IsHex(memo.MemoData)
         if !validData </span><span class="cov8" title="1">{
                 return false, errors.New("memoData should be a hexadecimal string")
         }</span>
 
         <span class="cov8" title="1">validFormat := memo.MemoFormat == "" || typecheck.IsHex(memo.MemoFormat)
-        if !validFormat </span><span class="cov0" title="0">{
+        if !validFormat </span><span class="cov8" title="1">{
                 return false, errors.New("memoFormat should be a hexadecimal string")
         }</span>
 
         <span class="cov8" title="1">validType := memo.MemoType == "" || typecheck.IsHex(memo.MemoType)
-        if !validType </span><span class="cov0" title="0">{
+        if !validType </span><span class="cov8" title="1">{
                 return false, errors.New("memoType should be a hexadecimal string")
         }</span>
 
