@@ -143,35 +143,6 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	return true, nil
 }
 
-// IsPathStep checks if the given map is a valid PathStep.
-func IsPathStep(pathStep map[string]interface{}) bool {
-	if account, ok := pathStep["account"]; ok && !typecheck.IsString(account) {
-		return false
-	}
-	if currency, ok := pathStep["currency"]; ok && !typecheck.IsString(currency) {
-		return false
-	}
-	if issuer, ok := pathStep["issuer"]; ok && !typecheck.IsString(issuer) {
-		return false
-	}
-	if _, ok := pathStep["account"]; ok {
-		if _, ok := pathStep["currency"]; !ok {
-			if _, ok := pathStep["issuer"]; !ok {
-				return true
-			}
-		}
-	}
-
-	// check if the path step has either a currency or an issuer
-	_, hasCurr := pathStep["currency"]
-	_, hasIssuer := pathStep["issuer"]
-
-	if !hasCurr && !hasIssuer {
-		return true
-	}
-	return false
-}
-
 // IsPath checks if the given pathstep is valid.
 func IsPath(path []PathStep) (bool, error) {
 	for _, pathStep := range path {
