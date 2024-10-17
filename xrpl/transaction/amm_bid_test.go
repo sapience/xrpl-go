@@ -8,6 +8,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAMMBidTransaction(t *testing.T) {
@@ -426,4 +427,9 @@ func TestAMMBidValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAMMBid_TxType(t *testing.T) {
+	entry := &AMMBid{}
+	assert.Equal(t, AMMBidTx, entry.TxType())
 }

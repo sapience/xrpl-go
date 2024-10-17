@@ -122,7 +122,6 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 
 	numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
 	if numOfKeys != ISSUED_CURRENCY_SIZE {
-		fmt.Println("HEREEEE")
 		return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
 	}
 
