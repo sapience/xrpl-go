@@ -1,9 +1,7 @@
 package transaction
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 
 	ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -29,52 +27,6 @@ type AMMBid struct {
 
 func (*AMMBid) TxType() TxType {
 	return AMMBidTx
-}
-
-// UnmarshalJSON unmarshals the Payment transaction from JSON.
-func (p *AMMBid) UnmarshalJSON(data []byte) error {
-	type pHelper struct {
-		BaseTx
-		Asset        json.RawMessage
-		Asset2       json.RawMessage
-		BidMin       json.RawMessage       `json:",omitempty"`
-		BidMax       json.RawMessage       `json:",omitempty"`
-		AuthAccounts []ledger.AuthAccounts `json:",omitempty"`
-	}
-	var h pHelper
-	if err := json.Unmarshal(data, &h); err != nil {
-		fmt.Println("error HERREEEEEE")
-		return err
-	}
-
-	*p = AMMBid{
-		BaseTx: h.BaseTx,
-	}
-	var asset, asset2 ledger.Asset
-	var bidMin, bidMax types.CurrencyAmount
-	var authAccounts []ledger.AuthAccounts
-
-	// Won't error as we unmarshal above
-	asset, _ = ledger.UnmarshalAsset(h.Asset)
-	// Won't error as we unmarshal above
-	asset2, _ = ledger.UnmarshalAsset(h.Asset2)
-
-	p.Asset = asset
-	p.Asset2 = asset2
-
-	// Won't error as we unmarshal above
-	bidMin, _ = types.UnmarshalCurrencyAmount(h.BidMin)
-	// Won't error as we unmarshal above
-	bidMax, _ = types.UnmarshalCurrencyAmount(h.BidMax)
-
-	p.BidMin = bidMin
-	p.BidMax = bidMax
-
-	authAccounts = append(authAccounts, h.AuthAccounts...)
-
-	p.AuthAccounts = authAccounts
-
-	return nil
 }
 
 func (a *AMMBid) Flatten() FlatTransaction {

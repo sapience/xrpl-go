@@ -395,7 +395,7 @@
 				
 				<option value="file169">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (73.0%)</option>
 				
-				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (83.8%)</option>
+				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (83.1%)</option>
 				
 				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx_type.go (100.0%)</option>
 				
@@ -8007,9 +8007,7 @@ func (s *AccountSet) Validate() (bool, error) <span class="cov8" title="1">{
 		<pre class="file" id="file136" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "errors"
-        "fmt"
 
         ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -8037,51 +8035,51 @@ func (*AMMBid) TxType() TxType <span class="cov8" title="1">{
         return AMMBidTx
 }</span>
 
-// UnmarshalJSON unmarshals the Payment transaction from JSON.
-func (p *AMMBid) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type pHelper struct {
-                BaseTx
-                Asset        json.RawMessage
-                Asset2       json.RawMessage
-                BidMin       json.RawMessage       `json:",omitempty"`
-                BidMax       json.RawMessage       `json:",omitempty"`
-                AuthAccounts []ledger.AuthAccounts `json:",omitempty"`
-        }
-        var h pHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov8" title="1">{
-                fmt.Println("error HERREEEEEE")
-                return err
-        }</span>
+// // UnmarshalJSON unmarshals the Payment transaction from JSON.
+// func (p *AMMBid) UnmarshalJSON(data []byte) error {
+//         type pHelper struct {
+//                 BaseTx
+//                 Asset        json.RawMessage
+//                 Asset2       json.RawMessage
+//                 BidMin       json.RawMessage       `json:",omitempty"`
+//                 BidMax       json.RawMessage       `json:",omitempty"`
+//                 AuthAccounts []ledger.AuthAccounts `json:",omitempty"`
+//         }
+//         var h pHelper
+//         if err := json.Unmarshal(data, &amp;h); err != nil {
+//                 fmt.Println("error HERREEEEEE")
+//                 return err
+//         }
 
-        <span class="cov8" title="1">*p = AMMBid{
-                BaseTx: h.BaseTx,
-        }
-        var asset, asset2 ledger.Asset
-        var bidMin, bidMax types.CurrencyAmount
-        var authAccounts []ledger.AuthAccounts
+//         *p = AMMBid{
+//                 BaseTx: h.BaseTx,
+//         }
+//         var asset, asset2 ledger.Asset
+//         var bidMin, bidMax types.CurrencyAmount
+//         var authAccounts []ledger.AuthAccounts
 
-        // Won't error as we unmarshal above
-        asset, _ = ledger.UnmarshalAsset(h.Asset)
-        // Won't error as we unmarshal above
-        asset2, _ = ledger.UnmarshalAsset(h.Asset2)
+//         // Won't error as we unmarshal above
+//         asset, _ = ledger.UnmarshalAsset(h.Asset)
+//         // Won't error as we unmarshal above
+//         asset2, _ = ledger.UnmarshalAsset(h.Asset2)
 
-        p.Asset = asset
-        p.Asset2 = asset2
+//         p.Asset = asset
+//         p.Asset2 = asset2
 
-        // Won't error as we unmarshal above
-        bidMin, _ = types.UnmarshalCurrencyAmount(h.BidMin)
-        // Won't error as we unmarshal above
-        bidMax, _ = types.UnmarshalCurrencyAmount(h.BidMax)
+//         // Won't error as we unmarshal above
+//         bidMin, _ = types.UnmarshalCurrencyAmount(h.BidMin)
+//         // Won't error as we unmarshal above
+//         bidMax, _ = types.UnmarshalCurrencyAmount(h.BidMax)
 
-        p.BidMin = bidMin
-        p.BidMax = bidMax
+//         p.BidMin = bidMin
+//         p.BidMax = bidMax
 
-        authAccounts = append(authAccounts, h.AuthAccounts...)
+//         authAccounts = append(authAccounts, h.AuthAccounts...)
 
-        p.AuthAccounts = authAccounts
+//         p.AuthAccounts = authAccounts
 
-        return nil</span>
-}
+//         return nil
+// }
 
 func (a *AMMBid) Flatten() FlatTransaction <span class="cov8" title="1">{
         // Add BaseTx fields
@@ -9944,7 +9942,7 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) <span class="cov8" title="1">
         <span class="cov8" title="1">fmt.Println("TxType", txType.TransactionType)
         var tx Tx
         switch txType.TransactionType </span>{
-        case AMMBidTx:<span class="cov8" title="1">
+        case AMMBidTx:<span class="cov0" title="0">
                 tx = &amp;AMMBid{}</span>
         case AMMCreateTx:<span class="cov8" title="1">
                 tx = &amp;AMMCreate{}</span>
