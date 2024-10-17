@@ -188,6 +188,46 @@ func TestAMMBidValidate(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "Invalid AMMBid with more an AuthAccount with invalid address",
+			ammBid: AMMBid{
+				BaseTx: BaseTx{
+					Account:         "abcdef",
+					TransactionType: AMMBidTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Asset:  ledger.Asset{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ"},
+				Asset2: ledger.Asset{Currency: "XRP"},
+				BidMin: types.XRPCurrencyAmount(100),
+				BidMax: types.IssuedCurrencyAmount{Currency: "USD", Issuer: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ", Value: "200"},
+				AuthAccounts: []ledger.AuthAccounts{
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcA",
+						},
+					},
+					{
+						AuthAccount: ledger.AuthAccount{
+							Account: "invalid",
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
 			name: "Invalid AMMBid with invalid Asset, currency empty",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{

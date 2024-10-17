@@ -3,6 +3,7 @@ package transaction
 import (
 	"errors"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -135,7 +136,11 @@ func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) {
 		return false, errors.New("authAccounts: AuthAccounts should have at most 4 AuthAccount objects")
 	}
 
-	// TODO: check that the AuthAccount 'Account' field is a valid XRP address when this function is available
+	for _, authAccounts := range authAccounts {
+		if ok := addresscodec.IsValidClassicAddress(authAccounts.AuthAccount.Account.String()); !ok {
+			return false, errors.New("authAccounts: Account is not a valid classic address")
+		}
+	}
 
 	return true, nil
 }
