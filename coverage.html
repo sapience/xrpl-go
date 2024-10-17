@@ -409,7 +409,7 @@
 				
 				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (78.7%)</option>
+				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (97.5%)</option>
 				
 				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
@@ -10471,35 +10471,6 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) <span class="cov
         <span class="cov8" title="1">return true, nil</span>
 }
 
-// IsPathStep checks if the given map is a valid PathStep.
-func IsPathStep(pathStep map[string]interface{}) bool <span class="cov0" title="0">{
-        if account, ok := pathStep["account"]; ok &amp;&amp; !typecheck.IsString(account) </span><span class="cov0" title="0">{
-                return false
-        }</span>
-        <span class="cov0" title="0">if currency, ok := pathStep["currency"]; ok &amp;&amp; !typecheck.IsString(currency) </span><span class="cov0" title="0">{
-                return false
-        }</span>
-        <span class="cov0" title="0">if issuer, ok := pathStep["issuer"]; ok &amp;&amp; !typecheck.IsString(issuer) </span><span class="cov0" title="0">{
-                return false
-        }</span>
-        <span class="cov0" title="0">if _, ok := pathStep["account"]; ok </span><span class="cov0" title="0">{
-                if _, ok := pathStep["currency"]; !ok </span><span class="cov0" title="0">{
-                        if _, ok := pathStep["issuer"]; !ok </span><span class="cov0" title="0">{
-                                return true
-                        }</span>
-                }
-        }
-
-        // check if the path step has either a currency or an issuer
-        <span class="cov0" title="0">_, hasCurr := pathStep["currency"]
-        _, hasIssuer := pathStep["issuer"]
-
-        if !hasCurr &amp;&amp; !hasIssuer </span><span class="cov0" title="0">{
-                return true
-        }</span>
-        <span class="cov0" title="0">return false</span>
-}
-
 // IsPath checks if the given pathstep is valid.
 func IsPath(path []PathStep) (bool, error) <span class="cov8" title="1">{
         for _, pathStep := range path </span><span class="cov8" title="1">{
@@ -10520,16 +10491,16 @@ func IsPath(path []PathStep) (bool, error) <span class="cov8" title="1">{
 
                 https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications
                 */
-                if (hasAccount &amp;&amp; !hasCurrency &amp;&amp; !hasIssuer) || (hasCurrency &amp;&amp; !hasAccount &amp;&amp; !hasIssuer) || (hasIssuer &amp;&amp; !hasAccount &amp;&amp; !hasCurrency) </span><span class="cov0" title="0">{
+                if (hasAccount &amp;&amp; !hasCurrency &amp;&amp; !hasIssuer) || (hasCurrency &amp;&amp; !hasAccount &amp;&amp; !hasIssuer) || (hasIssuer &amp;&amp; !hasAccount &amp;&amp; !hasCurrency) </span><span class="cov8" title="1">{
                         return true, nil
-                }</span> else<span class="cov8" title="1"> if hasIssuer &amp;&amp; hasCurrency &amp;&amp; pathStep.Currency != "XRP" </span><span class="cov0" title="0">{
+                }</span> else<span class="cov8" title="1"> if hasIssuer &amp;&amp; hasCurrency &amp;&amp; pathStep.Currency != "XRP" </span><span class="cov8" title="1">{
                         return true, nil
                 }</span> else<span class="cov8" title="1"> {
                         return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
                 }</span>
 
         }
-        <span class="cov0" title="0">return true, nil</span>
+        <span class="cov8" title="1">return true, nil</span>
 }
 
 // IsPaths checks if the given slice of slices of maps is a valid Paths.

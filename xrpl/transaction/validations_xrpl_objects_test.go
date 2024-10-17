@@ -305,3 +305,73 @@ func TestIsAsset(t *testing.T) {
 		}
 	})
 }
+func TestIsPath(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []PathStep
+		expected bool
+	}{
+		{
+			name: "Valid path with account only",
+			input: []PathStep{
+				{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
+			},
+			expected: true,
+		},
+		{
+			name: "Valid path with currency only",
+			input: []PathStep{
+				{Currency: "USD"},
+			},
+			expected: true,
+		},
+		{
+			name: "Valid path with issuer only",
+			input: []PathStep{
+				{Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
+			},
+			expected: true,
+		},
+		{
+			name: "Valid path with currency and issuer",
+			input: []PathStep{
+				{Currency: "USD", Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
+			},
+			expected: true,
+		},
+		{
+			name: "Invalid path with account and currency",
+			input: []PathStep{
+				{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW", Currency: "USD"},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid path with account and issuer",
+			input: []PathStep{
+				{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW", Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid path with currency XRP and issuer",
+			input: []PathStep{
+				{Currency: "XRP", Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
+			},
+			expected: false,
+		},
+		{
+			name:     "Empty path",
+			input:    []PathStep{},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if ok, err := IsPath(tt.input); ok != tt.expected {
+				t.Errorf("Expected IsPath to return %v, but got %v with error: %v", tt.expected, ok, err)
+			}
+		})
+	}
+}
