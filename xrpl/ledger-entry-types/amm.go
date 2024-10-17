@@ -5,7 +5,58 @@ import (
 )
 
 // An AMM ledger entry describes a single Automated Market Maker (AMM) instance.
-// This is always paired with a special AccountRoot entry. https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/accountroot#special-amm-accountroot-entries
+// This is always paired with a special AccountRoot entry. https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/amm#amm
+//
+// Example:
+//
+//	{
+//	    "Account" : "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
+//	    "Asset" : {
+//	      "currency" : "XRP"
+//	    },
+//	    "Asset2" : {
+//	      "currency" : "TST",
+//	      "issuer" : "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+//	    },
+//	    "AuctionSlot" : {
+//	      "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//	      "AuthAccounts" : [
+//	          {
+//	            "AuthAccount" : {
+//	                "Account" : "rMKXGCbJ5d8LbrqthdG46q3f969MVK2Qeg"
+//	            }
+//	          },
+//	          {
+//	            "AuthAccount" : {
+//	                "Account" : "rBepJuTLFJt3WmtLXYAxSjtBWAeQxVbncv"
+//	            }
+//	          }
+//	      ],
+//	      "DiscountedFee" : 60,
+//	      "Expiration" : 721870180,
+//	      "Price" : {
+//	          "currency" : "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
+//	          "issuer" : "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
+//	          "value" : "0.8696263565463045"
+//	      }
+//	    },
+//	    "Flags" : 0,
+//	    "LPTokenBalance" : {
+//	      "currency" : "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
+//	      "issuer" : "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
+//	      "value" : "71150.53584131501"
+//	    },
+//	    "TradingFee" : 600,
+//	    "VoteSlots" : [
+//	      {
+//	          "VoteEntry" : {
+//	            "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//	            "TradingFee" : 600,
+//	            "VoteWeight" : 100000
+//	          }
+//	      }
+//	    ]
+//	}
 type AMM struct {
 	LedgerEntryCommonFields
 	// The address of the special account that holds this AMM's assets.
