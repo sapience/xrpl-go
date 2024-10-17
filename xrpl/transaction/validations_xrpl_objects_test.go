@@ -39,32 +39,55 @@ func TestIsSigner(t *testing.T) {
 	})
 }
 func TestIsIssuedCurrency(t *testing.T) {
-	t.Run("Valid IssuedCurrency object", func(t *testing.T) {
-		obj1 := types.IssuedCurrencyAmount{
-			Value:    "100",
-			Issuer:   "r1234567890",
-			Currency: "USD",
-		}
-		if ok, err := IsIssuedCurrency(obj1); !ok {
-			t.Errorf("Expected IsIssuedCurrency to return true, but got false with error: %v", err)
-		}
-	})
+	tests := []struct {
+		name     string
+		input    types.IssuedCurrencyAmount
+		expected bool
+	}{
+		{
+			name: "Valid IssuedCurrency object",
+			input: types.IssuedCurrencyAmount{
+				Value:    "100",
+				Issuer:   "r1234567890",
+				Currency: "USD",
+			},
+			expected: true,
+		},
+		{
+			name: "IssuedCurrency object with missing currency and issuer fields",
+			input: types.IssuedCurrencyAmount{
+				Value: "100",
+			},
+			expected: false,
+		},
+		{
+			name: "IssuedCurrency object with missing issuer and value fields",
+			input: types.IssuedCurrencyAmount{
+				Currency: "USD",
+			},
+			expected: false,
+		},
+		{
+			name: "IssuedCurrency object with missing currency and value fields",
+			input: types.IssuedCurrencyAmount{
+				Issuer: "r1234567890",
+			},
+			expected: false,
+		},
+		{
+			name:     "Empty object",
+			input:    types.IssuedCurrencyAmount{},
+			expected: false,
+		},
+	}
 
-	t.Run("IssuedCurrency object with missing fields", func(t *testing.T) {
-		invalid := types.IssuedCurrencyAmount{
-			Value: "100",
-		}
-		if ok, _ := IsIssuedCurrency(invalid); ok {
-			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
-		}
-	})
-
-	t.Run("Empty object", func(t *testing.T) {
-		invalid := types.IssuedCurrencyAmount{}
-		if ok, _ := IsIssuedCurrency(invalid); ok {
-			t.Errorf("Expected IsIssuedCurrency to return false, but got true")
-		}
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if ok, err := IsIssuedCurrency(tt.input); ok != tt.expected {
+				t.Errorf("Expected IsIssuedCurrency to return %v, but got %v with error: %v", tt.expected, ok, err)
+			}
+		})
+	}
 }
 
 func TestIsMemo(t *testing.T) {

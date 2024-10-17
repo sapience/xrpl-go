@@ -117,12 +117,28 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 		return false, errors.New("an issued currency cannot be of type XRP")
 	}
 
+	// Get the size of the IssuedCurrency object.
 	issuedAmount, _ := input.(types.IssuedCurrencyAmount)
+
+	numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
+	if numOfKeys != ISSUED_CURRENCY_SIZE {
+		fmt.Println("HEREEEE")
+		return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
+	}
+
 	if issuedAmount.Currency == "" {
 		return false, errors.New("currency field is required for an issued currency")
 	}
 	if issuedAmount.Currency == "XRP" {
 		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
+	}
+
+	if issuedAmount.Issuer == "" {
+		return false, errors.New("issuer field is required for an issued currency")
+	}
+
+	if issuedAmount.Value == "" {
+		return false, errors.New("value field is required for an issued currency")
 	}
 
 	// Check if the value is a valid positive number
