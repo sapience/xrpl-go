@@ -42,11 +42,28 @@ func (a *AMMDelete) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
 
-	// Add AMMBid-specific fields
+	// Add AMMDelete-specific fields
 	flattened["TransactionType"] = "AMMDelete"
 
 	flattened["Asset"] = a.Asset.Flatten()
 
 	flattened["Asset2"] = a.Asset2.Flatten()
 	return flattened
+}
+
+func (a *AMMDelete) Validate() (bool, error) {
+	_, err := a.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset2); !ok {
+		return false, err
+	}
+
+	return true, nil
 }

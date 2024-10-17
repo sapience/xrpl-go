@@ -8239,7 +8239,7 @@ func (a *AMMDelete) Flatten() FlatTransaction <span class="cov8" title="1">{
         // Add BaseTx fields
         flattened := a.BaseTx.Flatten()
 
-        // Add AMMBid-specific fields
+        // Add AMMDelete-specific fields
         flattened["TransactionType"] = "AMMDelete"
 
         flattened["Asset"] = a.Asset.Flatten()
@@ -8247,6 +8247,23 @@ func (a *AMMDelete) Flatten() FlatTransaction <span class="cov8" title="1">{
         flattened["Asset2"] = a.Asset2.Flatten()
         return flattened
 }</span>
+
+func (a *AMMDelete) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := a.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset2); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file139" style="display: none">package transaction
@@ -10527,16 +10544,16 @@ func IsAsset(asset ledger.Asset) (bool, error) <span class="cov8" title="1">{
                 return false, errors.New("asset object should have at least one field 'currency', or two fields 'currency' and 'issuer'")
         }</span>
 
-        <span class="cov8" title="1">if asset.Currency == "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if strings.TrimSpace(asset.Currency) == "" </span><span class="cov8" title="1">{
                 return false, errors.New("currency field is required for an asset")
         }</span>
 
-        <span class="cov8" title="1">if strings.ToUpper(asset.Currency) == "XRP" &amp;&amp; asset.Issuer == "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if strings.ToUpper(asset.Currency) == "XRP" &amp;&amp; strings.TrimSpace(asset.Issuer.String()) == "" </span><span class="cov8" title="1">{
                 return true, nil
         }</span>
 
-        <span class="cov8" title="1">if asset.Currency != "" &amp;&amp; asset.Issuer == "" </span><span class="cov8" title="1">{
-                return false, errors.New("issuer field is required for an asset")
+        <span class="cov8" title="1">if asset.Currency != "" &amp;&amp; !addresscodec.IsValidClassicAddress(asset.Issuer.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("issuer field must be a valid XRPL classic address")
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
