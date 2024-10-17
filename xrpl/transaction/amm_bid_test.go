@@ -433,3 +433,151 @@ func TestAMMBid_TxType(t *testing.T) {
 	entry := &AMMBid{}
 	assert.Equal(t, AMMBidTx, entry.TxType())
 }
+
+// Tests all the errors for the UnmarshalJSON method
+func TestAMMBid_UnmarshalJSON_Errors(t *testing.T) {
+	tests := []struct {
+		name    string
+		jsonStr string
+		wantErr bool
+	}{
+		{
+			name: "Invalid JSON with invalid BaseTx, invalid Account",
+			jsonStr: `{
+				"Account": ,
+				"TransactionType": "AMMBid",
+				"Fee": "1",
+				"Sequence": 1234,
+				"SigningPubKey": "ghijk",
+				"TxnSignature": "A1B2C3D4E5F6",
+			}`,
+			wantErr: true,
+		},
+		{
+			name: "Invalid JSON with invalid Asset",
+			jsonStr: `{
+				"Account": "abcdef",
+				"TransactionType": "AMMBid",
+				"Fee": "1",
+				"Sequence": 1234,
+				"SigningPubKey": "ghijk",
+				"TxnSignature": "A1B2C3D4E5F6",
+				"Asset": {
+					"currency: "USD",
+					"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ"
+				}
+				"Asset2": {
+					"currency": "XRP"
+				},
+				"BidMin": "100",
+				"BidMax": {
+					"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ",
+					"currency": "USD",
+					"value": "200"
+				},
+				"AuthAccounts": [
+					{
+						"AuthAccount": {
+							"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ"
+						}
+					},
+					{
+						"AuthAccount": {
+							"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE"
+						}
+					}
+				]
+			}`,
+			wantErr: true,
+		},
+		{
+			name: "Invalid JSON with invalid BidMin",
+			jsonStr: `{
+				"Account": "abcdef",
+				"TransactionType": "AMMBid",
+				"Fee": "1",
+				"Sequence": 1234,
+				"SigningPubKey": "ghijk",
+				"TxnSignature": "A1B2C3D4E5F6",
+				"Asset": {
+					"currency": "USD",
+					"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ"
+				},
+				"Asset2": {
+					"currency": "XRP"
+				},
+				"BidMin": {,
+				"BidMax": {
+					"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ",
+					"currency": "USD",
+					"value": "200"
+				},
+				"AuthAccounts": [
+					{
+						"AuthAccount": {
+							"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ"
+						}
+					},
+					{
+						"AuthAccount": {
+							"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE"
+						}
+					}
+				]
+			}`,
+			wantErr: true,
+		},
+		{
+			name: "Invalid JSON with invalid BidMax",
+			jsonStr: `{
+				"Account": "abcdef",
+				"TransactionType": "AMMBid",
+				"Fee": "1",
+				"Sequence": 1234,
+				"SigningPubKey": "ghijk",
+				"TxnSignature": "A1B2C3D4E5F6",
+				"Asset": {
+					"currency": "USD",
+					"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ"
+				},
+				"Asset2": {
+					"currency": "XRP"
+				},
+				"BidMin": {
+					"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ",
+					"currency": "USD",
+					"value": "200"
+				},
+				"BidMax": {
+					"issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcQ",
+					"currency": "USD",
+					"value": "200"
+				,
+				"AuthAccounts": [
+					{
+						"AuthAccount": {
+							"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcZ"
+						}
+					},
+					{
+						"AuthAccount": {
+							"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcE"
+						}
+					}
+				]
+			}`,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var ammBid *AMMBid
+			err := ammBid.UnmarshalJSON([]byte(tt.jsonStr))
+			// json.Unmarshal([]byte(tt.jsonStr), &got)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("AMMBid.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

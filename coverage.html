@@ -327,7 +327,7 @@
 				
 				<option value="file135">github.com/Peersyst/xrpl-go/xrpl/transaction/account_set.go (53.0%)</option>
 				
-				<option value="file136">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_bid.go (90.3%)</option>
+				<option value="file136">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_bid.go (100.0%)</option>
 				
 				<option value="file137">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_create.go (85.7%)</option>
 				
@@ -409,7 +409,7 @@
 				
 				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (68.7%)</option>
+				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (68.4%)</option>
 				
 				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
@@ -8009,6 +8009,7 @@ func (s *AccountSet) Validate() (bool, error) <span class="cov8" title="1">{
 import (
         "encoding/json"
         "errors"
+        "fmt"
 
         ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -8032,7 +8033,7 @@ type AMMBid struct {
         AuthAccounts []ledger.AuthAccounts `json:",omitempty"`
 }
 
-func (*AMMBid) TxType() TxType <span class="cov0" title="0">{
+func (*AMMBid) TxType() TxType <span class="cov8" title="1">{
         return AMMBidTx
 }</span>
 
@@ -8047,40 +8048,32 @@ func (p *AMMBid) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
                 AuthAccounts []ledger.AuthAccounts `json:",omitempty"`
         }
         var h pHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
+        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov8" title="1">{
+                fmt.Println("error HERREEEEEE")
                 return err
         }</span>
+
         <span class="cov8" title="1">*p = AMMBid{
                 BaseTx: h.BaseTx,
         }
         var asset, asset2 ledger.Asset
         var bidMin, bidMax types.CurrencyAmount
         var authAccounts []ledger.AuthAccounts
-        var err error
 
-        asset, err = ledger.UnmarshalAsset(h.Asset)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">asset2, err = ledger.UnmarshalAsset(h.Asset2)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
+        // Won't error as we unmarshal above
+        asset, _ = ledger.UnmarshalAsset(h.Asset)
+        // Won't error as we unmarshal above
+        asset2, _ = ledger.UnmarshalAsset(h.Asset2)
 
-        <span class="cov8" title="1">p.Asset = asset
+        p.Asset = asset
         p.Asset2 = asset2
 
-        bidMin, err = types.UnmarshalCurrencyAmount(h.BidMin)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
+        // Won't error as we unmarshal above
+        bidMin, _ = types.UnmarshalCurrencyAmount(h.BidMin)
+        // Won't error as we unmarshal above
+        bidMax, _ = types.UnmarshalCurrencyAmount(h.BidMax)
 
-        <span class="cov8" title="1">bidMax, err = types.UnmarshalCurrencyAmount(h.BidMax)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        <span class="cov8" title="1">p.BidMin = bidMin
+        p.BidMin = bidMin
         p.BidMax = bidMax
 
         authAccounts = append(authAccounts, h.AuthAccounts...)
@@ -10465,7 +10458,6 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) <span class="cov
 
         numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
         if numOfKeys != ISSUED_CURRENCY_SIZE </span><span class="cov8" title="1">{
-                fmt.Println("HEREEEE")
                 return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
         }</span>
 

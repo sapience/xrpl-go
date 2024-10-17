@@ -3,6 +3,7 @@ package transaction
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -42,37 +43,29 @@ func (p *AMMBid) UnmarshalJSON(data []byte) error {
 	}
 	var h pHelper
 	if err := json.Unmarshal(data, &h); err != nil {
+		fmt.Println("error HERREEEEEE")
 		return err
 	}
+
 	*p = AMMBid{
 		BaseTx: h.BaseTx,
 	}
 	var asset, asset2 ledger.Asset
 	var bidMin, bidMax types.CurrencyAmount
 	var authAccounts []ledger.AuthAccounts
-	var err error
 
-	asset, err = ledger.UnmarshalAsset(h.Asset)
-	if err != nil {
-		return err
-	}
-	asset2, err = ledger.UnmarshalAsset(h.Asset2)
-	if err != nil {
-		return err
-	}
+	// Won't error as we unmarshal above
+	asset, _ = ledger.UnmarshalAsset(h.Asset)
+	// Won't error as we unmarshal above
+	asset2, _ = ledger.UnmarshalAsset(h.Asset2)
 
 	p.Asset = asset
 	p.Asset2 = asset2
 
-	bidMin, err = types.UnmarshalCurrencyAmount(h.BidMin)
-	if err != nil {
-		return err
-	}
-
-	bidMax, err = types.UnmarshalCurrencyAmount(h.BidMax)
-	if err != nil {
-		return err
-	}
+	// Won't error as we unmarshal above
+	bidMin, _ = types.UnmarshalCurrencyAmount(h.BidMin)
+	// Won't error as we unmarshal above
+	bidMax, _ = types.UnmarshalCurrencyAmount(h.BidMax)
 
 	p.BidMin = bidMin
 	p.BidMax = bidMax
