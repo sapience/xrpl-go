@@ -51,6 +51,8 @@ func GetSerializedType(t string) SerializedType {
 		return &PathSet{}
 	case "XChainBridge":
 		return &XChainBridge{}
+	case "Issue":
+		return &Issue{}
 	}
 	return nil
 }
