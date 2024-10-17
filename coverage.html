@@ -409,7 +409,7 @@
 				
 				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (97.5%)</option>
+				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
 				
 				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
@@ -10510,7 +10510,7 @@ func IsPaths(pathsteps [][]PathStep) (bool, error) <span class="cov8" title="1">
         }</span>
 
         <span class="cov8" title="1">for _, path := range pathsteps </span><span class="cov8" title="1">{
-                if len(path) == 0 </span><span class="cov0" title="0">{
+                if len(path) == 0 </span><span class="cov8" title="1">{
                         return false, errors.New("path should have at least one path step")
                 }</span>
 
@@ -10519,7 +10519,7 @@ func IsPaths(pathsteps [][]PathStep) (bool, error) <span class="cov8" title="1">
                 }</span>
         }
 
-        <span class="cov0" title="0">return true, nil</span>
+        <span class="cov8" title="1">return true, nil</span>
 }
 
 // IsAsset checks if the given object is a valid Asset object.
