@@ -409,7 +409,7 @@
 				
 				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (70.8%)</option>
+				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (73.4%)</option>
 				
 				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
@@ -10334,6 +10334,7 @@ import (
         "strconv"
         "strings"
 
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
@@ -10386,20 +10387,17 @@ func IsSigner(signerData SignerData) (bool, error) <span class="cov8" title="1">
                 return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")
         }</span>
 
-        // TODO: Update to check if the account is valid when the "isAccount" function exists
-        <span class="cov8" title="1">validAccount := signerData.Account != "" &amp;&amp; typecheck.IsString(signerData.Account.String())
-        if !validAccount </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">validAccount := strings.TrimSpace(signerData.Account.String()) != "" &amp;&amp; addresscodec.IsValidClassicAddress(signerData.Account.String())
+        if !validAccount </span><span class="cov8" title="1">{
                 return false, errors.New("signers: Account should be a string")
         }</span>
 
-        <span class="cov8" title="1">validTxnSignature := signerData.TxnSignature != "" &amp;&amp; typecheck.IsString(signerData.TxnSignature)
-        if !validTxnSignature </span><span class="cov0" title="0">{
-                return false, errors.New("signers: TxnSignature should be a string")
+        <span class="cov8" title="1">if strings.TrimSpace(signerData.TxnSignature) == "" </span><span class="cov8" title="1">{
+                return false, errors.New("signers: TxnSignature should be a non-empty string")
         }</span>
 
-        <span class="cov8" title="1">validSigningPubKey := signerData.SigningPubKey != "" &amp;&amp; typecheck.IsString(signerData.SigningPubKey)
-        if !validSigningPubKey </span><span class="cov0" title="0">{
-                return false, errors.New("signers: SigningPubKey should be a string")
+        <span class="cov8" title="1">if strings.TrimSpace(signerData.SigningPubKey) == "" </span><span class="cov8" title="1">{
+                return false, errors.New("signers: SigningPubKey should be a non-empty string")
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>

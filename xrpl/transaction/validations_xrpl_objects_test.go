@@ -8,35 +8,78 @@ import (
 )
 
 func TestIsSigner(t *testing.T) {
-	t.Run("Valid Signer object", func(t *testing.T) {
-		validSigner := SignerData{
-			Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
-			TxnSignature:  "0123456789abcdef",
-			SigningPubKey: "abcdef0123456789",
-		}
+	tests := []struct {
+		name     string
+		input    SignerData
+		expected bool
+	}{
+		{
+			name: "Valid Signer object",
+			input: SignerData{
+				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+				TxnSignature:  "0123456789abcdef",
+				SigningPubKey: "abcdef0123456789",
+			},
+			expected: true,
+		},
+		{
+			name: "Signer object with missing fields",
+			input: SignerData{
+				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+				SigningPubKey: "abcdef0123456789",
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Signer object with empty XRPL account",
+			input: SignerData{
+				Account:       "  ",
+				SigningPubKey: "abcdef0123456789",
+				TxnSignature:  "0123456789abcdef",
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Signer object with invalid XRPL account",
+			input: SignerData{
+				Account:       "invalid",
+				SigningPubKey: "abcdef0123456789",
+				TxnSignature:  "0123456789abcdef",
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Signer object with empty TxnSignature",
+			input: SignerData{
+				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+				TxnSignature:  "  ",
+				SigningPubKey: "abcdef0123456789",
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Signer object with empty SigningPubKey",
+			input: SignerData{
+				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
+				TxnSignature:  "0123456789abcdef",
+				SigningPubKey: "  ",
+			},
+			expected: false,
+		},
+		{
+			name:     "Nil object",
+			input:    SignerData{},
+			expected: false,
+		},
+	}
 
-		if ok, err := IsSigner(validSigner); !ok {
-			t.Errorf("Expected IsSigner to return true, but got false with error: %v", err)
-		}
-	})
-
-	t.Run("Signer object with missing fields", func(t *testing.T) {
-		invalidSigner := SignerData{
-			Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
-			SigningPubKey: "abcdef0123456789",
-		}
-
-		if ok, _ := IsSigner(invalidSigner); ok {
-			t.Errorf("Expected IsSigner to return false, but got true")
-		}
-	})
-
-	t.Run("Nil object", func(t *testing.T) {
-		invalidSigner := SignerData{}
-		if ok, _ := IsSigner(invalidSigner); ok {
-			t.Errorf("Expected IsSigner to return false, but got true")
-		}
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if ok, err := IsSigner(tt.input); ok != tt.expected {
+				t.Errorf("Expected IsSigner to return %v, but got %v with error: %v", tt.expected, ok, err)
+			}
+		})
+	}
 }
 func TestIsIssuedCurrency(t *testing.T) {
 	tests := []struct {

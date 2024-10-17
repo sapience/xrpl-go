@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
@@ -58,20 +59,17 @@ func IsSigner(signerData SignerData) (bool, error) {
 		return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")
 	}
 
-	// TODO: Update to check if the account is valid when the "isAccount" function exists
-	validAccount := signerData.Account != "" && typecheck.IsString(signerData.Account.String())
+	validAccount := strings.TrimSpace(signerData.Account.String()) != "" && addresscodec.IsValidClassicAddress(signerData.Account.String())
 	if !validAccount {
 		return false, errors.New("signers: Account should be a string")
 	}
 
-	validTxnSignature := signerData.TxnSignature != "" && typecheck.IsString(signerData.TxnSignature)
-	if !validTxnSignature {
-		return false, errors.New("signers: TxnSignature should be a string")
+	if strings.TrimSpace(signerData.TxnSignature) == "" {
+		return false, errors.New("signers: TxnSignature should be a non-empty string")
 	}
 
-	validSigningPubKey := signerData.SigningPubKey != "" && typecheck.IsString(signerData.SigningPubKey)
-	if !validSigningPubKey {
-		return false, errors.New("signers: SigningPubKey should be a string")
+	if strings.TrimSpace(signerData.SigningPubKey) == "" {
+		return false, errors.New("signers: SigningPubKey should be a non-empty string")
 	}
 
 	return true, nil
