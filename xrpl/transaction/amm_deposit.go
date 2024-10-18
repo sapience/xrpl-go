@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"errors"
+
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -10,6 +12,8 @@ import (
 // If successful, this transaction creates a trust line to the AMM Account (limit 0) to hold the LP Tokens.
 //
 // Example:
+//
+// ```json
 //
 //	{
 //	    "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -31,6 +35,8 @@ import (
 //	    "Sequence" : 7,
 //	    "TransactionType" : "AMMDeposit"
 //	}
+//
+// ```
 type AMMDeposit struct {
 	BaseTx
 	// The definition for one of the assets in the AMM's pool. In JSON, this is an object with currency and issuer fields (omit issuer for XRP).
@@ -135,4 +141,41 @@ func (a *AMMDeposit) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+func (a *AMMDeposit) Validate() (bool, error) {
+	_, err := a.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset2); !ok {
+		return false, err
+	}
+
+	if a.Amount2 != nil && a.Amount == nil {
+		return false, errors.New("ammDeposit: must set Amount with Amount2")
+	} else if a.EPrice != nil && a.Amount == nil {
+		return false, errors.New("ammDeposit: must set Amount with EPrice")
+	} else if a.LPTokenOut == nil && a.Amount == nil {
+		return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.EPrice, fieldName: "EPrice", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	return true, nil
 }
