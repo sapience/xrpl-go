@@ -86,3 +86,64 @@ func TestAMMDeposit_Flatten(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestAMMDeposit_Flags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*AMMDeposit)
+		expected uint
+	}{
+		{
+			name: "SetLPTokentFlag",
+			setter: func(a *AMMDeposit) {
+				a.SetLPTokentFlag()
+			},
+			expected: tfLPToken,
+		},
+		{
+			name: "SetSingleAssetFlag",
+			setter: func(a *AMMDeposit) {
+				a.SetSingleAssetFlag()
+			},
+			expected: tfSingleAsset,
+		},
+		{
+			name: "SetTwoAssetFlag",
+			setter: func(a *AMMDeposit) {
+				a.SetTwoAssetFlag()
+			},
+			expected: tfTwoAsset,
+		},
+		{
+			name: "SetOneAssetLPTokenFlag",
+			setter: func(a *AMMDeposit) {
+				a.SetOneAssetLPTokenFlag()
+			},
+			expected: tfOneAssetLPToken,
+		},
+		{
+			name: "SetLimitLPTokenFlag",
+			setter: func(a *AMMDeposit) {
+				a.SetLimitLPTokenFlag()
+			},
+			expected: tfLimitLPToken,
+		},
+		{
+			name: "SetTwoAssetIfEmptyFlag",
+			setter: func(a *AMMDeposit) {
+				a.SetTwoAssetIfEmptyFlag()
+			},
+			expected: tfTwoAssetIfEmpty,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := &AMMDeposit{}
+			tt.setter(a)
+			if a.Flags != tt.expected {
+				t.Errorf("Expected AMMDeposit Flags to be %d, got %d", tt.expected, a.Flags)
+			}
+		})
+	}
+}
