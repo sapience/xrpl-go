@@ -1,6 +1,10 @@
 package transaction
 
-import "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+import (
+	"errors"
+
+	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+)
 
 // Vote on the trading fee for an Automated Market Maker instance. Up to 8 accounts can vote in proportion to the amount of the AMM's LP Tokens they hold.
 // Each new vote re-calculates the AMM's trading fee based on a weighted average of the votes.
@@ -51,4 +55,25 @@ func (a *AMMVote) Flatten() FlatTransaction {
 	flattened["TradingFee"] = a.TradingFee
 
 	return flattened
+}
+
+func (a *AMMVote) Validate() (bool, error) {
+	_, err := a.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset2); !ok {
+		return false, err
+	}
+
+	if a.TradingFee > 1000 {
+		return false, errors.New("TradingFee must be less than or equal to 1000")
+	}
+
+	return true, nil
 }

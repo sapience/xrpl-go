@@ -8451,7 +8451,11 @@ func (a *AMMDeposit) Validate() (bool, error) <span class="cov8" title="1">{
 		
 		<pre class="file" id="file140" style="display: none">package transaction
 
-import "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+import (
+        "errors"
+
+        "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+)
 
 // Vote on the trading fee for an Automated Market Maker instance. Up to 8 accounts can vote in proportion to the amount of the AMM's LP Tokens they hold.
 // Each new vote re-calculates the AMM's trading fee based on a weighted average of the votes.
@@ -8503,6 +8507,27 @@ func (a *AMMVote) Flatten() FlatTransaction <span class="cov8" title="1">{
 
         return flattened
 }</span>
+
+func (a *AMMVote) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := a.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset2); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if a.TradingFee &gt; 1000 </span><span class="cov8" title="1">{
+                return false, errors.New("TradingFee must be less than or equal to 1000")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file141" style="display: none">package transaction
