@@ -13,6 +13,7 @@ func TestAMMVote_TxType(t *testing.T) {
 	tx := &AMMVote{}
 	assert.Equal(t, AMMVoteTx, tx.TxType())
 }
+
 func TestAMMVote_Flatten(t *testing.T) {
 	tx := &AMMVote{
 		BaseTx: BaseTx{
@@ -55,6 +56,7 @@ func TestAMMVote_Flatten(t *testing.T) {
 		t.Error(err)
 	}
 }
+
 func TestAMMVote_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
