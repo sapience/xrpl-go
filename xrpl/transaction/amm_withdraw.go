@@ -99,7 +99,28 @@ func (*AMMWithdraw) TxType() TxType {
 	return AMMWithdrawTx
 }
 
-// TODO: Implement flatten
-func (s *AMMWithdraw) Flatten() FlatTransaction {
-	return nil
+func (a *AMMWithdraw) Flatten() FlatTransaction {
+	// Add BaseTx fields
+	flattened := a.BaseTx.Flatten()
+
+	// Add AMMWithdraw-specific fields
+	flattened["TransactionType"] = "AMMWithdraw"
+
+	flattened["Asset"] = a.Asset.Flatten()
+	flattened["Asset2"] = a.Asset2.Flatten()
+
+	if a.Amount != nil {
+		flattened["Amount"] = a.Amount.Flatten()
+	}
+	if a.Amount2 != nil {
+		flattened["Amount2"] = a.Amount2.Flatten()
+	}
+	if a.EPrice != nil {
+		flattened["EPrice"] = a.EPrice.Flatten()
+	}
+	if a.LPTokenIn != nil {
+		flattened["LPTokenIn"] = a.LPTokenIn.Flatten()
+	}
+
+	return flattened
 }

@@ -3,6 +3,9 @@ package transaction
 import (
 	"testing"
 
+	ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+	"github.com/Peersyst/xrpl-go/xrpl/testutil"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -74,6 +77,132 @@ func TestAMMWithdraw_Flags(t *testing.T) {
 			tt.setter(a)
 			if a.Flags != tt.expected {
 				t.Errorf("Expected AMMWithdraw Flags to be %d, got %d", tt.expected, a.Flags)
+			}
+		})
+	}
+}
+
+func TestAMMWithdraw_Flatten(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    *AMMWithdraw
+		expected string
+	}{
+		{
+			name: "Full AMMWithdraw",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Value:    "5",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Amount2: types.IssuedCurrencyAmount{
+					Value:    "50000000",
+					Currency: "ABC",
+					Issuer:   "rKswUGcm3wXPSaMfEHdUAQvE8otkZCd1ur",
+				},
+				EPrice: types.IssuedCurrencyAmount{
+					Value:    "1",
+					Currency: "TST",
+					Issuer:   "rJhPKEN1m6FDGy9FZ85Ek2n3tAyUBR4KBv",
+				},
+				LPTokenIn: types.IssuedCurrencyAmount{
+					Value:    "100",
+					Currency: "TST",
+					Issuer:   "rQH2Rhja1YRC3spuVukZBu9WzRiD1R9Dcr",
+				},
+			},
+			expected: `{
+				"TransactionType": "AMMWithdraw",
+				"Account": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+				"Fee": "10",
+				"Flags": 1048576,
+				"Sequence": 10,
+				"Asset": {
+					"currency": "TST",
+					"issuer":   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+				},
+				"Asset2": {
+					"currency": "XRP"
+				},
+				"Amount": {
+					"value":    "5",
+					"currency": "TST",
+					"issuer":   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+				},
+				"Amount2": {
+					"value": "50000000",
+					"currency": "ABC",
+					"issuer": "rKswUGcm3wXPSaMfEHdUAQvE8otkZCd1ur"
+				},
+				"EPrice": {
+					"value": "1",
+					"currency": "TST",
+					"issuer": "rJhPKEN1m6FDGy9FZ85Ek2n3tAyUBR4KBv"
+				},
+				"LPTokenIn": {
+					"value": "100",
+					"currency": "TST",
+					"issuer": "rQH2Rhja1YRC3spuVukZBu9WzRiD1R9Dcr"
+				}
+			}`,
+		},
+		{
+			name: "Minimal AMMWithdraw",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+			},
+			expected: `{
+				"TransactionType": "AMMWithdraw",
+				"Account": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+				"Fee": "10",
+				"Flags": 1048576,
+				"Sequence": 10,
+				"Asset": {
+					"currency": "TST",
+					"issuer": "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+				},
+				"Asset2": {
+					"currency": "XRP"
+				}
+			}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.input.Flatten()
+
+			err := testutil.CompareFlattenAndExpected(result, []byte(tt.expected))
+			if err != nil {
+				t.Error(err)
 			}
 		})
 	}
