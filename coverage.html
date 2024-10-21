@@ -403,7 +403,7 @@
 				
 				<option value="file173">github.com/Peersyst/xrpl-go/xrpl/transaction/types/address.go (100.0%)</option>
 				
-				<option value="file174">github.com/Peersyst/xrpl-go/xrpl/transaction/types/currency_amount.go (84.6%)</option>
+				<option value="file174">github.com/Peersyst/xrpl-go/xrpl/transaction/types/currency_amount.go (85.0%)</option>
 				
 				<option value="file175">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash128.go (100.0%)</option>
 				
@@ -8523,6 +8523,8 @@ func (a *AMMVote) Validate() (bool, error) <span class="cov8" title="1">{
 		<pre class="file" id="file141" style="display: none">package transaction
 
 import (
+        "errors"
+
         "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -8568,7 +8570,7 @@ type AMMWithdraw struct {
         // The minimum effective price, in LP Token returned, to pay per unit of the asset to withdraw.
         EPrice types.CurrencyAmount `json:",omitempty"`
         // How many of the AMM's LP Tokens to redeem.
-        LPTokenIn types.CurrencyAmount `json:",omitempty"`
+        LPTokenIn types.IssuedCurrencyAmount `json:",omitempty"`
 }
 
 // ****************************
@@ -8640,11 +8642,50 @@ func (a *AMMWithdraw) Flatten() FlatTransaction <span class="cov8" title="1">{
         <span class="cov8" title="1">if a.EPrice != nil </span><span class="cov8" title="1">{
                 flattened["EPrice"] = a.EPrice.Flatten()
         }</span>
-        <span class="cov8" title="1">if a.LPTokenIn != nil </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if !a.LPTokenIn.IsZero() </span><span class="cov8" title="1">{
                 flattened["LPTokenIn"] = a.LPTokenIn.Flatten()
         }</span>
 
         <span class="cov8" title="1">return flattened</span>
+}
+
+func (a *AMMWithdraw) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := a.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset2); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if a.Amount2 != nil &amp;&amp; a.Amount == nil </span><span class="cov8" title="1">{
+                return false, errors.New("ammWithdraw: must set Amount with Amount2")
+        }</span> else<span class="cov8" title="1"> if a.EPrice != nil &amp;&amp; a.Amount == nil </span><span class="cov8" title="1">{
+                return false, errors.New("ammWithdraw: must set Amount with EPrice")
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: false}); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount2", isFieldRequired: false}); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(IsAmountArgs{field: a.EPrice, fieldName: "EPrice", isFieldRequired: false}); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsIssuedCurrency(a.LPTokenIn); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
 		
@@ -10545,6 +10586,11 @@ func (i IssuedCurrencyAmount) Flatten() interface{} <span class="cov8" title="1"
         }</span>
         <span class="cov8" title="1">return json</span>
 }
+
+// IsZero returns true if the IssuedCurrencyAmount is the zero value (empty object).
+func (i IssuedCurrencyAmount) IsZero() bool <span class="cov8" title="1">{
+        return i == IssuedCurrencyAmount{}
+}</span>
 
 type XRPCurrencyAmount uint64
 

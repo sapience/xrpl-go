@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"errors"
+
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -46,7 +48,7 @@ type AMMWithdraw struct {
 	// The minimum effective price, in LP Token returned, to pay per unit of the asset to withdraw.
 	EPrice types.CurrencyAmount `json:",omitempty"`
 	// How many of the AMM's LP Tokens to redeem.
-	LPTokenIn types.CurrencyAmount `json:",omitempty"`
+	LPTokenIn types.IssuedCurrencyAmount `json:",omitempty"`
 }
 
 // ****************************
@@ -118,9 +120,48 @@ func (a *AMMWithdraw) Flatten() FlatTransaction {
 	if a.EPrice != nil {
 		flattened["EPrice"] = a.EPrice.Flatten()
 	}
-	if a.LPTokenIn != nil {
+	if !a.LPTokenIn.IsZero() {
 		flattened["LPTokenIn"] = a.LPTokenIn.Flatten()
 	}
 
 	return flattened
+}
+
+func (a *AMMWithdraw) Validate() (bool, error) {
+	_, err := a.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAsset(a.Asset2); !ok {
+		return false, err
+	}
+
+	if a.Amount2 != nil && a.Amount == nil {
+		return false, errors.New("ammWithdraw: must set Amount with Amount2")
+	} else if a.EPrice != nil && a.Amount == nil {
+		return false, errors.New("ammWithdraw: must set Amount with EPrice")
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount2", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAmount(IsAmountArgs{field: a.EPrice, fieldName: "EPrice", isFieldRequired: false}); !ok {
+		return false, err
+	}
+
+	if ok, err := IsIssuedCurrency(a.LPTokenIn); !ok {
+		return false, err
+	}
+
+	return true, nil
 }

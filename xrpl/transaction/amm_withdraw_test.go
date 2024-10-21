@@ -207,3 +207,320 @@ func TestAMMWithdraw_Flatten(t *testing.T) {
 		})
 	}
 }
+func TestAMMWithdraw_Validate(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    *AMMWithdraw
+		expected bool
+	}{
+		{
+			name: "Valid AMMWithdraw",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Value:    "5",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Amount2: types.IssuedCurrencyAmount{
+					Value:    "50000000",
+					Currency: "ABC",
+					Issuer:   "rKswUGcm3wXPSaMfEHdUAQvE8otkZCd1ur",
+				},
+				EPrice: types.IssuedCurrencyAmount{
+					Value:    "1",
+					Currency: "TST",
+					Issuer:   "rJhPKEN1m6FDGy9FZ85Ek2n3tAyUBR4KBv",
+				},
+				LPTokenIn: types.IssuedCurrencyAmount{
+					Value:    "100",
+					Currency: "TST",
+					Issuer:   "rQH2Rhja1YRC3spuVukZBu9WzRiD1R9Dcr",
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "Invalid AMMWithdraw BaseTx, TransactionType missing",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:  "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					Fee:      types.XRPCurrencyAmount(10),
+					Flags:    1048576,
+					Sequence: 10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Value:    "5",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Amount2: types.IssuedCurrencyAmount{
+					Value:    "50000000",
+					Currency: "ABC",
+					Issuer:   "rKswUGcm3wXPSaMfEHdUAQvE8otkZCd1ur",
+				},
+				EPrice: types.IssuedCurrencyAmount{
+					Value:    "1",
+					Currency: "TST",
+					Issuer:   "rJhPKEN1m6FDGy9FZ85Ek2n3tAyUBR4KBv",
+				},
+				LPTokenIn: types.IssuedCurrencyAmount{
+					Value:    "100",
+					Currency: "TST",
+					Issuer:   "rQH2Rhja1YRC3spuVukZBu9WzRiD1R9Dcr",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Asset",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid, Amount2 without Amount",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "UST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount2: types.IssuedCurrencyAmount{
+					Value:    "50000000",
+					Currency: "ABC",
+					Issuer:   "rKswUGcm3wXPSaMfEHdUAQvE8otkZCd1ur",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid, EPrice set without Amount",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "UST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				EPrice: types.IssuedCurrencyAmount{
+					Value:    "50000000",
+					Currency: "ABC",
+					Issuer:   "rKswUGcm3wXPSaMfEHdUAQvE8otkZCd1ur",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Asset2",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "USDC",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Amount",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Value:    "",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid Amount2",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Value:    "10",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Amount2: types.IssuedCurrencyAmount{
+					Value:  "",
+					Issuer: "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid EPrice",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Value:    "10",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Amount2: types.IssuedCurrencyAmount{
+					Value:    "12",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				EPrice: types.IssuedCurrencyAmount{
+					Value:  "12",
+					Issuer: "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid LPTokenIn",
+			input: &AMMWithdraw{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Asset: ledger.Asset{
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Asset2: ledger.Asset{
+					Currency: "XRP",
+				},
+				Amount: types.IssuedCurrencyAmount{
+					Value:    "10",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				Amount2: types.IssuedCurrencyAmount{
+					Value:    "12",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				EPrice: types.IssuedCurrencyAmount{
+					Value:    "12",
+					Currency: "TST",
+					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+				LPTokenIn: types.IssuedCurrencyAmount{
+					Value:  "12",
+					Issuer: "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+				},
+			},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.input.Validate()
+			if valid != tt.expected {
+				t.Errorf("Expected validation result to be %v, got %v", tt.expected, valid)
+			}
+			if (err != nil) != !tt.expected {
+				t.Errorf("Expected error presence to be %v, got %v", !tt.expected, err != nil)
+			}
+		})
+	}
+}
