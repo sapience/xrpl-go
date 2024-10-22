@@ -155,15 +155,15 @@ func (a *AMMDeposit) Validate() (bool, error) {
 		return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.Amount2, "Amount", false); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.EPrice, fieldName: "EPrice", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.EPrice, "EPrice", false); !ok {
 		return false, err
 	}
 

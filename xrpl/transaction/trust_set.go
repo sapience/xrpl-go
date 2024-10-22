@@ -139,7 +139,7 @@ func (tx *TrustSet) Validate() (bool, error) {
 		return false, errors.New("trustSet: missing field LimitAmount")
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: tx.LimitAmount, fieldName: "LimitAmount", isFieldRequired: true}); !ok {
+	if ok, err := IsAmount(tx.LimitAmount, "LimitAmount", true); !ok {
 		return false, err
 	}
 

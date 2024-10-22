@@ -150,15 +150,15 @@ func (a *AMMWithdraw) Validate() (bool, error) {
 		return false, errors.New("ammWithdraw: must set Amount with EPrice")
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount2", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.Amount2, "Amount2", false); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.EPrice, fieldName: "EPrice", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.EPrice, "EPrice", false); !ok {
 		return false, err
 	}
 
