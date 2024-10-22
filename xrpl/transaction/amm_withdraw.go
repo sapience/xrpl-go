@@ -97,10 +97,12 @@ func (a *AMMWithdraw) SetLimitLPTokenFlag() {
 	a.Flags |= tfLimitLPToken
 }
 
+// TxType returns the type of the transaction (AMMWithdraw).
 func (*AMMWithdraw) TxType() TxType {
 	return AMMWithdrawTx
 }
 
+// Flatten returns the flattened map of the AMMWithdraw transaction.
 func (a *AMMWithdraw) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
@@ -127,6 +129,7 @@ func (a *AMMWithdraw) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validates the AMMWithdraw struct and make sure all the fields are correct.
 func (a *AMMWithdraw) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
