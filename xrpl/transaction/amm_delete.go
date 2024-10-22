@@ -12,6 +12,8 @@ import (
 //
 // Example:
 //
+// ```json
+//
 //	{
 //	    "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
 //	    "Asset" : {
@@ -26,6 +28,8 @@ import (
 //	    "Sequence" : 9,
 //	    "TransactionType" : "AMMDelete"
 //	}
+//
+// ```
 type AMMDelete struct {
 	BaseTx
 	// The definition for one of the assets in the AMM's pool. In JSON, this is an object with currency and issuer fields (omit issuer for XRP).
