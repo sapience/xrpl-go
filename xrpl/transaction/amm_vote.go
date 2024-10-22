@@ -75,7 +75,7 @@ func (a *AMMVote) Validate() (bool, error) {
 	}
 
 	if a.TradingFee > 1000 {
-		return false, errors.New("tradingFee must be less than or equal to 1000")
+		return false, errors.New("TradingFee must be less than or equal to 1000")
 	}
 
 	return true, nil
