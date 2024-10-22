@@ -40,10 +40,12 @@ type AMMVote struct {
 	TradingFee uint16
 }
 
+// TxType returns the type of the transaction (AMMVote).
 func (*AMMVote) TxType() TxType {
 	return AMMVoteTx
 }
 
+// Flatten returns the flattened map of the AMMVote transaction.
 func (a *AMMVote) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
@@ -57,6 +59,7 @@ func (a *AMMVote) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validates the AMMVote struct and make sure all the fields are correct.
 func (a *AMMVote) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
@@ -72,7 +75,7 @@ func (a *AMMVote) Validate() (bool, error) {
 	}
 
 	if a.TradingFee > 1000 {
-		return false, errors.New("TradingFee must be less than or equal to 1000")
+		return false, errors.New("tradingFee must be less than or equal to 1000")
 	}
 
 	return true, nil
