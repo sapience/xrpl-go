@@ -61,16 +61,6 @@ type AMMDeposit struct {
 
 // You must specify exactly one of these flags, plus any global flags.
 const (
-	// Perform a double-asset deposit and receive the specified amount of LP Tokens.
-	tfLPToken uint = 65536
-	// Perform a single-asset deposit with a specified amount of the asset to deposit.
-	tfSingleAsset uint = 524288
-	// Perform a double-asset deposit with specified amounts of both assets.
-	tfTwoAsset uint = 1048576
-	// Perform a single-asset deposit and receive the specified amount of LP Tokens.
-	tfOneAssetLPToken uint = 2097152
-	// Perform a single-asset deposit with a specified effective price.
-	tfLimitLPToken uint = 4194304
 	// Perform a special double-asset deposit to an AMM with an empty pool.
 	tfTwoAssetIfEmpty uint = 8388608
 )
@@ -165,15 +155,15 @@ func (a *AMMDeposit) Validate() (bool, error) {
 		return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.Amount2, "Amount", false); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.EPrice, fieldName: "EPrice", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.EPrice, "EPrice", false); !ok {
 		return false, err
 	}
 
