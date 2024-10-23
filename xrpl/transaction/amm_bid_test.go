@@ -77,7 +77,8 @@ func TestAMMBidFlatten(t *testing.T) {
 		t.Error(err)
 	}
 }
-func TestAMMBidValidate(t *testing.T) {
+
+func TestAMMBid_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
 		ammBid  AMMBid
@@ -87,7 +88,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Valid AMMBid",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -267,66 +267,16 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) {
 }
 
 func (tx *BaseTx) Validate() (bool, error) {
-	flattenTx := tx.Flatten()
-
-	err := ValidateRequiredField(flattenTx, "TransactionType", typecheck.IsString)
-	if err != nil {
-		return false, err
+	if !addresscodec.IsValidClassicAddress(tx.Account.String()) {
+		return false, fmt.Errorf("invalid xrpl address for the Account field")
 	}
 
-	err = ValidateRequiredField(flattenTx, "Account", typecheck.IsString)
-	if err != nil {
-		return false, err
-	}
-
-	// optional fields
-	err = ValidateOptionalField(flattenTx, "Fee", typecheck.IsString)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "AccountTxnID", typecheck.IsString)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsUint)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsUint)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "SigningPubKey", typecheck.IsString)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsUint)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "TxnSignature", typecheck.IsString)
-	if err != nil {
-		return false, err
-	}
-
-	err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsUint)
-	if err != nil {
-		return false, err
+	if tx.TransactionType == "" {
+		return false, fmt.Errorf("transaction type is required")
 	}
 
 	// memos
-	err = validateMemos(tx.Memos)
+	err := validateMemos(tx.Memos)
 	if err != nil {
 		return false, err
 	}
