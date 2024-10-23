@@ -371,7 +371,7 @@
 				
 				<option value="file157">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_mint.go (0.0%)</option>
 				
-				<option value="file158">github.com/Peersyst/xrpl-go/xrpl/transaction/offer_cancel.go (0.0%)</option>
+				<option value="file158">github.com/Peersyst/xrpl-go/xrpl/transaction/offer_cancel.go (100.0%)</option>
 				
 				<option value="file159">github.com/Peersyst/xrpl-go/xrpl/transaction/offer_create.go (100.0%)</option>
 				
@@ -397,7 +397,7 @@
 				
 				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (73.0%)</option>
 				
-				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (79.4%)</option>
+				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (78.7%)</option>
 				
 				<option value="file172">github.com/Peersyst/xrpl-go/xrpl/transaction/tx_type.go (100.0%)</option>
 				
@@ -9277,19 +9277,56 @@ func (s *NFTokenMint) Flatten() FlatTransaction <span class="cov0" title="0">{
 		
 		<pre class="file" id="file158" style="display: none">package transaction
 
+import "errors"
+
+// An OfferCancel transaction removes an Offer object from the XRP Ledger.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "TransactionType": "OfferCancel",
+//            "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+//            "Fee": "12",
+//            "Flags": 0,
+//            "LastLedgerSequence": 7108629,
+//            "OfferSequence": 6,
+//            "Sequence": 7
+//        }
+//
+// ```
 type OfferCancel struct {
         BaseTx
-        OfferSequence uint
+        // The sequence number (or Ticket number) of a previous OfferCreate transaction.
+        // If specified, cancel any offer object in the ledger that was created by that transaction. It is not considered an error if the offer specified does not exist.
+        OfferSequence uint32
 }
 
-func (*OfferCancel) TxType() TxType <span class="cov0" title="0">{
+func (*OfferCancel) TxType() TxType <span class="cov8" title="1">{
         return OfferCancelTx
 }</span>
 
-// TODO: Implement flatten
-func (s *OfferCancel) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
+// Flatten returns the flattened map of the OfferCancel transaction.
+func (o *OfferCancel) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := o.BaseTx.Flatten()
+        flattened["OfferSequence"] = o.OfferSequence
+        return flattened
 }</span>
+
+// Validates the OfferCancel struct and makes sure all fields are correct.
+func (o *OfferCancel) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := o.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if o.OfferSequence == 0 </span><span class="cov8" title="1">{
+                return false, errors.New("offerCancel: OfferSequence is required")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file159" style="display: none">package transaction
@@ -10431,7 +10468,7 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) <span class="cov8" title="1">
                 tx = &amp;NFTokenMint{}</span>
         case OfferCreateTx:<span class="cov0" title="0">
                 tx = &amp;OfferCreate{}</span>
-        case OfferCancelTx:<span class="cov8" title="1">
+        case OfferCancelTx:<span class="cov0" title="0">
                 tx = &amp;OfferCancel{}</span>
         case PaymentTx:<span class="cov8" title="1">
                 tx = &amp;Payment{}</span>

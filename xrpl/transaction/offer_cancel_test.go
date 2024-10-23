@@ -41,3 +41,79 @@ func TestOfferCancel_Flatten(t *testing.T) {
 		t.Error(err)
 	}
 }
+func TestOfferCancel_Validate(t *testing.T) {
+	tests := []struct {
+		name      string
+		tx        *OfferCancel
+		wantValid bool
+	}{
+		{
+			name: "valid OfferCancel",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+				OfferSequence: 6,
+			},
+			wantValid: true,
+		},
+		{
+			name: "OfferSequence set to 0",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+				OfferSequence: 0,
+			},
+			wantValid: false,
+		},
+		{
+			name: "missing OfferSequence",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid BaseTx",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+				OfferSequence: 6,
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.tx.Validate()
+			if valid != tt.wantValid {
+				t.Errorf("expected %v, got %v, error: %v", tt.wantValid, valid, err)
+			}
+		})
+	}
+}

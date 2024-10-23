@@ -1,5 +1,7 @@
 package transaction
 
+import "errors"
+
 // An OfferCancel transaction removes an Offer object from the XRP Ledger.
 //
 // Example:
@@ -33,4 +35,18 @@ func (o *OfferCancel) Flatten() FlatTransaction {
 	flattened := o.BaseTx.Flatten()
 	flattened["OfferSequence"] = o.OfferSequence
 	return flattened
+}
+
+// Validates the OfferCancel struct and makes sure all fields are correct.
+func (o *OfferCancel) Validate() (bool, error) {
+	_, err := o.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if o.OfferSequence == 0 {
+		return false, errors.New("offerCancel: OfferSequence is required")
+	}
+
+	return true, nil
 }
