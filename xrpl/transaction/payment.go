@@ -211,7 +211,7 @@ func (tx *Payment) Validate() (bool, error) {
 	}
 
 	// Check if the field Amount is valid
-	if ok, err := IsAmount(IsAmountArgs{field: tx.Amount, fieldName: "Amount", isFieldRequired: true}); !ok {
+	if ok, err := IsAmount(tx.Amount, "Amount", true); !ok {
 		return false, err
 	}
 
@@ -241,17 +241,17 @@ func (tx *Payment) Validate() (bool, error) {
 	}
 
 	// Check if the field SendMax is valid
-	if ok, err := IsAmount(IsAmountArgs{field: tx.SendMax, fieldName: "SendMax"}); !ok {
+	if ok, err := IsAmount(tx.SendMax, "SendMax", false); !ok {
 		return false, err
 	}
 
 	// Check if the field DeliverMax is valid
-	if ok, err := IsAmount(IsAmountArgs{field: tx.DeliverMax, fieldName: "DeliverMax"}); !ok {
+	if ok, err := IsAmount(tx.DeliverMax, "DeliverMax", false); !ok {
 		return false, err
 	}
 
 	// Check if the field DeliverMin is valid
-	if ok, err := IsAmount(IsAmountArgs{field: tx.DeliverMin, fieldName: "DeliverMin"}); !ok {
+	if ok, err := IsAmount(tx.DeliverMin, "DeliverMin", false); !ok {
 		return false, err
 	}
 
@@ -276,7 +276,7 @@ func checkPartialPayment(tx *Payment) (bool, error) {
 		return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: tx.DeliverMin, fieldName: "DeliverMin", isFieldRequired: true}); !ok {
+	if ok, err := IsAmount(tx.DeliverMin, "DeliverMin", true); !ok {
 		return false, err
 	}
 
