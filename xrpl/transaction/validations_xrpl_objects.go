@@ -4,9 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -29,10 +32,6 @@ func IsMemo(memo Memo) (bool, error) {
 
 	if size == 0 {
 		return false, errors.New("memo object should have at least one field, MemoData, MemoFormat or MemoType")
-	}
-
-	if size > MEMO_SIZE {
-		return false, errors.New("memo object should have at most three fields, MemoData, MemoFormat and MemoType")
 	}
 
 	validData := memo.MemoData == "" || typecheck.IsHex(memo.MemoData)
@@ -60,20 +59,17 @@ func IsSigner(signerData SignerData) (bool, error) {
 		return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")
 	}
 
-	// TODO: Update to check if the account is valid when the "isAccount" function exists
-	validAccount := signerData.Account != "" && typecheck.IsString(signerData.Account.String())
+	validAccount := strings.TrimSpace(signerData.Account.String()) != "" && addresscodec.IsValidClassicAddress(signerData.Account.String())
 	if !validAccount {
 		return false, errors.New("signers: Account should be a string")
 	}
 
-	validTxnSignature := signerData.TxnSignature != "" && typecheck.IsString(signerData.TxnSignature)
-	if !validTxnSignature {
-		return false, errors.New("signers: TxnSignature should be a string")
+	if strings.TrimSpace(signerData.TxnSignature) == "" {
+		return false, errors.New("signers: TxnSignature should be a non-empty string")
 	}
 
-	validSigningPubKey := signerData.SigningPubKey != "" && typecheck.IsString(signerData.SigningPubKey)
-	if !validSigningPubKey {
-		return false, errors.New("signers: SigningPubKey should be a string")
+	if strings.TrimSpace(signerData.SigningPubKey) == "" {
+		return false, errors.New("signers: SigningPubKey should be a non-empty string")
 	}
 
 	return true, nil
@@ -115,12 +111,27 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 		return false, errors.New("an issued currency cannot be of type XRP")
 	}
 
+	// Get the size of the IssuedCurrency object.
 	issuedAmount, _ := input.(types.IssuedCurrencyAmount)
-	if issuedAmount.Currency == "" {
+
+	numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
+	if numOfKeys != ISSUED_CURRENCY_SIZE {
+		return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
+	}
+
+	if strings.TrimSpace(issuedAmount.Currency) == "" {
 		return false, errors.New("currency field is required for an issued currency")
 	}
-	if issuedAmount.Currency == "XRP" {
+	if strings.ToUpper(issuedAmount.Currency) == "XRP" {
 		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
+	}
+
+	if !addresscodec.IsValidClassicAddress(issuedAmount.Issuer.String()) {
+		return false, errors.New("issuer field is not a valid XRPL classic address")
+	}
+
+	if strings.TrimSpace(issuedAmount.Value) == "" {
+		return false, errors.New("value field is required for an issued currency")
 	}
 
 	// Check if the value is a valid positive number
@@ -130,35 +141,6 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	}
 
 	return true, nil
-}
-
-// IsPathStep checks if the given map is a valid PathStep.
-func IsPathStep(pathStep map[string]interface{}) bool {
-	if account, ok := pathStep["account"]; ok && !typecheck.IsString(account) {
-		return false
-	}
-	if currency, ok := pathStep["currency"]; ok && !typecheck.IsString(currency) {
-		return false
-	}
-	if issuer, ok := pathStep["issuer"]; ok && !typecheck.IsString(issuer) {
-		return false
-	}
-	if _, ok := pathStep["account"]; ok {
-		if _, ok := pathStep["currency"]; !ok {
-			if _, ok := pathStep["issuer"]; !ok {
-				return true
-			}
-		}
-	}
-
-	// check if the path step has either a currency or an issuer
-	_, hasCurr := pathStep["currency"]
-	_, hasIssuer := pathStep["issuer"]
-
-	if !hasCurr && !hasIssuer {
-		return true
-	}
-	return false
 }
 
 // IsPath checks if the given pathstep is valid.
@@ -207,6 +189,30 @@ func IsPaths(pathsteps [][]PathStep) (bool, error) {
 		if ok, err := IsPath(path); !ok {
 			return false, err
 		}
+	}
+
+	return true, nil
+}
+
+// IsAsset checks if the given object is a valid Asset object.
+func IsAsset(asset ledger.Asset) (bool, error) {
+	// Get the size of the Asset object.
+	lenKeys := len(maputils.GetKeys(asset.Flatten()))
+
+	if lenKeys == 0 {
+		return false, errors.New("asset object should have at least one field 'currency', or two fields 'currency' and 'issuer'")
+	}
+
+	if asset.Currency == "" {
+		return false, errors.New("currency field is required for an asset")
+	}
+
+	if strings.ToUpper(asset.Currency) == "XRP" && asset.Issuer == "" {
+		return true, nil
+	}
+
+	if asset.Currency != "" && asset.Issuer == "" {
+		return false, errors.New("issuer field is required for an asset")
 	}
 
 	return true, nil

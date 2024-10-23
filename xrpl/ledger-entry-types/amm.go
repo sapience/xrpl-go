@@ -1,13 +1,62 @@
 package ledger
 
 import (
-	"encoding/json"
-
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 // An AMM ledger entry describes a single Automated Market Maker (AMM) instance.
-// This is always paired with a special AccountRoot entry. https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/accountroot#special-amm-accountroot-entries
+// This is always paired with a special AccountRoot entry. https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/amm#amm
+//
+// Example:
+//
+//	{
+//	    "Account" : "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
+//	    "Asset" : {
+//	      "currency" : "XRP"
+//	    },
+//	    "Asset2" : {
+//	      "currency" : "TST",
+//	      "issuer" : "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+//	    },
+//	    "AuctionSlot" : {
+//	      "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//	      "AuthAccounts" : [
+//	          {
+//	            "AuthAccount" : {
+//	                "Account" : "rMKXGCbJ5d8LbrqthdG46q3f969MVK2Qeg"
+//	            }
+//	          },
+//	          {
+//	            "AuthAccount" : {
+//	                "Account" : "rBepJuTLFJt3WmtLXYAxSjtBWAeQxVbncv"
+//	            }
+//	          }
+//	      ],
+//	      "DiscountedFee" : 60,
+//	      "Expiration" : 721870180,
+//	      "Price" : {
+//	          "currency" : "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
+//	          "issuer" : "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
+//	          "value" : "0.8696263565463045"
+//	      }
+//	    },
+//	    "Flags" : 0,
+//	    "LPTokenBalance" : {
+//	      "currency" : "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
+//	      "issuer" : "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
+//	      "value" : "71150.53584131501"
+//	    },
+//	    "TradingFee" : 600,
+//	    "VoteSlots" : [
+//	      {
+//	          "VoteEntry" : {
+//	            "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//	            "TradingFee" : 600,
+//	            "VoteWeight" : 100000
+//	          }
+//	      }
+//	    ]
+//	}
 type AMM struct {
 	LedgerEntryCommonFields
 	// The address of the special account that holds this AMM's assets.
@@ -36,6 +85,20 @@ type AMM struct {
 type Asset struct {
 	Currency string        `json:"currency"`
 	Issuer   types.Address `json:"issuer,omitempty"`
+}
+
+func (a *Asset) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
+
+	if a.Issuer != "" {
+		flattened["issuer"] = a.Issuer
+	}
+
+	if a.Currency != "" {
+		flattened["currency"] = a.Currency
+	}
+
+	return flattened
 }
 
 // ---------------------------------------------
@@ -67,10 +130,22 @@ type AuthAccounts struct {
 	AuthAccount AuthAccount
 }
 
+func (a *AuthAccounts) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
+	flattened["AuthAccount"] = a.AuthAccount.Flatten()
+	return flattened
+}
+
 // An additional account that you allow to trade at the discounted fee.
 type AuthAccount struct {
 	// Authorized account to trade at the discounted fee for this AMM instance.
 	Account types.Address
+}
+
+func (a *AuthAccount) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
+	flattened["Account"] = a.Account
+	return flattened
 }
 
 // ---------------------------------------------
@@ -91,68 +166,4 @@ type VoteEntry struct {
 
 func (*AMM) EntryType() LedgerEntryType {
 	return AMMEntry
-}
-
-func (a *AMM) UnmarshalJSON(data []byte) error {
-	type ammHelper struct {
-		Asset          Asset
-		Asset2         Asset
-		Account        types.Address
-		AuctionSlot    AuctionSlot
-		LPTokenBalance json.RawMessage
-		TradingFee     uint16
-		VoteSlots      []VoteSlots
-	}
-	var h ammHelper
-	var err error
-	if err = json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*a = AMM{
-		Asset:       h.Asset,
-		Asset2:      h.Asset2,
-		Account:     h.Account,
-		AuctionSlot: h.AuctionSlot,
-		TradingFee:  h.TradingFee,
-		VoteSlots:   h.VoteSlots,
-	}
-
-	a.LPTokenBalance, err = types.UnmarshalCurrencyAmount(h.LPTokenBalance)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// UnmarshalJSON is a custom JSON unmarshaler for the AuctionSlot struct.
-// It decodes JSON data into an AuctionSlot instance, handling the nested
-// structure and converting the Price field using a custom unmarshal function.
-// If the JSON data cannot be unmarshaled into the expected structure,
-// or if the Price field cannot be converted, an error is returned.
-func (s *AuctionSlot) UnmarshalJSON(data []byte) error {
-	type aasHelper struct {
-		Account       types.Address
-		AuthAccounts  []AuthAccounts
-		DiscountedFee uint32
-		Price         json.RawMessage
-		Expiration    uint32
-	}
-	var h aasHelper
-	var err error
-	if err = json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*s = AuctionSlot{
-		Account:       h.Account,
-		AuthAccounts:  h.AuthAccounts,
-		DiscountedFee: h.DiscountedFee,
-		Expiration:    h.Expiration,
-	}
-
-	s.Price, err = types.UnmarshalCurrencyAmount(h.Price)
-	if err != nil {
-		return err
-	}
-	return nil
 }
