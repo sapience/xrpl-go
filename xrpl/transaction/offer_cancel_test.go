@@ -1,42 +1,43 @@
 package transaction
 
 import (
-	"encoding/json"
-	"reflect"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestOfferCancelTx(t *testing.T) {
-	s := OfferCancel{
+func TestOfferCancel_TxType(t *testing.T) {
+	tx := &OfferCancel{}
+	assert.Equal(t, OfferCancelTx, tx.TxType())
+}
+
+func TestOfferCancel_Flatten(t *testing.T) {
+	tx := &OfferCancel{
 		BaseTx: BaseTx{
 			Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 			TransactionType:    OfferCancelTx,
-			Fee:                types.XRPCurrencyAmount(12),
-			Sequence:           7,
+			Fee:                types.XRPCurrencyAmount(10),
+			Flags:              123,
 			LastLedgerSequence: 7108629,
+			Sequence:           7,
 		},
 		OfferSequence: 6,
 	}
-	j := `{
-	"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-	"TransactionType": "OfferCancel",
-	"Fee": "12",
-	"Sequence": 7,
-	"LastLedgerSequence": 7108629,
-	"OfferSequence": 6
-}`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
-		t.Error(err)
-	}
 
-	tx, err := UnmarshalTx(json.RawMessage(j))
+	expected := `{
+		"Account":            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+		"TransactionType":    "OfferCancel",
+		"Fee":                "10",
+		"Flags":              123,
+		"LastLedgerSequence": 7108629,
+		"Sequence":           7,
+		"OfferSequence":      6
+	}`
+
+	err := testutil.CompareFlattenAndExpected(tx.Flatten(), []byte(expected))
 	if err != nil {
-		t.Errorf("UnmarshalTx error: %s", err.Error())
-	}
-	if !reflect.DeepEqual(tx, &s) {
-		t.Error("UnmarshalTx result differs from expected")
+		t.Error(err)
 	}
 }
