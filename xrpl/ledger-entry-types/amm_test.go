@@ -4,111 +4,72 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestAmm(t *testing.T) {
-	amm := AMM{
-		LedgerEntryCommonFields: LedgerEntryCommonFields{
-			Flags: 0,
-		},
-		Account: "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
-		Asset: Asset{
-			Currency: "XRP",
-		},
-		Asset2: Asset{
-			Currency: "TST",
-			Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
-		},
-		AuctionSlot: AuctionSlot{
-			Account: "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-			AuthAccounts: []AuthAccounts{
-				{
-					AuthAccount: AuthAccount{
-						Account: "rMKXGCbJ5d8LbrqthdG46q3f969MVK2Qeg",
-					},
-				},
-				{
-					AuthAccount: AuthAccount{
-						Account: "rBepJuTLFJt3WmtLXYAxSjtBWAeQxVbncv",
-					},
-				},
-			},
-			DiscountedFee: 60,
-			Expiration:    721870180,
-			Price: types.IssuedCurrencyAmount{
-				Currency: "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
-				Issuer:   "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
-				Value:    "0.8696263565463045",
-			},
-		},
-		LPTokenBalance: types.IssuedCurrencyAmount{
-			Currency: "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
-			Issuer:   "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
-			Value:    "71150.53584131501",
-		},
-		TradingFee: 600,
-		VoteSlots: []VoteSlots{
-			{
-				VoteEntry: VoteEntry{
-					Account:    "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-					TradingFee: 600,
-					VoteWeight: 100000,
-				},
-			},
-		},
+func TestAssetFlatten(t *testing.T) {
+	asset := Asset{
+		Currency: "USD",
+		Issuer:   "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
 	}
 
 	json := `{
-	"Flags": 0,
-	"Account": "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
-	"Asset": {
-		"currency": "XRP"
-	},
-	"Asset2": {
-		"currency": "TST",
-		"issuer": "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
-	},
-	"AuctionSlot": {
-		"Account": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-		"AuthAccounts": [
-			{
-				"AuthAccount": {
-					"Account": "rMKXGCbJ5d8LbrqthdG46q3f969MVK2Qeg"
-				}
-			},
-			{
-				"AuthAccount": {
-					"Account": "rBepJuTLFJt3WmtLXYAxSjtBWAeQxVbncv"
-				}
-			}
-		],
-		"DiscountedFee": 60,
-		"Price": {
-			"issuer": "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
-			"currency": "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
-			"value": "0.8696263565463045"
-		},
-		"Expiration": 721870180
-	},
-	"LPTokenBalance": {
-		"issuer": "rE54zDvgnghAoPopCgvtiqWNq3dU5y836S",
-		"currency": "039C99CD9AB0B70B32ECDA51EAAE471625608EA2",
-		"value": "71150.53584131501"
-	},
-	"TradingFee": 600,
-	"VoteSlots": [
-		{
-			"VoteEntry": {
-				"Account": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-				"TradingFee": 600,
-				"VoteWeight": 100000
-			}
-		}
-	]
+	"currency": "USD",
+	"issuer": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm"
 }`
 
-	if err := testutil.SerializeAndDeserialize(t, amm, json); err != nil {
+	if err := testutil.CompareFlattenAndExpected(asset.Flatten(), []byte(json)); err != nil {
+		t.Error(err)
+	}
+
+	// 2nd test with issuer empty
+	asset2 := Asset{
+		Currency: "XRP",
+	}
+
+	json2 := `{
+	"currency": "XRP"
+}`
+
+	if err := testutil.CompareFlattenAndExpected(asset2.Flatten(), []byte(json2)); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAMM_EntryType(t *testing.T) {
+	entry := &AMM{}
+	assert.Equal(t, AMMEntry, entry.EntryType())
+}
+func TestAuthAccounts_Flatten(t *testing.T) {
+	authAccount := AuthAccount{
+		Account: "rExampleAccount",
+	}
+
+	authAccounts := AuthAccounts{
+		AuthAccount: authAccount,
+	}
+
+	expectedJSON := `{
+	"AuthAccount": {
+		"Account": "rExampleAccount"
+	}
+}`
+
+	if err := testutil.CompareFlattenAndExpected(authAccounts.Flatten(), []byte(expectedJSON)); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAuthAccount_Flatten(t *testing.T) {
+	authAccount := AuthAccount{
+		Account: "rExampleAccount",
+	}
+
+	expectedJSON := `{
+	"Account": "rExampleAccount"
+}`
+
+	if err := testutil.CompareFlattenAndExpected(authAccount.Flatten(), []byte(expectedJSON)); err != nil {
 		t.Error(err)
 	}
 }
