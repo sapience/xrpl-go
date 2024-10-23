@@ -9,6 +9,31 @@ import (
 // The maximum value is 1000, indicating a 1% fee. The minimum value is 0. https://xrpl.org/docs/references/protocol/transactions/types/ammcreate#ammcreate-fields
 const AMM_MAX_TRADING_FEE = 1000
 
+// Create a new Automated Market Maker (AMM) instance for trading a pair of assets (fungible tokens or XRP).
+//
+// Creates both an AMM entry and a special AccountRoot entry to represent the AMM.
+// Also transfers ownership of the starting balance of both assets from the sender to the created AccountRoot and issues an initial balance of liquidity provider tokens (LP Tokens) from the AMM account to the sender.
+//
+// Example:
+//
+// ```json
+//
+//	{
+//	    "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//	    "Amount" : {
+//	        "currency" : "TST",
+//	        "issuer" : "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+//	        "value" : "25"
+//	    },
+//	    "Amount2" : "250000000",
+//	    "Fee" : "2000000",
+//	    "Flags" : 2147483648,
+//	    "Sequence" : 6,
+//	    "TradingFee" : 500,
+//	    "TransactionType" : "AMMCreate"
+//	}
+//
+// ```
 type AMMCreate struct {
 	BaseTx
 	// The first of the two assets to fund this AMM with. This must be a positive amount.
@@ -19,10 +44,12 @@ type AMMCreate struct {
 	TradingFee uint16
 }
 
+// TxType returns the type of the transaction (AMMCreate).
 func (*AMMCreate) TxType() TxType {
 	return AMMCreateTx
 }
 
+// Flatten returns a map of the AMMCreate struct
 func (s *AMMCreate) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := s.BaseTx.Flatten()
@@ -43,6 +70,7 @@ func (s *AMMCreate) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validates the AMMCreate struct and makes sure all fields are correct.
 func (a *AMMCreate) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
