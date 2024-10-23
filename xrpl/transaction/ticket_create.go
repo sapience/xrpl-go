@@ -6,7 +6,7 @@ import "errors"
 //
 // Example:
 //
-//	```json
+// ```json
 //
 //	{
 //	    "TransactionType": "TicketCreate",
