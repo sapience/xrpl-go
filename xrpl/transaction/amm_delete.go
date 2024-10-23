@@ -38,10 +38,12 @@ type AMMDelete struct {
 	Asset2 ledger.Asset
 }
 
+// TxType returns the type of the transaction (AMMDelete).
 func (*AMMDelete) TxType() TxType {
 	return AMMDeleteTx
 }
 
+// Flatten returns a map of the AMMDelete struct
 func (a *AMMDelete) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
@@ -55,6 +57,7 @@ func (a *AMMDelete) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validates the AMMDelete struct and makes sure all fields are correct.
 func (a *AMMDelete) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
