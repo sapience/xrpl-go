@@ -84,7 +84,7 @@ func TestTicketCreate_Validate(t *testing.T) {
 			name: "valid ticket count",
 			ticket: TicketCreate{
 				BaseTx: BaseTx{
-					Account:         "abc",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: TicketCreateTx,
 					Fee:             types.XRPCurrencyAmount(10),
 					Sequence:        50,
@@ -110,7 +110,7 @@ func TestTicketCreate_Validate(t *testing.T) {
 			name: "ticket count zero",
 			ticket: TicketCreate{
 				BaseTx: BaseTx{
-					Account:         "abc",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: TicketCreateTx,
 					Fee:             types.XRPCurrencyAmount(10),
 					Sequence:        50,
@@ -123,7 +123,7 @@ func TestTicketCreate_Validate(t *testing.T) {
 			name: "ticket count exceeds limit",
 			ticket: TicketCreate{
 				BaseTx: BaseTx{
-					Account:         "abc",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: TicketCreateTx,
 					Fee:             types.XRPCurrencyAmount(10),
 					Sequence:        50,
