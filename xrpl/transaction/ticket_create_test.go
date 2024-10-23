@@ -73,6 +73,7 @@ func TestTicketCreate_TxType(t *testing.T) {
 	tx := &TicketCreate{}
 	assert.Equal(t, TicketCreateTx, tx.TxType())
 }
+
 func TestTicketCreate_Validate(t *testing.T) {
 	tests := []struct {
 		name      string
