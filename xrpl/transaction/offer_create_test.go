@@ -194,3 +194,50 @@ func TestOfferCreate_Validate(t *testing.T) {
 		})
 	}
 }
+
+func TestOfferCreate_Flags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*OfferCreate)
+		expected uint
+	}{
+		{
+			name: "SetPassiveFlag",
+			setter: func(a *OfferCreate) {
+				a.SetPassiveFlag()
+			},
+			expected: tfPassive,
+		},
+		{
+			name: "SetImmediateOrCancelFlag",
+			setter: func(a *OfferCreate) {
+				a.SetImmediateOrCancelFlag()
+			},
+			expected: tfImmediateOrCancel,
+		},
+		{
+			name: "SetFillOrKillFlag",
+			setter: func(a *OfferCreate) {
+				a.SetFillOrKillFlag()
+			},
+			expected: tfFillOrKill,
+		},
+		{
+			name: "SetSellFlag",
+			setter: func(a *OfferCreate) {
+				a.SetSellFlag()
+			},
+			expected: tfSell,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := &OfferCreate{}
+			tt.setter(o)
+			if o.Flags != tt.expected {
+				t.Errorf("Expected OfferCreate Flags to be %d, got %d", tt.expected, o.Flags)
+			}
+		})
+	}
+}
