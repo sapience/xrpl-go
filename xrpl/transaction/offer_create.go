@@ -61,6 +61,11 @@ func (s *OfferCreate) Flatten() FlatTransaction {
 
 // Validates the OfferCreate transaction.
 func (o *OfferCreate) Validate() (bool, error) {
+	_, err := o.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
 	if ok, err := IsAmount(o.TakerGets, "TakerGets", true); !ok {
 		return false, err
 	}

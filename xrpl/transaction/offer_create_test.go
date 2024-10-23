@@ -97,3 +97,100 @@ func TestOfferCreateFlatten(t *testing.T) {
 		})
 	}
 }
+
+func TestOfferCreate_Validate(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    OfferCreate
+		expected bool
+	}{
+		{
+			name: "Valid OfferCreate",
+			input: OfferCreate{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCreateTx,
+					Fee:                types.XRPCurrencyAmount(12),
+					Sequence:           8,
+					LastLedgerSequence: 7108682,
+				},
+				TakerGets: types.XRPCurrencyAmount(6000000),
+				TakerPays: types.IssuedCurrencyAmount{
+					Issuer:   "ruazs5h1qEsqpke88pcqnaseXdm6od2xc",
+					Currency: "GKO",
+					Value:    "2",
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "Invalid OfferCreate, missing Account",
+			input: OfferCreate{
+				BaseTx: BaseTx{
+					TransactionType:    OfferCreateTx,
+					Fee:                types.XRPCurrencyAmount(12),
+					Sequence:           8,
+					LastLedgerSequence: 7108682,
+				},
+				TakerGets: types.XRPCurrencyAmount(6000000),
+				TakerPays: types.IssuedCurrencyAmount{
+					Issuer:   "ruazs5h1qEsqpke88pcqnaseXdm6od2xc",
+					Currency: "GKO",
+					Value:    "2",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid TakerGets",
+			input: OfferCreate{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCreateTx,
+					Fee:                types.XRPCurrencyAmount(12),
+					Sequence:           8,
+					LastLedgerSequence: 7108682,
+				},
+				TakerGets: types.IssuedCurrencyAmount{
+					Issuer:   "",
+					Currency: "",
+					Value:    "",
+				},
+				TakerPays: types.IssuedCurrencyAmount{
+					Issuer:   "ruazs5h1qEsqpke88pcqnaseXdm6od2xc",
+					Currency: "GKO",
+					Value:    "2",
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "Invalid TakerPays",
+			input: OfferCreate{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCreateTx,
+					Fee:                types.XRPCurrencyAmount(12),
+					Sequence:           8,
+					LastLedgerSequence: 7108682,
+				},
+				TakerGets: types.XRPCurrencyAmount(6000000),
+				TakerPays: types.IssuedCurrencyAmount{
+					Issuer:   "",
+					Currency: "",
+					Value:    "",
+				},
+			},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.input.Validate()
+			if valid != tt.expected {
+				t.Errorf("expected %v, got %v, error: %v", tt.expected, valid, err)
+			}
+		})
+	}
+}
