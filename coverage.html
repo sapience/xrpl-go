@@ -327,7 +327,7 @@
 				
 				<option value="file135">github.com/Peersyst/xrpl-go/xrpl/transaction/account_set.go (53.0%)</option>
 				
-				<option value="file136">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_bid.go (100.0%)</option>
+				<option value="file136">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_bid.go (78.4%)</option>
 				
 				<option value="file137">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_create.go (100.0%)</option>
 				
@@ -359,7 +359,7 @@
 				
 				<option value="file151">github.com/Peersyst/xrpl-go/xrpl/transaction/flat_tx.go (0.0%)</option>
 				
-				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/memo.go (92.3%)</option>
+				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/memo.go (61.5%)</option>
 				
 				<option value="file153">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go (66.7%)</option>
 				
@@ -387,7 +387,7 @@
 				
 				<option value="file165">github.com/Peersyst/xrpl-go/xrpl/transaction/set_regular_key.go (0.0%)</option>
 				
-				<option value="file166">github.com/Peersyst/xrpl-go/xrpl/transaction/signer.go (100.0%)</option>
+				<option value="file166">github.com/Peersyst/xrpl-go/xrpl/transaction/signer.go (66.7%)</option>
 				
 				<option value="file167">github.com/Peersyst/xrpl-go/xrpl/transaction/signer_list_set.go (0.0%)</option>
 				
@@ -397,7 +397,7 @@
 				
 				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (73.0%)</option>
 				
-				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (78.7%)</option>
+				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (66.0%)</option>
 				
 				<option value="file172">github.com/Peersyst/xrpl-go/xrpl/transaction/tx_type.go (100.0%)</option>
 				
@@ -8086,27 +8086,27 @@ func (a *AMMBid) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset2); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ok, err := IsAsset(a.Asset2); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if a.Asset.Currency == "XRP" &amp;&amp; a.Asset2.Currency == "XRP" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if a.Asset.Currency == "XRP" &amp;&amp; a.Asset2.Currency == "XRP" </span><span class="cov0" title="0">{
                 return false, errors.New("at least one of the assets must be non-XRP")
         }</span>
 
-        <span class="cov8" title="1">if ok, err := IsAmount(a.BidMin, "BidMin", false); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ok, err := IsAmount(a.BidMin, "BidMin", false); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if ok, err := IsAmount(a.BidMax, "BidMax", false); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ok, err := IsAmount(a.BidMax, "BidMax", false); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if ok, err := validateAuthAccounts(a.AuthAccounts); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ok, err := validateAuthAccounts(a.AuthAccounts); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
@@ -8115,12 +8115,12 @@ func (a *AMMBid) Validate() (bool, error) <span class="cov8" title="1">{
 
 // Validate the AuthAccounts field.
 func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) <span class="cov8" title="1">{
-        if len(authAccounts) &gt; 4 </span><span class="cov8" title="1">{
+        if len(authAccounts) &gt; 4 </span><span class="cov0" title="0">{
                 return false, errors.New("authAccounts: AuthAccounts should have at most 4 AuthAccount objects")
         }</span>
 
         <span class="cov8" title="1">for _, authAccounts := range authAccounts </span><span class="cov8" title="1">{
-                if ok := addresscodec.IsValidClassicAddress(authAccounts.AuthAccount.Account.String()); !ok </span><span class="cov8" title="1">{
+                if ok := addresscodec.IsValidClassicAddress(authAccounts.AuthAccount.Account.String()); !ok </span><span class="cov0" title="0">{
                         return false, errors.New("authAccounts: Account is not a valid classic address")
                 }</span>
         }
@@ -8140,6 +8140,31 @@ import (
 // The maximum value is 1000, indicating a 1% fee. The minimum value is 0. https://xrpl.org/docs/references/protocol/transactions/types/ammcreate#ammcreate-fields
 const AMM_MAX_TRADING_FEE = 1000
 
+// Create a new Automated Market Maker (AMM) instance for trading a pair of assets (fungible tokens or XRP).
+//
+// Creates both an AMM entry and a special AccountRoot entry to represent the AMM.
+// Also transfers ownership of the starting balance of both assets from the sender to the created AccountRoot and issues an initial balance of liquidity provider tokens (LP Tokens) from the AMM account to the sender.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//            "Amount" : {
+//                "currency" : "TST",
+//                "issuer" : "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+//                "value" : "25"
+//            },
+//            "Amount2" : "250000000",
+//            "Fee" : "2000000",
+//            "Flags" : 2147483648,
+//            "Sequence" : 6,
+//            "TradingFee" : 500,
+//            "TransactionType" : "AMMCreate"
+//        }
+//
+// ```
 type AMMCreate struct {
         BaseTx
         // The first of the two assets to fund this AMM with. This must be a positive amount.
@@ -8150,10 +8175,12 @@ type AMMCreate struct {
         TradingFee uint16
 }
 
+// TxType returns the type of the transaction (AMMCreate).
 func (*AMMCreate) TxType() TxType <span class="cov8" title="1">{
         return AMMCreateTx
 }</span>
 
+// Flatten returns a map of the AMMCreate struct
 func (s *AMMCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
         // Add BaseTx fields
         flattened := s.BaseTx.Flatten()
@@ -8174,6 +8201,7 @@ func (s *AMMCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
         return flattened</span>
 }
 
+// Validates the AMMCreate struct and makes sure all fields are correct.
 func (a *AMMCreate) Validate() (bool, error) <span class="cov8" title="1">{
         _, err := a.BaseTx.Validate()
         if err != nil </span><span class="cov8" title="1">{
@@ -8236,10 +8264,12 @@ type AMMDelete struct {
         Asset2 ledger.Asset
 }
 
+// TxType returns the type of the transaction (AMMDelete).
 func (*AMMDelete) TxType() TxType <span class="cov8" title="1">{
         return AMMDeleteTx
 }</span>
 
+// Flatten returns a map of the AMMDelete struct
 func (a *AMMDelete) Flatten() FlatTransaction <span class="cov8" title="1">{
         // Add BaseTx fields
         flattened := a.BaseTx.Flatten()
@@ -8253,6 +8283,7 @@ func (a *AMMDelete) Flatten() FlatTransaction <span class="cov8" title="1">{
         return flattened
 }</span>
 
+// Validates the AMMDelete struct and makes sure all fields are correct.
 func (a *AMMDelete) Validate() (bool, error) <span class="cov8" title="1">{
         _, err := a.BaseTx.Validate()
         if err != nil </span><span class="cov8" title="1">{
@@ -9074,8 +9105,8 @@ type Memo struct {
         MemoType   string `json:",omitempty"`
 }
 
-func (mw *MemoWrapper) Flatten() map[string]interface{} <span class="cov8" title="1">{
-        if mw.Memo != (Memo{}) </span><span class="cov8" title="1">{
+func (mw *MemoWrapper) Flatten() map[string]interface{} <span class="cov0" title="0">{
+        if mw.Memo != (Memo{}) </span><span class="cov0" title="0">{
                 flattened := make(map[string]interface{})
                 flattened["Memo"] = mw.Memo.Flatten()
                 return flattened
@@ -9937,12 +9968,12 @@ type Signer struct {
 
 type FlatSigner map[string]interface{}
 
-func (s *Signer) Flatten() FlatSigner <span class="cov8" title="1">{
+func (s *Signer) Flatten() FlatSigner <span class="cov0" title="0">{
         flattened := make(FlatSigner)
-        if s.SignerData != (SignerData{}) </span><span class="cov8" title="1">{
+        if s.SignerData != (SignerData{}) </span><span class="cov0" title="0">{
                 flattened["SignerData"] = s.SignerData.Flatten()
         }</span>
-        <span class="cov8" title="1">return flattened</span>
+        <span class="cov0" title="0">return flattened</span>
 }
 
 type SignerData struct {
@@ -10233,7 +10264,7 @@ import (
         "encoding/json"
         "fmt"
 
-        "github.com/Peersyst/xrpl-go/pkg/typecheck"
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -10346,7 +10377,7 @@ func (tx *BaseTx) Flatten() FlatTransaction <span class="cov8" title="1">{
         <span class="cov8" title="1">if tx.Sequence != 0 </span><span class="cov8" title="1">{
                 flattened["Sequence"] = tx.Sequence
         }</span>
-        <span class="cov8" title="1">if tx.AccountTxnID != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if tx.AccountTxnID != "" </span><span class="cov0" title="0">{
                 flattened["AccountTxnID"] = tx.AccountTxnID.String()
         }</span>
         <span class="cov8" title="1">if tx.Flags != 0 </span><span class="cov8" title="1">{
@@ -10355,36 +10386,36 @@ func (tx *BaseTx) Flatten() FlatTransaction <span class="cov8" title="1">{
         <span class="cov8" title="1">if tx.LastLedgerSequence != 0 </span><span class="cov8" title="1">{
                 flattened["LastLedgerSequence"] = tx.LastLedgerSequence
         }</span>
-        <span class="cov8" title="1">if len(tx.Memos) &gt; 0 </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if len(tx.Memos) &gt; 0 </span><span class="cov0" title="0">{
                 flattenedMemos := make([]any, 0)
-                for _, memo := range tx.Memos </span><span class="cov8" title="1">{
+                for _, memo := range tx.Memos </span><span class="cov0" title="0">{
                         flattenedMemo := memo.Flatten()
-                        if flattenedMemo != nil </span><span class="cov8" title="1">{
+                        if flattenedMemo != nil </span><span class="cov0" title="0">{
                                 flattenedMemos = append(flattenedMemos, flattenedMemo)
                         }</span>
                 }
-                <span class="cov8" title="1">flattened["Memos"] = flattenedMemos</span>
+                <span class="cov0" title="0">flattened["Memos"] = flattenedMemos</span>
         }
-        <span class="cov8" title="1">if tx.NetworkId != 0 </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if tx.NetworkId != 0 </span><span class="cov0" title="0">{
                 flattened["NetworkId"] = tx.NetworkId
         }</span>
-        <span class="cov8" title="1">if len(tx.Signers) &gt; 0 </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if len(tx.Signers) &gt; 0 </span><span class="cov0" title="0">{
                 flattenedSigners := make([]FlatSigner, 0)
-                for _, signer := range tx.Signers </span><span class="cov8" title="1">{
+                for _, signer := range tx.Signers </span><span class="cov0" title="0">{
                         flattenedSigner := signer.Flatten()
-                        if flattenedSigner != nil </span><span class="cov8" title="1">{
+                        if flattenedSigner != nil </span><span class="cov0" title="0">{
                                 flattenedSigners = append(flattenedSigners, flattenedSigner)
                         }</span>
                 }
-                <span class="cov8" title="1">flattened["Signers"] = flattenedSigners</span>
+                <span class="cov0" title="0">flattened["Signers"] = flattenedSigners</span>
         }
-        <span class="cov8" title="1">if tx.SourceTag != 0 </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if tx.SourceTag != 0 </span><span class="cov0" title="0">{
                 flattened["SourceTag"] = tx.SourceTag
         }</span>
         <span class="cov8" title="1">if tx.SigningPubKey != "" </span><span class="cov8" title="1">{
                 flattened["SigningPubKey"] = tx.SigningPubKey
         }</span>
-        <span class="cov8" title="1">if tx.TicketSequence != 0 </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if tx.TicketSequence != 0 </span><span class="cov0" title="0">{
                 flattened["TicketSequence"] = tx.TicketSequence
         }</span>
         <span class="cov8" title="1">if tx.TxnSignature != "" </span><span class="cov8" title="1">{
@@ -10496,66 +10527,16 @@ func UnmarshalTx(data json.RawMessage) (Tx, error) <span class="cov8" title="1">
 }
 
 func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
-        flattenTx := tx.Flatten()
-
-        err := ValidateRequiredField(flattenTx, "TransactionType", typecheck.IsString)
-        if err != nil </span><span class="cov8" title="1">{
-                return false, err
+        if !addresscodec.IsValidClassicAddress(tx.Account.String()) </span><span class="cov8" title="1">{
+                return false, fmt.Errorf("invalid xrpl address for the Account field")
         }</span>
 
-        <span class="cov8" title="1">err = ValidateRequiredField(flattenTx, "Account", typecheck.IsString)
-        if err != nil </span><span class="cov8" title="1">{
-                return false, err
-        }</span>
-
-        // optional fields
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "Fee", typecheck.IsString)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "AccountTxnID", typecheck.IsString)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsUint)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsUint)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "SigningPubKey", typecheck.IsString)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsUint)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "TxnSignature", typecheck.IsString)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsUint)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
+        <span class="cov8" title="1">if tx.TransactionType == "" </span><span class="cov8" title="1">{
+                return false, fmt.Errorf("transaction type is required")
         }</span>
 
         // memos
-        <span class="cov8" title="1">err = validateMemos(tx.Memos)
+        <span class="cov8" title="1">err := validateMemos(tx.Memos)
         if err != nil </span><span class="cov8" title="1">{
                 return false, err
         }</span>
