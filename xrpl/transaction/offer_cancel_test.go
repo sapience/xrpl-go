@@ -1,42 +1,119 @@
 package transaction
 
 import (
-	"encoding/json"
-	"reflect"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestOfferCancelTx(t *testing.T) {
-	s := OfferCancel{
+func TestOfferCancel_TxType(t *testing.T) {
+	tx := &OfferCancel{}
+	assert.Equal(t, OfferCancelTx, tx.TxType())
+}
+
+func TestOfferCancel_Flatten(t *testing.T) {
+	tx := &OfferCancel{
 		BaseTx: BaseTx{
 			Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 			TransactionType:    OfferCancelTx,
-			Fee:                types.XRPCurrencyAmount(12),
-			Sequence:           7,
+			Fee:                types.XRPCurrencyAmount(10),
+			Flags:              123,
 			LastLedgerSequence: 7108629,
+			Sequence:           7,
 		},
 		OfferSequence: 6,
 	}
-	j := `{
-	"Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-	"TransactionType": "OfferCancel",
-	"Fee": "12",
-	"Sequence": 7,
-	"LastLedgerSequence": 7108629,
-	"OfferSequence": 6
-}`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+
+	expected := `{
+		"Account":            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+		"TransactionType":    "OfferCancel",
+		"Fee":                "10",
+		"Flags":              123,
+		"LastLedgerSequence": 7108629,
+		"Sequence":           7,
+		"OfferSequence":      6
+	}`
+
+	err := testutil.CompareFlattenAndExpected(tx.Flatten(), []byte(expected))
+	if err != nil {
 		t.Error(err)
 	}
-
-	tx, err := UnmarshalTx(json.RawMessage(j))
-	if err != nil {
-		t.Errorf("UnmarshalTx error: %s", err.Error())
+}
+func TestOfferCancel_Validate(t *testing.T) {
+	tests := []struct {
+		name      string
+		tx        *OfferCancel
+		wantValid bool
+	}{
+		{
+			name: "valid OfferCancel",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+				OfferSequence: 6,
+			},
+			wantValid: true,
+		},
+		{
+			name: "OfferSequence set to 0",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+				OfferSequence: 0,
+			},
+			wantValid: false,
+		},
+		{
+			name: "missing OfferSequence",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid BaseTx",
+			tx: &OfferCancel{
+				BaseTx: BaseTx{
+					Account:            "",
+					TransactionType:    OfferCancelTx,
+					Fee:                types.XRPCurrencyAmount(10),
+					Flags:              123,
+					LastLedgerSequence: 7108629,
+					Sequence:           7,
+				},
+				OfferSequence: 6,
+			},
+			wantValid: false,
+		},
 	}
-	if !reflect.DeepEqual(tx, &s) {
-		t.Error("UnmarshalTx result differs from expected")
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.tx.Validate()
+			if valid != tt.wantValid {
+				t.Errorf("expected %v, got %v, error: %v", tt.wantValid, valid, err)
+			}
+		})
 	}
 }

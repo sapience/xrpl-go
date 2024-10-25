@@ -9,6 +9,7 @@ import (
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	maputils "github.com/Peersyst/xrpl-go/pkg/map_utils"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	"github.com/Peersyst/xrpl-go/xrpl/currency"
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -76,29 +77,23 @@ func IsSigner(signerData SignerData) (bool, error) {
 
 }
 
-type IsAmountArgs struct {
-	field           types.CurrencyAmount
-	fieldName       string
-	isFieldRequired bool
-}
-
 // IsAmount checks if the given object is a valid Amount object.
 // It is a string for an XRP amount or a map for an IssuedCurrency amount.
-func IsAmount(props IsAmountArgs) (bool, error) {
-	if props.isFieldRequired && props.field == nil {
-		return false, fmt.Errorf("missing field %s", props.fieldName)
+func IsAmount(field types.CurrencyAmount, fieldName string, isFieldRequired bool) (bool, error) {
+	if isFieldRequired && field == nil {
+		return false, fmt.Errorf("missing field %s", fieldName)
 	}
 
-	if !props.isFieldRequired && props.field == nil {
+	if !isFieldRequired && field == nil {
 		// no need to check further properties on a nil field, will create a panic with tests otherwise
 		return true, nil
 	}
 
-	if props.field.Kind() == types.XRP {
+	if field.Kind() == types.XRP {
 		return true, nil
 	}
 
-	if ok, err := IsIssuedCurrency(props.field); !ok {
+	if ok, err := IsIssuedCurrency(field); !ok {
 		return false, err
 	}
 
@@ -122,7 +117,7 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	if strings.TrimSpace(issuedAmount.Currency) == "" {
 		return false, errors.New("currency field is required for an issued currency")
 	}
-	if strings.ToUpper(issuedAmount.Currency) == "XRP" {
+	if strings.ToUpper(issuedAmount.Currency) == currency.NATIVE_CURRENCY_SYMBOL {
 		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
 	}
 
@@ -165,7 +160,7 @@ func IsPath(path []PathStep) (bool, error) {
 		*/
 		if (hasAccount && !hasCurrency && !hasIssuer) || (hasCurrency && !hasAccount && !hasIssuer) || (hasIssuer && !hasAccount && !hasCurrency) {
 			return true, nil
-		} else if hasIssuer && hasCurrency && pathStep.Currency != "XRP" {
+		} else if hasIssuer && hasCurrency && pathStep.Currency != currency.NATIVE_CURRENCY_SYMBOL {
 			return true, nil
 		} else {
 			return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
@@ -203,16 +198,20 @@ func IsAsset(asset ledger.Asset) (bool, error) {
 		return false, errors.New("asset object should have at least one field 'currency', or two fields 'currency' and 'issuer'")
 	}
 
-	if asset.Currency == "" {
+	if strings.TrimSpace(asset.Currency) == "" {
 		return false, errors.New("currency field is required for an asset")
 	}
 
-	if strings.ToUpper(asset.Currency) == "XRP" && asset.Issuer == "" {
+	if strings.ToUpper(asset.Currency) == currency.NATIVE_CURRENCY_SYMBOL && strings.TrimSpace(asset.Issuer.String()) == "" {
 		return true, nil
 	}
 
-	if asset.Currency != "" && asset.Issuer == "" {
-		return false, errors.New("issuer field is required for an asset")
+	if strings.ToUpper(asset.Currency) == currency.NATIVE_CURRENCY_SYMBOL && asset.Issuer != "" {
+		return false, errors.New("issuer field should be omitted for XRP currency")
+	}
+
+	if asset.Currency != "" && !addresscodec.IsValidClassicAddress(asset.Issuer.String()) {
+		return false, errors.New("issuer field must be a valid XRPL classic address")
 	}
 
 	return true, nil
