@@ -11,7 +11,7 @@ import (
 // ===============================
 
 // ErrNotValidXChainBridge is an error that occurs when the
-// xchain bridge objectis not valid.
+// xchain bridge object is not valid.
 type ErrNotValidXChainBridge struct{}
 
 // Error returns the error message.
