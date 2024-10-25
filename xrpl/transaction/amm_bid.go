@@ -115,11 +115,11 @@ func (a *AMMBid) Validate() (bool, error) {
 		return false, errors.New("at least one of the assets must be non-XRP")
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.BidMin, fieldName: "BidMin", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.BidMin, "BidMin", false); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.BidMax, fieldName: "BidMax", isFieldRequired: false}); !ok {
+	if ok, err := IsAmount(a.BidMax, "BidMax", false); !ok {
 		return false, err
 	}
 

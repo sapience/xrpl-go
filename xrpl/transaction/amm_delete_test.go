@@ -9,19 +9,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAMMVote_TxType(t *testing.T) {
-	tx := &AMMVote{}
-	assert.Equal(t, AMMVoteTx, tx.TxType())
+func TestAMMDelete_TxType(t *testing.T) {
+	tx := &AMMDelete{}
+	assert.Equal(t, AMMDeleteTx, tx.TxType())
 }
 
-func TestAMMVote_Flatten(t *testing.T) {
-	tx := &AMMVote{
+func TestAMMDelete_Flatten(t *testing.T) {
+	tx := &AMMDelete{
 		BaseTx: BaseTx{
-			Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-			TransactionType: "AMMVote",
-			Fee:             types.XRPCurrencyAmount(10),
-			Flags:           2147483648,
-			Sequence:        8,
+			Account:  "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+			Fee:      types.XRPCurrencyAmount(10),
+			Sequence: 9,
 		},
 		Asset: ledger.Asset{
 			Currency: "XRP",
@@ -30,48 +28,43 @@ func TestAMMVote_Flatten(t *testing.T) {
 			Currency: "TST",
 			Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
 		},
-		TradingFee: 600,
 	}
 
 	flattened := tx.Flatten()
 
 	expected := `{
-		"Account":         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-		"Fee":             "10",
-		"Flags":           2147483648,
-		"Sequence":        8,
-		"TransactionType": "AMMVote",
-		"Asset": {
-			"currency": "XRP"
-		},
-		"Asset2": {
-			"currency": "TST",
-			"issuer":   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
-		},
-		"TradingFee": 600
-	}`
+	"Account": "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+	"Fee": "10",
+	"Sequence": 9,
+	"TransactionType": "AMMDelete",
+	"Asset": {
+		"currency": "XRP"
+	},
+	"Asset2": {
+		"currency": "TST",
+		"issuer": "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd"
+	}
+}`
 
 	err := testutil.CompareFlattenAndExpected(flattened, []byte(expected))
 	if err != nil {
 		t.Error(err)
 	}
 }
-
-func TestAMMVote_Validate(t *testing.T) {
+func TestAMMDelete_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
-		tx      *AMMVote
+		tx      *AMMDelete
 		wantErr bool
 	}{
 		{
-			name: "valid AMMVote",
-			tx: &AMMVote{
+			name: "Valid AMMDelete",
+			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-					TransactionType: "AMMVote",
+					TransactionType: AMMDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           2147483648,
-					Sequence:        8,
+					Sequence:        9,
 				},
 				Asset: ledger.Asset{
 					Currency: "XRP",
@@ -80,18 +73,16 @@ func TestAMMVote_Validate(t *testing.T) {
 					Currency: "TST",
 					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
 				},
-				TradingFee: 600,
 			},
 			wantErr: false,
 		},
 		{
-			name: "Invalid AMMVote BaseTx, TransactionType missing",
-			tx: &AMMVote{
+			name: "Invalid AMMDelete BaseTx, Account missing",
+			tx: &AMMDelete{
 				BaseTx: BaseTx{
-					Account:  "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-					Fee:      types.XRPCurrencyAmount(10),
-					Flags:    2147483648,
-					Sequence: 8,
+					TransactionType: AMMDeleteTx,
+					Fee:             types.XRPCurrencyAmount(10),
+					Sequence:        9,
 				},
 				Asset: ledger.Asset{
 					Currency: "XRP",
@@ -100,70 +91,81 @@ func TestAMMVote_Validate(t *testing.T) {
 					Currency: "TST",
 					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
 				},
-				TradingFee: 600,
 			},
 			wantErr: true,
 		},
 		{
-			name: "invalid TradingFee",
-			tx: &AMMVote{
+			name: "Invalid Asset",
+			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-					TransactionType: "AMMVote",
+					TransactionType: AMMDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           2147483648,
-					Sequence:        8,
+					Sequence:        9,
 				},
 				Asset: ledger.Asset{
-					Currency: "XRP",
+					Currency: "  ",
 				},
 				Asset2: ledger.Asset{
 					Currency: "TST",
 					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
 				},
-				TradingFee: 1200,
 			},
 			wantErr: true,
 		},
 		{
-			name: "invalid Asset",
-			tx: &AMMVote{
+			name: "Invalid Asset2, empty currency",
+			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-					TransactionType: "AMMVote",
+					TransactionType: AMMDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           2147483648,
-					Sequence:        8,
-				},
-				Asset: ledger.Asset{
-					Currency: " ",
-				},
-				Asset2: ledger.Asset{
-					Currency: "TST",
-					Issuer:   "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
-				},
-				TradingFee: 600,
-			},
-			wantErr: true,
-		},
-		{
-			name: "invalid Asset2",
-			tx: &AMMVote{
-				BaseTx: BaseTx{
-					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-					TransactionType: "AMMVote",
-					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           2147483648,
-					Sequence:        8,
+					Sequence:        9,
 				},
 				Asset: ledger.Asset{
 					Currency: "XRP",
 				},
 				Asset2: ledger.Asset{
-					Currency: "TST",
+					Currency: "  ",
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid Asset2, invalid xrpl address as issuer",
+			tx: &AMMDelete{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: AMMDeleteTx,
+					Fee:             types.XRPCurrencyAmount(10),
+					Sequence:        9,
+				},
+				Asset: ledger.Asset{
+					Currency: "XRP",
+				},
+				Asset2: ledger.Asset{
+					Currency: "USD",
+					Issuer:   "invalid xrpl address",
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid Asset2, empty issuer",
+			tx: &AMMDelete{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: AMMDeleteTx,
+					Fee:             types.XRPCurrencyAmount(10),
+					Sequence:        9,
+				},
+				Asset: ledger.Asset{
+					Currency: "XRP",
+				},
+				Asset2: ledger.Asset{
+					Currency: "USD",
 					Issuer:   " ",
 				},
-				TradingFee: 600,
 			},
 			wantErr: true,
 		},
@@ -173,11 +175,11 @@ func TestAMMVote_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.tx.Validate()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("AMMVote.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("AMMDelete.Validate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if valid != !tt.wantErr {
-				t.Errorf("AMMVote.Validate() = %v, want %v", valid, !tt.wantErr)
+				t.Errorf("AMMDelete.Validate() = %v, want %v", valid, !tt.wantErr)
 			}
 		})
 	}
