@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidate(t *testing.T) {
+func TestTx_Validate(t *testing.T) {
 	testCases := []struct {
 		name   string
 		tx     *BaseTx
