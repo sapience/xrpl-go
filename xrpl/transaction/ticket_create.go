@@ -4,6 +4,15 @@ import (
 	"fmt"
 )
 
+const (
+	// Minimum TicketCount value.
+	// https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
+	MIN_TICKET_COUNT = 1
+	// Maximum TicketCount value.
+	// https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
+	MAX_TICKET_COUNT = 250
+)
+
 // A TicketCreate transaction sets aside one or more sequence numbers as Tickets.
 //
 // Example:
@@ -44,14 +53,6 @@ func (t *TicketCreate) Flatten() FlatTransaction {
 
 	return flattened
 }
-
-// Minimum TicketCount value.
-// https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
-const MIN_TICKET_COUNT = 1
-
-// Maximum TicketCount value.
-// https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
-const MAX_TICKET_COUNT = 250
 
 // Validates the TicketCreate transaction and makes sure all the fields are correct.
 func (t *TicketCreate) Validate() (bool, error) {
