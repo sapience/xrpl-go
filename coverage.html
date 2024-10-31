@@ -345,7 +345,7 @@
 				
 				<option value="file144">github.com/Peersyst/xrpl-go/xrpl/transaction/check_create.go (0.0%)</option>
 				
-				<option value="file145">github.com/Peersyst/xrpl-go/xrpl/transaction/clawback.go (50.0%)</option>
+				<option value="file145">github.com/Peersyst/xrpl-go/xrpl/transaction/clawback.go (87.5%)</option>
 				
 				<option value="file146">github.com/Peersyst/xrpl-go/xrpl/transaction/deposit_preauth.go (0.0%)</option>
 				
@@ -377,7 +377,7 @@
 				
 				<option value="file160">github.com/Peersyst/xrpl-go/xrpl/transaction/path_step.go (100.0%)</option>
 				
-				<option value="file161">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (61.8%)</option>
+				<option value="file161">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (79.7%)</option>
 				
 				<option value="file162">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go (12.5%)</option>
 				
@@ -395,7 +395,7 @@
 				
 				<option value="file169">github.com/Peersyst/xrpl-go/xrpl/transaction/transaction_metadata.go (0.0%)</option>
 				
-				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (51.4%)</option>
+				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (70.4%)</option>
 				
 				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (100.0%)</option>
 				
@@ -8755,8 +8755,6 @@ func (s *CheckCancel) Flatten() FlatTransaction <span class="cov0" title="0">{
 		<pre class="file" id="file143" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -8775,45 +8773,11 @@ func (*CheckCash) TxType() TxType <span class="cov0" title="0">{
 func (s *CheckCash) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
-
-func (tx *CheckCash) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
-        type ccHelper struct {
-                BaseTx
-                CheckID    types.Hash256
-                Amount     json.RawMessage `json:",omitempty"`
-                DeliverMin json.RawMessage `json:",omitempty"`
-        }
-        var h ccHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">*tx = CheckCash{
-                BaseTx:  h.BaseTx,
-                CheckID: h.CheckID,
-        }
-
-        var amount, min types.CurrencyAmount
-        var err error
-        amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">min, err = types.UnmarshalCurrencyAmount(h.DeliverMin)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">tx.Amount = amount
-        tx.DeliverMin = min
-        return nil</span>
-
-}
 </pre>
 		
 		<pre class="file" id="file144" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -8834,42 +8798,11 @@ func (*CheckCreate) TxType() TxType <span class="cov0" title="0">{
 func (s *CheckCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
-
-func (c *CheckCreate) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
-        type ccHelper struct {
-                BaseTx
-                Destination    types.Address
-                SendMax        json.RawMessage
-                DestinationTag uint          `json:",omitempty"`
-                Expiration     uint          `json:",omitempty"`
-                InvoiceID      types.Hash256 `json:",omitempty"`
-        }
-        var h ccHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">*c = CheckCreate{
-                BaseTx:         h.BaseTx,
-                Destination:    h.Destination,
-                DestinationTag: h.DestinationTag,
-                Expiration:     h.Expiration,
-                InvoiceID:      h.InvoiceID,
-        }
-
-        max, err := types.UnmarshalCurrencyAmount(h.SendMax)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">c.SendMax = max
-
-        return nil</span>
-}
 </pre>
 		
 		<pre class="file" id="file145" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "errors"
 
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -8906,40 +8839,6 @@ func (s *Clawback) Flatten() FlatTransaction <span class="cov8" title="1">{
         }</span>
 
         <span class="cov8" title="1">return flattened</span>
-}
-
-// UnmarshalJSON unmarshals the JSON data into a Clawback struct.
-func (c *Clawback) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
-        // Define a helper struct to hold the unmarshaled data
-        type cHelper struct {
-                BaseTx
-                Amount json.RawMessage
-        }
-
-        var h cHelper
-
-        // Unmarshal the JSON data into the helper struct
-        err := json.Unmarshal(data, &amp;h)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        // Assign the values from the helper struct to the Clawback struct
-        <span class="cov0" title="0">*c = Clawback{
-                BaseTx: h.BaseTx,
-        }
-
-        // Unmarshal the Amount field into a CurrencyAmount struct
-        var amount types.CurrencyAmount
-        amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        // Assign the unmarshaled CurrencyAmount to the Clawback struct
-        <span class="cov0" title="0">c.Amount = amount
-
-        return nil</span>
 }
 
 // Validates the Clawback struct.
@@ -9136,8 +9035,6 @@ func (m *Memo) Flatten() map[string]interface{} <span class="cov8" title="1">{
 		<pre class="file" id="file153" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -9151,31 +9048,6 @@ type NFTokenAcceptOffer struct {
 func (*NFTokenAcceptOffer) TxType() TxType <span class="cov0" title="0">{
         return NFTokenAcceptOfferTx
 }</span>
-
-func (n *NFTokenAcceptOffer) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
-        type naoHelper struct {
-                BaseTx
-                NFTokenSellOffer types.Hash256   `json:",omitempty"`
-                NFTokenBuyOffer  types.Hash256   `json:",omitempty"`
-                NFTokenBrokerFee json.RawMessage `json:",omitempty"`
-        }
-        var h naoHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">*n = NFTokenAcceptOffer{
-                BaseTx:           h.BaseTx,
-                NFTokenSellOffer: h.NFTokenSellOffer,
-                NFTokenBuyOffer:  h.NFTokenBuyOffer,
-        }
-
-        fee, err := types.UnmarshalCurrencyAmount(h.NFTokenBrokerFee)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">n.NFTokenBrokerFee = fee
-        return nil</span>
-}
 
 // TODO: Implement flatten
 func (s *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
@@ -9229,8 +9101,6 @@ func (s *NFTokenCancelOffer) Flatten() FlatTransaction <span class="cov0" title=
 		<pre class="file" id="file156" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -9251,35 +9121,6 @@ func (*NFTokenCreateOffer) TxType() TxType <span class="cov0" title="0">{
 func (s *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
-
-func (n *NFTokenCreateOffer) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
-        type ncoHelper struct {
-                BaseTx
-                Owner       types.Address `json:",omitempty"`
-                NFTokenID   types.NFTokenID
-                Amount      json.RawMessage
-                Expiration  uint          `json:",omitempty"`
-                Destination types.Address `json:",omitempty"`
-        }
-        var h ncoHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">*n = NFTokenCreateOffer{
-                BaseTx:      h.BaseTx,
-                Owner:       h.Owner,
-                NFTokenID:   h.NFTokenID,
-                Expiration:  h.Expiration,
-                Destination: h.Destination,
-        }
-
-        amount, err := types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">n.Amount = amount
-        return nil</span>
-}
 </pre>
 		
 		<pre class="file" id="file157" style="display: none">package transaction
@@ -9510,7 +9351,6 @@ func (p *PathStep) Flatten() map[string]interface{} <span class="cov8" title="1"
 		<pre class="file" id="file161" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "errors"
 
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -9659,50 +9499,6 @@ func (p *Payment) SetPartialPaymentFlag() <span class="cov8" title="1">{
 func (p *Payment) SetLimitQualityFlag() <span class="cov8" title="1">{
         p.Flags |= tfLimitQuality
 }</span>
-
-// UnmarshalJSON unmarshals the Payment transaction from JSON.
-func (p *Payment) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
-        type pHelper struct {
-                BaseTx
-                Amount         json.RawMessage
-                Destination    types.Address
-                DestinationTag uint32          `json:",omitempty"`
-                InvoiceID      types.Hash256   `json:",omitempty"`
-                Paths          [][]PathStep    `json:",omitempty"`
-                SendMax        json.RawMessage `json:",omitempty"`
-                DeliverMin     json.RawMessage `json:",omitempty"`
-        }
-        var h pHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">*p = Payment{
-                BaseTx:         h.BaseTx,
-                Destination:    h.Destination,
-                DestinationTag: h.DestinationTag,
-                InvoiceID:      h.InvoiceID,
-                Paths:          h.Paths,
-        }
-        var amount, max, min types.CurrencyAmount
-        var err error
-        amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">max, err = types.UnmarshalCurrencyAmount(h.SendMax)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">min, err = types.UnmarshalCurrencyAmount(h.DeliverMin)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">p.Amount = amount
-        p.DeliverMin = min
-        p.SendMax = max
-
-        return nil</span>
-}
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
 func (tx *Payment) Validate() (bool, error) <span class="cov8" title="1">{
@@ -10102,7 +9898,6 @@ type DeletedNode struct {
 		<pre class="file" id="file170" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "errors"
 
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -10201,31 +9996,6 @@ func (t *TrustSet) SetSetFreezeFlag() <span class="cov0" title="0">{
 func (t *TrustSet) SetClearFreezeFlag() <span class="cov0" title="0">{
         t.Flags |= tfClearFreeze
 }</span>
-
-func (t *TrustSet) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
-        type tsHelper struct {
-                BaseTx
-                LimitAmount json.RawMessage
-                QualityIn   uint32 `json:",omitempty"`
-                QualityOut  uint32 `json:",omitempty"`
-        }
-        var h tsHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">*t = TrustSet{
-                BaseTx:     h.BaseTx,
-                QualityIn:  h.QualityIn,
-                QualityOut: h.QualityOut,
-        }
-        limit, err := types.UnmarshalCurrencyAmount(h.LimitAmount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov0" title="0">t.LimitAmount = limit
-
-        return nil</span>
-}
 
 // Validates the TrustSet transaction.
 func (tx *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
