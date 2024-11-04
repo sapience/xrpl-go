@@ -35,34 +35,34 @@ func (*EscrowCancel) TxType() TxType {
 }
 
 // Flatten returns the flattened map of the EscrowCancel transaction.
-func (s *EscrowCancel) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (e *EscrowCancel) Flatten() FlatTransaction {
+	flattened := e.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "EscrowCancel"
 
-	if s.Owner != "" {
-		flattened["Owner"] = s.Owner
+	if e.Owner != "" {
+		flattened["Owner"] = e.Owner
 	}
 
-	if s.OfferSequence != 0 {
-		flattened["OfferSequence"] = s.OfferSequence
+	if e.OfferSequence != 0 {
+		flattened["OfferSequence"] = e.OfferSequence
 	}
 
 	return flattened
 }
 
 // Validate checks if the EscrowCancel struct is valid.
-func (s *EscrowCancel) Validate() (bool, error) {
-	_, err := s.BaseTx.Validate()
+func (e *EscrowCancel) Validate() (bool, error) {
+	_, err := e.BaseTx.Validate()
 	if err != nil {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(s.Owner.String()) {
+	if !addresscodec.IsValidClassicAddress(e.Owner.String()) {
 		return false, errors.New("invalid xrpl address for the Owner field")
 	}
 
-	if s.OfferSequence == 0 {
+	if e.OfferSequence == 0 {
 		return false, errors.New("missing OfferSequence")
 	}
 

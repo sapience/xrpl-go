@@ -48,47 +48,47 @@ func (*EscrowCreate) TxType() TxType {
 }
 
 // Flatten returns the flattened map of the EscrowCreate transaction.
-func (s *EscrowCreate) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (e *EscrowCreate) Flatten() FlatTransaction {
+	flattened := e.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "EscrowCreate"
 
-	flattened["Amount"] = s.Amount.Flatten()
+	flattened["Amount"] = e.Amount.Flatten()
 
-	if s.Destination != "" {
-		flattened["Destination"] = s.Destination
+	if e.Destination != "" {
+		flattened["Destination"] = e.Destination
 	}
-	if s.CancelAfter != 0 {
-		flattened["CancelAfter"] = s.CancelAfter
+	if e.CancelAfter != 0 {
+		flattened["CancelAfter"] = e.CancelAfter
 	}
-	if s.FinishAfter != 0 {
-		flattened["FinishAfter"] = s.FinishAfter
+	if e.FinishAfter != 0 {
+		flattened["FinishAfter"] = e.FinishAfter
 	}
-	if s.Condition != "" {
-		flattened["Condition"] = s.Condition
+	if e.Condition != "" {
+		flattened["Condition"] = e.Condition
 	}
-	if s.DestinationTag != 0 {
-		flattened["DestinationTag"] = s.DestinationTag
+	if e.DestinationTag != 0 {
+		flattened["DestinationTag"] = e.DestinationTag
 	}
 
 	return flattened
 }
 
 // Validates the EscrowCreate transaction and makes sure all the fields are correct.
-func (s *EscrowCreate) Validate() (bool, error) {
-	if ok, err := s.BaseTx.Validate(); !ok {
+func (e *EscrowCreate) Validate() (bool, error) {
+	if ok, err := e.BaseTx.Validate(); !ok {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(s.Destination.String()) {
+	if !addresscodec.IsValidClassicAddress(e.Destination.String()) {
 		return false, errors.New("invalid xrpl destination address")
 	}
 
-	if s.CancelAfter == 0 && s.FinishAfter == 0 {
+	if e.CancelAfter == 0 && e.FinishAfter == 0 {
 		return false, errors.New("either CancelAfter or FinishAfter must be set")
 	}
 
-	if s.FinishAfter == 0 && s.Condition == "" {
+	if e.FinishAfter == 0 && e.Condition == "" {
 		return false, errors.New("either Condition or FinishAfter must be specified")
 	}
 

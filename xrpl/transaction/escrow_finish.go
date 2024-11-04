@@ -41,25 +41,25 @@ func (*EscrowFinish) TxType() TxType {
 }
 
 // Flatten returns the flattened map of the EscrowFinish transaction.
-func (s *EscrowFinish) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (e *EscrowFinish) Flatten() FlatTransaction {
+	flattened := e.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "EscrowFinish"
 
-	if s.Owner != "" {
-		flattened["Owner"] = s.Owner
+	if e.Owner != "" {
+		flattened["Owner"] = e.Owner
 	}
 
-	if s.OfferSequence != 0 {
-		flattened["OfferSequence"] = s.OfferSequence
+	if e.OfferSequence != 0 {
+		flattened["OfferSequence"] = e.OfferSequence
 	}
 
-	if s.Condition != "" {
-		flattened["Condition"] = s.Condition
+	if e.Condition != "" {
+		flattened["Condition"] = e.Condition
 	}
 
-	if s.Fulfillment != "" {
-		flattened["Fulfillment"] = s.Fulfillment
+	if e.Fulfillment != "" {
+		flattened["Fulfillment"] = e.Fulfillment
 	}
 
 	return flattened
