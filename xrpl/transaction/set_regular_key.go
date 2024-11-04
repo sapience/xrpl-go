@@ -52,8 +52,8 @@ func (s *SetRegularKey) Flatten() FlatTransaction {
 
 // Validate checks if the SetRegularKey struct is valid.
 func (s *SetRegularKey) Validate() (bool, error) {
-	_, err := s.BaseTx.Validate()
-	if err != nil {
+	ok, err := s.BaseTx.Validate()
+	if err != nil || !ok {
 		return false, err
 	}
 

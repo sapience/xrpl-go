@@ -88,8 +88,8 @@ const MAX_SIGNERS = 32
 
 // Validate checks if the SignerListSet struct is valid.
 func (s *SignerListSet) Validate() (bool, error) {
-	_, err := s.BaseTx.Validate()
-	if err != nil {
+	ok, err := s.BaseTx.Validate()
+	if err != nil || !ok {
 		return false, err
 	}
 
