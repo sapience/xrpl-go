@@ -1,6 +1,9 @@
 package transaction
 
 import (
+	"errors"
+
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -68,4 +71,25 @@ func (s *EscrowCreate) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validates the EscrowCreate transaction and makes sure all the fields are correct.
+func (s *EscrowCreate) Validate() (bool, error) {
+	if ok, err := s.BaseTx.Validate(); !ok {
+		return false, err
+	}
+
+	if !addresscodec.IsValidClassicAddress(s.Destination.String()) {
+		return false, errors.New("invalid xrpl destination address")
+	}
+
+	if s.CancelAfter == 0 && s.FinishAfter == 0 {
+		return false, errors.New("either CancelAfter or FinishAfter must be set")
+	}
+
+	if s.FinishAfter == 0 && s.Condition == "" {
+		return false, errors.New("either Condition or FinishAfter must be specified")
+	}
+
+	return true, nil
 }
