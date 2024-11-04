@@ -359,7 +359,7 @@
 				
 				<option value="file151">github.com/Peersyst/xrpl-go/xrpl/transaction/deposit_preauth.go (0.0%)</option>
 				
-				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_cancel.go (0.0%)</option>
+				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_cancel.go (100.0%)</option>
 				
 				<option value="file153">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_create.go (100.0%)</option>
 				
@@ -9396,23 +9396,73 @@ func (s *DepositPreauth) Flatten() FlatTransaction <span class="cov0" title="0">
 		<pre class="file" id="file152" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Return escrowed XRP to the sender.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "TransactionType": "EscrowCancel",
+//            "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "OfferSequence": 7,
+//        }
+//
+// ```
 type EscrowCancel struct {
         BaseTx
-        Owner         types.Address
+        // Address of the source account that funded the escrow payment.
+        Owner types.Address
+        // Transaction sequence (or Ticket number) of EscrowCreate transaction that created the escrow to cancel.
         OfferSequence uint
 }
 
-func (*EscrowCancel) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the transaction type for this transaction (EscrowCancel).
+func (*EscrowCancel) TxType() TxType <span class="cov8" title="1">{
         return EscrowCancelTx
 }</span>
 
-// TODO: Implement flatten
-func (s *EscrowCancel) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns the flattened map of the EscrowCancel transaction.
+func (s *EscrowCancel) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := s.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "EscrowCancel"
+
+        if s.Owner != "" </span><span class="cov8" title="1">{
+                flattened["Owner"] = s.Owner
+        }</span>
+
+        <span class="cov8" title="1">if s.OfferSequence != 0 </span><span class="cov8" title="1">{
+                flattened["OfferSequence"] = s.OfferSequence
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks if the EscrowCancel struct is valid.
+func (s *EscrowCancel) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := s.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(s.Owner.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("invalid xrpl address for the Owner field")
+        }</span>
+
+        <span class="cov8" title="1">if s.OfferSequence == 0 </span><span class="cov8" title="1">{
+                return false, errors.New("missing OfferSequence")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file153" style="display: none">package transaction
@@ -9459,6 +9509,7 @@ type EscrowCreate struct {
         DestinationTag uint `json:",omitempty"`
 }
 
+// TxType returns the transaction type for this transaction (EscrowCreate).
 func (*EscrowCreate) TxType() TxType <span class="cov8" title="1">{
         return EscrowCreateTx
 }</span>
