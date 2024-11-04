@@ -67,8 +67,8 @@ func (e *EscrowFinish) Flatten() FlatTransaction {
 
 // Validate checks if the EscrowFinish struct is valid.
 func (e *EscrowFinish) Validate() (bool, error) {
-	_, err := e.BaseTx.Validate()
-	if err != nil {
+	ok, err := e.BaseTx.Validate()
+	if err != nil || !ok {
 		return false, err
 	}
 
