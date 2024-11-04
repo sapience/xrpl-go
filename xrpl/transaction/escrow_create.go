@@ -42,6 +42,7 @@ type EscrowCreate struct {
 	DestinationTag uint `json:",omitempty"`
 }
 
+// TxType returns the transaction type for this transaction (EscrowCreate).
 func (*EscrowCreate) TxType() TxType {
 	return EscrowCreateTx
 }
