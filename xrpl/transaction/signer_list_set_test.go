@@ -121,9 +121,10 @@ func TestSignerListSet_Flatten(t *testing.T) {
 }
 func TestSignerListSet_Validate(t *testing.T) {
 	tests := []struct {
-		name    string
-		entry   *SignerListSet
-		wantErr bool
+		name      string
+		entry     *SignerListSet
+		wantValid bool
+		wantErr   bool
 	}{
 		{
 			name: "Valid SignerListSet",
@@ -151,7 +152,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 					},
 				},
 			},
-			wantErr: false,
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
 			name: "Invalid SignerListSet BaseTx",
@@ -176,7 +178,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 					},
 				},
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid SignerListSet with no SignerEntries and quorum > 0",
@@ -188,7 +191,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 				},
 				SignerQuorum: 3,
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid SignerListSet with too many SignerEntries",
@@ -212,7 +216,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 					return entries
 				}(),
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid SignerListSet with invalid WalletLocator",
@@ -233,7 +238,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 					},
 				},
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid SignerListSet with SignerQuorum greater than sum of SignerWeights",
@@ -259,7 +265,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 					},
 				},
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid SignerEntry Account, not an xrpl address",
@@ -285,7 +292,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 					},
 				},
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Valid SignerListSet with SignerQuorum 0",
@@ -297,7 +305,8 @@ func TestSignerListSet_Validate(t *testing.T) {
 				},
 				SignerQuorum: 0,
 			},
-			wantErr: false,
+			wantValid: true,
+			wantErr:   false,
 		},
 	}
 
@@ -308,7 +317,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !valid && !tt.wantErr {
+			if valid != tt.wantValid {
 				t.Errorf("Validate() = %v, want %v", valid, !tt.wantErr)
 			}
 		})
