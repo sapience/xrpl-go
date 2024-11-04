@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"encoding/hex"
 	"testing"
 
 	ledger "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
@@ -136,14 +137,16 @@ func TestSignerListSet_Validate(t *testing.T) {
 				SignerEntries: []ledger.SignerEntryWrapper{
 					{
 						SignerEntry: ledger.SignerEntry{
-							Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
-							SignerWeight: 2,
+							Account:       "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+							SignerWeight:  2,
+							WalletLocator: types.Hash256(hex.EncodeToString([]byte("Ledger"))),
 						},
 					},
 					{
 						SignerEntry: ledger.SignerEntry{
-							Account:      "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
-							SignerWeight: 1,
+							Account:       "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+							SignerWeight:  1,
+							WalletLocator: types.Hash256(hex.EncodeToString([]byte("Ledger Nano"))),
 						},
 					},
 				},
