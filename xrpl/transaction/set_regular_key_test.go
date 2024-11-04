@@ -61,6 +61,7 @@ func TestSetRegularKey_Validate(t *testing.T) {
 	tests := []struct {
 		name       string
 		regularKey *SetRegularKey
+		wantValid  bool
 		wantErr    bool
 	}{
 		{
@@ -72,7 +73,8 @@ func TestSetRegularKey_Validate(t *testing.T) {
 				},
 				RegularKey: "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
 			},
-			wantErr: false,
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
 			name: "Invalid SetRegularKey BaseTx",
@@ -82,7 +84,8 @@ func TestSetRegularKey_Validate(t *testing.T) {
 				},
 				RegularKey: "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "RegularKey same as Account",
@@ -93,7 +96,8 @@ func TestSetRegularKey_Validate(t *testing.T) {
 				},
 				RegularKey: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid RegularKey address",
@@ -104,7 +108,8 @@ func TestSetRegularKey_Validate(t *testing.T) {
 				},
 				RegularKey: "invalidAddress",
 			},
-			wantErr: true,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Without RegularKey",
@@ -114,7 +119,8 @@ func TestSetRegularKey_Validate(t *testing.T) {
 					TransactionType: SetRegularKeyTx,
 				},
 			},
-			wantErr: false,
+			wantValid: true,
+			wantErr:   false,
 		},
 	}
 
@@ -125,7 +131,7 @@ func TestSetRegularKey_Validate(t *testing.T) {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !valid && !tt.wantErr {
+			if valid != tt.wantValid {
 				t.Errorf("Validate() = %v, want %v", valid, !tt.wantErr)
 			}
 		})
