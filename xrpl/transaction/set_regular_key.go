@@ -1,6 +1,9 @@
 package transaction
 
 import (
+	"errors"
+
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -45,4 +48,24 @@ func (s *SetRegularKey) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate checks if the SetRegularKey struct is valid.
+func (s *SetRegularKey) Validate() (bool, error) {
+	_, err := s.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	// Check if the regular key is not the same as the account address
+	if s.RegularKey != "" && s.RegularKey == s.Account {
+		return false, errors.New("regular key must not match the account address")
+	}
+
+	// Check if the regular key is a valid xrpl address
+	if s.RegularKey != "" && !addresscodec.IsValidClassicAddress(s.RegularKey.String()) {
+		return false, errors.New("invalid xrpl address for the RegularKey field")
+	}
+
+	return true, nil
 }
