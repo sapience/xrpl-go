@@ -100,6 +100,17 @@ func TestEscrowFinish_Validate(t *testing.T) {
 			expected: true,
 		},
 		{
+			name: "Invalid EscrowFinish BaseTx",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+			},
+			expected: false,
+		},
+		{
 			name: "Invalid Owner Address",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
