@@ -3,6 +3,7 @@ package transaction
 import (
 	"fmt"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 )
@@ -102,10 +103,15 @@ func (s *SignerListSet) Validate() (bool, error) {
 		return false, fmt.Errorf("signerEntries must have at least %d entry and no more than %d entries", MIN_SIGNERS, MAX_SIGNERS)
 	}
 
-	// Check if WalletLocator is an hexadecimal string for each SignerEntry
 	for _, signerEntry := range s.SignerEntries {
+		// Check if WalletLocator is an hexadecimal string for each SignerEntry
 		if signerEntry.SignerEntry.WalletLocator != "" && !typecheck.IsHex(signerEntry.SignerEntry.WalletLocator.String()) {
 			return false, fmt.Errorf("invalid WalletLocator in SignerEntry, must be an hexadecimal string")
+		}
+
+		// Check if Account is a valid xrpl address for each SignerEntry
+		if !addresscodec.IsValidClassicAddress(signerEntry.SignerEntry.Account.String()) {
+			return false, fmt.Errorf("invalid xrpl address for the Account field in SignerEntry")
 		}
 	}
 
