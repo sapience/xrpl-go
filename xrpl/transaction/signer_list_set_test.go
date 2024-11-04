@@ -118,3 +118,170 @@ func TestSignerListSet_Flatten(t *testing.T) {
 		})
 	}
 }
+func TestSignerListSet_Validate(t *testing.T) {
+	tests := []struct {
+		name    string
+		entry   *SignerListSet
+		wantErr bool
+	}{
+		{
+			name: "Valid SignerListSet",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SignerListSetTx,
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: 3,
+				SignerEntries: []ledger.SignerEntryWrapper{
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+							SignerWeight: 2,
+						},
+					},
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+							SignerWeight: 1,
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Invalid SignerListSet BaseTx",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					Fee:     types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: 3,
+				SignerEntries: []ledger.SignerEntryWrapper{
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+							SignerWeight: 2,
+						},
+					},
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+							SignerWeight: 1,
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid SignerListSet with no SignerEntries and quorum > 0",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SignerListSetTx,
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: 3,
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid SignerListSet with too many SignerEntries",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SignerListSetTx,
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: 3,
+				SignerEntries: func() []ledger.SignerEntryWrapper {
+					entries := make([]ledger.SignerEntryWrapper, 33)
+					for i := range entries {
+						entries[i] = ledger.SignerEntryWrapper{
+							SignerEntry: ledger.SignerEntry{
+								Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+								SignerWeight: 1,
+							},
+						}
+					}
+					return entries
+				}(),
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid SignerListSet with invalid WalletLocator",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SignerListSetTx,
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: 3,
+				SignerEntries: []ledger.SignerEntryWrapper{
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:       "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+							SignerWeight:  2,
+							WalletLocator: "invalid_hex",
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Invalid SignerListSet with SignerQuorum greater than sum of SignerWeights",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SignerListSetTx,
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: 5,
+				SignerEntries: []ledger.SignerEntryWrapper{
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+							SignerWeight: 2,
+						},
+					},
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+							SignerWeight: 1,
+						},
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Valid SignerListSet with SignerQuorum 0",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SignerListSetTx,
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: 0,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.entry.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !valid && !tt.wantErr {
+				t.Errorf("Validate() = %v, want %v", valid, !tt.wantErr)
+			}
+		})
+	}
+}
