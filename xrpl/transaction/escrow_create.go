@@ -4,21 +4,68 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Sequester XRP until the escrow process either finishes or is canceled.
+//
+// Example:
+//
+// ```json
+//
+//	{
+//	    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//	    "TransactionType": "EscrowCreate",
+//	    "Amount": "10000",
+//	    "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+//	    "CancelAfter": 533257958,
+//	    "FinishAfter": 533171558,
+//	    "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+//	    "DestinationTag": 23480,
+//	    "SourceTag": 11747
+//	}
+//
+// ```
 type EscrowCreate struct {
 	BaseTx
-	Amount         types.XRPCurrencyAmount
-	Destination    types.Address
-	CancelAfter    uint   `json:",omitempty"`
-	FinishAfter    uint   `json:",omitempty"`
-	Condition      string `json:",omitempty"`
-	DestinationTag uint   `json:",omitempty"`
+	// Amount of XRP, in drops, to deduct from the sender's balance and escrow. Once escrowed, the XRP can either go to the Destination address (after the FinishAfter time) or returned to the sender (after the CancelAfter time).
+	Amount types.XRPCurrencyAmount
+	// Address to receive escrowed XRP.
+	Destination types.Address
+	// (Optional) The time, in seconds since the Ripple Epoch, when this escrow expires. This value is immutable; the funds can only be returned to the sender after this time.
+	CancelAfter uint `json:",omitempty"`
+	// (Optional) The time, in seconds since the Ripple Epoch, when the escrowed XRP can be released to the recipient. This value is immutable, and the funds can't be accessed until this time.
+	FinishAfter uint `json:",omitempty"`
+	// (Optional) Hex value representing a PREIMAGE-SHA-256 crypto-condition. The funds can only be delivered to the recipient if this condition is fulfilled. If the condition is not fulfilled before the expiration time specified in the CancelAfter field, the XRP can only revert to the sender.
+	Condition string `json:",omitempty"`
+	// (Optional) Arbitrary tag to further specify the destination for this escrowed payment, such as a hosted recipient at the destination address.
+	DestinationTag uint `json:",omitempty"`
 }
 
 func (*EscrowCreate) TxType() TxType {
 	return EscrowCreateTx
 }
 
-// TODO: Implement flatten
+// Flatten returns the flattened map of the EscrowCreate transaction.
 func (s *EscrowCreate) Flatten() FlatTransaction {
-	return nil
+	flattened := s.BaseTx.Flatten()
+
+	flattened["TransactionType"] = "EscrowCreate"
+
+	flattened["Amount"] = s.Amount.Flatten()
+
+	if s.Destination != "" {
+		flattened["Destination"] = s.Destination
+	}
+	if s.CancelAfter != 0 {
+		flattened["CancelAfter"] = s.CancelAfter
+	}
+	if s.FinishAfter != 0 {
+		flattened["FinishAfter"] = s.FinishAfter
+	}
+	if s.Condition != "" {
+		flattened["Condition"] = s.Condition
+	}
+	if s.DestinationTag != 0 {
+		flattened["DestinationTag"] = s.DestinationTag
+	}
+
+	return flattened
 }
