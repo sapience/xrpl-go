@@ -1,6 +1,9 @@
 package transaction
 
 import (
+	"fmt"
+
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 )
 
@@ -74,4 +77,46 @@ func (s *SignerListSet) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// At least one account must be part of the SignerList
+const MIN_SIGNERS = 1
+
+// A SignerList can have at most 32 signers
+const MAX_SIGNERS = 32
+
+// Validate checks if the SignerListSet struct is valid.
+func (s *SignerListSet) Validate() (bool, error) {
+	_, err := s.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	// All other checks are for if SignerQuorum is greater than 0
+	if s.SignerQuorum == 0 {
+		return true, nil
+	}
+
+	// Check if SignerEntries has at least 1 entry and no more than 32 entries
+	if len(s.SignerEntries) < MIN_SIGNERS || len(s.SignerEntries) > MAX_SIGNERS {
+		return false, fmt.Errorf("signerEntries must have at least %d entry and no more than %d entries", MIN_SIGNERS, MAX_SIGNERS)
+	}
+
+	// Check if WalletLocator is an hexadecimal string for each SignerEntry
+	for _, signerEntry := range s.SignerEntries {
+		if signerEntry.SignerEntry.WalletLocator != "" && !typecheck.IsHex(signerEntry.SignerEntry.WalletLocator.String()) {
+			return false, fmt.Errorf("invalid WalletLocator in SignerEntry, must be an hexadecimal string")
+		}
+	}
+
+	// Check SignerQuorum is less than or equal to the sum of all SignerWeights
+	sumSignerWeights := uint16(0)
+	for _, signerEntry := range s.SignerEntries {
+		sumSignerWeights += signerEntry.SignerEntry.SignerWeight
+	}
+	if s.SignerQuorum > uint(sumSignerWeights) {
+		return false, fmt.Errorf("signerQuorum must be less than or equal to the sum of all SignerWeights")
+	}
+
+	return true, nil
 }

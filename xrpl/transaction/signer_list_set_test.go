@@ -92,6 +92,21 @@ func TestSignerListSet_Flatten(t *testing.T) {
 				"SignerQuorum": 0
 			}`,
 		},
+		{
+			name: "Without SignerEntries and SignerQuorum",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					Fee:     types.XRPCurrencyAmount(12),
+				},
+			},
+			expected: `{
+				"TransactionType": "SignerListSet",
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Fee": "12",
+				"SignerQuorum": 0
+			}`,
+		},
 	}
 
 	for _, tt := range tests {

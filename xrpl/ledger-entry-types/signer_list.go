@@ -85,7 +85,7 @@ type SignerEntry struct {
 	// An XRP Ledger address whose signature contributes to the multi-signature. It does not need to be a funded address in the ledger.
 	Account types.Address
 	// The weight of a signature from this signer. A multi-signature is only valid if the sum weight of the signatures provided meets or exceeds the signer list's SignerQuorum value.
-	SignerWeight uint64
+	SignerWeight uint16
 	// (Optional) Arbitrary hexadecimal data. This can be used to identify the signer or for other, related purposes. (Added by the ExpandedSignerList amendment.)
 	WalletLocator types.Hash256 `json:",omitempty"`
 }
