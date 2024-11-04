@@ -88,9 +88,10 @@ func TestEscrowCancel_Flatten(t *testing.T) {
 
 func TestEscrowCancel_Validate(t *testing.T) {
 	tests := []struct {
-		name     string
-		escrow   *EscrowCancel
-		expected bool
+		name      string
+		escrow    *EscrowCancel
+		wantValid bool
+		wantErr   bool
 	}{
 		{
 			name: "valid EscrowCancel",
@@ -102,7 +103,8 @@ func TestEscrowCancel_Validate(t *testing.T) {
 				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				OfferSequence: 7,
 			},
-			expected: true,
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
 			name: "Invalid EscrowCancel BaseTx",
@@ -113,7 +115,8 @@ func TestEscrowCancel_Validate(t *testing.T) {
 				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				OfferSequence: 7,
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "invalid Owner address",
@@ -125,7 +128,8 @@ func TestEscrowCancel_Validate(t *testing.T) {
 				Owner:         "invalidAddress",
 				OfferSequence: 7,
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "missing OfferSequence",
@@ -136,14 +140,21 @@ func TestEscrowCancel_Validate(t *testing.T) {
 				},
 				Owner: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valid, _ := tt.escrow.Validate()
-			assert.Equal(t, tt.expected, valid)
+			valid, err := tt.escrow.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("EscrowCancel.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if valid != tt.wantValid {
+				t.Errorf("EscrowCancel.Validate() = %v, want %v", valid, tt.wantValid)
+			}
 		})
 	}
 }
