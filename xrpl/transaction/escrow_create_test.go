@@ -79,7 +79,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name: "Valid transaction",
+			name: "Valid transaction - Conditional with expiration",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -107,7 +107,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Valid transaction with FinishAfter",
+			name: "Valid transaction - Time based",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -121,7 +121,22 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Valid transaction with Condition",
+			name: "Valid transaction - Time based with expiration",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				FinishAfter: 533171558,
+				CancelAfter: 533257958,
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "Valid transaction - Timed conditional",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -131,6 +146,22 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 				FinishAfter: 533171558,
 				Condition:   "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "Valid transaction - Timed conditional with Expiration",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				FinishAfter: 533171558,
+				Condition:   "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+				CancelAfter: 533257958,
 			},
 			wantValid: true,
 			wantErr:   false,
