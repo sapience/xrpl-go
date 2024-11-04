@@ -85,3 +85,65 @@ func TestEscrowCancel_Flatten(t *testing.T) {
 		})
 	}
 }
+
+func TestEscrowCancel_Validate(t *testing.T) {
+	tests := []struct {
+		name     string
+		escrow   *EscrowCancel
+		expected bool
+	}{
+		{
+			name: "valid EscrowCancel",
+			escrow: &EscrowCancel{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCancelTx,
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+			},
+			expected: true,
+		},
+		{
+			name: "Invalid EscrowCancel BaseTx",
+			escrow: &EscrowCancel{
+				BaseTx: BaseTx{
+					TransactionType: EscrowCancelTx,
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+			},
+			expected: false,
+		},
+		{
+			name: "invalid Owner address",
+			escrow: &EscrowCancel{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCancelTx,
+				},
+				Owner:         "invalidAddress",
+				OfferSequence: 7,
+			},
+			expected: false,
+		},
+		{
+			name: "missing OfferSequence",
+			escrow: &EscrowCancel{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCancelTx,
+				},
+				Owner: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+			},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, _ := tt.escrow.Validate()
+			assert.Equal(t, tt.expected, valid)
+		})
+	}
+}

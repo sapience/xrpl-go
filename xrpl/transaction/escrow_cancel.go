@@ -1,6 +1,9 @@
 package transaction
 
 import (
+	"errors"
+
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -46,4 +49,22 @@ func (s *EscrowCancel) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate checks if the EscrowCancel struct is valid.
+func (s *EscrowCancel) Validate() (bool, error) {
+	_, err := s.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	if !addresscodec.IsValidClassicAddress(s.Owner.String()) {
+		return false, errors.New("invalid xrpl address for the Owner field")
+	}
+
+	if s.OfferSequence == 0 {
+		return false, errors.New("missing OfferSequence")
+	}
+
+	return true, nil
 }
