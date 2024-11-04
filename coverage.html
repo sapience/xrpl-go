@@ -9529,8 +9529,8 @@ func (e *EscrowCancel) Flatten() FlatTransaction <span class="cov8" title="1">{
 
 // Validate checks if the EscrowCancel struct is valid.
 func (e *EscrowCancel) Validate() (bool, error) <span class="cov8" title="1">{
-        _, err := e.BaseTx.Validate()
-        if err != nil </span><span class="cov8" title="1">{
+        ok, err := e.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
@@ -9624,7 +9624,8 @@ func (e *EscrowCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
 
 // Validates the EscrowCreate transaction and makes sure all the fields are correct.
 func (e *EscrowCreate) Validate() (bool, error) <span class="cov8" title="1">{
-        if ok, err := e.BaseTx.Validate(); !ok </span><span class="cov8" title="1">{
+        ok, err := e.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
@@ -9713,8 +9714,8 @@ func (e *EscrowFinish) Flatten() FlatTransaction <span class="cov8" title="1">{
 
 // Validate checks if the EscrowFinish struct is valid.
 func (e *EscrowFinish) Validate() (bool, error) <span class="cov8" title="1">{
-        _, err := e.BaseTx.Validate()
-        if err != nil </span><span class="cov8" title="1">{
+        ok, err := e.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
