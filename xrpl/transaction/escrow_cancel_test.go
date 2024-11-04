@@ -149,11 +149,11 @@ func TestEscrowCancel_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.escrow.Validate()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("EscrowCancel.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("escrowCancel.Validate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if valid != tt.wantValid {
-				t.Errorf("EscrowCancel.Validate() = %v, want %v", valid, tt.wantValid)
+				t.Errorf("escrowCancel.Validate() = %v, want %v", valid, tt.wantValid)
 			}
 		})
 	}

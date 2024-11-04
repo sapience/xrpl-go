@@ -182,11 +182,11 @@ func TestEscrowCreate_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.entry.Validate()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("EscrowCreate.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("escrowCreate.Validate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if valid != tt.wantValid {
-				t.Errorf("EscrowCreate.Validate() = %v, want %v", valid, tt.wantValid)
+				t.Errorf("escrowCreate.Validate() = %v, want %v", valid, tt.wantValid)
 			}
 		})
 	}
