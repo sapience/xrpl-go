@@ -80,3 +80,54 @@ func TestEscrowFinish_Flatten(t *testing.T) {
 		})
 	}
 }
+
+func TestEscrowFinish_Validate(t *testing.T) {
+	tests := []struct {
+		name     string
+		entry    *EscrowFinish
+		expected bool
+	}{
+		{
+			name: "Valid EscrowFinish",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+			},
+			expected: true,
+		},
+		{
+			name: "Invalid Owner Address",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner:         "invalidAddress",
+				OfferSequence: 7,
+			},
+			expected: false,
+		},
+		{
+			name: "Missing OfferSequence",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+			},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, _ := tt.entry.Validate()
+			assert.Equal(t, tt.expected, valid)
+		})
+	}
+}
