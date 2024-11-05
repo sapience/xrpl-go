@@ -433,3 +433,54 @@ func TestIsFloat32(t *testing.T) {
 		})
 	}
 }
+func TestIsStringNumericUint(t *testing.T) {
+	tests := []struct {
+		name string
+		s    string
+		want bool
+	}{
+		{
+			name: "Valid uint string",
+			s:    "42",
+			want: true,
+		},
+		{
+			name: "Valid large uint string",
+			s:    "18446744073709551615", // Max uint64 value
+			want: true,
+		},
+		{
+			name: "Invalid uint string with negative sign",
+			s:    "-42",
+			want: false,
+		},
+		{
+			name: "Invalid uint string with decimal point",
+			s:    "42.0",
+			want: false,
+		},
+		{
+			name: "Invalid uint string with non-numeric characters",
+			s:    "42abc",
+			want: false,
+		},
+		{
+			name: "Invalid uint string with special characters",
+			s:    "42!",
+			want: false,
+		},
+		{
+			name: "Empty string",
+			s:    "",
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsStringNumericUint(tt.s); got != tt.want {
+				t.Errorf("IsStringNumericUint(%q) = %v, want %v", tt.s, got, tt.want)
+			}
+		})
+	}
+}
