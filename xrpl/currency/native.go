@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	DROPS_PER_XRP       float64 = 1000000
-	MAX_FRACTION_LENGTH uint    = 6
+	DROPS_PER_XRP          float64 = 1000000
+	MAX_FRACTION_LENGTH    uint    = 6
+	NATIVE_CURRENCY_SYMBOL string  = "XRP"
 )
 
 // Convert an amount in XRP to an amount in drops.

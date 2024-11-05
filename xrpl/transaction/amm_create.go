@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -10,6 +9,31 @@ import (
 // The maximum value is 1000, indicating a 1% fee. The minimum value is 0. https://xrpl.org/docs/references/protocol/transactions/types/ammcreate#ammcreate-fields
 const AMM_MAX_TRADING_FEE = 1000
 
+// Create a new Automated Market Maker (AMM) instance for trading a pair of assets (fungible tokens or XRP).
+//
+// Creates both an AMM entry and a special AccountRoot entry to represent the AMM.
+// Also transfers ownership of the starting balance of both assets from the sender to the created AccountRoot and issues an initial balance of liquidity provider tokens (LP Tokens) from the AMM account to the sender.
+//
+// Example:
+//
+// ```json
+//
+//	{
+//	    "Account" : "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+//	    "Amount" : {
+//	        "currency" : "TST",
+//	        "issuer" : "rP9jPyP5kyvFRb6ZiRghAGw5u8SGAmU4bd",
+//	        "value" : "25"
+//	    },
+//	    "Amount2" : "250000000",
+//	    "Fee" : "2000000",
+//	    "Flags" : 2147483648,
+//	    "Sequence" : 6,
+//	    "TradingFee" : 500,
+//	    "TransactionType" : "AMMCreate"
+//	}
+//
+// ```
 type AMMCreate struct {
 	BaseTx
 	// The first of the two assets to fund this AMM with. This must be a positive amount.
@@ -20,44 +44,12 @@ type AMMCreate struct {
 	TradingFee uint16
 }
 
+// TxType returns the type of the transaction (AMMCreate).
 func (*AMMCreate) TxType() TxType {
 	return AMMCreateTx
 }
 
-// UnmarshalJSON unmarshals the Payment transaction from JSON.
-func (p *AMMCreate) UnmarshalJSON(data []byte) error {
-	type pHelper struct {
-		BaseTx
-		Amount     json.RawMessage
-		Amount2    json.RawMessage
-		TradingFee uint16
-	}
-	var h pHelper
-	if err := json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*p = AMMCreate{
-		BaseTx:     h.BaseTx,
-		TradingFee: h.TradingFee,
-	}
-	var amount, amount2 types.CurrencyAmount
-	var err error
-
-	amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-	if err != nil {
-		return err
-	}
-	amount2, err = types.UnmarshalCurrencyAmount(h.Amount2)
-	if err != nil {
-		return err
-	}
-
-	p.Amount = amount
-	p.Amount2 = amount2
-
-	return nil
-}
-
+// Flatten returns a map of the AMMCreate struct
 func (s *AMMCreate) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := s.BaseTx.Flatten()
@@ -78,17 +70,18 @@ func (s *AMMCreate) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validates the AMMCreate struct and makes sure all fields are correct.
 func (a *AMMCreate) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount, fieldName: "Amount", isFieldRequired: true}); !ok {
+	if ok, err := IsAmount(a.Amount, "Amount", true); !ok {
 		return false, err
 	}
 
-	if ok, err := IsAmount(IsAmountArgs{field: a.Amount2, fieldName: "Amount2", isFieldRequired: true}); !ok {
+	if ok, err := IsAmount(a.Amount2, "Amount2", true); !ok {
 		return false, err
 	}
 
