@@ -145,14 +145,14 @@ func DecodeSeed(seed string) ([]byte, CryptoImplementation, error) {
 	decoded, err := Base58CheckDecode(seed)
 
 	if err != nil {
-		return nil, crypto.CryptoAlgorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
+		return nil, crypto.Algorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
 	}
 
 	if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) {
 		return decoded[3:], crypto.ED25519(), nil
-	} else {
-		return decoded[1:], crypto.SECP256K1(), nil
 	}
+
+	return decoded[1:], crypto.SECP256K1(), nil
 
 }
 
