@@ -8,7 +8,7 @@ import (
 )
 
 func TestAccountObjectsRequest(t *testing.T) {
-	s := AccountObjectsRequest{
+	s := ObjectsRequest{
 		Account:     "rsuHaTvJh1bDmDoxX9QcKP7HEBSBt4XsHx",
 		Type:        SignerListObject,
 		LedgerIndex: common.LedgerIndex(123),

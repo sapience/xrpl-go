@@ -1,13 +1,13 @@
 package server
 
-type ServerInfoRequest struct {
+type InfoRequest struct {
 }
 
-func (*ServerInfoRequest) Method() string {
+func (*InfoRequest) Method() string {
 	return "server_info"
 }
 
 // TODO: Implement
-func (*ServerInfoRequest) Validate() error {
+func (*InfoRequest) Validate() error {
 	return nil
 }

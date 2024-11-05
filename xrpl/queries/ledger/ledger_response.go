@@ -7,15 +7,15 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type LedgerResponse struct {
-	Ledger      LedgerHeader       `json:"ledger"`
+type Response struct {
+	Ledger      Header             `json:"ledger"`
 	LedgerHash  string             `json:"ledger_hash"`
 	LedgerIndex common.LedgerIndex `json:"ledger_index"`
 	Validated   bool               `json:"validated,omitempty"`
-	QueueData   []LedgerQueueData  `json:"queue_data,omitempty"`
+	QueueData   []QueueData        `json:"queue_data,omitempty"`
 }
 
-type LedgerHeader struct {
+type Header struct {
 	AccountHash         string                         `json:"account_hash"`
 	AccountState        []ledger.FlatLedgerObject      `json:"accountState,omitempty"`
 	CloseFlags          int                            `json:"close_flags"`
@@ -32,7 +32,7 @@ type LedgerHeader struct {
 	Transactions        []transactions.FlatTransaction `json:"transactions,omitempty"`
 }
 
-type LedgerQueueData struct {
+type QueueData struct {
 	Account          types.Address                `json:"account"`
 	Tx               transactions.FlatTransaction `json:"tx"`
 	RetriesRemaining int                          `json:"retries_remaining"`

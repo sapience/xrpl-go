@@ -12,12 +12,12 @@ import (
 // GetAccountInfo retrieves information about an account on the XRP Ledger.
 // It takes an AccountInfoRequest as input and returns an AccountInfoResponse,
 // along with the raw XRPL response and any error encountered.
-func (c *WebsocketClient) GetAccountInfo(req *account.AccountInfoRequest) (*account.AccountInfoResponse, error) {
+func (c *Client) GetAccountInfo(req *account.InfoRequest) (*account.InfoResponse, error) {
 	res, err := c.sendRequest(req)
 	if err != nil {
 		return nil, err
 	}
-	var air account.AccountInfoResponse
+	var air account.InfoResponse
 	err = res.GetResult(&air)
 	if err != nil {
 		return nil, err
@@ -28,12 +28,12 @@ func (c *WebsocketClient) GetAccountInfo(req *account.AccountInfoRequest) (*acco
 // GetAccountObjects retrieves a list of objects owned by an account on the XRP Ledger.
 // It takes an AccountObjectsRequest as input and returns an AccountObjectsResponse,
 // along with any error encountered.
-func (c *WebsocketClient) GetAccountObjects(req *account.AccountObjectsRequest) (*account.AccountObjectsResponse, error) {
+func (c *Client) GetAccountObjects(req *account.ObjectsRequest) (*account.ObjectsResponse, error) {
 	res, err := c.sendRequest(req)
 	if err != nil {
 		return nil, err
 	}
-	var acr account.AccountObjectsResponse
+	var acr account.ObjectsResponse
 	err = res.GetResult(&acr)
 	if err != nil {
 		return nil, err
@@ -43,8 +43,8 @@ func (c *WebsocketClient) GetAccountObjects(req *account.AccountObjectsRequest) 
 
 // GetXrpBalance retrieves the XRP balance of a given account address.
 // It returns the balance as a string in XRP (not drops) and any error encountered.
-func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
-	res, err := c.GetAccountInfo(&account.AccountInfoRequest{
+func (c *Client) GetXrpBalance(address string) (string, error) {
+	res, err := c.GetAccountInfo(&account.InfoRequest{
 		Account: types.Address(address),
 	})
 	if err != nil {
@@ -62,12 +62,12 @@ func (c *WebsocketClient) GetXrpBalance(address string) (string, error) {
 // GetAccountLines retrieves the lines associated with an account on the XRP Ledger.
 // It takes an AccountLinesRequest as input and returns an AccountLinesResponse,
 // along with any error encountered.
-func (c *WebsocketClient) GetAccountLines(req *account.AccountLinesRequest) (*account.AccountLinesResponse, error) {
+func (c *Client) GetAccountLines(req *account.LinesRequest) (*account.LinesResponse, error) {
 	res, err := c.sendRequest(req)
 	if err != nil {
 		return nil, err
 	}
-	var acr account.AccountLinesResponse
+	var acr account.LinesResponse
 	err = res.GetResult(&acr)
 	if err != nil {
 		return nil, err
@@ -76,15 +76,15 @@ func (c *WebsocketClient) GetAccountLines(req *account.AccountLinesRequest) (*ac
 }
 
 // Returns the index of the most recently validated ledger.
-func (c *WebsocketClient) GetLedgerIndex() (common.LedgerIndex, error) {
-	res, err := c.sendRequest(&ledger.LedgerRequest{
+func (c *Client) GetLedgerIndex() (common.LedgerIndex, error) {
+	res, err := c.sendRequest(&ledger.Request{
 		LedgerIndex: common.LedgerTitle("validated"),
 	})
 	if err != nil {
 		return 0, err
 	}
 
-	var lr ledger.LedgerResponse
+	var lr ledger.Response
 	err = res.GetResult(&lr)
 	if err != nil {
 		return 0, err
@@ -95,12 +95,12 @@ func (c *WebsocketClient) GetLedgerIndex() (common.LedgerIndex, error) {
 // GetServerInfo retrieves information about the server.
 // It takes a ServerInfoRequest as input and returns a ServerInfoResponse,
 // along with any error encountered.
-func (c *WebsocketClient) GetServerInfo(req *server.ServerInfoRequest) (*server.ServerInfoResponse, error) {
+func (c *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, error) {
 	res, err := c.sendRequest(req)
 	if err != nil {
 		return nil, err
 	}
-	var sir server.ServerInfoResponse
+	var sir server.InfoResponse
 	err = res.GetResult(&sir)
 	if err != nil {
 		return nil, err

@@ -8,11 +8,11 @@ import (
 )
 
 func TestSubscribeRequest(t *testing.T) {
-	s := SubscribeRequest{
+	s := Request{
 		Streams:          []string{"abc", "def"},
 		Accounts:         []types.Address{"ghi", "jkl"},
 		AccountsProposed: []types.Address{"bcd", "efg"},
-		Books: []SubscribeOrderBook{
+		Books: []OrderBook{
 			{
 				TakerGets: types.IssuedCurrencyAmount{
 					Currency: "EUR",
@@ -57,7 +57,7 @@ func TestSubscribeRequest(t *testing.T) {
 }
 
 func TestSubscribeResponse(t *testing.T) {
-	s := SubscribeResponse{
+	s := Response{
 		LoadBase:         10,
 		LoadFactor:       10,
 		Random:           "abc",

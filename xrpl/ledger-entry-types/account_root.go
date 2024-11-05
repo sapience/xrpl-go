@@ -12,7 +12,7 @@ type AccountRoot struct {
 	Domain            string                  `json:",omitempty"`
 	EmailHash         types.Hash128           `json:",omitempty"`
 	Flags             uint64
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	MessageKey        string        `json:",omitempty"`
 	MintedNFTokens    uint32        `json:",omitempty"`
 	NFTokenMinter     types.Address `json:",omitempty"`
@@ -24,10 +24,10 @@ type AccountRoot struct {
 	TicketCount       uint32 `json:",omitempty"`
 	TickSize          uint8  `json:",omitempty"`
 	TransferRate      uint32 `json:",omitempty"`
-	// TODO determine if this is a required field
-	//Index             types.Hash256 `json:"index,omitempty"`
+	// TODO: determine if this is a required field
+	// Index             types.Hash256 `json:"index,omitempty"`
 }
 
-func (*AccountRoot) EntryType() LedgerEntryType {
+func (*AccountRoot) EntryType() EntryType {
 	return AccountRootEntry
 }

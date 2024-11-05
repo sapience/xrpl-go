@@ -3,7 +3,7 @@ package stream
 import "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 
 type PeerStatusStream struct {
-	Type           StreamType         `json:"type"`
+	Type           Type               `json:"type"`
 	Action         string             `json:"action"`
 	Date           uint64             `json:"date"`
 	LedgerHash     common.LedgerHash  `json:"ledger_hash"`

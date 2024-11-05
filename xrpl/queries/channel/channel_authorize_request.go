@@ -6,7 +6,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type ChannelAuthorizeRequest struct {
+type AuthorizeRequest struct {
 	ChannelID  string                  `json:"channel_id"`
 	Secret     string                  `json:"secret,omitempty"`
 	Seed       string                  `json:"seed,omitempty"`
@@ -16,12 +16,12 @@ type ChannelAuthorizeRequest struct {
 	Amount     types.XRPCurrencyAmount `json:"amount"`
 }
 
-func (*ChannelAuthorizeRequest) Method() string {
+func (*AuthorizeRequest) Method() string {
 	return "channel_authorize"
 }
 
 // do not allow secrets to be printed
-func (c *ChannelAuthorizeRequest) Format(s fmt.State, v rune) {
+func (c *AuthorizeRequest) Format(s fmt.State, v rune) {
 	type fHelper struct {
 		ChannelID string                  `json:"channel_id"`
 		KeyType   string                  `json:"key_type,omitempty"`

@@ -8,9 +8,9 @@ import (
 )
 
 type LedgerRequestResponse struct {
-	LedgerHeader  *ledger.LedgerHeader `json:"ledger,omitempty"`
-	LedgerRequest *LedgerRequest       `json:"-"`
-	Acquiring     *LedgerRequest       `json:"acquiring,omitempty"`
+	LedgerHeader  *ledger.Header `json:"ledger,omitempty"`
+	LedgerRequest *LedgerRequest `json:"-"`
+	Acquiring     *LedgerRequest `json:"acquiring,omitempty"`
 }
 
 type LedgerRequest struct {

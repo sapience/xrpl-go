@@ -4,7 +4,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type AccountCurrenciesResponse struct {
+type CurrenciesResponse struct {
 	LedgerHash        common.LedgerHash  `json:"ledger_hash,omitempty"`
 	LedgerIndex       common.LedgerIndex `json:"ledger_index"`
 	ReceiveCurrencies []string           `json:"receive_currencies"`

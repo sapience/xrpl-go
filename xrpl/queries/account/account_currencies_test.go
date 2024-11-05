@@ -8,7 +8,7 @@ import (
 )
 
 func TestAccountCurrenciesRequest(t *testing.T) {
-	s := AccountCurrenciesRequest{
+	s := CurrenciesRequest{
 		Account:     "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 		Strict:      true,
 		LedgerIndex: common.LedgerIndex(1234),
@@ -25,7 +25,7 @@ func TestAccountCurrenciesRequest(t *testing.T) {
 }
 
 func TestAccountCurrenciesResponse(t *testing.T) {
-	s := AccountCurrenciesResponse{
+	s := CurrenciesResponse{
 		LedgerHash:  "abc",
 		LedgerIndex: 123,
 		ReceiveCurrencies: []string{

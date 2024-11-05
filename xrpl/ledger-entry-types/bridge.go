@@ -59,6 +59,6 @@ type Bridge struct {
 }
 
 // EntryType returns the type of the ledger entry.
-func (*Bridge) EntryType() LedgerEntryType {
+func (*Bridge) EntryType() EntryType {
 	return BridgeEntry
 }

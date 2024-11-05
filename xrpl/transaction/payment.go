@@ -196,22 +196,22 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 }
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
-func (tx *Payment) Validate() (bool, error) {
-	flattenTx := tx.Flatten()
+func (p *Payment) Validate() (bool, error) {
+	flattenTx := p.Flatten()
 
 	// Validate the base transaction
-	_, err := tx.BaseTx.Validate()
+	_, err := p.BaseTx.Validate()
 	if err != nil {
 		return false, err
 	}
 
 	// Check if the field Amount is set
-	if tx.Amount == nil {
+	if p.Amount == nil {
 		return false, errors.New("missing field Amount")
 	}
 
 	// Check if the field Amount is valid
-	if ok, err := IsAmount(tx.Amount, "Amount", true); !ok {
+	if ok, err := IsAmount(p.Amount, "Amount", true); !ok {
 		return false, err
 	}
 
@@ -234,29 +234,29 @@ func (tx *Payment) Validate() (bool, error) {
 	}
 
 	// Check if the field Paths is valid
-	if tx.Paths != nil {
-		if ok, err := IsPaths(tx.Paths); !ok {
+	if p.Paths != nil {
+		if ok, err := IsPaths(p.Paths); !ok {
 			return false, err
 		}
 	}
 
 	// Check if the field SendMax is valid
-	if ok, err := IsAmount(tx.SendMax, "SendMax", false); !ok {
+	if ok, err := IsAmount(p.SendMax, "SendMax", false); !ok {
 		return false, err
 	}
 
 	// Check if the field DeliverMax is valid
-	if ok, err := IsAmount(tx.DeliverMax, "DeliverMax", false); !ok {
+	if ok, err := IsAmount(p.DeliverMax, "DeliverMax", false); !ok {
 		return false, err
 	}
 
 	// Check if the field DeliverMin is valid
-	if ok, err := IsAmount(tx.DeliverMin, "DeliverMin", false); !ok {
+	if ok, err := IsAmount(p.DeliverMin, "DeliverMin", false); !ok {
 		return false, err
 	}
 
 	// Check partial payment fields
-	if ok, err := checkPartialPayment(tx); !ok {
+	if ok, err := checkPartialPayment(p); !ok {
 		return false, err
 	}
 

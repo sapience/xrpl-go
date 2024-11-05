@@ -1,5 +1,5 @@
 package faucet
 
 const (
-	USER_AGENT = "xrpl.go"
+	UserAgent = "xrpl.go"
 )

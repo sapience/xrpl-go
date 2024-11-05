@@ -5,7 +5,7 @@ import (
 	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
 )
 
-type TransactionEntryResponse struct {
+type EntryResponse struct {
 	LedgerIndex common.LedgerIndex           `json:"ledger_index"`
 	LedgerHash  common.LedgerHash            `json:"ledger_hash,omitempty"`
 	Metadata    transactions.TxObjMeta       `json:"metadata"`

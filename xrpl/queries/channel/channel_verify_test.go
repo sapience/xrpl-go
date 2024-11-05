@@ -8,7 +8,7 @@ import (
 )
 
 func TestChannelVerifyRequest(t *testing.T) {
-	s := ChannelVerifyRequest{
+	s := VerifyRequest{
 		Amount:    types.XRPCurrencyAmount(1000000),
 		ChannelID: "5DB01B7FFED6B67E6B0414DED11E051D2EE2B7619CE0EAA6286D67A3A4D5BDB3",
 		PublicKey: "aB44YfzW24VDEJQ2UuLPV2PvqcPCSoLnL7y5M1EzhdW4LnK5xMS3",
@@ -28,7 +28,7 @@ func TestChannelVerifyRequest(t *testing.T) {
 }
 
 func TestChannelVerifyResponse(t *testing.T) {
-	s := ChannelVerifyResponse{
+	s := VerifyResponse{
 		SignatureVerified: false,
 	}
 

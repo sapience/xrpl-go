@@ -8,7 +8,7 @@ const (
 	ErrAccountTxUnmarshal string = "Unmarshal JSON AccountTransaction"
 )
 
-type AccountTransaction struct {
+type Transaction struct {
 	LedgerIndex uint64                       `json:"ledger_index"`
 	Meta        transactions.TxMeta          `json:"meta"`
 	Tx          transactions.FlatTransaction `json:"tx"`

@@ -7,7 +7,7 @@ import (
 )
 
 func TestSignerList(t *testing.T) {
-	var s LedgerObject = &SignerList{
+	var s Object = &SignerList{
 		Flags:             0,
 		LedgerEntryType:   SignerListEntry,
 		OwnerNode:         "0000000000000000",

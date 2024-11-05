@@ -7,7 +7,7 @@ import (
 )
 
 func TestCheck(t *testing.T) {
-	var s LedgerObject = &Check{
+	var s Object = &Check{
 		Account:           "rUn84CUYbNjRoTQ6mSW7BVJPSVJNLb1QLo",
 		Destination:       "rfkE1aSy9G8Upk4JssnwBxhEv5p4mn2KTy",
 		DestinationNode:   "0000000000000000",

@@ -8,7 +8,7 @@ import (
 )
 
 func TestLedgerEntryRequest(t *testing.T) {
-	s := LedgerEntryRequest{
+	s := EntryRequest{
 		LedgerIndex: common.VALIDATED,
 		Directory: &DirectoryEntryReq{
 			Owner: "abc",

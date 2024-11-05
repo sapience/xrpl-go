@@ -7,7 +7,7 @@ import (
 )
 
 func TestNegativeUNL(t *testing.T) {
-	var s LedgerObject = &NegativeUNL{
+	var s Object = &NegativeUNL{
 		DisabledValidators: []DisabledValidatorEntry{
 			{
 				DisabledValidator: DisabledValidator{

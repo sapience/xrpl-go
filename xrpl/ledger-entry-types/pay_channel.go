@@ -12,7 +12,7 @@ type PayChannel struct {
 	DestinationNode   string `json:",omitempty"`
 	Expiration        uint   `json:",omitempty"`
 	Flags             uint
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	OwnerNode         string
 	PreviousTxnID     types.Hash256
 	PreviousTxnLgrSeq uint
@@ -21,6 +21,6 @@ type PayChannel struct {
 	SourceTag         uint `json:",omitempty"`
 }
 
-func (*PayChannel) EntryType() LedgerEntryType {
+func (*PayChannel) EntryType() EntryType {
 	return PayChannelEntry
 }

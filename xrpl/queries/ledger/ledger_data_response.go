@@ -5,16 +5,16 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type LedgerDataResponse struct {
+type DataResponse struct {
 	LedgerIndex string            `json:"ledger_index"`
 	LedgerHash  common.LedgerHash `json:"ledger_hash"`
-	State       []LedgerState     `json:"state"`
+	State       []State           `json:"state"`
 	Marker      any               `json:"marker"`
 }
 
-type LedgerState struct {
+type State struct {
 	Data            string                  `json:"data,omitempty"`
-	LedgerEntryType ledger.LedgerEntryType  `json:",omitempty"`
+	LedgerEntryType ledger.EntryType        `json:",omitempty"`
 	LedgerObject    ledger.FlatLedgerObject `json:"-"`
 	Index           string                  `json:"index"`
 }

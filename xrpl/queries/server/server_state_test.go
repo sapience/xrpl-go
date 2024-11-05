@@ -7,13 +7,13 @@ import (
 )
 
 func TestServerStateResponse(t *testing.T) {
-	s := ServerStateResponse{
-		State: ServerState{
+	s := StateResponse{
+		State: State{
 			BuildVersion:    "1.7.2",
 			CompleteLedgers: "64572720-65887201",
 			IOLatencyMS:     1,
 			JQTransOverflow: "0",
-			LastClose: &ServerStateClose{
+			LastClose: &StateClose{
 				ConvergeTime: 3005,
 				Proposers:    41,
 			},
@@ -27,7 +27,7 @@ func TestServerStateResponse(t *testing.T) {
 			PubkeyNode:              "n9MozjnGB3tpULewtTsVtuudg5JqYFyV3QFdAtVLzJaxHcBaxuXD",
 			ServerState:             "full",
 			ServerStateDurationUS:   "3588969453592",
-			StateAccounting: map[string]ServerStateAccounting{
+			StateAccounting: map[string]StateAccounting{
 				"connected": {
 					DurationUS:  "301410595",
 					Transitions: "2",
@@ -51,7 +51,7 @@ func TestServerStateResponse(t *testing.T) {
 			},
 			Time:   "2021-Aug-24 20:44:43.466048 UTC",
 			Uptime: 3589480,
-			ValidatedLedger: &ServerLedgerState{
+			ValidatedLedger: &LedgerState{
 				BaseFee:     10,
 				CloseTime:   683153081,
 				Hash:        "B52AC3876412A152FE9C0442801E685D148D05448D0238587DBA256330A98FD3",

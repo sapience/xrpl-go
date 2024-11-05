@@ -31,7 +31,7 @@ func (ms *MockWebSocketServer) TestWebSocketServer(writeFunc connFn) *httptest.S
 	return s
 }
 
-func ConvertHttpToWS(u string) (string, error) {
+func ConvertHTTPToWS(u string) (string, error) {
 	s, err := url.Parse(u)
 	if err != nil {
 		return "", err

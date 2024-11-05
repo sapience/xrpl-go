@@ -9,7 +9,7 @@ const (
 )
 
 type SignerList struct {
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	Flags             SignerListFlags
 	PreviousTxnID     string
 	PreviousTxnLgrSeq uint64
@@ -29,6 +29,6 @@ type SignerEntry struct {
 	WalletLocator types.Hash256 `json:",omitempty"`
 }
 
-func (*SignerList) EntryType() LedgerEntryType {
+func (*SignerList) EntryType() EntryType {
 	return SignerListEntry
 }

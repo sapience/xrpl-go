@@ -43,6 +43,6 @@ func (n *NFTokenAcceptOffer) UnmarshalJSON(data []byte) error {
 }
 
 // TODO: Implement flatten
-func (s *NFTokenAcceptOffer) Flatten() FlatTransaction {
+func (n *NFTokenAcceptOffer) Flatten() FlatTransaction {
 	return nil
 }

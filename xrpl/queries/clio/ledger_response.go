@@ -8,13 +8,13 @@ import (
 )
 
 type LedgerResponse struct {
-	Ledger      ClioLedger         `json:"ledger"`
+	Ledger      Ledger             `json:"ledger"`
 	LedgerHash  common.LedgerHash  `json:"ledger_hash"`
 	LedgerIndex common.LedgerIndex `json:"ledger_index"`
 	Validated   bool               `json:"validated"`
 }
 
-type ClioLedger struct {
+type Ledger struct {
 	AccountHash         string                         `json:"account_hash"`
 	AccountState        []ledger.FlatLedgerObject      `json:"accountState,omitempty"`
 	CloseFlags          int                            `json:"close_flags"`

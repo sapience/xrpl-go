@@ -1,5 +1,5 @@
 package channel
 
-type ChannelAuthorizeResponse struct {
+type AuthorizeResponse struct {
 	Signature string `json:"signature"`
 }

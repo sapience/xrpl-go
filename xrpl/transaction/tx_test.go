@@ -27,7 +27,7 @@ func TestValidate(t *testing.T) {
 				SigningPubKey:      "abcdefg",
 				TicketSequence:     2,
 				TxnSignature:       "xyz123",
-				NetworkId:          1,
+				NetworkID:          1,
 				Memos: []MemoWrapper{
 					{
 						Memo: Memo{

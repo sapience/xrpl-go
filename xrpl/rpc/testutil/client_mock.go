@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-type JsonRpcMockClient struct {
+type JSONRPCMockClient struct {
 	DoFunc       func(req *http.Request) (*http.Response, error)
 	Spy          *http.Request
 	RequestCount int
 }
 
-func (m *JsonRpcMockClient) Do(req *http.Request) (*http.Response, error) {
+func (m *JSONRPCMockClient) Do(req *http.Request) (*http.Response, error) {
 	if m.DoFunc != nil {
 		return m.DoFunc(req)
 	}
@@ -20,7 +20,7 @@ func (m *JsonRpcMockClient) Do(req *http.Request) (*http.Response, error) {
 	return &http.Response{}, nil
 }
 
-func MockResponse(resString string, statusCode int, m *JsonRpcMockClient) func(req *http.Request) (*http.Response, error) {
+func MockResponse(resString string, statusCode int, m *JSONRPCMockClient) func(req *http.Request) (*http.Response, error) {
 	return func(req *http.Request) (*http.Response, error) {
 		m.Spy = req
 		return &http.Response{

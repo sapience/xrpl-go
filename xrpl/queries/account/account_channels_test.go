@@ -9,7 +9,7 @@ import (
 )
 
 func TestAccountChannelRequest(t *testing.T) {
-	s := AccountChannelsRequest{
+	s := ChannelsRequest{
 		Account:            "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		DestinationAccount: "rnZvsWuLem5Ha46AZs61jLWR9R5esinkG3",
 		LedgerIndex:        common.VALIDATED,
@@ -27,7 +27,7 @@ func TestAccountChannelRequest(t *testing.T) {
 }
 
 func TestAccountChannelsResponse(t *testing.T) {
-	s := AccountChannelsResponse{
+	s := ChannelsResponse{
 		Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		Channels: []ChannelResult{
 			{
@@ -66,7 +66,7 @@ func TestAccountChannelsResponse(t *testing.T) {
 }
 
 func TestValidate(t *testing.T) {
-	s := AccountChannelsRequest{
+	s := ChannelsRequest{
 		Account: "",
 	}
 

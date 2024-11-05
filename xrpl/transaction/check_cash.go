@@ -18,11 +18,11 @@ func (*CheckCash) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *CheckCash) Flatten() FlatTransaction {
+func (c *CheckCash) Flatten() FlatTransaction {
 	return nil
 }
 
-func (tx *CheckCash) UnmarshalJSON(data []byte) error {
+func (c *CheckCash) UnmarshalJSON(data []byte) error {
 	type ccHelper struct {
 		BaseTx
 		CheckID    types.Hash256
@@ -33,7 +33,7 @@ func (tx *CheckCash) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*tx = CheckCash{
+	*c = CheckCash{
 		BaseTx:  h.BaseTx,
 		CheckID: h.CheckID,
 	}
@@ -48,8 +48,8 @@ func (tx *CheckCash) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	tx.Amount = amount
-	tx.DeliverMin = min
+	c.Amount = amount
+	c.DeliverMin = min
 	return nil
 
 }

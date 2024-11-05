@@ -5,7 +5,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountLinesResponse struct {
+type LinesResponse struct {
 	Account            types.Address      `json:"account"`
 	Lines              []TrustLine        `json:"lines"`
 	LedgerCurrentIndex common.LedgerIndex `json:"ledger_current_index,omitempty"`
