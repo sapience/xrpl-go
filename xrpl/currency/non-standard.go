@@ -5,11 +5,11 @@ import (
 	"strings"
 )
 
-// CurrencyStringToHex converts a string to a hexadecimal representation
+// ConvertStringToHex converts a string to a hexadecimal representation
 // with trailing zeros up to a length of 40 characters.
 // This is to support the non-standard currency codes for the XRPL.
 // See https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes
-func CurrencyStringToHex(input string) string {
+func ConvertStringToHex(input string) string {
 	// non-standard currency codes are for currencies with more than 3 characters
 	if len(input) <= 3 {
 		return input
@@ -27,10 +27,10 @@ func CurrencyStringToHex(input string) string {
 	return hexString
 }
 
-// CurrencyHexToString converts a hexadecimal to a string.
+// ConvertHexToString converts a hexadecimal to a string.
 // This functions removes the null bytes from the string which come from the non-standard currency codes for the XRPL.
 // See https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes
-func CurrencyHexToString(input string) (string, error) {
+func ConvertHexToString(input string) (string, error) {
 	// Convert the hexadecimal representation to bytes
 	bytes, err := hex.DecodeString(input)
 	if err != nil {

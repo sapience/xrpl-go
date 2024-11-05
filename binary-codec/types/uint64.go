@@ -15,11 +15,11 @@ import (
 // UInt64 represents a 64-bit unsigned integer.
 type UInt64 struct{}
 
-var ErrInvalidUInt64String error = errors.New("invalid UInt64 string, value should be a string representation of a UInt64")
+var ErrInvalidUInt64String = errors.New("invalid UInt64 string, value should be a string representation of a UInt64")
 
-// FromJson converts a JSON value into a serialized byte slice representing a 64-bit unsigned integer.
+// FromJSON converts a JSON value into a serialized byte slice representing a 64-bit unsigned integer.
 // The input value is assumed to be a string representation of an integer. If the serialization fails, an error is returned.
-func (u *UInt64) FromJson(value any) ([]byte, error) {
+func (u *UInt64) FromJSON(value any) ([]byte, error) {
 
 	var buf = new(bytes.Buffer)
 
@@ -42,22 +42,21 @@ func (u *UInt64) FromJson(value any) ([]byte, error) {
 			return nil, err
 		}
 		return buf.Bytes(), nil
-	} else {
-		value = strings.Repeat("0", 16-len(value.(string))) + value.(string) // right justify the string
-		decoded, err := hex.DecodeString(value.(string))
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(decoded)
 	}
+	value = strings.Repeat("0", 16-len(value.(string))) + value.(string) // right justify the string
+	decoded, err := hex.DecodeString(value.(string))
+	if err != nil {
+		return nil, err
+	}
+	buf.Write(decoded)
 
 	return buf.Bytes(), nil
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into a JSON string value. This method assumes the parser contains data representing
 // a 64-bit unsigned integer. If the parsing fails, an error is returned.
-func (u *UInt64) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) {
+func (u *UInt64) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	b, err := p.ReadBytes(8)
 	if err != nil {
 		return nil, err

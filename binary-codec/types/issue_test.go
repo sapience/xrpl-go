@@ -39,7 +39,7 @@ func TestIssue_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			issue := &Issue{}
-			actual, err := issue.FromJson(tc.input)
+			actual, err := issue.FromJSON(tc.input)
 			require.Equal(t, tc.expected, actual)
 			require.Equal(t, tc.expectedErr, err)
 		})
@@ -113,7 +113,7 @@ func TestIssue_ToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			issue, parser := tc.setup(t)
-			actual, err := issue.ToJson(parser, tc.opts...)
+			actual, err := issue.ToJSON(parser, tc.opts...)
 
 			if tc.err != nil {
 				require.Error(t, err)

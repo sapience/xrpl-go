@@ -70,7 +70,7 @@ func TestSTArrayFromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
 			st := STArray{}
-			got, err := st.FromJson(tc.input)
+			got, err := st.FromJSON(tc.input)
 
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
@@ -148,7 +148,7 @@ func TestSTArrayToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
 			st := STArray{}
-			act, err := st.ToJson(serdes.NewBinaryParser(tc.input))
+			act, err := st.ToJSON(serdes.NewBinaryParser(tc.input))
 			if tc.expectedErr != nil {
 				require.Error(t, err, tc.expectedErr.Error())
 				require.Nil(t, act)

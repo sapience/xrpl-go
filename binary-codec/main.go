@@ -40,7 +40,7 @@ func Encode(json map[string]any) (string, error) {
 		}
 	}
 
-	b, err := st.FromJson(json)
+	b, err := st.FromJSON(json)
 	if err != nil {
 		return "", err
 	}
@@ -59,7 +59,7 @@ func EncodeForMultisigning(json map[string]any, xrpAccountID string) (string, er
 
 	json["SigningPubKey"] = ""
 
-	suffix, err := st.FromJson(xrpAccountID)
+	suffix, err := st.FromJSON(xrpAccountID)
 	if err != nil {
 		return "", err
 	}
@@ -92,14 +92,14 @@ func EncodeForSigningClaim(json map[string]any) (string, error) {
 		return "", ErrSigningClaimFieldNotFound
 	}
 
-	channel, err := types.NewHash256().FromJson(json["Channel"])
+	channel, err := types.NewHash256().FromJSON(json["Channel"])
 
 	if err != nil {
 		return "", err
 	}
 
 	t := &types.Amount{}
-	amount, err := t.FromJson(json["Amount"])
+	amount, err := t.FromJSON(json["Amount"])
 
 	if err != nil {
 		return "", err
@@ -135,7 +135,7 @@ func Decode(hexEncoded string) (map[string]any, error) {
 	}
 	p := serdes.NewBinaryParser(b)
 	st := &types.STObject{}
-	m, err := st.ToJson(p)
+	m, err := st.ToJSON(p)
 	if err != nil {
 		return nil, err
 	}

@@ -39,7 +39,7 @@ func TestUint16_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			uint16 := &UInt16{}
-			actual, err := uint16.FromJson(tc.input)
+			actual, err := uint16.FromJSON(tc.input)
 			if err != tc.expectedErr {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}
@@ -82,7 +82,7 @@ func TestUint16_ToJson(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			uint16 := &UInt16{}
 			parser := serdes.NewBinaryParser(tc.input)
-			actual, err := uint16.ToJson(parser)
+			actual, err := uint16.ToJSON(parser)
 			if err != tc.expectedErr {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}
