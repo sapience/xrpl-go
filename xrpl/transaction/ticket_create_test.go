@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTicketCreateFlatten(t *testing.T) {
+func TestTicketCreate_Flatten(t *testing.T) {
 	s := TicketCreate{
 		BaseTx: BaseTx{
 			Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
