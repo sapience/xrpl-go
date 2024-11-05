@@ -24,6 +24,6 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Run linter
-      run: docker run --rm xrpl-go-ci:latest sh -c "make lint"
+      run: docker run --rm xrpl-go-ci:latest sh -c "GOLANGCI_LINT_VERSION=v1.53.2 make lint"
     - name: Run tests
       run: docker run --rm xrpl-go-ci:latest sh -c "make test-ci"
