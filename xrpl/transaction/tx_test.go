@@ -11,10 +11,10 @@ import (
 
 func TestTx_Validate(t *testing.T) {
 	testCases := []struct {
-		name   string
-		tx     *BaseTx
-		valid  bool
-		errMsg string
+		name      string
+		tx        *BaseTx
+		wantValid bool
+		wantErr   bool
 	}{
 		{
 			name: "Valid transaction",
@@ -56,21 +56,24 @@ func TestTx_Validate(t *testing.T) {
 					},
 				},
 			},
-			valid: true,
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
 			name: "Missing required Account field",
 			tx: &BaseTx{
 				TransactionType: PaymentTx,
 			},
-			valid: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Missing required TransactionType field",
 			tx: &BaseTx{
 				Account: "rhbi7TGHknHCsRrVYmW57tQHmHjmFgjEpU",
 			},
-			valid: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid memos",
@@ -95,7 +98,8 @@ func TestTx_Validate(t *testing.T) {
 					},
 				},
 			},
-			valid: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid signers",
@@ -118,15 +122,20 @@ func TestTx_Validate(t *testing.T) {
 					},
 				},
 			},
-			valid: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			valid, err := tc.tx.Validate()
-			if valid != tc.valid || (err == nil && !tc.valid) {
-				t.Errorf("Test case %s failed: expected valid=%v, errMsg=%s", tc.name, tc.valid, err)
+			if (err != nil) != tc.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tc.wantErr)
+				return
+			}
+			if valid != tc.wantValid {
+				t.Errorf("Validate() = %v, want %v", valid, !tc.wantErr)
 			}
 		})
 	}
