@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
 	"github.com/golang/mock/gomock"
 )
@@ -19,31 +20,46 @@ func TestUint16_FromJson(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			name:        "Valid uint16 from uint16",
+			name:     "fail - invalid ledger entry type",
+			input:    "invalid",
+			expected: nil,
+			expectedErr: &definitions.NotFoundError{
+				Instance: "LedgerEntryTypeName",
+				Input:    "invalid",
+			},
+		},
+		{
+			name:        "fail - invalid uint16 value (2)",
+			input:       int(65536),
+			expected:    nil,
+			expectedErr: errors.New("uint16: value out of range"),
+		},
+		{
+			name:        "pass - valid uint16 from uint16",
 			input:       1,
 			expected:    []byte{0, 1},
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint16 from uint16 (2)",
+			name:        "pass - valid uint16 from uint16 (2)",
 			input:       100,
 			expected:    []byte{0, 100},
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint16 from uint16 (3)",
+			name:        "pass - valid uint16 from uint16 (3)",
 			input:       255,
 			expected:    []byte{0, 255},
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint16 from TransactionType",
+			name:        "pass - valid uint16 from TransactionType",
 			input:       "Payment",
 			expected:    []byte{0, 0},
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint16 from TransactionType (2)",
+			name:        "pass - valid uint16 from TransactionType (2)",
 			input:       "EscrowCreate",
 			expected:    []byte{0, 1},
 			expectedErr: nil,

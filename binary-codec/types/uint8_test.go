@@ -57,8 +57,8 @@ func TestUint8_FromJson(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			uint8 := &UInt8{}
-			actual, err := uint8.FromJson(tc.input)
+			class := &UInt8{}
+			actual, err := class.FromJson(tc.input)
 			if !reflect.DeepEqual(err, tc.expectedErr) {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}

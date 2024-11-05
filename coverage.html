@@ -79,7 +79,7 @@
 				
 				<option value="file11">github.com/Peersyst/xrpl-go/binary-codec/types/account_id.go (100.0%)</option>
 				
-				<option value="file12">github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (54.6%)</option>
+				<option value="file12">github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (83.1%)</option>
 				
 				<option value="file13">github.com/Peersyst/xrpl-go/binary-codec/types/blob.go (100.0%)</option>
 				
@@ -91,23 +91,23 @@
 				
 				<option value="file17">github.com/Peersyst/xrpl-go/binary-codec/types/hash256.go (100.0%)</option>
 				
-				<option value="file18">github.com/Peersyst/xrpl-go/binary-codec/types/pathset.go (55.2%)</option>
+				<option value="file18">github.com/Peersyst/xrpl-go/binary-codec/types/pathset.go (93.8%)</option>
 				
-				<option value="file19">github.com/Peersyst/xrpl-go/binary-codec/types/serialized_type.go (56.2%)</option>
+				<option value="file19">github.com/Peersyst/xrpl-go/binary-codec/types/serialized_type.go (100.0%)</option>
 				
-				<option value="file20">github.com/Peersyst/xrpl-go/binary-codec/types/st_array.go (83.9%)</option>
+				<option value="file20">github.com/Peersyst/xrpl-go/binary-codec/types/st_array.go (90.3%)</option>
 				
-				<option value="file21">github.com/Peersyst/xrpl-go/binary-codec/types/st_object.go (80.0%)</option>
+				<option value="file21">github.com/Peersyst/xrpl-go/binary-codec/types/st_object.go (88.3%)</option>
 				
-				<option value="file22">github.com/Peersyst/xrpl-go/binary-codec/types/uint16.go (84.2%)</option>
+				<option value="file22">github.com/Peersyst/xrpl-go/binary-codec/types/uint16.go (94.7%)</option>
 				
-				<option value="file23">github.com/Peersyst/xrpl-go/binary-codec/types/uint32.go (77.8%)</option>
+				<option value="file23">github.com/Peersyst/xrpl-go/binary-codec/types/uint32.go (88.9%)</option>
 				
-				<option value="file24">github.com/Peersyst/xrpl-go/binary-codec/types/uint64.go (59.3%)</option>
+				<option value="file24">github.com/Peersyst/xrpl-go/binary-codec/types/uint64.go (95.2%)</option>
 				
 				<option value="file25">github.com/Peersyst/xrpl-go/binary-codec/types/uint8.go (94.4%)</option>
 				
-				<option value="file26">github.com/Peersyst/xrpl-go/binary-codec/types/vector256.go (31.6%)</option>
+				<option value="file26">github.com/Peersyst/xrpl-go/binary-codec/types/vector256.go (85.7%)</option>
 				
 				<option value="file27">github.com/Peersyst/xrpl-go/keypairs/crypto.go (44.4%)</option>
 				
@@ -1786,78 +1786,78 @@ func (e *InvalidCodeError) Error() string <span class="cov8" title="1">{
 type Amount struct{}
 
 // FromJson serializes an issued currency amount to its bytes representation from JSON.
-func (a *Amount) FromJson(value any) ([]byte, error) <span class="cov0" title="0">{
+func (a *Amount) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
 
         switch value := value.(type) </span>{
-        case string:<span class="cov0" title="0">
+        case string:<span class="cov8" title="1">
                 return serializeXrpAmount(value)</span>
-        case map[string]any:<span class="cov0" title="0">
+        case map[string]any:<span class="cov8" title="1">
                 return serializeIssuedCurrencyAmount(value["value"].(string), value["currency"].(string), value["issuer"].(string))</span>
-        default:<span class="cov0" title="0">
+        default:<span class="cov8" title="1">
                 return nil, errors.New("invalid amount type")</span>
         }
 }
 
 // ToJson deserializes a binary-encoded Amount object from a BinaryParser into a JSON representation.
-func (a *Amount) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov0" title="0">{
+func (a *Amount) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.Peek()
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var sign string
-        if !isPositive(b) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">var sign string
+        if !isPositive(b) </span><span class="cov8" title="1">{
                 sign = "-"
         }</span>
-        <span class="cov0" title="0">if isNative(b) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if isNative(b) </span><span class="cov8" title="1">{
                 xrp, err := p.ReadBytes(8)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">xrpVal := binary.BigEndian.Uint64(xrp)
+                <span class="cov8" title="1">xrpVal := binary.BigEndian.Uint64(xrp)
                 xrpVal = xrpVal &amp; 0x3FFFFFFFFFFFFFFF
                 return sign + strconv.FormatUint(xrpVal, 10), nil</span>
-        } else<span class="cov0" title="0"> {
+        } else<span class="cov8" title="1"> {
                 token, err := p.ReadBytes(48)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">return deserializeToken(token)</span>
+                <span class="cov8" title="1">return deserializeToken(token)</span>
         }
 }
 
-func deserializeToken(data []byte) (map[string]any, error) <span class="cov0" title="0">{
+func deserializeToken(data []byte) (map[string]any, error) <span class="cov8" title="1">{
 
         var value string
         var err error
         if bytes.Equal(data[0:8], []byte{0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}) </span><span class="cov0" title="0">{
                 value = "0"
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 value, err = deserializeValue(data[:8])
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
         }
-        <span class="cov0" title="0">issuer, err := deserializeIssuer(data[28:])
+        <span class="cov8" title="1">issuer, err := deserializeIssuer(data[28:])
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">curr, err := deserializeCurrencyCode(data[8:28])
+        <span class="cov8" title="1">curr, err := deserializeCurrencyCode(data[8:28])
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">return map[string]any{
+        <span class="cov8" title="1">return map[string]any{
                 "value":    value,
                 "currency": curr,
                 "issuer":   issuer,
         }, nil</span>
 }
 
-func deserializeValue(data []byte) (string, error) <span class="cov0" title="0">{
+func deserializeValue(data []byte) (string, error) <span class="cov8" title="1">{
         sign := ""
         if !isPositive(data[0]) </span><span class="cov0" title="0">{
                 sign = "-"
         }</span>
-        <span class="cov0" title="0">value_bytes := data[:8]
+        <span class="cov8" title="1">value_bytes := data[:8]
         b1 := value_bytes[0]
         b2 := value_bytes[1]
         e1 := int((b1 &amp; 0x3F) &lt;&lt; 2)
@@ -1869,12 +1869,12 @@ func deserializeValue(data []byte) (string, error) <span class="cov0" title="0">
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
-        <span class="cov0" title="0">val := d.GetScaledValue()
+        <span class="cov8" title="1">val := d.GetScaledValue()
         err = verifyIOUValue(val)
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
-        <span class="cov0" title="0">return val, nil</span>
+        <span class="cov8" title="1">return val, nil</span>
 }
 
 func deserializeCurrencyCode(data []byte) (string, error) <span class="cov8" title="1">{
@@ -1895,7 +1895,7 @@ func deserializeCurrencyCode(data []byte) (string, error) <span class="cov8" tit
         <span class="cov8" title="1">return iso, nil</span>
 }
 
-func deserializeIssuer(data []byte) (string, error) <span class="cov0" title="0">{
+func deserializeIssuer(data []byte) (string, error) <span class="cov8" title="1">{
         return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil
 }</span>
 
@@ -2115,23 +2115,23 @@ func serializeIssuedCurrencyAmount(value, currency, issuer string) ([]byte, erro
 
         var valBytes []byte
         var err error
-        if value == "0" </span><span class="cov0" title="0">{
+        if value == "0" </span><span class="cov8" title="1">{
                 valBytes = make([]byte, 8)
                 binary.BigEndian.PutUint64(valBytes, uint64(ZeroCurrencyAmountHex))
         }</span> else<span class="cov8" title="1"> {
                 valBytes, err = SerializeIssuedCurrencyValue(value) // serialize the value
         }</span>
 
-        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">currencyBytes, err := serializeIssuedCurrencyCode(currency) // serialize the currency code
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">_, issuerBytes, err := addresscodec.DecodeClassicAddressToAccountID(issuer) // decode the issuer address
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
 
@@ -2365,69 +2365,69 @@ var ErrInvalidPathSet error = errors.New("invalid type to construct PathSet from
 
 // FromJson attempts to serialize a path set from a JSON representation of a slice of paths to a byte array.
 // It returns the byte array representation of the path set, or an error if the provided json does not represent a valid path set.
-func (p PathSet) FromJson(json any) ([]byte, error) <span class="cov0" title="0">{
+func (p PathSet) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
 
-        if _, ok := json.([]any)[0].([]any); !ok </span><span class="cov0" title="0">{
+        if _, ok := json.([]any)[0].([]any); !ok </span><span class="cov8" title="1">{
                 return nil, ErrInvalidPathSet
         }</span>
 
-        <span class="cov0" title="0">if !isPathSet(json.([]any)) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !isPathSet(json.([]any)) </span><span class="cov8" title="1">{
                 return nil, ErrInvalidPathSet
         }</span>
 
-        <span class="cov0" title="0">return newPathSet(json.([]any)), nil</span>
+        <span class="cov8" title="1">return newPathSet(json.([]any)), nil</span>
 }
 
 // ToJson decodes a path set from a binary representation using a provided binary parser, then translates it to a JSON representation.
 // It returns a slice representing the JSON format of the path set, or an error if the path set could not be decoded or if an invalid step is encountered.
-func (p PathSet) ToJson(parser interfaces.BinaryParser, opts ...int) (any, error) <span class="cov0" title="0">{
+func (p PathSet) ToJson(parser interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         var pathSet []any
 
-        for parser.HasMore() </span><span class="cov0" title="0">{
+        for parser.HasMore() </span><span class="cov8" title="1">{
                 peek, err := parser.Peek()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
 
-                <span class="cov0" title="0">if peek == pathsetEndByte </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if peek == pathsetEndByte </span><span class="cov8" title="1">{
                         _, err := parser.ReadByte()
                         if err != nil </span><span class="cov0" title="0">{
                                 return nil, err
                         }</span>
-                        <span class="cov0" title="0">break</span>
+                        <span class="cov8" title="1">break</span>
                 }
 
-                <span class="cov0" title="0">path, err := parsePath(parser)
-                if err != nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">path, err := parsePath(parser)
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
 
-                <span class="cov0" title="0">if len(path) &gt; 0 </span><span class="cov0" title="0">{
-                        for i, step := range path </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if len(path) &gt; 0 </span><span class="cov8" title="1">{
+                        for i, step := range path </span><span class="cov8" title="1">{
                                 stepMap, ok := step.(map[string]any)
                                 if !ok </span><span class="cov0" title="0">{
                                         return nil, fmt.Errorf("step is not of type map[string]any")
                                 }</span>
-                                <span class="cov0" title="0">if _, ok := stepMap["account"]; ok </span><span class="cov0" title="0">{
+                                <span class="cov8" title="1">if _, ok := stepMap["account"]; ok </span><span class="cov8" title="1">{
                                         stepMap["type"] = 1
                                         stepMap["type_hex"] = "0000000000000001"
                                 }</span>
-                                <span class="cov0" title="0">if _, ok := stepMap["currency"]; ok </span><span class="cov0" title="0">{
+                                <span class="cov8" title="1">if _, ok := stepMap["currency"]; ok </span><span class="cov8" title="1">{
                                         stepMap["type"] = 16
                                         stepMap["type_hex"] = "0000000000000010"
                                 }</span>
-                                <span class="cov0" title="0">path[i] = stepMap</span>
+                                <span class="cov8" title="1">path[i] = stepMap</span>
                         }
-                        <span class="cov0" title="0">pathSet = append(pathSet, path)</span>
+                        <span class="cov8" title="1">pathSet = append(pathSet, path)</span>
                 }
         }
 
-        <span class="cov0" title="0">return pathSet, nil</span>
+        <span class="cov8" title="1">return pathSet, nil</span>
 }
 
 // isPathSet determines if an array represents a valid path set.
 // It checks if the array is either empty or if its first element is a valid path step.
-func isPathSet(v []any) bool <span class="cov0" title="0">{
+func isPathSet(v []any) bool <span class="cov8" title="1">{
         return len(v) == 0 || len(v[0].([]any)) == 0 || isPathStep(v[0].([]any)[0].(map[string]any))
 }</span>
 
@@ -2497,7 +2497,7 @@ func newPathSet(v []any) []byte <span class="cov8" title="1">{
 // It returns a map representing the path step, or an error if the path step could not be decoded.
 func parsePathStep(parser interfaces.BinaryParser) (map[string]any, error) <span class="cov8" title="1">{
         dataType, err := parser.ReadByte()
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
 
@@ -2542,17 +2542,17 @@ func parsePath(parser interfaces.BinaryParser) ([]any, error) <span class="cov8"
 
         for parser.HasMore() </span><span class="cov8" title="1">{
                 peek, err := parser.Peek()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
 
-                <span class="cov8" title="1">if peek == pathsetEndByte </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if peek == pathsetEndByte </span><span class="cov8" title="1">{
                         break</span>
                 }
 
-                <span class="cov8" title="1">if peek == pathSeparatorByte </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if peek == pathSeparatorByte </span><span class="cov8" title="1">{
                         _, err := parser.ReadByte()
-                        if err != nil </span><span class="cov0" title="0">{
+                        if err != nil </span><span class="cov8" title="1">{
                                 return nil, err
                         }</span>
                         <span class="cov0" title="0">break</span>
@@ -2592,7 +2592,7 @@ type SerializedType interface {
 // If the input string does not match a known type, the function returns nil.
 func GetSerializedType(t string) SerializedType <span class="cov8" title="1">{
         switch t </span>{
-        case "UInt8":<span class="cov0" title="0">
+        case "UInt8":<span class="cov8" title="1">
                 return &amp;UInt8{}</span>
         case "UInt16":<span class="cov8" title="1">
                 return &amp;UInt16{}</span>
@@ -2600,7 +2600,7 @@ func GetSerializedType(t string) SerializedType <span class="cov8" title="1">{
                 return &amp;UInt32{}</span>
         case "UInt64":<span class="cov8" title="1">
                 return &amp;UInt64{}</span>
-        case "Hash128":<span class="cov0" title="0">
+        case "Hash128":<span class="cov8" title="1">
                 return NewHash128()</span>
         case "Hash160":<span class="cov8" title="1">
                 return NewHash160()</span>
@@ -2608,20 +2608,20 @@ func GetSerializedType(t string) SerializedType <span class="cov8" title="1">{
                 return NewHash256()</span>
         case "AccountID":<span class="cov8" title="1">
                 return &amp;AccountID{}</span>
-        case "Amount":<span class="cov0" title="0">
+        case "Amount":<span class="cov8" title="1">
                 return &amp;Amount{}</span>
-        case "Vector256":<span class="cov0" title="0">
+        case "Vector256":<span class="cov8" title="1">
                 return &amp;Vector256{}</span>
         case "Blob":<span class="cov8" title="1">
                 return &amp;Blob{}</span>
         case "STObject":<span class="cov8" title="1">
                 return &amp;STObject{}</span>
-        case "STArray":<span class="cov0" title="0">
+        case "STArray":<span class="cov8" title="1">
                 return &amp;STArray{}</span>
-        case "PathSet":<span class="cov0" title="0">
+        case "PathSet":<span class="cov8" title="1">
                 return &amp;PathSet{}</span>
         }
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
@@ -2649,7 +2649,7 @@ var ErrNotSTObjectInSTArray = errors.New("not STObject in STArray. Array fields 
 // of an STObject, appending the resulting byte slice to a "sink" slice.
 // The method returns an error if the JSON value is not a slice.
 func (t *STArray) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
-        if _, ok := json.([]any); !ok </span><span class="cov0" title="0">{
+        if _, ok := json.([]any); !ok </span><span class="cov8" title="1">{
                 return nil, ErrNotSTObjectInSTArray
         }</span>
 
@@ -2679,7 +2679,7 @@ func (t *STArray) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <s
 
                 stObj := make(map[string]any)
                 fi, err := p.ReadField()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
                 <span class="cov8" title="1">if count == 0 &amp;&amp; fi.Type != "STObject" </span><span class="cov0" title="0">{
@@ -2723,12 +2723,12 @@ type STObject struct{}
 // This method returns an error if the JSON input is not a valid object.
 func (t *STObject) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
         s := serdes.NewSerializer()
-        if _, ok := json.(map[string]any); !ok </span><span class="cov0" title="0">{
+        if _, ok := json.(map[string]any); !ok </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("not a valid json node")
         }</span>
         <span class="cov8" title="1">fimap, err := createFieldInstanceMapFromJson(json.(map[string]any))
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
 
@@ -2761,7 +2761,7 @@ func (t *STObject) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <
         for p.HasMore() </span><span class="cov8" title="1">{
 
                 fi, err := p.ReadField()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
 
@@ -2845,9 +2845,9 @@ func getSortedKeys(m map[definitions.FieldInstance]any) []definitions.FieldInsta
 // If the field is not an enumerated type, the original value is returned.
 func enumToStr(fieldType string, value any) (any, error) <span class="cov8" title="1">{
         switch fieldType </span>{
-        case "TransactionType":<span class="cov0" title="0">
+        case "TransactionType":<span class="cov8" title="1">
                 return definitions.Get().GetTransactionTypeNameByTransactionTypeCode(int32(value.(int)))</span>
-        case "TransactionResult":<span class="cov0" title="0">
+        case "TransactionResult":<span class="cov8" title="1">
                 return definitions.Get().GetTransactionResultNameByTransactionResultTypeCode(int32(value.(int)))</span>
         case "LedgerEntryType":<span class="cov8" title="1">
                 return definitions.Get().GetLedgerEntryTypeNameByLedgerEntryTypeCode(int32(value.(int)))</span>
@@ -2887,7 +2887,7 @@ func (u *UInt16) FromJson(value any) ([]byte, error) <span class="cov8" title="1
                 tc, err := definitions.Get().GetTransactionTypeCodeByTransactionTypeName(value.(string))
                 if err != nil </span><span class="cov8" title="1">{
                         tc, err = definitions.Get().GetLedgerEntryTypeCodeByLedgerEntryTypeName(value.(string))
-                        if err != nil </span><span class="cov0" title="0">{
+                        if err != nil </span><span class="cov8" title="1">{
                                 return nil, err
                         }</span>
                 }
@@ -2896,10 +2896,9 @@ func (u *UInt16) FromJson(value any) ([]byte, error) <span class="cov8" title="1
 
         <span class="cov8" title="1">buf := new(bytes.Buffer)
 
-        if !IsUint16(value.(int)) </span><span class="cov0" title="0">{
+        if !IsUint16(value.(int)) </span><span class="cov8" title="1">{
                 return nil, errors.New("uint16: value out of range")
         }</span>
-
 
         <span class="cov8" title="1">err := binary.Write(buf, binary.BigEndian, uint16(value.(int)))
 
@@ -2950,7 +2949,7 @@ func (u *UInt32) FromJson(value any) ([]byte, error) <span class="cov8" title="1
 // a 32-bit unsigned integer. If the parsing fails, an error is returned.
 func (u *UInt32) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(4)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">return int(binary.BigEndian.Uint32(b)), nil</span>
@@ -2961,11 +2960,9 @@ func (u *UInt32) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <sp
 
 import (
         "bytes"
-        "encoding/binary"
         "encoding/hex"
         "errors"
         "regexp"
-        "strconv"
         "strings"
 
         "github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
@@ -2982,25 +2979,17 @@ func (u *UInt64) FromJson(value any) ([]byte, error) <span class="cov8" title="1
 
         var buf = new(bytes.Buffer)
 
-        if _, ok := value.(string); !ok </span><span class="cov0" title="0">{
+        if _, ok := value.(string); !ok </span><span class="cov8" title="1">{
                 return nil, ErrInvalidUInt64String
         }</span>
 
         <span class="cov8" title="1">if !isNumeric(value.(string)) </span><span class="cov8" title="1">{
-                if hex, err := hex.DecodeString(value.(string)); err == nil </span><span class="cov8" title="1">{
-                        buf.Write(hex)
-                        return buf.Bytes(), nil
-                }</span>
-                <span class="cov0" title="0">stringToUint64, err := strconv.ParseUint(value.(string), 10, 64)
-                if err != nil </span><span class="cov0" title="0">{
+                hex, err := hex.DecodeString(value.(string));
+                if  err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">value = stringToUint64
-                err = binary.Write(buf, binary.BigEndian, value)
-                if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
-                }</span>
-                <span class="cov0" title="0">return buf.Bytes(), nil</span>
+                <span class="cov8" title="1">buf.Write(hex)
+                return buf.Bytes(), nil</span>
         } else<span class="cov8" title="1"> {
                 value = strings.Repeat("0", 16-len(value.(string))) + value.(string) // right justify the string
                 decoded, err := hex.DecodeString(value.(string))
@@ -3018,7 +3007,7 @@ func (u *UInt64) FromJson(value any) ([]byte, error) <span class="cov8" title="1
 // a 64-bit unsigned integer. If the parsing fails, an error is returned.
 func (u *UInt64) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(8)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">return strings.ToUpper(hex.EncodeToString(b)), nil</span>
@@ -3113,19 +3102,19 @@ type Vector256 struct{}
 // FromJson converts a JSON value into a serialized byte slice representing a Vector256.
 // The input value is assumed to be an array of strings representing Hash256 values.
 // If the serialization fails, an error is returned.
-func (v *Vector256) FromJson(json any) ([]byte, error) <span class="cov0" title="0">{
+func (v *Vector256) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
 
-        if _, ok := json.([]string); !ok </span><span class="cov0" title="0">{
+        if _, ok := json.([]string); !ok </span><span class="cov8" title="1">{
                 return nil, &amp;ErrInvalidVector256Type{fmt.Sprintf("%T", json)}
         }</span>
 
-        <span class="cov0" title="0">b, err := vector256FromValue(json.([]string))
+        <span class="cov8" title="1">b, err := vector256FromValue(json.([]string))
 
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">return b, nil</span>
+        <span class="cov8" title="1">return b, nil</span>
 }
 
 // vector256FromValue takes a slice of strings representing Hash256 values,
@@ -3148,16 +3137,19 @@ func vector256FromValue(value []string) ([]byte, error) <span class="cov8" title
 // ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into an array of JSON string values representing Hash256 values.
 // If the parsing fails, an error is returned.
-func (v *Vector256) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov0" title="0">{
+func (v *Vector256) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
 
-        b, _ := p.ReadBytes(opts[0])
-        var value []string
+        b, err := p.ReadBytes(opts[0])
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">var value []string
 
-        for i := 0; i &lt; len(b); i += HashLengthBytes </span><span class="cov0" title="0">{
+        for i := 0; i &lt; len(b); i += HashLengthBytes </span><span class="cov8" title="1">{
                 value = append(value, strings.ToUpper(hex.EncodeToString(b[i:i+HashLengthBytes])))
         }</span>
 
-        <span class="cov0" title="0">return value, nil</span>
+        <span class="cov8" title="1">return value, nil</span>
 }
 </pre>
 		
