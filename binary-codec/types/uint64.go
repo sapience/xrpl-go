@@ -26,8 +26,8 @@ func (u *UInt64) FromJson(value any) ([]byte, error) {
 	}
 
 	if !isNumeric(value.(string)) {
-		hex, err := hex.DecodeString(value.(string));
-		if  err != nil {
+		hex, err := hex.DecodeString(value.(string))
+		if err != nil {
 			return nil, err
 		}
 		buf.Write(hex)
