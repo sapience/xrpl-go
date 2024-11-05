@@ -2,11 +2,18 @@ linters:
   enable:
     - gofmt
     - govet
+    # - dupl TODO: enable
+    - gocritic
     - errcheck
     - staticcheck
     - ineffassign
+    - typecheck
     - gosimple
+    - misspell
+    - unparam
     - unused
+    - gosec
+    - revive
 
 run:
   timeout: 1m
@@ -14,6 +21,9 @@ run:
 
 issues:
   exclude-rules:
+    - path: examples/
+      linters:
+        - gosec
     - path: _test\.go
       linters:
         - errcheck
