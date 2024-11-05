@@ -1,26 +1,26 @@
 package crypto
 
-type CryptoAlgorithm struct {
+type Algorithm struct {
 	prefix           uint8
 	familySeedPrefix uint8
 }
 
-func (c CryptoAlgorithm) Prefix() uint8 {
+func (c Algorithm) Prefix() uint8 {
 	return c.prefix
 }
 
-func (c CryptoAlgorithm) FamilySeedPrefix() uint8 {
+func (c Algorithm) FamilySeedPrefix() uint8 {
 	return c.familySeedPrefix
 }
 
-func (c CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error) {
+func (c Algorithm) DeriveKeypair(_ []byte, _ bool) (string, string, error) {
 	return "", "", nil
 }
 
-func (c CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
+func (c Algorithm) Sign(_ string, _ string) (string, error) {
 	return "", nil
 }
 
-func (c CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
+func (c Algorithm) Validate(_ string, _ string, _ string) bool {
 	return false
 }
