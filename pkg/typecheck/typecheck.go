@@ -5,6 +5,12 @@ import (
 	"strconv"
 )
 
+// IsUint8 checks if the given interface is a uint8.
+func IsUint8(num interface{}) bool {
+	_, ok := num.(uint8)
+	return ok
+}
+
 // IsString checks if the given interface is a string.
 func IsString(str interface{}) bool {
 	_, ok := str.(string)
