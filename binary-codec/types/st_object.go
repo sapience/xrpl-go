@@ -5,21 +5,26 @@ import (
 	"sort"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
-	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
 // STObject represents a map of serialized field instances, where each key is a field name
 // and the associated value is the field's value. This structure allows us to represent nested
 // and complex structures of the Ripple protocol.
-type STObject struct{}
+type STObject struct {
+	binarySerializer interfaces.BinarySerializer
+}
+
+// NewSTObject returns a new STObject with the given binary serializer.
+func NewSTObject(bs interfaces.BinarySerializer) *STObject {
+	return &STObject{binarySerializer: bs}
+}
 
 // FromJSON converts a JSON object into a serialized byte slice.
 // It works by converting the JSON object into a map of field instances (which include the field definition
 // and value), and then serializing each field instance.
 // This method returns an error if the JSON input is not a valid object.
 func (t *STObject) FromJSON(json any) ([]byte, error) {
-	s := serdes.NewSerializer()
 	if _, ok := json.(map[string]any); !ok {
 		return nil, fmt.Errorf("not a valid json node")
 	}
@@ -41,12 +46,12 @@ func (t *STObject) FromJSON(json any) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = s.WriteFieldAndValue(v, b)
+		err = t.binarySerializer.WriteFieldAndValue(v, b)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return s.GetSink(), nil
+	return t.binarySerializer.GetSink(), nil
 }
 
 // ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
