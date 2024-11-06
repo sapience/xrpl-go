@@ -61,13 +61,13 @@
 				
 				<option value="file2">github.com/Peersyst/xrpl-go/address-codec/base58check.go (94.7%)</option>
 				
-				<option value="file3">github.com/Peersyst/xrpl-go/binary-codec/definitions/definitions.go (92.1%)</option>
+				<option value="file3">github.com/Peersyst/xrpl-go/binary-codec/definitions/definitions.go (96.8%)</option>
 				
-				<option value="file4">github.com/Peersyst/xrpl-go/binary-codec/definitions/field_instance.go (0.0%)</option>
+				<option value="file4">github.com/Peersyst/xrpl-go/binary-codec/definitions/field_instance.go (83.3%)</option>
 				
 				<option value="file5">github.com/Peersyst/xrpl-go/binary-codec/definitions/helpers.go (100.0%)</option>
 				
-				<option value="file6">github.com/Peersyst/xrpl-go/binary-codec/definitions/init.go (66.7%)</option>
+				<option value="file6">github.com/Peersyst/xrpl-go/binary-codec/definitions/init.go (100.0%)</option>
 				
 				<option value="file7">github.com/Peersyst/xrpl-go/binary-codec/main.go (81.6%)</option>
 				
@@ -864,12 +864,20 @@ import (
         "github.com/ugorji/go/codec"
 )
 
-var definitions *Definitions
+var (
+        // definitions is the singleton instance of the Definitions struct.
+        definitions *Definitions
+
+        // Errors
+
+        // ErrUnableToCastFieldInfo is returned when the field info cannot be cast.
+        ErrUnableToCastFieldInfo = errors.New("unable to cast to field info")
+)
 
 //go:embed definitions.json
 var docBytes []byte
 
-func Get() *Definitions <span class="cov0" title="0">{
+func Get() *Definitions <span class="cov8" title="1">{
         return definitions
 }</span>
 
@@ -916,22 +924,11 @@ type definitionsDoc struct {
         TransactionTypes   map[string]int32 `json:"TRANSACTION_TYPES"`
 }
 
-type fieldInstanceMap map[string]*FieldInstance
-
-func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {<span class="cov0" title="0">}</span>
-
-func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) <span class="cov8" title="1">{
-        var x [][]interface{}
-        d.MustDecode(&amp;x)
-        y := convertToFieldInstanceMap(x)
-        *fi = y
-}</span>
-
 // Loads JSON from the definitions file and converts it to a preferred format.
 // The definitions file contains information required for the XRP Ledger's
 // canonical binary serialization format:
 // `Serialization &lt;https://xrpl.org/serialization.html&gt;`_
-func loadDefinitions() error <span class="cov8" title="1">{
+func loadDefinitions() <span class="cov8" title="1">{
 
         var jh codec.JsonHandle
 
@@ -940,11 +937,9 @@ func loadDefinitions() error <span class="cov8" title="1">{
 
         dec := codec.NewDecoderBytes(docBytes, &amp;jh)
         var data definitionsDoc
-        err := dec.Decode(&amp;data)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">definitions = &amp;Definitions{
+        dec.MustDecode(&amp;data)
+
+        definitions = &amp;Definitions{
                 Types:              data.Types,
                 Fields:             data.Fields,
                 LedgerEntryTypes:   data.LedgerEntryTypes,
@@ -954,9 +949,7 @@ func loadDefinitions() error <span class="cov8" title="1">{
 
         addFieldHeadersAndOrdinals()
         createFieldIDNameMap()
-
-        return nil</span>
-}
+}</span>
 
 func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance <span class="cov8" title="1">{
         nm := make(map[string]*FieldInstance, len(m))
@@ -985,7 +978,7 @@ func castFieldInfo(v interface{}) (FieldInfo, error) <span class="cov8" title="1
                         Type:           fi["type"].(string),
                 }, nil
         }</span>
-        <span class="cov0" title="0">return FieldInfo{}, errors.New("unable to cast to field info")</span>
+        <span class="cov0" title="0">return FieldInfo{}, ErrUnableToCastFieldInfo</span>
 }
 
 func addFieldHeadersAndOrdinals() <span class="cov8" title="1">{
@@ -1014,6 +1007,8 @@ func createFieldIDNameMap() <span class="cov8" title="1">{
 		
 		<pre class="file" id="file4" style="display: none">package definitions
 
+import "github.com/ugorji/go/codec"
+
 type FieldInstance struct {
         FieldName string
         *FieldInfo
@@ -1034,13 +1029,25 @@ type FieldHeader struct {
         FieldCode int32
 }
 
-func (d *Definitions) CreateFieldHeader(tc, fc int32) FieldHeader <span class="cov0" title="0">{
+func (d *Definitions) CreateFieldHeader(tc, fc int32) FieldHeader <span class="cov8" title="1">{
         return FieldHeader{
                 TypeCode:  tc,
                 FieldCode: fc,
         }
 }</span>
-</pre>
+
+type fieldInstanceMap map[string]*FieldInstance
+
+// CodecEncodeSelf implements the codec.SelfEncoder interface.<span class="cov0" title="0">
+func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {}
+
+</span>// CodecDecodeSelf implements the codec.SelfDecoder interface.
+func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) {
+        var x [][]interface{}
+        d.MustDecode(&amp;x)
+        y := convertToFieldInstanceMap(x)
+        *fi = y
+}</pre>
 		
 		<pre class="file" id="file5" style="display: none">package definitions
 
@@ -1246,11 +1253,8 @@ func (d *Definitions) GetLedgerEntryTypeNameByLedgerEntryTypeCode(c int32) (stri
 		<pre class="file" id="file6" style="display: none">package definitions
 
 func init() <span class="cov8" title="1">{
-        err := loadDefinitions()
-        if err != nil </span><span class="cov0" title="0">{
-                return
-        }</span>
-}
+        loadDefinitions()
+}</span>
 </pre>
 		
 		<pre class="file" id="file7" style="display: none">package binarycodec
@@ -1410,19 +1414,19 @@ import (
 
 var (
         ErrParserOutOfBound = errors.New("parser out of bounds")
-        ErrInvalidTypecode = errors.New("invalid typecode")
+        ErrInvalidTypecode  = errors.New("invalid typecode")
         ErrInvalidFieldcode = errors.New("invalid fieldcode")
 )
 
 type BinaryParser struct {
-        data       []byte
+        data        []byte
         definitions interfaces.Definitions
 }
 
 // NewBinaryParser returns a new BinaryParser initialized with the given data.
 func NewBinaryParser(d []byte, definitions interfaces.Definitions) *BinaryParser <span class="cov8" title="1">{
         return &amp;BinaryParser{
-                data:       d,
+                data:        d,
                 definitions: definitions,
         }
 }</span>
@@ -1567,7 +1571,7 @@ import (
 var ErrLengthPrefixTooLong = errors.New("length of value must not exceed 918744 bytes of data")
 
 type BinarySerializer struct {
-        sink []byte
+        sink         []byte
         fieldIDCodec interfaces.FieldIDCodec
 }
 
