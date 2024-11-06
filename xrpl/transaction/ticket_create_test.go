@@ -60,7 +60,7 @@ func TestTicketCreate_Flatten(t *testing.T) {
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "TicketCreate",
 		"Fee":             "10",
-		"Sequence":        uint(50),
+		"Sequence":        int(50),
 		"TicketCount":     uint32(5),
 	}
 
