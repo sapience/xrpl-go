@@ -143,10 +143,16 @@ func getSortedKeys(m map[definitions.FieldInstance]any) []definitions.FieldInsta
 func enumToStr(fieldType string, value any) (any, error) {
 	switch fieldType {
 	case "TransactionType":
+		// TODO: Check if this is still needed
+		//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 		return definitions.Get().GetTransactionTypeNameByTransactionTypeCode(int32(value.(int)))
 	case "TransactionResult":
+		// TODO: Check if this is still needed
+		//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 		return definitions.Get().GetTransactionResultNameByTransactionResultTypeCode(int32(value.(int)))
 	case "LedgerEntryType":
+		// TODO: Check if this is still needed
+		//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 		return definitions.Get().GetLedgerEntryTypeNameByLedgerEntryTypeCode(int32(value.(int)))
 	default:
 		return value, nil

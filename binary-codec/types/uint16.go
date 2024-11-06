@@ -28,6 +28,7 @@ func (u *UInt16) FromJSON(value any) ([]byte, error) {
 	}
 
 	buf := new(bytes.Buffer)
+	//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 	err := binary.Write(buf, binary.BigEndian, uint16(value.(int)))
 
 	if err != nil {

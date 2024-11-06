@@ -120,6 +120,8 @@ func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance {
 func castFieldInfo(v interface{}) (FieldInfo, error) {
 	if fi, ok := v.(map[string]interface{}); ok {
 		return FieldInfo{
+			// TODO: Check if this is still needed
+			//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 			Nth:            int32(fi["nth"].(int64)),
 			IsVLEncoded:    fi["isVLEncoded"].(bool),
 			IsSerialized:   fi["isSerialized"].(bool),

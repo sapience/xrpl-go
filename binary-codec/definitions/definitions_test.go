@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func convertIntToBytes(i int32) []byte {
+func convertIntToBytes(_ int32) []byte {
 
 	return []byte{3}
 }
