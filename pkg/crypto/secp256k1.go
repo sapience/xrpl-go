@@ -46,19 +46,19 @@ func (c SECP256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *
 
 		if discrim != nil {
 			discrimBytes := make([]byte, 4)
-			bytes[0] = byte(uint32(discrim.Uint64()))
-			bytes[1] = byte(uint32(discrim.Uint64()) >> 8)
-			bytes[2] = byte(uint32(discrim.Uint64()) >> 16)
-			bytes[3] = byte(uint32(discrim.Uint64()) >> 24)
+			bytes[0] = byte(discrim.Uint64())
+			bytes[1] = byte(discrim.Uint64() >> 8)
+			bytes[2] = byte(discrim.Uint64() >> 16)
+			bytes[3] = byte(discrim.Uint64() >> 24)
 
 			hash.Write(discrimBytes)
 		}
 
 		shiftBytes := make([]byte, 4)
-		bytes[0] = byte(uint32(i))
-		bytes[1] = byte(uint32(i) >> 8)
-		bytes[2] = byte(uint32(i) >> 16)
-		bytes[3] = byte(uint32(i) >> 24)
+		bytes[0] = byte(i)
+		bytes[1] = byte(i >> 8)
+		bytes[2] = byte(i >> 16)
+		bytes[3] = byte(i >> 24)
 
 		hash.Write(shiftBytes)
 
