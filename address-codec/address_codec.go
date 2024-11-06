@@ -132,9 +132,8 @@ func EncodeSeed(entropy []byte, encodingType CryptoImplementation) (string, erro
 	} else if secp256k1 := crypto.SECP256K1(); encodingType == secp256k1 {
 		prefix := []byte{secp256k1.FamilySeedPrefix()}
 		return Encode(entropy, prefix, FamilySeedLength), nil
-	} else {
-		return "", errors.New("encoding type must be `ed25519` or `secp256k1`")
 	}
+	return "", errors.New("encoding type must be `ed25519` or `secp256k1`")
 
 }
 
