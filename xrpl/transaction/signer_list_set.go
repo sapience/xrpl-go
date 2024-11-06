@@ -6,7 +6,7 @@ import (
 
 type SignerListSet struct {
 	BaseTx
-	SignerQuorum  uint
+	SignerQuorum  uint32
 	SignerEntries []ledger.SignerEntryWrapper
 }
 

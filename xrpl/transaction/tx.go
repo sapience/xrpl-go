@@ -47,7 +47,7 @@ type BaseTx struct {
 	// transaction from the same account. The special case 0 means the transaction
 	// is using a Ticket instead.
 	//
-	Sequence uint `json:",omitempty"`
+	Sequence uint32 `json:",omitempty"`
 	//
 	// Hash value identifying another transaction. If provided, this transaction
 	// is only valid if the sending account's previously-sent transaction matches
@@ -55,19 +55,19 @@ type BaseTx struct {
 	//
 	AccountTxnID types.Hash256 `json:",omitempty"`
 	// Set of bit-flags for this transaction.
-	Flags uint `json:",omitempty"`
+	Flags uint32 `json:",omitempty"`
 	//
 	// Highest ledger index this transaction can appear in. Specifying this field
 	// places a strict upper limit on how long the transaction can wait to be
 	// validated or rejected.
 	//
-	LastLedgerSequence uint `json:",omitempty"`
+	LastLedgerSequence uint32 `json:",omitempty"`
 	//
 	// Additional arbitrary information used to identify this transaction.
 	//
 	Memos []MemoWrapper `json:",omitempty"`
 	// The network id of the transaction.
-	NetworkID uint `json:",omitempty"`
+	NetworkID uint32 `json:",omitempty"`
 	//
 	// Array of objects that represent a multi-signature which authorizes this
 	// transaction.
@@ -79,7 +79,7 @@ type BaseTx struct {
 	// specify the initial payment's SourceTag as the refund payment's
 	// DestinationTag.
 	//
-	SourceTag uint `json:",omitempty"`
+	SourceTag uint32 `json:",omitempty"`
 	//
 	// Hex representation of the public key that corresponds to the private key
 	// used to sign this transaction. If an empty string, indicates a
@@ -90,7 +90,7 @@ type BaseTx struct {
 	// The sequence number of the ticket to use in place of a Sequence number. If
 	// this is provided, Sequence must be 0. Cannot be used with AccountTxnID.
 	//
-	TicketSequence uint `json:",omitempty"`
+	TicketSequence uint32 `json:",omitempty"`
 	//
 	// The signature that verifies this transaction as originating from the
 	// account it says it is from.

@@ -95,7 +95,7 @@ func TestTrustSetFlags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*TrustSet)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "SetSetAuthFlag",

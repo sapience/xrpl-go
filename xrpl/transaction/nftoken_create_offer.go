@@ -11,7 +11,7 @@ type NFTokenCreateOffer struct {
 	Owner       types.Address `json:",omitempty"`
 	NFTokenID   types.NFTokenID
 	Amount      types.CurrencyAmount
-	Expiration  uint          `json:",omitempty"`
+	Expiration  uint32        `json:",omitempty"`
 	Destination types.Address `json:",omitempty"`
 }
 
@@ -30,7 +30,7 @@ func (n *NFTokenCreateOffer) UnmarshalJSON(data []byte) error {
 		Owner       types.Address `json:",omitempty"`
 		NFTokenID   types.NFTokenID
 		Amount      json.RawMessage
-		Expiration  uint          `json:",omitempty"`
+		Expiration  uint32        `json:",omitempty"`
 		Destination types.Address `json:",omitempty"`
 	}
 	var h ncoHelper

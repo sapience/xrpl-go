@@ -139,7 +139,7 @@ func TestPaymentFlags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*Payment)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "SetRippleNotDirectFlag",

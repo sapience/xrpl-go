@@ -2,7 +2,7 @@ package ledger
 
 type NegativeUNL struct {
 	DisabledValidators  []DisabledValidatorEntry `json:",omitempty"`
-	Flags               uint
+	Flags               uint32
 	LedgerEntryType     EntryType
 	ValidatorToDisable  string `json:",omitempty"`
 	ValidatorToReEnable string `json:",omitempty"`

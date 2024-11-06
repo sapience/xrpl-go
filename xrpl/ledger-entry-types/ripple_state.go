@@ -6,18 +6,18 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
 type RippleState struct {
 	Balance           types.IssuedCurrencyAmount
-	Flags             uint
+	Flags             uint32
 	HighLimit         types.IssuedCurrencyAmount
 	HighNode          string
-	HighQualityIn     uint `json:",omitempty"`
-	HighQualityOut    uint `json:",omitempty"`
+	HighQualityIn     uint32 `json:",omitempty"`
+	HighQualityOut    uint32 `json:",omitempty"`
 	LedgerEntryType   EntryType
 	LowLimit          types.IssuedCurrencyAmount
 	LowNode           string
-	LowQualityIn      uint `json:",omitempty"`
-	LowQualityOut     uint `json:",omitempty"`
+	LowQualityIn      uint32 `json:",omitempty"`
+	LowQualityOut     uint32 `json:",omitempty"`
 	PreviousTxnID     types.Hash256
-	PreviousTxnLgrSeq uint
+	PreviousTxnLgrSeq uint32
 }
 
 func (*RippleState) EntryType() EntryType {

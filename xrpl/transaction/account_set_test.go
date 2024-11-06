@@ -50,7 +50,7 @@ func TestAccountSetFlags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*AccountSet)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "SetRequireDestTag",

@@ -5,7 +5,7 @@ import (
 )
 
 func TestIsFlagEnabled(t *testing.T) {
-	var flags uint
+	var flags uint32
 	const flag1 = 0x00010000
 	const flag2 = 0x00020000
 

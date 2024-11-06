@@ -8,10 +8,10 @@ type EscrowCreate struct {
 	BaseTx
 	Amount         types.XRPCurrencyAmount
 	Destination    types.Address
-	CancelAfter    uint   `json:",omitempty"`
-	FinishAfter    uint   `json:",omitempty"`
+	CancelAfter    uint32 `json:",omitempty"`
+	FinishAfter    uint32 `json:",omitempty"`
 	Condition      string `json:",omitempty"`
-	DestinationTag uint   `json:",omitempty"`
+	DestinationTag uint32 `json:",omitempty"`
 }
 
 func (*EscrowCreate) TxType() TxType {
