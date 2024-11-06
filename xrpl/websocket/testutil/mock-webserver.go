@@ -19,7 +19,7 @@ func (ms *MockWebSocketServer) TestWebSocketServer(writeFunc connFn) *httptest.S
 	var upgrader = websocket.Upgrader{}
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+		upgrader.CheckOrigin = func(_ *http.Request) bool { return true }
 		c, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Println("Upgrade:", err)
