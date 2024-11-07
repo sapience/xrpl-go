@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/stretchr/testify/require"
 )
@@ -148,7 +149,7 @@ func TestSTArrayToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
 			st := STArray{}
-			act, err := st.ToJSON(serdes.NewBinaryParser(tc.input))
+			act, err := st.ToJSON(serdes.NewBinaryParser(tc.input, definitions.Get()))
 			if tc.expectedErr != nil {
 				require.Error(t, err, tc.expectedErr.Error())
 				require.Nil(t, act)

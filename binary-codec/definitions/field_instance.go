@@ -20,7 +20,7 @@ type FieldHeader struct {
 	FieldCode int32
 }
 
-func CreateFieldHeader(tc, fc int32) FieldHeader {
+func (d *Definitions) CreateFieldHeader(tc, fc int32) FieldHeader {
 	return FieldHeader{
 		TypeCode:  tc,
 		FieldCode: fc,
