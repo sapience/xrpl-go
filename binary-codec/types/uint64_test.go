@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 )
 
@@ -85,7 +86,7 @@ func TestUint64_ToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			uint64 := &UInt64{}
-			parser := serdes.NewBinaryParser(tc.input)
+			parser := serdes.NewBinaryParser(tc.input, definitions.Get())
 			actual, err := uint64.ToJSON(parser)
 			if err != tc.expectedErr {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)

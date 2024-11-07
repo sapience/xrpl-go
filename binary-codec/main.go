@@ -24,7 +24,7 @@ const (
 // The binary format is defined in XRPL's core codebase.
 func Encode(json map[string]any) (string, error) {
 
-	st := &types.STObject{}
+	st := types.NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
 
 	// Iterate over the keys in the provided JSON
 	for k := range json {
@@ -133,8 +133,8 @@ func Decode(hexEncoded string) (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	p := serdes.NewBinaryParser(b)
-	st := &types.STObject{}
+	p := serdes.NewBinaryParser(b, definitions.Get())
+	st := types.NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
 	m, err := st.ToJSON(p)
 	if err != nil {
 		return nil, err

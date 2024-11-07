@@ -4,20 +4,25 @@ import (
 	"errors"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes/interfaces"
 )
 
 var (
 	ErrParserOutOfBound = errors.New("parser out of bounds")
+	ErrInvalidTypecode  = errors.New("invalid typecode")
+	ErrInvalidFieldcode = errors.New("invalid fieldcode")
 )
 
 type BinaryParser struct {
-	data []byte
+	data        []byte
+	definitions interfaces.Definitions
 }
 
 // NewBinaryParser returns a new BinaryParser initialized with the given data.
-func NewBinaryParser(d []byte) *BinaryParser {
+func NewBinaryParser(d []byte, definitions interfaces.Definitions) *BinaryParser {
 	return &BinaryParser{
-		data: d,
+		data:        d,
+		definitions: definitions,
 	}
 }
 
@@ -29,11 +34,11 @@ func (p *BinaryParser) ReadField() (*definitions.FieldInstance, error) {
 	if err != nil {
 		return nil, err
 	}
-	fn, err := definitions.Get().GetFieldNameByFieldHeader(*fh)
+	fn, err := p.definitions.GetFieldNameByFieldHeader(*fh)
 	if err != nil {
 		return nil, err
 	}
-	f, err := definitions.Get().GetFieldInstanceByFieldName(fn)
+	f, err := p.definitions.GetFieldInstanceByFieldName(fn)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +48,10 @@ func (p *BinaryParser) ReadField() (*definitions.FieldInstance, error) {
 // readFieldHeader reads the header of the next field in the data.
 func (p *BinaryParser) readFieldHeader() (*definitions.FieldHeader, error) {
 	// Read the first byte of the field header
-	typeCode, _ := p.ReadByte()
+	typeCode, err := p.ReadByte()
+	if err != nil {
+		return nil, err
+	}
 
 	// The field code is the last 4 bits of the first byte
 	fieldCode := typeCode & 15
@@ -51,17 +59,23 @@ func (p *BinaryParser) readFieldHeader() (*definitions.FieldHeader, error) {
 
 	// Read the type code if it's not in the first byte
 	if typeCode == 0 {
-		typeCode, _ = p.ReadByte()
+		typeCode, err = p.ReadByte()
+		if err != nil {
+			return nil, err
+		}
 		if typeCode == 0 || typeCode < 16 {
-			return nil, errors.New("invalid typecode")
+			return nil, ErrInvalidTypecode
 		}
 	}
 
 	// Read the field code if it's not in the first byte
 	if fieldCode == 0 {
-		fieldCode, _ = p.ReadByte()
+		fieldCode, err = p.ReadByte()
+		if err != nil {
+			return nil, err
+		}
 		if fieldCode == 0 || fieldCode < 16 {
-			return nil, errors.New("invalid fieldcode")
+			return nil, ErrInvalidFieldcode
 		}
 	}
 
@@ -119,17 +133,13 @@ func (p *BinaryParser) ReadVariableLength() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	if b1 < 193 {
-		return int(b1), nil
-	}
 	if b1 > 192 && b1 < 241 {
 		b2, err := p.ReadByte()
 		if err != nil {
 			return 0, err
 		}
 		return 193 + ((int(b1) - 193) * 256) + int(b2), nil
-	}
-	if b1 > 240 && b1 < 255 {
+	} else if b1 > 240 && b1 < 255 {
 		b2, err := p.ReadByte()
 		if err != nil {
 			return 0, err
@@ -140,5 +150,5 @@ func (p *BinaryParser) ReadVariableLength() (int, error) {
 		}
 		return 12481 + ((int(b1) - 241) * 65536) + (int(b2) * 256) + int(b3), nil
 	}
-	return 0, nil
+	return int(b1), nil
 }

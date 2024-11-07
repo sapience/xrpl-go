@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/stretchr/testify/require"
 )
@@ -180,7 +181,7 @@ func TestParsePathStep(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
 
-			p := serdes.NewBinaryParser(tc.input)
+			p := serdes.NewBinaryParser(tc.input, definitions.Get())
 			got, err := parsePathStep(p)
 			require.NoError(t, err)
 			require.Equal(t, tc.expected, got)
@@ -215,7 +216,7 @@ func TestParsePath(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
-			p := serdes.NewBinaryParser(tc.input)
+			p := serdes.NewBinaryParser(tc.input, definitions.Get())
 			got, err := parsePath(p)
 
 			require.NoError(t, err)
