@@ -1,10 +1,14 @@
 package types
 
 import (
-	"bytes"
+	"errors"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUint64_FromJson(t *testing.T) {
@@ -16,34 +20,51 @@ func TestUint64_FromJson(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			name:        "Valid uint64",
+			name:        "fail - value is not a string",
+			input:       1,
+			expected:    nil,
+			expectedErr: ErrInvalidUInt64String,
+		},
+		{
+			name:        "fail - invalid hex string",
+			input:       "invalid",
+			expected:    nil,
+			expectedErr: errors.New("encoding/hex: invalid byte: U+0069 'i'"),
+		},
+		{
+			name:        "pass - valid uint64 numeric string",
 			input:       "1",
 			expected:    []byte{0, 0, 0, 0, 0, 0, 0, 1},
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint64 (2)",
+			name:        "pass - valid uint64 numeric string (2)",
 			input:       "100",
 			expected:    []byte{0, 0, 0, 0, 0, 0, 1, 0},
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint64 (3)",
+			name:        "pass - valid uint64 numeric string (3)",
 			input:       "255",
 			expected:    []byte{0, 0, 0, 0, 0, 0, 2, 85},
+			expectedErr: nil,
+		},
+		{
+			name:        "pass - valid uint64 non-numeric string (large number)",
+			input:       "FFFFFFFFFFFFFFFF",
+			expected:    []byte{255, 255, 255, 255, 255, 255, 255, 255},
 			expectedErr: nil,
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			uint64 := &UInt64{}
-			actual, err := uint64.FromJson(tc.input)
-			if err != tc.expectedErr {
-				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
-			}
-			if !bytes.Equal(actual, tc.expected) {
-				t.Errorf("Expected %v, got %v", tc.expected, actual)
+			u64 := &UInt64{}
+			actual, err := u64.FromJson(tc.input)
+			if tc.expectedErr != nil {
+				require.EqualError(t, err, tc.expectedErr.Error())
+			} else {
+				require.Equal(t, tc.expected, actual)
 			}
 		})
 	}
@@ -53,45 +74,68 @@ func TestUint64_ToJson(t *testing.T) {
 	tt := []struct {
 		name        string
 		input       []byte
+		malleate    func(t *testing.T) interfaces.BinaryParser
 		expected    string
 		expectedErr error
 	}{
 		{
-			name:        "Valid uint64",
-			input:       []byte{0, 0, 0, 0, 0, 0, 0, 1},
-			expected:    "0000000000000001",
+			name:  "fail - binary parser has no data",
+			input: []byte{},
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				parserMock := testutil.NewMockBinaryParser(gomock.NewController(t))
+				parserMock.EXPECT().ReadBytes(gomock.Any()).Return([]byte{}, errors.New("binary parser has no data"))
+				return parserMock
+			},
+			expected:    "",
+			expectedErr: errors.New("binary parser has no data"),
+		},
+		{
+			name:     "pass - valid uint64",
+			input:    []byte{0, 0, 0, 0, 0, 0, 0, 1},
+			expected: "0000000000000001",
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 1})
+			},
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint64 (2)",
+			name:        "pass - valid uint64 (2)",
 			input:       []byte{0, 0, 0, 0, 0, 0, 0, 100},
 			expected:    "0000000000000064",
 			expectedErr: nil,
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 100})
+			},
 		},
 		{
-			name:        "Valid uint64 (3)",
+			name:        "pass - valid uint64 (3)",
 			input:       []byte{0, 0, 0, 0, 0, 0, 0, 255},
 			expected:    "00000000000000FF",
 			expectedErr: nil,
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 255})
+			},
 		},
 		{
-			name:        "Valid uint64 (large number)",
+			name:        "pass - valid uint64 (large number)",
 			input:       []byte{255, 255, 255, 255, 255, 255, 255, 255},
 			expected:    "FFFFFFFFFFFFFFFF", // Max uint64 value
 			expectedErr: nil,
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{255, 255, 255, 255, 255, 255, 255, 255})
+			},
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			uint64 := &UInt64{}
-			parser := serdes.NewBinaryParser(tc.input)
+			parser := tc.malleate(t)
 			actual, err := uint64.ToJson(parser)
-			if err != tc.expectedErr {
-				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
-			}
-			if actual != tc.expected {
-				t.Errorf("Expected %v, got %v", tc.expected, actual)
+			if tc.expectedErr != nil {
+				require.EqualError(t, err, tc.expectedErr.Error())
+			} else {
+				require.Equal(t, tc.expected, actual)
 			}
 		})
 	}
