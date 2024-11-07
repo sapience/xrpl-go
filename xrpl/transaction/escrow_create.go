@@ -76,7 +76,8 @@ func (e *EscrowCreate) Flatten() FlatTransaction {
 
 // Validates the EscrowCreate transaction and makes sure all the fields are correct.
 func (e *EscrowCreate) Validate() (bool, error) {
-	if ok, err := e.BaseTx.Validate(); !ok {
+	ok, err := e.BaseTx.Validate()
+	if err != nil || !ok {
 		return false, err
 	}
 

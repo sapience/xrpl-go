@@ -73,12 +73,13 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 
 func TestEscrowCreate_Validate(t *testing.T) {
 	tests := []struct {
-		name     string
-		entry    *EscrowCreate
-		expected bool
+		name      string
+		entry     *EscrowCreate
+		wantValid bool
+		wantErr   bool
 	}{
 		{
-			name: "Valid transaction",
+			name: "Valid transaction - Conditional with expiration",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -89,7 +90,8 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				CancelAfter: 533257958,
 				Condition:   "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
 			},
-			expected: true,
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
 			name: "Invalid BaseTx, missing TransactionType",
@@ -101,10 +103,11 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 				CancelAfter: 533257958,
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
-			name: "Valid transaction with FinishAfter",
+			name: "Valid transaction - Time based",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -114,10 +117,26 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 				FinishAfter: 533171558,
 			},
-			expected: true,
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
-			name: "Valid transaction with Condition",
+			name: "Valid transaction - Time based with expiration",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				FinishAfter: 533171558,
+				CancelAfter: 533257958,
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "Valid transaction - Timed conditional",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -128,7 +147,24 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				FinishAfter: 533171558,
 				Condition:   "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
 			},
-			expected: true,
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "Valid transaction - Timed conditional with Expiration",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				FinishAfter: 533171558,
+				Condition:   "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+				CancelAfter: 533257958,
+			},
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
 			name: "Invalid transaction with no CancelAfter or FinishAfter",
@@ -140,7 +176,8 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				Amount:      types.XRPCurrencyAmount(10000),
 				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid transaction with no Condition and FinishAfter",
@@ -153,7 +190,8 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 				CancelAfter: 533257958,
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid transaction with invalid destination address",
@@ -166,14 +204,21 @@ func TestEscrowCreate_Validate(t *testing.T) {
 				Destination: "invalidAddress",
 				CancelAfter: 533257958,
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valid, _ := tt.entry.Validate()
-			assert.Equal(t, tt.expected, valid)
+			valid, err := tt.entry.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("escrowCreate.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if valid != tt.wantValid {
+				t.Errorf("escrowCreate.Validate() = %v, want %v", valid, tt.wantValid)
+			}
 		})
 	}
 }

@@ -53,8 +53,8 @@ func (e *EscrowCancel) Flatten() FlatTransaction {
 
 // Validate checks if the EscrowCancel struct is valid.
 func (e *EscrowCancel) Validate() (bool, error) {
-	_, err := e.BaseTx.Validate()
-	if err != nil {
+	ok, err := e.BaseTx.Validate()
+	if err != nil || !ok {
 		return false, err
 	}
 

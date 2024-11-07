@@ -83,9 +83,10 @@ func TestEscrowFinish_Flatten(t *testing.T) {
 
 func TestEscrowFinish_Validate(t *testing.T) {
 	tests := []struct {
-		name     string
-		entry    *EscrowFinish
-		expected bool
+		name      string
+		entry     *EscrowFinish
+		wantValid bool
+		wantErr   bool
 	}{
 		{
 			name: "Valid EscrowFinish",
@@ -97,7 +98,8 @@ func TestEscrowFinish_Validate(t *testing.T) {
 				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				OfferSequence: 7,
 			},
-			expected: true,
+			wantValid: true,
+			wantErr:   false,
 		},
 		{
 			name: "Invalid EscrowFinish BaseTx",
@@ -108,7 +110,8 @@ func TestEscrowFinish_Validate(t *testing.T) {
 				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				OfferSequence: 7,
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Invalid Owner Address",
@@ -120,7 +123,8 @@ func TestEscrowFinish_Validate(t *testing.T) {
 				Owner:         "invalidAddress",
 				OfferSequence: 7,
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 		{
 			name: "Missing OfferSequence",
@@ -131,14 +135,21 @@ func TestEscrowFinish_Validate(t *testing.T) {
 				},
 				Owner: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 			},
-			expected: false,
+			wantValid: false,
+			wantErr:   true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			valid, _ := tt.entry.Validate()
-			assert.Equal(t, tt.expected, valid)
+			valid, err := tt.entry.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("escrowFinish.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if valid != tt.wantValid {
+				t.Errorf("escrowFinish.Validate() = %v, want %v", valid, tt.wantValid)
+			}
 		})
 	}
 }

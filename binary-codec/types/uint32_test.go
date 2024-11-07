@@ -2,9 +2,15 @@ package types
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUint32_FromJson(t *testing.T) {
@@ -54,40 +60,59 @@ func TestUint32_ToJson(t *testing.T) {
 	tt := []struct {
 		name        string
 		input       []byte
+		malleate    func(t *testing.T) interfaces.BinaryParser
 		expected    int
 		expectedErr error
 	}{
 		{
-			name:        "Valid uint32",
-			input:       []byte{0, 0, 0, 1},
+			name:  "fail - invalid uint32",
+			input: []byte{0, 0, 0, 1},
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				parserMock := testutil.NewMockBinaryParser(gomock.NewController(t))
+				parserMock.EXPECT().ReadBytes(gomock.Any()).Return([]byte{}, errors.New("binary parser has no data"))
+				return parserMock
+			},
+			expected:    0,
+			expectedErr: fmt.Errorf("binary parser has no data"),
+		},
+		{
+			name:  "pass - valid uint32",
+			input: []byte{0, 0, 0, 1},
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 1})
+			},
 			expected:    1,
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint32 (2)",
-			input:       []byte{0, 0, 0, 100},
+			name:  "pass - valid uint32 (2)",
+			input: []byte{0, 0, 0, 100},
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 100})
+			},
 			expected:    100,
 			expectedErr: nil,
 		},
 		{
-			name:        "Valid uint32 (3)",
-			input:       []byte{0, 0, 0, 255},
+			name:  "pass - valid uint32 (3)",
+			input: []byte{0, 0, 0, 255},
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 255})
+			},
 			expected:    255,
 			expectedErr: nil,
 		},
-		// TODO: Add test for overflow case
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			uint32 := &UInt32{}
-			parser := serdes.NewBinaryParser(tc.input)
+			parser := tc.malleate(t)
 			actual, err := uint32.ToJson(parser)
-			if err != tc.expectedErr {
-				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
-			}
-			if actual != tc.expected {
-				t.Errorf("Expected %v, got %v", tc.expected, actual)
+			if tc.expectedErr != nil {
+				require.EqualError(t, err, tc.expectedErr.Error())
+			} else {
+				require.Equal(t, tc.expected, actual)
 			}
 		})
 	}
