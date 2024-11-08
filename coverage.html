@@ -4092,8 +4092,8 @@ func IsFloat64(s string) bool <span class="cov8" title="1">{
 }</span>
 
 // Checks if the given string is a valid number (Uint).
-func IsStringNumericUint(s string) bool <span class="cov8" title="1">{
-        _, err := strconv.ParseUint(s, 10, 64)
+func IsStringNumericUint(s string, base, bitSize int) bool <span class="cov8" title="1">{
+        _, err := strconv.ParseUint(s, base, bitSize)
         return err == nil
 }</span>
 </pre>
@@ -10831,7 +10831,7 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, fmt.Errorf("transaction type is required")
         }</span>
 
-        <span class="cov8" title="1">if !typecheck.IsStringNumericUint(tx.Fee.String()) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !typecheck.IsStringNumericUint(tx.Fee.String(), 10, 64) </span><span class="cov0" title="0">{
                 return false, errors.New("invalid fee amount, not a uint")
         }</span>
 
