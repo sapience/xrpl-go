@@ -4,10 +4,6 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
 type SignerListFlags uint32
 
-const (
-	LsfOneOwnerCount SignerListFlags = 0x00010000
-)
-
 // A SignerList entry represents a list of parties that, as a group, are authorized to sign a transaction in place of an individual account.
 // You can create, replace, or remove a signer list using a SignerListSet transaction.
 //
@@ -53,15 +49,15 @@ type SignerList struct {
 	// The identifying hash of the transaction that most recently modified this object.
 	PreviousTxnID string
 	// The index of the ledger that contains the transaction that most recently modified this object.
-	PreviousTxnLgrSeq uint64
+	PreviousTxnLgrSeq uint32
 	// A hint indicating which page of the owner directory links to this object, in case the directory consists of multiple pages.
 	OwnerNode string
 	// An array of Signer Entry objects representing the parties who are part of this signer list.
 	SignerEntries []SignerEntryWrapper
 	// An ID for this signer list. Currently always set to 0. If a future amendment allows multiple signer lists for an account, this may change.
-	SignerListID uint64
+	SignerListID uint32
 	// A target number for signer weights. To produce a valid signature for the owner of this SignerList, the signers must provide valid signatures whose weights sum to this value or more.
-	SignerQuorum uint64
+	SignerQuorum uint32
 }
 
 // Wrapper for SignerEntry
@@ -71,12 +67,9 @@ type SignerEntryWrapper struct {
 
 // Flatten returns a map of the SignerEntryWrapper object
 func (s *SignerEntryWrapper) Flatten() FlatLedgerObject {
-	if s.SignerEntry != (SignerEntry{}) {
-		flattened := make(map[string]interface{})
-		flattened["SignerEntry"] = s.SignerEntry.Flatten()
-		return flattened
-	}
-	return nil
+	flattened := make(map[string]interface{})
+	flattened["SignerEntry"] = s.SignerEntry.Flatten()
+	return flattened
 }
 
 // Each member of the SignerEntries field is an object that describes that signer in the list.

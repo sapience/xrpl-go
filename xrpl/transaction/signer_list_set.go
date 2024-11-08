@@ -8,6 +8,14 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 )
 
+const (
+	// At least one account must be part of the SignerList
+	MinSigners = 1
+
+	// A SignerList can have at most 32 signers
+	MaxSigners = 32
+)
+
 // The SignerListSet transaction creates, replaces, or removes a list of signers that can be used to multi-sign a transaction. This transaction type was introduced by the MultiSign amendment.
 //
 // Example:
@@ -47,7 +55,7 @@ type SignerListSet struct {
 	BaseTx
 	// A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value.
 	// To delete a signer list, use the value 0.
-	SignerQuorum uint
+	SignerQuorum uint32
 	// (Omitted when deleting) Array of SignerEntry objects, indicating the addresses and weights of signers in this list.
 	// This signer list must have at least 1 member and no more than 32 members.
 	// No address may appear more than once in the list, nor may the Account submitting the transaction appear in the list.
@@ -80,12 +88,6 @@ func (s *SignerListSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// At least one account must be part of the SignerList
-const MIN_SIGNERS = 1
-
-// A SignerList can have at most 32 signers
-const MAX_SIGNERS = 32
-
 // Validate checks if the SignerListSet struct is valid.
 func (s *SignerListSet) Validate() (bool, error) {
 	ok, err := s.BaseTx.Validate()
@@ -99,8 +101,8 @@ func (s *SignerListSet) Validate() (bool, error) {
 	}
 
 	// Check if SignerEntries has at least 1 entry and no more than 32 entries
-	if len(s.SignerEntries) < MIN_SIGNERS || len(s.SignerEntries) > MAX_SIGNERS {
-		return false, fmt.Errorf("signerEntries must have at least %d entry and no more than %d entries", MIN_SIGNERS, MAX_SIGNERS)
+	if len(s.SignerEntries) < MinSigners || len(s.SignerEntries) > MaxSigners {
+		return false, fmt.Errorf("signerEntries must have at least %d entry and no more than %d entries", MinSigners, MaxSigners)
 	}
 
 	for _, signerEntry := range s.SignerEntries {
@@ -120,7 +122,7 @@ func (s *SignerListSet) Validate() (bool, error) {
 	for _, signerEntry := range s.SignerEntries {
 		sumSignerWeights += signerEntry.SignerEntry.SignerWeight
 	}
-	if s.SignerQuorum > uint(sumSignerWeights) {
+	if s.SignerQuorum > uint32(sumSignerWeights) {
 		return false, fmt.Errorf("signerQuorum must be less than or equal to the sum of all SignerWeights")
 	}
 
