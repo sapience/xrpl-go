@@ -361,11 +361,11 @@
 				
 				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/deposit_preauth.go (0.0%)</option>
 				
-				<option value="file153">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_cancel.go (0.0%)</option>
+				<option value="file153">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_cancel.go (100.0%)</option>
 				
-				<option value="file154">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_create.go (0.0%)</option>
+				<option value="file154">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_create.go (100.0%)</option>
 				
-				<option value="file155">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_finish.go (0.0%)</option>
+				<option value="file155">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_finish.go (100.0%)</option>
 				
 				<option value="file156">github.com/Peersyst/xrpl-go/xrpl/transaction/flags.go (100.0%)</option>
 				
@@ -9475,73 +9475,258 @@ func (s *DepositPreauth) Flatten() FlatTransaction <span class="cov0" title="0">
 		<pre class="file" id="file153" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Return escrowed XRP to the sender.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "TransactionType": "EscrowCancel",
+//            "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "OfferSequence": 7,
+//        }
+//
+// ```
 type EscrowCancel struct {
         BaseTx
-        Owner         types.Address
-        OfferSequence uint
+        // Address of the source account that funded the escrow payment.
+        Owner types.Address
+        // Transaction sequence (or Ticket number) of EscrowCreate transaction that created the escrow to cancel.
+        OfferSequence uint32
 }
 
-func (*EscrowCancel) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the transaction type for this transaction (EscrowCancel).
+func (*EscrowCancel) TxType() TxType <span class="cov8" title="1">{
         return EscrowCancelTx
 }</span>
 
-// TODO: Implement flatten
-func (s *EscrowCancel) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns the flattened map of the EscrowCancel transaction.
+func (e *EscrowCancel) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := e.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "EscrowCancel"
+
+        if e.Owner != "" </span><span class="cov8" title="1">{
+                flattened["Owner"] = e.Owner
+        }</span>
+
+        <span class="cov8" title="1">if e.OfferSequence != 0 </span><span class="cov8" title="1">{
+                flattened["OfferSequence"] = e.OfferSequence
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks if the EscrowCancel struct is valid.
+func (e *EscrowCancel) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := e.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(e.Owner.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("invalid xrpl address for the Owner field")
+        }</span>
+
+        <span class="cov8" title="1">if e.OfferSequence == 0 </span><span class="cov8" title="1">{
+                return false, errors.New("missing OfferSequence")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file154" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Sequester XRP until the escrow process either finishes or is canceled.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "TransactionType": "EscrowCreate",
+//            "Amount": "10000",
+//            "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+//            "CancelAfter": 533257958,
+//            "FinishAfter": 533171558,
+//            "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+//            "DestinationTag": 23480,
+//            "SourceTag": 11747
+//        }
+//
+// ```
 type EscrowCreate struct {
         BaseTx
-        Amount         types.XRPCurrencyAmount
-        Destination    types.Address
-        CancelAfter    uint   `json:",omitempty"`
-        FinishAfter    uint   `json:",omitempty"`
-        Condition      string `json:",omitempty"`
-        DestinationTag uint   `json:",omitempty"`
+        // Amount of XRP, in drops, to deduct from the sender's balance and escrow. Once escrowed, the XRP can either go to the Destination address (after the FinishAfter time) or returned to the sender (after the CancelAfter time).
+        Amount types.XRPCurrencyAmount
+        // Address to receive escrowed XRP.
+        Destination types.Address
+        // (Optional) The time, in seconds since the Ripple Epoch, when this escrow expires. This value is immutable; the funds can only be returned to the sender after this time.
+        CancelAfter uint32 `json:",omitempty"`
+        // (Optional) The time, in seconds since the Ripple Epoch, when the escrowed XRP can be released to the recipient. This value is immutable, and the funds can't be accessed until this time.
+        FinishAfter uint32 `json:",omitempty"`
+        // (Optional) Hex value representing a PREIMAGE-SHA-256 crypto-condition. The funds can only be delivered to the recipient if this condition is fulfilled. If the condition is not fulfilled before the expiration time specified in the CancelAfter field, the XRP can only revert to the sender.
+        Condition string `json:",omitempty"`
+        // (Optional) Arbitrary tag to further specify the destination for this escrowed payment, such as a hosted recipient at the destination address.
+        DestinationTag uint32 `json:",omitempty"`
 }
 
-func (*EscrowCreate) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the transaction type for this transaction (EscrowCreate).
+func (*EscrowCreate) TxType() TxType <span class="cov8" title="1">{
         return EscrowCreateTx
 }</span>
 
-// TODO: Implement flatten
-func (s *EscrowCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns the flattened map of the EscrowCreate transaction.
+func (e *EscrowCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := e.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "EscrowCreate"
+
+        flattened["Amount"] = e.Amount.Flatten()
+
+        if e.Destination != "" </span><span class="cov8" title="1">{
+                flattened["Destination"] = e.Destination
+        }</span>
+        <span class="cov8" title="1">if e.CancelAfter != 0 </span><span class="cov8" title="1">{
+                flattened["CancelAfter"] = e.CancelAfter
+        }</span>
+        <span class="cov8" title="1">if e.FinishAfter != 0 </span><span class="cov8" title="1">{
+                flattened["FinishAfter"] = e.FinishAfter
+        }</span>
+        <span class="cov8" title="1">if e.Condition != "" </span><span class="cov8" title="1">{
+                flattened["Condition"] = e.Condition
+        }</span>
+        <span class="cov8" title="1">if e.DestinationTag != 0 </span><span class="cov8" title="1">{
+                flattened["DestinationTag"] = e.DestinationTag
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validates the EscrowCreate transaction and makes sure all the fields are correct.
+func (e *EscrowCreate) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := e.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(e.Destination.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("invalid xrpl destination address")
+        }</span>
+
+        <span class="cov8" title="1">if e.CancelAfter == 0 &amp;&amp; e.FinishAfter == 0 </span><span class="cov8" title="1">{
+                return false, errors.New("either CancelAfter or FinishAfter must be set")
+        }</span>
+
+        <span class="cov8" title="1">if e.FinishAfter == 0 &amp;&amp; e.Condition == "" </span><span class="cov8" title="1">{
+                return false, errors.New("either Condition or FinishAfter must be specified")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file155" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Deliver XRP from a held payment to the recipient.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "TransactionType": "EscrowFinish",
+//            "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "OfferSequence": 7,
+//            "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+//            "Fulfillment": "A0028000"
+//        }
+//
+// ````
 type EscrowFinish struct {
         BaseTx
-        Owner         types.Address
-        OfferSequence uint
-        Condition     string `json:",omitempty"`
-        Fulfillment   string `json:",omitempty"`
+        // Address of the source account that funded the held payment.
+        Owner types.Address
+        // Transaction sequence of EscrowCreate transaction that created the held payment to finish.
+        OfferSequence uint32
+        // (Optional) Hex value matching the previously-supplied PREIMAGE-SHA-256 crypto-condition of the held payment.
+        Condition string `json:",omitempty"`
+        // Optional) Hex value of the PREIMAGE-SHA-256 crypto-condition fulfillment matching the held payment's Condition.
+        Fulfillment string `json:",omitempty"`
 }
 
-func (*EscrowFinish) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the transaction type for this transaction (EscrowFinish).
+func (*EscrowFinish) TxType() TxType <span class="cov8" title="1">{
         return EscrowFinishTx
 }</span>
 
-// TODO: Implement flatten
-func (s *EscrowFinish) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns the flattened map of the EscrowFinish transaction.
+func (e *EscrowFinish) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := e.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "EscrowFinish"
+
+        if e.Owner != "" </span><span class="cov8" title="1">{
+                flattened["Owner"] = e.Owner
+        }</span>
+
+        <span class="cov8" title="1">if e.OfferSequence != 0 </span><span class="cov8" title="1">{
+                flattened["OfferSequence"] = e.OfferSequence
+        }</span>
+
+        <span class="cov8" title="1">if e.Condition != "" </span><span class="cov8" title="1">{
+                flattened["Condition"] = e.Condition
+        }</span>
+
+        <span class="cov8" title="1">if e.Fulfillment != "" </span><span class="cov8" title="1">{
+                flattened["Fulfillment"] = e.Fulfillment
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks if the EscrowFinish struct is valid.
+func (e *EscrowFinish) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := e.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(e.Owner.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("invalid xrpl address for the Owner field")
+        }</span>
+
+        <span class="cov8" title="1">if e.OfferSequence == 0 </span><span class="cov8" title="1">{
+                return false, errors.New("missing OfferSequence")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file156" style="display: none">package transaction
