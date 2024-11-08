@@ -435,60 +435,60 @@ func TestIsFloat32(t *testing.T) {
 }
 func TestIsStringNumericUint(t *testing.T) {
 	tests := []struct {
-		name string
-		s    string
-		base int
+		name    string
+		s       string
+		base    int
 		bitSize int
-		want bool
+		want    bool
 	}{
 		{
-			name: "pass - Valid uint string",
-			s:    "42",
-			base: 10,
+			name:    "pass - Valid uint string",
+			s:       "42",
+			base:    10,
 			bitSize: 64,
-			want: true,
+			want:    true,
 		},
 		{
-			name: "pass - Valid large uint string",
-			s:    "18446744073709551615", // Max uint64 value
-			base: 10,
+			name:    "pass - Valid large uint string",
+			s:       "18446744073709551615", // Max uint64 value
+			base:    10,
 			bitSize: 64,
-			want: true,
+			want:    true,
 		},
 		{
-			name: "pass - Invalid uint string with negative sign",
-			s:    "-42",
-			base: 10,
+			name:    "pass - Invalid uint string with negative sign",
+			s:       "-42",
+			base:    10,
 			bitSize: 64,
-			want: false,
+			want:    false,
 		},
 		{
-			name: "pass - Invalid uint string with decimal point",
-			s:    "42.0",
-			base: 10,
+			name:    "pass - Invalid uint string with decimal point",
+			s:       "42.0",
+			base:    10,
 			bitSize: 64,
-			want: false,
+			want:    false,
 		},
 		{
-			name: "pass - Invalid uint string with non-numeric characters",
-			s:    "42abc",
-			base: 10,
+			name:    "pass - Invalid uint string with non-numeric characters",
+			s:       "42abc",
+			base:    10,
 			bitSize: 64,
-			want: false,
+			want:    false,
 		},
 		{
-			name: "pass - Invalid uint string with special characters",
-			s:    "42!",
-			base: 10,
+			name:    "pass - Invalid uint string with special characters",
+			s:       "42!",
+			base:    10,
 			bitSize: 64,
-			want: false,
+			want:    false,
 		},
 		{
-			name: "pass - Empty string",
-			s:    "",
-			base: 10,
+			name:    "pass - Empty string",
+			s:       "",
+			base:    10,
 			bitSize: 64,
-			want: false,
+			want:    false,
 		},
 	}
 
