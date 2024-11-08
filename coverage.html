@@ -353,11 +353,11 @@
 				
 				<option value="file148">github.com/Peersyst/xrpl-go/xrpl/transaction/check_cancel.go (0.0%)</option>
 				
-				<option value="file149">github.com/Peersyst/xrpl-go/xrpl/transaction/check_cash.go (72.2%)</option>
+				<option value="file149">github.com/Peersyst/xrpl-go/xrpl/transaction/check_cash.go (0.0%)</option>
 				
-				<option value="file150">github.com/Peersyst/xrpl-go/xrpl/transaction/check_create.go (66.7%)</option>
+				<option value="file150">github.com/Peersyst/xrpl-go/xrpl/transaction/check_create.go (0.0%)</option>
 				
-				<option value="file151">github.com/Peersyst/xrpl-go/xrpl/transaction/clawback.go (85.7%)</option>
+				<option value="file151">github.com/Peersyst/xrpl-go/xrpl/transaction/clawback.go (87.5%)</option>
 				
 				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/deposit_preauth.go (0.0%)</option>
 				
@@ -373,13 +373,13 @@
 				
 				<option value="file158">github.com/Peersyst/xrpl-go/xrpl/transaction/memo.go (92.3%)</option>
 				
-				<option value="file159">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go (66.7%)</option>
+				<option value="file159">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go (0.0%)</option>
 				
 				<option value="file160">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_burn.go (0.0%)</option>
 				
 				<option value="file161">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_cancel_offer.go (0.0%)</option>
 				
-				<option value="file162">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go (66.7%)</option>
+				<option value="file162">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go (0.0%)</option>
 				
 				<option value="file163">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_mint.go (0.0%)</option>
 				
@@ -389,7 +389,7 @@
 				
 				<option value="file166">github.com/Peersyst/xrpl-go/xrpl/transaction/path_step.go (100.0%)</option>
 				
-				<option value="file167">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (79.8%)</option>
+				<option value="file167">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (79.7%)</option>
 				
 				<option value="file168">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go (12.5%)</option>
 				
@@ -407,9 +407,9 @@
 				
 				<option value="file175">github.com/Peersyst/xrpl-go/xrpl/transaction/transaction_metadata.go (0.0%)</option>
 				
-				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (73.0%)</option>
+				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (70.4%)</option>
 				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (78.7%)</option>
+				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (88.9%)</option>
 				
 				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/transaction/tx_type.go (100.0%)</option>
 				
@@ -4088,6 +4088,12 @@ func IsFloat32(s string) bool <span class="cov8" title="1">{
 // Checks if the given string is a valid number (Float64).
 func IsFloat64(s string) bool <span class="cov8" title="1">{
         _, err := strconv.ParseFloat(s, 64)
+        return err == nil
+}</span>
+
+// Checks if the given string is a valid number (Uint).
+func IsStringNumericUint(s string, base, bitSize int) bool <span class="cov8" title="1">{
+        _, err := strconv.ParseUint(s, base, bitSize)
         return err == nil
 }</span>
 </pre>
@@ -8075,7 +8081,10 @@ import (
 // The rippled server and its APIs represent time as an unsigned integer.
 // This number measures the number of seconds since the "Ripple Epoch" of January 1, 2000 (00:00 UTC).
 // This is like the way the Unix epoch works, except the Ripple Epoch is 946684800 seconds after the Unix Epoch.
-const RippleEpochDiff int64 = 946684800
+const (
+        RippleEpochDiff int64  = 946684800
+        ISO8601Format   string = "2006-01-02T15:04:05.000Z"
+)
 
 // RippleTimeToUnixTime converts a ripple timestamp to a unix timestamp.
 //
@@ -8102,7 +8111,7 @@ func UnixTimeToRippleTime(timestamp int64) int64 <span class="cov8" title="1">{
 // It returns the time formatted as an ISO 8601 string.
 func RippleTimeToISOTime(rippleTime int64) string <span class="cov8" title="1">{
         unixTime := RippleTimeToUnixTime(rippleTime)
-        return formatTimeToISO8601WithMillis(time.Unix(int64(unixTime/1000), 0).UTC()) //.Format(time.RFC3339)
+        return time.Unix(int64(unixTime/1000), 0).UTC().Format(ISO8601Format)
 }</span>
 
 // IsoTimeToRippleTime converts an ISO8601 timestmap to a ripple timestamp.
@@ -8110,8 +8119,8 @@ func RippleTimeToISOTime(rippleTime int64) string <span class="cov8" title="1">{
 // iso8601 is the ISO 8601 formatted string.
 //
 // It returns the seconds since ripple epoch (1/1/2000 GMT).
-func IsoTimeToRippleTime(iso8601 string) (int64, error) <span class="cov8" title="1">{
-        t, err := parseISO8601(iso8601)
+func IsoTimeToRippleTime(isoTime string) (int64, error) <span class="cov8" title="1">{
+        t, err := parseISO8601(isoTime)
         if err != nil </span><span class="cov8" title="1">{
                 return 0, err
         }</span>
@@ -8125,15 +8134,6 @@ func IsoTimeToRippleTime(iso8601 string) (int64, error) <span class="cov8" title
 // It returns the parsed time.Time object and an error if the parsing fails.
 func parseISO8601(iso8601 string) (time.Time, error) <span class="cov8" title="1">{
         return time.Parse(time.RFC3339, iso8601)
-}</span>
-
-// FormatTimeToISO8601WithMillis formats a time.Time object to an ISO 8601 string with milliseconds.
-//
-// t is the time.Time object to be formatted.
-//
-// It returns the formatted ISO 8601 string with milliseconds.
-func formatTimeToISO8601WithMillis(t time.Time) string <span class="cov8" title="1">{
-        return t.Format("2006-01-02T15:04:05.000Z")
 }</span>
 </pre>
 		
@@ -9337,8 +9337,6 @@ func (s *CheckCancel) Flatten() FlatTransaction <span class="cov0" title="0">{
 		<pre class="file" id="file149" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -9357,45 +9355,11 @@ func (*CheckCash) TxType() TxType <span class="cov0" title="0">{
 func (s *CheckCash) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
-
-func (tx *CheckCash) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type ccHelper struct {
-                BaseTx
-                CheckID    types.Hash256
-                Amount     json.RawMessage `json:",omitempty"`
-                DeliverMin json.RawMessage `json:",omitempty"`
-        }
-        var h ccHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*tx = CheckCash{
-                BaseTx:  h.BaseTx,
-                CheckID: h.CheckID,
-        }
-
-        var amount, min types.CurrencyAmount
-        var err error
-        amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">min, err = types.UnmarshalCurrencyAmount(h.DeliverMin)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">tx.Amount = amount
-        tx.DeliverMin = min
-        return nil</span>
-
-}
 </pre>
 		
 		<pre class="file" id="file150" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -9416,42 +9380,11 @@ func (*CheckCreate) TxType() TxType <span class="cov0" title="0">{
 func (s *CheckCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
-
-func (c *CheckCreate) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type ccHelper struct {
-                BaseTx
-                Destination    types.Address
-                SendMax        json.RawMessage
-                DestinationTag uint          `json:",omitempty"`
-                Expiration     uint          `json:",omitempty"`
-                InvoiceID      types.Hash256 `json:",omitempty"`
-        }
-        var h ccHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*c = CheckCreate{
-                BaseTx:         h.BaseTx,
-                Destination:    h.Destination,
-                DestinationTag: h.DestinationTag,
-                Expiration:     h.Expiration,
-                InvoiceID:      h.InvoiceID,
-        }
-
-        max, err := types.UnmarshalCurrencyAmount(h.SendMax)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">c.SendMax = max
-
-        return nil</span>
-}
 </pre>
 		
 		<pre class="file" id="file151" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "errors"
 
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -9488,40 +9421,6 @@ func (s *Clawback) Flatten() FlatTransaction <span class="cov8" title="1">{
         }</span>
 
         <span class="cov8" title="1">return flattened</span>
-}
-
-// UnmarshalJSON unmarshals the JSON data into a Clawback struct.
-func (c *Clawback) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        // Define a helper struct to hold the unmarshaled data
-        type cHelper struct {
-                BaseTx
-                Amount json.RawMessage
-        }
-
-        var h cHelper
-
-        // Unmarshal the JSON data into the helper struct
-        err := json.Unmarshal(data, &amp;h)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        // Assign the values from the helper struct to the Clawback struct
-        <span class="cov8" title="1">*c = Clawback{
-                BaseTx: h.BaseTx,
-        }
-
-        // Unmarshal the Amount field into a CurrencyAmount struct
-        var amount types.CurrencyAmount
-        amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        // Assign the unmarshaled CurrencyAmount to the Clawback struct
-        <span class="cov8" title="1">c.Amount = amount
-
-        return nil</span>
 }
 
 // Validates the Clawback struct.
@@ -9718,8 +9617,6 @@ func (m *Memo) Flatten() map[string]interface{} <span class="cov8" title="1">{
 		<pre class="file" id="file159" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -9733,31 +9630,6 @@ type NFTokenAcceptOffer struct {
 func (*NFTokenAcceptOffer) TxType() TxType <span class="cov0" title="0">{
         return NFTokenAcceptOfferTx
 }</span>
-
-func (n *NFTokenAcceptOffer) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type naoHelper struct {
-                BaseTx
-                NFTokenSellOffer types.Hash256   `json:",omitempty"`
-                NFTokenBuyOffer  types.Hash256   `json:",omitempty"`
-                NFTokenBrokerFee json.RawMessage `json:",omitempty"`
-        }
-        var h naoHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*n = NFTokenAcceptOffer{
-                BaseTx:           h.BaseTx,
-                NFTokenSellOffer: h.NFTokenSellOffer,
-                NFTokenBuyOffer:  h.NFTokenBuyOffer,
-        }
-
-        fee, err := types.UnmarshalCurrencyAmount(h.NFTokenBrokerFee)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">n.NFTokenBrokerFee = fee
-        return nil</span>
-}
 
 // TODO: Implement flatten
 func (s *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
@@ -9811,8 +9683,6 @@ func (s *NFTokenCancelOffer) Flatten() FlatTransaction <span class="cov0" title=
 		<pre class="file" id="file162" style="display: none">package transaction
 
 import (
-        "encoding/json"
-
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -9833,35 +9703,6 @@ func (*NFTokenCreateOffer) TxType() TxType <span class="cov0" title="0">{
 func (s *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
-
-func (n *NFTokenCreateOffer) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type ncoHelper struct {
-                BaseTx
-                Owner       types.Address `json:",omitempty"`
-                NFTokenID   types.NFTokenID
-                Amount      json.RawMessage
-                Expiration  uint          `json:",omitempty"`
-                Destination types.Address `json:",omitempty"`
-        }
-        var h ncoHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*n = NFTokenCreateOffer{
-                BaseTx:      h.BaseTx,
-                Owner:       h.Owner,
-                NFTokenID:   h.NFTokenID,
-                Expiration:  h.Expiration,
-                Destination: h.Destination,
-        }
-
-        amount, err := types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">n.Amount = amount
-        return nil</span>
-}
 </pre>
 		
 		<pre class="file" id="file163" style="display: none">package transaction
@@ -10092,7 +9933,6 @@ func (p *PathStep) Flatten() map[string]interface{} <span class="cov8" title="1"
 		<pre class="file" id="file167" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "errors"
 
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -10241,50 +10081,6 @@ func (p *Payment) SetPartialPaymentFlag() <span class="cov8" title="1">{
 func (p *Payment) SetLimitQualityFlag() <span class="cov8" title="1">{
         p.Flags |= tfLimitQuality
 }</span>
-
-// UnmarshalJSON unmarshals the Payment transaction from JSON.
-func (p *Payment) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type pHelper struct {
-                BaseTx
-                Amount         json.RawMessage
-                Destination    types.Address
-                DestinationTag uint32          `json:",omitempty"`
-                InvoiceID      types.Hash256   `json:",omitempty"`
-                Paths          [][]PathStep    `json:",omitempty"`
-                SendMax        json.RawMessage `json:",omitempty"`
-                DeliverMin     json.RawMessage `json:",omitempty"`
-        }
-        var h pHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*p = Payment{
-                BaseTx:         h.BaseTx,
-                Destination:    h.Destination,
-                DestinationTag: h.DestinationTag,
-                InvoiceID:      h.InvoiceID,
-                Paths:          h.Paths,
-        }
-        var amount, max, min types.CurrencyAmount
-        var err error
-        amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">max, err = types.UnmarshalCurrencyAmount(h.SendMax)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">min, err = types.UnmarshalCurrencyAmount(h.DeliverMin)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">p.Amount = amount
-        p.DeliverMin = min
-        p.SendMax = max
-
-        return nil</span>
-}
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
 func (tx *Payment) Validate() (bool, error) <span class="cov8" title="1">{
@@ -10726,7 +10522,6 @@ type DeletedNode struct {
 		<pre class="file" id="file176" style="display: none">package transaction
 
 import (
-        "encoding/json"
         "errors"
 
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -10826,31 +10621,6 @@ func (t *TrustSet) SetClearFreezeFlag() <span class="cov0" title="0">{
         t.Flags |= tfClearFreeze
 }</span>
 
-func (t *TrustSet) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
-        type tsHelper struct {
-                BaseTx
-                LimitAmount json.RawMessage
-                QualityIn   uint32 `json:",omitempty"`
-                QualityOut  uint32 `json:",omitempty"`
-        }
-        var h tsHelper
-        if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">*t = TrustSet{
-                BaseTx:     h.BaseTx,
-                QualityIn:  h.QualityIn,
-                QualityOut: h.QualityOut,
-        }
-        limit, err := types.UnmarshalCurrencyAmount(h.LimitAmount)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">t.LimitAmount = limit
-
-        return nil</span>
-}
-
 // Validates the TrustSet transaction.
 func (tx *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
         // Validate the base transaction
@@ -10885,9 +10655,10 @@ func (tx *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
 		<pre class="file" id="file177" style="display: none">package transaction
 
 import (
-        "encoding/json"
+        "errors"
         "fmt"
 
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -10899,7 +10670,7 @@ type Tx interface {
 
 type TxHash string
 
-func (*TxHash) TxType() TxType <span class="cov0" title="0">{
+func (*TxHash) TxType() TxType <span class="cov8" title="1">{
         return HashedTx
 }</span>
 
@@ -10907,7 +10678,7 @@ type Binary struct {
         TxBlob string `json:"tx_blob"`
 }
 
-func (tx *Binary) TxType() TxType <span class="cov0" title="0">{
+func (tx *Binary) TxType() TxType <span class="cov8" title="1">{
         return BinaryTx
 }</span>
 
@@ -10982,7 +10753,7 @@ type BaseTx struct {
         TxnSignature string `json:",omitempty"`
 }
 
-func (tx *BaseTx) TxType() TxType <span class="cov0" title="0">{
+func (tx *BaseTx) TxType() TxType <span class="cov8" title="1">{
         return tx.TransactionType
 }</span>
 
@@ -11049,127 +10820,22 @@ func (tx *BaseTx) Flatten() FlatTransaction <span class="cov8" title="1">{
         <span class="cov8" title="1">return flattened</span>
 }
 
-func UnmarshalTx(data json.RawMessage) (Tx, error) <span class="cov8" title="1">{
-        if len(data) == 0 </span><span class="cov0" title="0">{
-                return nil, nil
-        }</span>
-        <span class="cov8" title="1">if data[0] == '"' </span><span class="cov0" title="0">{
-                var ret TxHash
-                if err := json.Unmarshal(data, &amp;ret); err != nil </span><span class="cov0" title="0">{
-                        return nil, err
-                }</span>
-                <span class="cov0" title="0">return &amp;ret, nil</span>
-        } else<span class="cov8" title="1"> if data[0] != '{' </span><span class="cov0" title="0">{
-                // TODO error verbosity/record failed json
-                return nil, fmt.Errorf("unexpected tx format; must be tx object or hash string")
-        }</span>
-        // TODO AMM endpoint support
-        <span class="cov8" title="1">type txTypeParser struct {
-                TransactionType TxType
-                TxBlob          string `json:"tx_blob"`
-        }
-        var txType txTypeParser
-        if err := json.Unmarshal(data, &amp;txType); err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-        <span class="cov8" title="1">if len(txType.TxBlob) &gt; 0 &amp;&amp; len(txType.TransactionType) == 0 </span><span class="cov0" title="0">{
-                return &amp;Binary{
-                        TxBlob: txType.TxBlob,
-                }, nil
-        }</span>
-
-        <span class="cov8" title="1">fmt.Println("TxType", txType.TransactionType)
-        var tx Tx
-        switch txType.TransactionType </span>{
-        case AMMBidTx:<span class="cov0" title="0">
-                tx = &amp;AMMBid{}</span>
-        case AMMCreateTx:<span class="cov0" title="0">
-                tx = &amp;AMMCreate{}</span>
-        case AMMDepositTx:<span class="cov0" title="0">
-                tx = &amp;AMMDeposit{}</span>
-        case AMMVoteTx:<span class="cov0" title="0">
-                tx = &amp;AMMVote{}</span>
-        case AMMWithdrawTx:<span class="cov0" title="0">
-                tx = &amp;AMMWithdraw{}</span>
-        case AccountSetTx:<span class="cov8" title="1">
-                tx = &amp;AccountSet{}</span>
-        case AccountDeleteTx:<span class="cov8" title="1">
-                tx = &amp;AccountDelete{}</span>
-        case CheckCancelTx:<span class="cov8" title="1">
-                tx = &amp;CheckCancel{}</span>
-        case CheckCashTx:<span class="cov8" title="1">
-                tx = &amp;CheckCash{}</span>
-        case CheckCreateTx:<span class="cov8" title="1">
-                tx = &amp;CheckCreate{}</span>
-        case ClawbackTx:<span class="cov8" title="1">
-                tx = &amp;Clawback{}</span>
-        case DepositPreauthTx:<span class="cov8" title="1">
-                tx = &amp;DepositPreauth{}</span>
-        case EscrowCancelTx:<span class="cov8" title="1">
-                tx = &amp;EscrowCancel{}</span>
-        case EscrowCreateTx:<span class="cov8" title="1">
-                tx = &amp;EscrowCreate{}</span>
-        case EscrowFinishTx:<span class="cov8" title="1">
-                tx = &amp;EscrowFinish{}</span>
-        case NFTokenAcceptOfferTx:<span class="cov8" title="1">
-                tx = &amp;NFTokenAcceptOffer{}</span>
-        case NFTokenBurnTx:<span class="cov8" title="1">
-                tx = &amp;NFTokenBurn{}</span>
-        case NFTokenCancelOfferTx:<span class="cov8" title="1">
-                tx = &amp;NFTokenCancelOffer{}</span>
-        case NFTokenCreateOfferTx:<span class="cov8" title="1">
-                tx = &amp;NFTokenCreateOffer{}</span>
-        case NFTokenMintTx:<span class="cov8" title="1">
-                tx = &amp;NFTokenMint{}</span>
-        case OfferCreateTx:<span class="cov0" title="0">
-                tx = &amp;OfferCreate{}</span>
-        case OfferCancelTx:<span class="cov0" title="0">
-                tx = &amp;OfferCancel{}</span>
-        case PaymentTx:<span class="cov8" title="1">
-                tx = &amp;Payment{}</span>
-        case PaymentChannelClaimTx:<span class="cov8" title="1">
-                tx = &amp;PaymentChannelClaim{}</span>
-        case PaymentChannelCreateTx:<span class="cov8" title="1">
-                tx = &amp;PaymentChannelCreate{}</span>
-        case PaymentChannelFundTx:<span class="cov8" title="1">
-                tx = &amp;PaymentChannelFund{}</span>
-        case SetRegularKeyTx:<span class="cov8" title="1">
-                tx = &amp;SetRegularKey{}</span>
-        case SignerListSetTx:<span class="cov8" title="1">
-                tx = &amp;SignerListSet{}</span>
-        case TrustSetTx:<span class="cov8" title="1">
-                tx = &amp;TrustSet{}</span>
-        case TicketCreateTx:<span class="cov8" title="1">
-                tx = &amp;TicketCreate{}</span>
-        default:<span class="cov0" title="0">
-                return nil, fmt.Errorf("unsupported transaction type %s", txType.TransactionType)</span>
-        }
-        <span class="cov8" title="1">if err := json.Unmarshal(data, tx); err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-        <span class="cov8" title="1">return tx, nil</span>
-}
-
 func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
         flattenTx := tx.Flatten()
 
-        err := ValidateRequiredField(flattenTx, "TransactionType", typecheck.IsString)
-        if err != nil </span><span class="cov8" title="1">{
-                return false, err
+        if !addresscodec.IsValidClassicAddress(tx.Account.String()) </span><span class="cov8" title="1">{
+                return false, fmt.Errorf("invalid xrpl address for the Account field")
         }</span>
 
-        <span class="cov8" title="1">err = ValidateRequiredField(flattenTx, "Account", typecheck.IsString)
-        if err != nil </span><span class="cov8" title="1">{
-                return false, err
+        <span class="cov8" title="1">if tx.TransactionType == "" </span><span class="cov8" title="1">{
+                return false, fmt.Errorf("transaction type is required")
         }</span>
 
-        // optional fields
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "Fee", typecheck.IsString)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
+        <span class="cov8" title="1">if !typecheck.IsStringNumericUint(tx.Fee.String(), 10, 64) </span><span class="cov0" title="0">{
+                return false, errors.New("invalid fee amount, not a uint")
         }</span>
 
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
+        <span class="cov8" title="1">err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
