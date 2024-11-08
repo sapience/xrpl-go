@@ -26,7 +26,7 @@ type EscrowCancel struct {
 	// Address of the source account that funded the escrow payment.
 	Owner types.Address
 	// Transaction sequence (or Ticket number) of EscrowCreate transaction that created the escrow to cancel.
-	OfferSequence uint
+	OfferSequence uint32
 }
 
 // TxType returns the transaction type for this transaction (EscrowCancel).

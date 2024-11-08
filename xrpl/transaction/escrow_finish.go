@@ -28,7 +28,7 @@ type EscrowFinish struct {
 	// Address of the source account that funded the held payment.
 	Owner types.Address
 	// Transaction sequence of EscrowCreate transaction that created the held payment to finish.
-	OfferSequence uint
+	OfferSequence uint32
 	// (Optional) Hex value matching the previously-supplied PREIMAGE-SHA-256 crypto-condition of the held payment.
 	Condition string `json:",omitempty"`
 	// Optional) Hex value of the PREIMAGE-SHA-256 crypto-condition fulfillment matching the held payment's Condition.
