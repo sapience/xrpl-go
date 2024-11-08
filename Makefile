@@ -52,7 +52,7 @@ test-xrpl:
 test-ci:
 	@echo "Running Go tests..."
 	@go clean -testcache
-	@go test -v $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
+	@go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
 	@echo "Tests complete!"
 
 coverage-unit:
