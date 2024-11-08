@@ -100,11 +100,11 @@ func TestAccountID_ToJson(t *testing.T) {
 			},
 			expected: "",
 			opts:     []int{20},
-			err:      errors.New("read bytes error"),
+			err:      errors.New("errReadBytes"),
 			setup: func(t *testing.T) (*AccountID, *testutil.MockBinaryParser) {
 				ctrl := gomock.NewController(t)
 				mock := testutil.NewMockBinaryParser(ctrl)
-				mock.EXPECT().ReadBytes(20).Return([]byte{}, errors.New("read bytes error"))
+				mock.EXPECT().ReadBytes(20).Return([]byte{}, errors.New("errReadBytes"))
 				return &AccountID{}, mock
 			},
 		},

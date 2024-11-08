@@ -12,7 +12,9 @@ import (
 	"github.com/Peersyst/xrpl-go/binary-codec/types"
 )
 
-var ErrSigningClaimFieldNotFound = errors.New("'Channel' & 'Amount' fields are both required, but were not found")
+var (
+	errSigningClaimFieldNotFound = errors.New("'Channel' & 'Amount' fields are both required, but were not found")
+)
 
 const (
 	txMultiSigPrefix          = "534D5400"
@@ -23,7 +25,6 @@ const (
 // Encode converts a JSON transaction object to a hex string in the canonical binary format.
 // The binary format is defined in XRPL's core codebase.
 func Encode(json map[string]any) (string, error) {
-
 	st := types.NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
 
 	// Iterate over the keys in the provided JSON
@@ -52,7 +53,6 @@ func Encode(json map[string]any) (string, error) {
 // signature towards a multi-signed transaction.
 // (Only encodes fields that are intended to be signed.)
 func EncodeForMultisigning(json map[string]any, xrpAccountID string) (string, error) {
-
 	st := &types.AccountID{}
 
 	// SigningPubKey is required for multi-signing but should be set to empty string.
@@ -89,7 +89,7 @@ func EncodeForSigning(json map[string]any) (string, error) {
 func EncodeForSigningClaim(json map[string]any) (string, error) {
 
 	if json["Channel"] == nil || json["Amount"] == nil {
-		return "", ErrSigningClaimFieldNotFound
+		return "", errSigningClaimFieldNotFound
 	}
 
 	channel, err := types.NewHash256().FromJSON(json["Channel"])

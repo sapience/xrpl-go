@@ -1,44 +1,16 @@
 package types
 
 import (
+	"errors"
+
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-	"github.com/Peersyst/xrpl-go/binary-codec/types/errors"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
-// ===============================
 // Errors
-// ===============================
-
-// ErrNotValidXChainBridge is an error that occurs when the
-// xchain bridge object is not valid.
-type ErrNotValidXChainBridge struct{}
-
-// Error returns the error message.
-func (e *ErrNotValidXChainBridge) Error() string {
-	return "not a valid xchain bridge"
-}
-
-// ErrReadBytes is an error that occurs when trying to read bytes with a parser.
-type ErrReadBytes struct{}
-
-// Error returns the error message.
-func (e *ErrReadBytes) Error() string {
-	return "read bytes error"
-}
-
-// ErrDecodeClassicAddress is an error that occurs
-// when trying to decode a classic address.
-type ErrDecodeClassicAddress struct{}
-
-// Error returns the error message.
-func (e *ErrDecodeClassicAddress) Error() string {
-	return "decode classic address error"
-}
-
-// ===============================
-// XChainBridge
-// ===============================
+var (
+	errNotValidXChainBridge = errors.New("not a valid xchain bridge")
+)
 
 // XChainBridge is a struct that represents an xchain bridge.
 type XChainBridge struct{}
@@ -48,31 +20,31 @@ type XChainBridge struct{}
 func (x *XChainBridge) FromJSON(json any) ([]byte, error) {
 	v, ok := json.(map[string]any)
 	if !ok {
-		return nil, &errors.ErrNotValidJSON{}
+		return nil, errNotValidJSON
 	}
 
 	if v["LockingChainDoor"] == nil || v["LockingChainIssue"] == nil || v["IssuingChainDoor"] == nil || v["IssuingChainIssue"] == nil {
-		return nil, &ErrNotValidXChainBridge{}
+		return nil, errNotValidXChainBridge
 	}
 
 	_, lockingChainDoor, err := addresscodec.DecodeClassicAddressToAccountID(v["LockingChainDoor"].(string))
 	if err != nil {
-		return nil, &ErrDecodeClassicAddress{}
+		return nil, errDecodeClassicAddress
 	}
 
 	_, lockingChainIssue, err := addresscodec.DecodeClassicAddressToAccountID(v["LockingChainIssue"].(string))
 	if err != nil {
-		return nil, &ErrDecodeClassicAddress{}
+		return nil, errDecodeClassicAddress
 	}
 
 	_, issuingChainDoor, err := addresscodec.DecodeClassicAddressToAccountID(v["IssuingChainDoor"].(string))
 	if err != nil {
-		return nil, &ErrDecodeClassicAddress{}
+		return nil, errDecodeClassicAddress
 	}
 
 	_, issuingChainIssue, err := addresscodec.DecodeClassicAddressToAccountID(v["IssuingChainIssue"].(string))
 	if err != nil {
-		return nil, &ErrDecodeClassicAddress{}
+		return nil, errDecodeClassicAddress
 	}
 
 	bytes := make([]byte, 0, 80)
@@ -94,7 +66,7 @@ func (x *XChainBridge) ToJSON(p interfaces.BinaryParser, opts ...int) (any, erro
 
 	bytes, err := p.ReadBytes(opts[0])
 	if err != nil {
-		return nil, &ErrReadBytes{}
+		return nil, errReadBytes
 	}
 
 	json := make(map[string]string)
