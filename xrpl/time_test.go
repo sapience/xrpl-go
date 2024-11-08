@@ -74,17 +74,17 @@ func TestTimeConversion_RippleTimeToIsoTime(t *testing.T) {
 		isoTime    string
 	}{
 		{
-			name:       "ISO time 2000-01-01T00:00:00.000Z",
+			name:       "pass - ISO time 2000-01-01T00:00:00.000Z",
 			rippleTime: 0,
 			isoTime:    "2000-01-01T00:00:00.000Z",
 		},
 		{
-			name:       "ISO time 2030-01-01T00:00:00.000Z",
+			name:       "pass - ISO time 2030-01-01T00:00:00.000Z",
 			rippleTime: 946771200,
 			isoTime:    "2030-01-01T00:00:00.000Z",
 		},
 		{
-			name:       "ISO time 2001-01-01T00:00:00.000Z",
+			name:       "pass - ISO time 2001-01-01T00:00:00.000Z",
 			rippleTime: 31622400,
 			isoTime:    "2001-01-01T00:00:00.000Z",
 		},
@@ -105,25 +105,25 @@ func TestTimeConversion_IsoTimeToRippleTime(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			name:       "ISO time 2000-01-01T00:00:00.000Z",
+			name:       "pass - ISO time 2000-01-01T00:00:00.000Z",
 			rippleTime: 0,
 			isoTime:    "2000-01-01T00:00:00.000Z",
 			wantErr:    false,
 		},
 		{
-			name:       "ISO time 2030-01-01T00:00:00.000Z",
+			name:       "pass - ISO time 2030-01-01T00:00:00.000Z",
 			rippleTime: 946771200,
 			isoTime:    "2030-01-01T00:00:00.000Z",
 			wantErr:    false,
 		},
 		{
-			name:       "ISO time 2001-01-01T00:00:00.000Z",
+			name:       "pass - ISO time 2001-01-01T00:00:00.000Z",
 			rippleTime: 31622400,
 			isoTime:    "2001-01-01T00:00:00.000Z",
 			wantErr:    false,
 		},
 		{
-			name:       "Invalid ISO time",
+			name:       "fail - Invalid ISO time",
 			rippleTime: 31622400,
 			isoTime:    "Invalid",
 			wantErr:    true,
@@ -151,25 +151,25 @@ func TestTimeConversion_ParseISO8601(t *testing.T) {
 		hasError bool
 	}{
 		{
-			name:     "Valid ISO8601 time",
+			name:     "pass - Valid ISO8601 time",
 			input:    "2023-10-01T12:34:56.789Z",
 			expected: time.Date(2023, 10, 1, 12, 34, 56, 789000000, time.UTC),
 			hasError: false,
 		},
 		{
-			name:     "Valid ISO8601 time without milliseconds",
+			name:     "pass - Valid ISO8601 time without milliseconds",
 			input:    "2023-10-01T12:34:56Z",
 			expected: time.Date(2023, 10, 1, 12, 34, 56, 0, time.UTC),
 			hasError: false,
 		},
 		{
-			name:     "Invalid ISO8601 time",
+			name:     "fail - Invalid ISO8601 time",
 			input:    "invalid-time",
 			expected: time.Time{},
 			hasError: true,
 		},
 		{
-			name:     "Empty string",
+			name:     "fail - Empty string",
 			input:    "",
 			expected: time.Time{},
 			hasError: true,
