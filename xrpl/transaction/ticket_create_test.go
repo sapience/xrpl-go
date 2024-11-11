@@ -1,47 +1,12 @@
 package transaction
 
 import (
-	"encoding/json"
 	"reflect"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestTicketCreateTx(t *testing.T) {
-	s := TicketCreate{
-		BaseTx: BaseTx{
-			Account:         "abc",
-			TransactionType: TicketCreateTx,
-			Fee:             types.XRPCurrencyAmount(10),
-			Sequence:        50,
-		},
-		TicketCount: 5,
-	}
-
-	j := `{
-	"Account": "abc",
-	"TransactionType": "TicketCreate",
-	"Fee": "10",
-	"Sequence": 50,
-	"TicketCount": 5
-}`
-
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
-		t.Error(err)
-	}
-
-	tx, err := UnmarshalTx(json.RawMessage(j))
-	if err != nil {
-		t.Errorf("UnmarshalTx error: %s", err.Error())
-	}
-	if !reflect.DeepEqual(tx, &s) {
-		t.Error("UnmarshalTx result differs from expected")
-	}
-
-}
 
 func TestTicketCreate_Flatten(t *testing.T) {
 	s := TicketCreate{

@@ -1,48 +1,155 @@
 package transaction
 
 import (
-	"encoding/json"
-	"reflect"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestEscrowFinishTransaction(t *testing.T) {
-	s := EscrowFinish{
-		BaseTx: BaseTx{
-			Account:         "abcdef",
-			TransactionType: EscrowFinishTx,
-			Fee:             types.XRPCurrencyAmount(1),
-			Sequence:        1234,
-			SigningPubKey:   "ghijk",
-			TxnSignature:    "A1B2C3D4E5F6",
+func TestEscrowFinish_TxType(t *testing.T) {
+	entry := &EscrowFinish{}
+	assert.Equal(t, EscrowFinishTx, entry.TxType())
+}
+
+func TestEscrowFinish_Flatten(t *testing.T) {
+	tests := []struct {
+		name     string
+		entry    *EscrowFinish
+		expected string
+	}{
+		{
+			name: "All fields set",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+				Condition:     "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+				Fulfillment:   "A0028000",
+			},
+			expected: `{
+				"TransactionType": "EscrowFinish",
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"OfferSequence":   7,
+				"Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+				"Fulfillment": "A0028000"
+			}`,
 		},
-		Owner:         "abcdef",
-		OfferSequence: 1232,
+		{
+			name: "Optional fields omitted",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+			},
+			expected: `{
+				"TransactionType": "EscrowFinish",
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"OfferSequence": 7
+			}`,
+		},
+		{
+			name: "Only BaseTx fields",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+			},
+			expected: `{
+				"TransactionType": "EscrowFinish",
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+			}`,
+		},
 	}
 
-	j := `{
-	"Account": "abcdef",
-	"TransactionType": "EscrowFinish",
-	"Fee": "1",
-	"Sequence": 1234,
-	"SigningPubKey": "ghijk",
-	"TxnSignature": "A1B2C3D4E5F6",
-	"Owner": "abcdef",
-	"OfferSequence": 1232
-}`
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := testutil.CompareFlattenAndExpected(tt.entry.Flatten(), []byte(tt.expected))
+			if err != nil {
+				t.Error(err)
+			}
+		})
+	}
+}
 
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
-		t.Error(err)
+func TestEscrowFinish_Validate(t *testing.T) {
+	tests := []struct {
+		name      string
+		entry     *EscrowFinish
+		wantValid bool
+		wantErr   bool
+	}{
+		{
+			name: "Valid EscrowFinish",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "Invalid EscrowFinish BaseTx",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				},
+				Owner:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				OfferSequence: 7,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "Invalid Owner Address",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner:         "invalidAddress",
+				OfferSequence: 7,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "Missing OfferSequence",
+			entry: &EscrowFinish{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowFinishTx,
+				},
+				Owner: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
 	}
 
-	tx, err := UnmarshalTx(json.RawMessage(j))
-	if err != nil {
-		t.Errorf("UnmarshalTx error: %s", err.Error())
-	}
-	if !reflect.DeepEqual(tx, &s) {
-		t.Error("UnmarshalTx result differs from expected")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.entry.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("escrowFinish.Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if valid != tt.wantValid {
+				t.Errorf("escrowFinish.Validate() = %v, want %v", valid, tt.wantValid)
+			}
+		})
 	}
 }

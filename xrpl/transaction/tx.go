@@ -1,9 +1,10 @@
 package transaction
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -165,127 +166,22 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 	return flattened
 }
 
-func UnmarshalTx(data json.RawMessage) (Tx, error) {
-	if len(data) == 0 {
-		return nil, nil
-	}
-	if data[0] == '"' {
-		var ret TxHash
-		if err := json.Unmarshal(data, &ret); err != nil {
-			return nil, err
-		}
-		return &ret, nil
-	} else if data[0] != '{' {
-		// TODO error verbosity/record failed json
-		return nil, fmt.Errorf("unexpected tx format; must be tx object or hash string")
-	}
-	// TODO AMM endpoint support
-	type txTypeParser struct {
-		TransactionType TxType
-		TxBlob          string `json:"tx_blob"`
-	}
-	var txType txTypeParser
-	if err := json.Unmarshal(data, &txType); err != nil {
-		return nil, err
-	}
-	if len(txType.TxBlob) > 0 && len(txType.TransactionType) == 0 {
-		return &Binary{
-			TxBlob: txType.TxBlob,
-		}, nil
-	}
-
-	fmt.Println("TxType", txType.TransactionType)
-	var tx Tx
-	switch txType.TransactionType {
-	case AMMBidTx:
-		tx = &AMMBid{}
-	case AMMCreateTx:
-		tx = &AMMCreate{}
-	case AMMDepositTx:
-		tx = &AMMDeposit{}
-	case AMMVoteTx:
-		tx = &AMMVote{}
-	case AMMWithdrawTx:
-		tx = &AMMWithdraw{}
-	case AccountSetTx:
-		tx = &AccountSet{}
-	case AccountDeleteTx:
-		tx = &AccountDelete{}
-	case CheckCancelTx:
-		tx = &CheckCancel{}
-	case CheckCashTx:
-		tx = &CheckCash{}
-	case CheckCreateTx:
-		tx = &CheckCreate{}
-	case ClawbackTx:
-		tx = &Clawback{}
-	case DepositPreauthTx:
-		tx = &DepositPreauth{}
-	case EscrowCancelTx:
-		tx = &EscrowCancel{}
-	case EscrowCreateTx:
-		tx = &EscrowCreate{}
-	case EscrowFinishTx:
-		tx = &EscrowFinish{}
-	case NFTokenAcceptOfferTx:
-		tx = &NFTokenAcceptOffer{}
-	case NFTokenBurnTx:
-		tx = &NFTokenBurn{}
-	case NFTokenCancelOfferTx:
-		tx = &NFTokenCancelOffer{}
-	case NFTokenCreateOfferTx:
-		tx = &NFTokenCreateOffer{}
-	case NFTokenMintTx:
-		tx = &NFTokenMint{}
-	case OfferCreateTx:
-		tx = &OfferCreate{}
-	case OfferCancelTx:
-		tx = &OfferCancel{}
-	case PaymentTx:
-		tx = &Payment{}
-	case PaymentChannelClaimTx:
-		tx = &PaymentChannelClaim{}
-	case PaymentChannelCreateTx:
-		tx = &PaymentChannelCreate{}
-	case PaymentChannelFundTx:
-		tx = &PaymentChannelFund{}
-	case SetRegularKeyTx:
-		tx = &SetRegularKey{}
-	case SignerListSetTx:
-		tx = &SignerListSet{}
-	case TrustSetTx:
-		tx = &TrustSet{}
-	case TicketCreateTx:
-		tx = &TicketCreate{}
-	default:
-		return nil, fmt.Errorf("unsupported transaction type %s", txType.TransactionType)
-	}
-	if err := json.Unmarshal(data, tx); err != nil {
-		return nil, err
-	}
-	return tx, nil
-}
-
 func (tx *BaseTx) Validate() (bool, error) {
 	flattenTx := tx.Flatten()
 
-	err := ValidateRequiredField(flattenTx, "TransactionType", typecheck.IsString)
-	if err != nil {
-		return false, err
+	if !addresscodec.IsValidClassicAddress(tx.Account.String()) {
+		return false, fmt.Errorf("invalid xrpl address for the Account field")
 	}
 
-	err = ValidateRequiredField(flattenTx, "Account", typecheck.IsString)
-	if err != nil {
-		return false, err
+	if tx.TransactionType == "" {
+		return false, fmt.Errorf("transaction type is required")
 	}
 
-	// optional fields
-	err = ValidateOptionalField(flattenTx, "Fee", typecheck.IsString)
-	if err != nil {
-		return false, err
+	if !typecheck.IsStringNumericUint(tx.Fee.String(), 10, 64) {
+		return false, errors.New("invalid fee amount, not a uint")
 	}
 
-	err = ValidateOptionalField(flattenTx, "Sequence", typecheck.IsInt)
+	err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
 	if err != nil {
 		return false, err
 	}

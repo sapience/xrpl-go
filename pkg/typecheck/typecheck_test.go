@@ -9,17 +9,17 @@ func TestIsString(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid string",
+			name: "pass - Valid string",
 			str:  "Hello, World!",
 			want: true,
 		},
 		{
-			name: "Invalid string",
+			name: "pass - Invalid string",
 			str:  42,
 			want: false,
 		},
 		{
-			name: "Empty string",
+			name: "pass - Empty string",
 			str:  "",
 			want: true,
 		},
@@ -40,37 +40,37 @@ func TestIsUint32(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid uint32",
+			name: "pass - Valid uint32",
 			num:  uint32(42),
 			want: true,
 		},
 		{
-			name: "Invalid uint32",
+			name: "pass - Invalid uint32",
 			num:  42,
 			want: false,
 		},
 		{
-			name: "Valid uint64",
+			name: "pass - Valid uint64",
 			num:  uint64(42),
 			want: false,
 		},
 		{
-			name: "Valid int",
+			name: "pass - Valid int",
 			num:  int(42),
 			want: false,
 		},
 		{
-			name: "Valid uint",
+			name: "pass - Valid uint",
 			num:  uint(42),
 			want: false,
 		},
 		{
-			name: "Valid bool",
+			name: "pass - Valid bool",
 			num:  true,
 			want: false,
 		},
 		{
-			name: "Valid map",
+			name: "pass - Valid map",
 			num:  map[string]interface{}{},
 			want: false,
 		},
@@ -91,37 +91,37 @@ func TestIsUint64(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid uint64",
+			name: "pass - Valid uint64",
 			num:  uint64(42),
 			want: true,
 		},
 		{
-			name: "Invalid uint64",
+			name: "pass - Invalid uint64",
 			num:  42,
 			want: false,
 		},
 		{
-			name: "Valid uint32",
+			name: "pass - Valid uint32",
 			num:  uint32(42),
 			want: false,
 		},
 		{
-			name: "Valid int",
+			name: "pass - Valid int",
 			num:  int(42),
 			want: false,
 		},
 		{
-			name: "Valid uint",
+			name: "pass - Valid uint",
 			num:  uint(42),
 			want: false,
 		},
 		{
-			name: "Valid bool",
+			name: "pass - Valid bool",
 			num:  true,
 			want: false,
 		},
 		{
-			name: "Valid map",
+			name: "pass - Valid map",
 			num:  map[string]interface{}{},
 			want: false,
 		},
@@ -142,37 +142,37 @@ func TestIsUint(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid uint",
+			name: "pass - Valid uint",
 			num:  uint(42),
 			want: true,
 		},
 		{
-			name: "Invalid uint",
+			name: "pass - Invalid uint",
 			num:  42,
 			want: false,
 		},
 		{
-			name: "Valid uint32",
+			name: "pass - Valid uint32",
 			num:  uint32(42),
 			want: false,
 		},
 		{
-			name: "Valid uint64",
+			name: "pass - Valid uint64",
 			num:  uint64(42),
 			want: false,
 		},
 		{
-			name: "Valid int",
+			name: "pass - Valid int",
 			num:  int(42),
 			want: false,
 		},
 		{
-			name: "Valid bool",
+			name: "pass - Valid bool",
 			num:  true,
 			want: false,
 		},
 		{
-			name: "Valid map",
+			name: "pass - Valid map",
 			num:  map[string]interface{}{},
 			want: false,
 		},
@@ -193,22 +193,22 @@ func TestIsBool(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid bool",
+			name: "pass - Valid bool",
 			b:    true,
 			want: true,
 		},
 		{
-			name: "Invalid bool",
+			name: "pass - Invalid bool",
 			b:    42,
 			want: false,
 		},
 		{
-			name: "Invalid bool",
+			name: "pass - Invalid bool",
 			b:    "true",
 			want: false,
 		},
 		{
-			name: "Invalid bool",
+			name: "pass - Invalid bool",
 			b:    nil,
 			want: false,
 		},
@@ -230,27 +230,27 @@ func TestIsHex(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid hexadecimal string",
+			name: "pass - Valid hexadecimal string",
 			s:    "0123456789abcdefABCDEF",
 			want: true,
 		},
 		{
-			name: "Invalid hexadecimal string with non-hex characters",
+			name: "pass - Invalid hexadecimal string with non-hex characters",
 			s:    "0123456789abcdefABCDEFG",
 			want: false,
 		},
 		{
-			name: "Invalid hexadecimal string with spaces",
+			name: "pass - Invalid hexadecimal string with spaces",
 			s:    "0123456789 abcdefABCDEF",
 			want: false,
 		},
 		{
-			name: "Invalid hexadecimal string with special characters",
+			name: "pass - Invalid hexadecimal string with special characters",
 			s:    "0123456789!abcdefABCDEF",
 			want: false,
 		},
 		{
-			name: "Empty string",
+			name: "pass - Empty string",
 			s:    "",
 			want: false,
 		},
@@ -271,22 +271,22 @@ func TestIsInt(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid int",
+			name: "pass - Valid int",
 			num:  42,
 			want: true,
 		},
 		{
-			name: "Invalid int",
+			name: "pass - Invalid int",
 			num:  3.14,
 			want: false,
 		},
 		{
-			name: "Invalid int",
+			name: "pass - Invalid int",
 			num:  "42",
 			want: false,
 		},
 		{
-			name: "Invalid int",
+			name: "pass - Invalid int",
 			num:  nil,
 			want: false,
 		},
@@ -308,52 +308,52 @@ func TestIsFloat64(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid float64",
+			name: "pass - Valid float64",
 			s:    "3.141592653589793",
 			want: true,
 		},
 		{
-			name: "Valid float64 (integer)",
+			name: "pass - Valid float64 (integer)",
 			s:    "42",
 			want: true,
 		},
 		{
-			name: "Valid negative float64",
+			name: "pass - Valid negative float64",
 			s:    "-42.0",
 			want: true,
 		},
 		{
-			name: "Valid float64 with leading zero",
+			name: "pass - Valid float64 with leading zero",
 			s:    "0.123456789",
 			want: true,
 		},
 		{
-			name: "Valid negative float64",
+			name: "pass - Valid negative float64",
 			s:    "-3.141592653589793",
 			want: true,
 		},
 		{
-			name: "Invalid float64 with multiple decimal points",
+			name: "pass - Invalid float64 with multiple decimal points",
 			s:    "3.14.15",
 			want: false,
 		},
 		{
-			name: "Invalid float64 with non-numeric characters",
+			name: "pass - Invalid float64 with non-numeric characters",
 			s:    "3.14abc",
 			want: false,
 		},
 		{
-			name: "Valid float64 with leading plus sign",
+			name: "pass - Valid float64 with leading plus sign",
 			s:    "+3.141592653589793",
 			want: true,
 		},
 		{
-			name: "Invalid float64 with leading minus sign",
+			name: "pass - Invalid float64 with leading minus sign",
 			s:    "-",
 			want: false,
 		},
 		{
-			name: "Invalid float64 with empty string",
+			name: "pass - Invalid float64 with empty string",
 			s:    "",
 			want: false,
 		},
@@ -374,52 +374,52 @@ func TestIsFloat32(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "Valid float32",
+			name: "pass - Valid float32",
 			s:    "3.14159",
 			want: true,
 		},
 		{
-			name: "Valid float32 (integer)",
+			name: "pass - Valid float32 (integer)",
 			s:    "42",
 			want: true,
 		},
 		{
-			name: "Valid negative float32",
+			name: "pass - Valid negative float32",
 			s:    "-42.0",
 			want: true,
 		},
 		{
-			name: "Valid float32 with leading zero",
+			name: "pass - Valid float32 with leading zero",
 			s:    "0.123456",
 			want: true,
 		},
 		{
-			name: "Valid negative float32",
+			name: "pass - Valid negative float32",
 			s:    "-3.14159",
 			want: true,
 		},
 		{
-			name: "Invalid float32 with multiple decimal points",
+			name: "pass - Invalid float32 with multiple decimal points",
 			s:    "3.14.15",
 			want: false,
 		},
 		{
-			name: "Invalid float32 with non-numeric characters",
+			name: "pass - Invalid float32 with non-numeric characters",
 			s:    "3.14abc",
 			want: false,
 		},
 		{
-			name: "Valid float32 with leading plus sign",
+			name: "pass - Valid float32 with leading plus sign",
 			s:    "+3.14159",
 			want: true,
 		},
 		{
-			name: "Invalid float32 with leading minus sign",
+			name: "pass - Invalid float32 with leading minus sign",
 			s:    "-",
 			want: false,
 		},
 		{
-			name: "Invalid float32 with empty string",
+			name: "pass - Invalid float32 with empty string",
 			s:    "",
 			want: false,
 		},
@@ -429,6 +429,73 @@ func TestIsFloat32(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := IsFloat32(tt.s); got != tt.want {
 				t.Errorf("IsFloat32(%q) = %v, want %v", tt.s, got, tt.want)
+			}
+		})
+	}
+}
+func TestIsStringNumericUint(t *testing.T) {
+	tests := []struct {
+		name    string
+		s       string
+		base    int
+		bitSize int
+		want    bool
+	}{
+		{
+			name:    "pass - Valid uint string",
+			s:       "42",
+			base:    10,
+			bitSize: 64,
+			want:    true,
+		},
+		{
+			name:    "pass - Valid large uint string",
+			s:       "18446744073709551615", // Max uint64 value
+			base:    10,
+			bitSize: 64,
+			want:    true,
+		},
+		{
+			name:    "pass - Invalid uint string with negative sign",
+			s:       "-42",
+			base:    10,
+			bitSize: 64,
+			want:    false,
+		},
+		{
+			name:    "pass - Invalid uint string with decimal point",
+			s:       "42.0",
+			base:    10,
+			bitSize: 64,
+			want:    false,
+		},
+		{
+			name:    "pass - Invalid uint string with non-numeric characters",
+			s:       "42abc",
+			base:    10,
+			bitSize: 64,
+			want:    false,
+		},
+		{
+			name:    "pass - Invalid uint string with special characters",
+			s:       "42!",
+			base:    10,
+			bitSize: 64,
+			want:    false,
+		},
+		{
+			name:    "pass - Empty string",
+			s:       "",
+			base:    10,
+			bitSize: 64,
+			want:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsStringNumericUint(tt.s, tt.base, tt.bitSize); got != tt.want {
+				t.Errorf("IsStringNumericUint(%q) = %v, want %v", tt.s, got, tt.want)
 			}
 		})
 	}

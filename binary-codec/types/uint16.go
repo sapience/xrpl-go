@@ -8,6 +8,13 @@ import (
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
+const MinUint16 uint16 = 0
+const MaxUint16 uint16 = ^uint16(0)
+
+func IsUint16(value int) bool {
+	return value >= int(MinUint16) && value <= int(MaxUint16)
+}
+
 // UInt16 represents a 16-bit unsigned integer.
 type UInt16 struct{}
 
