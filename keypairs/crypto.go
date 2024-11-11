@@ -2,27 +2,19 @@ package keypairs
 
 import (
 	"encoding/hex"
-	"fmt"
+	"errors"
 
+	"github.com/Peersyst/xrpl-go/keypairs/interfaces"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
-// -------------------------------------------------------------------------------------------------
-// ERRORS
-// -------------------------------------------------------------------------------------------------
-
-type CryptoImplementationError struct{}
-
-func (e *CryptoImplementationError) Error() string {
-	return fmt.Sprintln("not a valid crypto implementation")
-}
-
-// -------------------------------------------------------------------------------------------------
-// FUNCTIONS
-// -------------------------------------------------------------------------------------------------
+// Errors
+var (
+	ErrInvalidCryptoImplementation = errors.New("not a valid crypto implementation")
+)
 
 // GetCryptoImplementationFromKey returns the CryptoImplementation based on the key
-func getCryptoImplementationFromKey(k string) CryptoImplementation {
+func getCryptoImplementationFromKey(k string) interfaces.CryptoImplementation {
 	prefix, err := hex.DecodeString(k[:2])
 	if err != nil {
 		return nil

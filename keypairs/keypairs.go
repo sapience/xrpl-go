@@ -1,27 +1,28 @@
 package keypairs
 
 import (
-	"crypto/rand"
+	"errors"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-	"github.com/Peersyst/xrpl-go/pkg/random"
+	"github.com/Peersyst/xrpl-go/keypairs/interfaces"
 )
 
-var r random.Randomizer
+var (
+	// Errors
+
+	// Derived keypair did not generate verifiable signature
+	ErrInvalidSignature = errors.New("derived keypair did not generate verifiable signature")
+)
 
 const (
-	VERIFICATIONMESSAGE = "This test message should verify."
+	verificationMessage = "This test message should verify."
 )
 
-func init() {
-	r.Reader = rand.Reader
-}
-
-func GenerateSeed(entropy string, alg CryptoImplementation) (string, error) {
+func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfaces.Randomizer) (string, error) {
 	var pe []byte
+	var err error
 	if entropy == "" {
-		b, err := r.GenerateBytes(addresscodec.FamilySeedLength)
-		pe = b
+		pe, err = r.GenerateBytes(addresscodec.FamilySeedLength)
 		if err != nil {
 			return "", err
 		}
@@ -35,18 +36,20 @@ func GenerateSeed(entropy string, alg CryptoImplementation) (string, error) {
 func DeriveKeypair(seed string, validator bool) (private, public string, err error) {
 	ds, alg, err := addresscodec.DecodeSeed(seed)
 	if err != nil {
-		return
+		return "", "", err
 	}
 	private, public, err = alg.DeriveKeypair(ds, validator)
 	if err != nil {
-		return
+		return "", "", err
 	}
-	signature, err := alg.Sign(VERIFICATIONMESSAGE, private)
-
-	if !alg.Validate(VERIFICATIONMESSAGE, public, signature) {
-		return "", "", &InvalidSignatureError{}
+	signature, err := alg.Sign(verificationMessage, private)
+	if err != nil {
+		return "", "", err
 	}
-	return
+	if !alg.Validate(verificationMessage, public, signature) {
+		return "", "", ErrInvalidSignature
+	}
+	return private, public, nil
 }
 
 func DeriveClassicAddress(pubkey string) (string, error) {
@@ -56,7 +59,7 @@ func DeriveClassicAddress(pubkey string) (string, error) {
 func Sign(msg, privKey string) (string, error) {
 	alg := getCryptoImplementationFromKey(privKey)
 	if alg == nil {
-		return "", &CryptoImplementationError{}
+		return "", ErrInvalidCryptoImplementation
 	}
 	return alg.Sign(msg, privKey)
 }
@@ -64,13 +67,7 @@ func Sign(msg, privKey string) (string, error) {
 func Validate(msg, pubKey, sig string) (bool, error) {
 	alg := getCryptoImplementationFromKey(pubKey)
 	if alg == nil {
-		return false, &CryptoImplementationError{}
+		return false, ErrInvalidCryptoImplementation
 	}
 	return alg.Validate(msg, pubKey, sig), nil
-}
-
-type InvalidSignatureError struct{}
-
-func (e *InvalidSignatureError) Error() string {
-	return "derived keypair did not generate verifiable signature"
 }
