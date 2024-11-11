@@ -27,7 +27,7 @@ func TestWalletProposeResponse(t *testing.T) {
 		KeyType:       "secp256k1",
 		MasterSeed:    "snoPBrXtMeMyMHUVTgbuqAfg1SUTb",
 		MasterSeedHex: "DEDCE9CE67B451D852FD4E846FCDE31C",
-		AccountId:     "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+		AccountID:     "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 		PublicKey:     "aBQG8RQAzjs1eTKFEAQXr2gS4utcDiEC9wmi7pfUPTi27VCahwgw",
 		PublicKeyHex:  "0330E7FC9D56BB25D6893BA3F317AE5BCF33B3291BD63DB32654A313222F7FD020",
 	}

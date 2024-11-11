@@ -26,7 +26,7 @@ const (
 type TrustSet struct {
 	// Base transaction fields
 	BaseTx
-	//Object defining the trust line to create or modify, in the format of a Currency Amount.
+	// Object defining the trust line to create or modify, in the format of a Currency Amount.
 	LimitAmount types.CurrencyAmount
 	// (Optional) Value incoming balances on this trust line at the ratio of this number per 1,000,000,000 units.
 	// A value of 0 is shorthand for treating balances at face value. For example, if you set the value to 10,000,000, 1% of incoming funds remain with the sender.
@@ -101,29 +101,29 @@ func (t *TrustSet) SetClearFreezeFlag() {
 }
 
 // Validates the TrustSet transaction.
-func (tx *TrustSet) Validate() (bool, error) {
+func (t *TrustSet) Validate() (bool, error) {
 	// Validate the base transaction
-	_, err := tx.BaseTx.Validate()
+	_, err := t.BaseTx.Validate()
 	if err != nil {
 		return false, err
 	}
 
 	// Check if the field LimitAmount is set
-	if tx.LimitAmount == nil {
+	if t.LimitAmount == nil {
 		return false, errors.New("trustSet: missing field LimitAmount")
 	}
 
-	if ok, err := IsAmount(tx.LimitAmount, "LimitAmount", true); !ok {
+	if ok, err := IsAmount(t.LimitAmount, "LimitAmount", true); !ok {
 		return false, err
 	}
 
 	// Check if QualityIn is a number
-	if tx.QualityIn != 0 && !typecheck.IsUint32(tx.QualityIn) {
+	if t.QualityIn != 0 && !typecheck.IsUint32(t.QualityIn) {
 		return false, errors.New("trustSet: QualityIn must be a number")
 	}
 
 	// Check if QualityOut is a number
-	if tx.QualityOut != 0 && !typecheck.IsUint32(tx.QualityOut) {
+	if t.QualityOut != 0 && !typecheck.IsUint32(t.QualityOut) {
 		return false, errors.New("trustSet: QualityOut must be a number")
 	}
 

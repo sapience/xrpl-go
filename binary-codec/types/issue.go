@@ -12,10 +12,10 @@ import (
 // This type is crucial for handling currency issuers in XRPL transactions and ledger entries.
 type Issue struct{}
 
-// FromJson parses a classic address string and returns the corresponding AccountID byte slice.
+// FromJSON parses a classic address string and returns the corresponding AccountID byte slice.
 // It uses the addresscodec package to decode the classic address.
 // If the input is not a valid classic address, it returns an error.
-func (i *Issue) FromJson(json any) ([]byte, error) {
+func (i *Issue) FromJSON(json any) ([]byte, error) {
 	_, accountID, err := addresscodec.DecodeClassicAddressToAccountID(json.(string))
 
 	if err != nil {
@@ -25,10 +25,10 @@ func (i *Issue) FromJson(json any) ([]byte, error) {
 	return accountID, nil
 }
 
-// ToJson converts an AccountID byte slice back to a classic address string.
+// ToJSON converts an AccountID byte slice back to a classic address string.
 // It uses the addresscodec package to encode the byte slice.
 // If the input is not a valid AccountID byte slice, it returns an error.
-func (i *Issue) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) {
+func (i *Issue) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) {
 	if opts == nil {
 		return nil, ErrNoLengthPrefix
 	}

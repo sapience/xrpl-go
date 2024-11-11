@@ -17,13 +17,13 @@ func main() {
 		return
 	}
 
-	client := websocket.NewWebsocketClient(
+	client := websocket.NewClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 
-	accountObjRes, err := client.GetAccountObjects(&account.AccountObjectsRequest{
+	accountObjRes, err := client.GetAccountObjects(&account.ObjectsRequest{
 		Account: types.Address(wallet.GetAddress()),
 	})
 	if err != nil {

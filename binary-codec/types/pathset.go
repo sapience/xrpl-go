@@ -21,11 +21,11 @@ const (
 type PathSet struct{}
 
 // ErrInvalidPathSet is an error that's thrown when an invalid path set is provided.
-var ErrInvalidPathSet error = errors.New("invalid type to construct PathSet from. Expected []any of []any")
+var ErrInvalidPathSet = errors.New("invalid type to construct PathSet from. Expected []any of []any")
 
-// FromJson attempts to serialize a path set from a JSON representation of a slice of paths to a byte array.
+// FromJSON attempts to serialize a path set from a JSON representation of a slice of paths to a byte array.
 // It returns the byte array representation of the path set, or an error if the provided json does not represent a valid path set.
-func (p PathSet) FromJson(json any) ([]byte, error) {
+func (p PathSet) FromJSON(json any) ([]byte, error) {
 
 	if _, ok := json.([]any)[0].([]any); !ok {
 		return nil, ErrInvalidPathSet
@@ -38,9 +38,9 @@ func (p PathSet) FromJson(json any) ([]byte, error) {
 	return newPathSet(json.([]any)), nil
 }
 
-// ToJson decodes a path set from a binary representation using a provided binary parser, then translates it to a JSON representation.
+// ToJSON decodes a path set from a binary representation using a provided binary parser, then translates it to a JSON representation.
 // It returns a slice representing the JSON format of the path set, or an error if the path set could not be decoded or if an invalid step is encountered.
-func (p PathSet) ToJson(parser interfaces.BinaryParser, opts ...int) (any, error) {
+func (p PathSet) ToJSON(parser interfaces.BinaryParser, _ ...int) (any, error) {
 	var pathSet []any
 
 	for parser.HasMore() {

@@ -1,8 +1,8 @@
 package ledger
 
-type LedgerCurrentRequest struct {
+type CurrentRequest struct {
 }
 
-func (*LedgerCurrentRequest) Method() string {
+func (*CurrentRequest) Method() string {
 	return "ledger_current"
 }

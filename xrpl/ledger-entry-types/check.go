@@ -11,7 +11,7 @@ type Check struct {
 	Expiration        uint   `json:",omitempty"`
 	Flags             uint
 	InvoiceID         types.Hash256 `json:",omitempty"`
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	OwnerNode         string
 	PreviousTxnID     types.Hash256
 	PreviousTxnLgrSeq uint
@@ -20,6 +20,6 @@ type Check struct {
 	SourceTag         uint `json:",omitempty"`
 }
 
-func (*Check) EntryType() LedgerEntryType {
+func (*Check) EntryType() EntryType {
 	return CheckEntry
 }

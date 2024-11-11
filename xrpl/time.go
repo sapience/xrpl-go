@@ -40,7 +40,7 @@ func RippleTimeToISOTime(rippleTime int64) string {
 	return time.Unix(int64(unixTime/1000), 0).UTC().Format(ISO8601Format)
 }
 
-// IsoTimeToRippleTime converts an ISO8601 timestmap to a ripple timestamp.
+// IsoTimeToRippleTime converts an ISO8601 timestamp to a ripple timestamp.
 //
 // iso8601 is the ISO 8601 formatted string.
 //

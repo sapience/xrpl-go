@@ -2,12 +2,12 @@ package definitions
 
 type FieldInstance struct {
 	FieldName string
-	*fieldInfo
+	*FieldInfo
 	FieldHeader *FieldHeader
 	Ordinal     int32
 }
 
-type fieldInfo struct {
+type FieldInfo struct {
 	Nth            int32
 	IsVLEncoded    bool
 	IsSerialized   bool

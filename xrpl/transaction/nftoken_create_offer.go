@@ -18,6 +18,6 @@ func (*NFTokenCreateOffer) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *NFTokenCreateOffer) Flatten() FlatTransaction {
+func (n *NFTokenCreateOffer) Flatten() FlatTransaction {
 	return nil
 }

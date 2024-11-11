@@ -19,11 +19,11 @@ const (
 	// It is presented as an array of objects. Each object has only one field, Memo,
 	// which in turn contains another object with one or more of the following fields:
 	// MemoData, MemoFormat, and MemoType. https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field
-	MEMO_SIZE   = 3
-	SIGNER_SIZE = 3
+	MemoSize   = 3
+	SignerSize = 3
 	// For a token, must have the following fields: currency, issuer, value. https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-currency-amounts
-	ISSUED_CURRENCY_SIZE       = 3
-	STANDARD_CURRENCY_CODE_LEN = 3
+	IssuedCurrencySize      = 3
+	StandardCurrencyCodeLen = 3
 )
 
 // IsMemo checks if the given object is a valid Memo object.
@@ -56,7 +56,7 @@ func IsMemo(memo Memo) (bool, error) {
 // IsSigner checks if the given object is a valid Signer object.
 func IsSigner(signerData SignerData) (bool, error) {
 	size := len(maputils.GetKeys(signerData.Flatten()))
-	if size != SIGNER_SIZE {
+	if size != SignerSize {
 		return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")
 	}
 
@@ -110,14 +110,14 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	issuedAmount, _ := input.(types.IssuedCurrencyAmount)
 
 	numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
-	if numOfKeys != ISSUED_CURRENCY_SIZE {
+	if numOfKeys != IssuedCurrencySize {
 		return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
 	}
 
 	if strings.TrimSpace(issuedAmount.Currency) == "" {
 		return false, errors.New("currency field is required for an issued currency")
 	}
-	if strings.ToUpper(issuedAmount.Currency) == currency.NATIVE_CURRENCY_SYMBOL {
+	if strings.ToUpper(issuedAmount.Currency) == currency.NativeCurrencySymbol {
 		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
 	}
 
@@ -158,11 +158,16 @@ func IsPath(path []PathStep) (bool, error) {
 
 		https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications
 		*/
-		if (hasAccount && !hasCurrency && !hasIssuer) || (hasCurrency && !hasAccount && !hasIssuer) || (hasIssuer && !hasAccount && !hasCurrency) {
+		switch {
+		case hasAccount && !hasCurrency && !hasIssuer:
 			return true, nil
-		} else if hasIssuer && hasCurrency && pathStep.Currency != currency.NATIVE_CURRENCY_SYMBOL {
+		case hasCurrency && !hasAccount && !hasIssuer:
 			return true, nil
-		} else {
+		case hasIssuer && !hasAccount && !hasCurrency:
+			return true, nil
+		case hasIssuer && hasCurrency && pathStep.Currency != currency.NativeCurrencySymbol:
+			return true, nil
+		default:
 			return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
 		}
 
@@ -202,11 +207,11 @@ func IsAsset(asset ledger.Asset) (bool, error) {
 		return false, errors.New("currency field is required for an asset")
 	}
 
-	if strings.ToUpper(asset.Currency) == currency.NATIVE_CURRENCY_SYMBOL && strings.TrimSpace(asset.Issuer.String()) == "" {
+	if strings.ToUpper(asset.Currency) == currency.NativeCurrencySymbol && strings.TrimSpace(asset.Issuer.String()) == "" {
 		return true, nil
 	}
 
-	if strings.ToUpper(asset.Currency) == currency.NATIVE_CURRENCY_SYMBOL && asset.Issuer != "" {
+	if strings.ToUpper(asset.Currency) == currency.NativeCurrencySymbol && asset.Issuer != "" {
 		return false, errors.New("issuer field should be omitted for XRP currency")
 	}
 

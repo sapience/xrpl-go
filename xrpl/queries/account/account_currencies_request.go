@@ -7,18 +7,18 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountCurrenciesRequest struct {
+type CurrenciesRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 	Strict      bool                   `json:"strict,omitempty"`
 }
 
-func (*AccountCurrenciesRequest) Method() string {
+func (*CurrenciesRequest) Method() string {
 	return "account_currencies"
 }
 
-func (r *AccountCurrenciesRequest) UnmarshalJSON(data []byte) error {
+func (r *CurrenciesRequest) UnmarshalJSON(data []byte) error {
 	type acrHelper struct {
 		Account     types.Address     `json:"account"`
 		LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
@@ -29,7 +29,7 @@ func (r *AccountCurrenciesRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = AccountCurrenciesRequest{
+	*r = CurrenciesRequest{
 		Account:    h.Account,
 		LedgerHash: h.LedgerHash,
 		Strict:     h.Strict,

@@ -7,7 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountNFTsRequest struct {
+type NFTsRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -15,11 +15,11 @@ type AccountNFTsRequest struct {
 	Marker      any                    `json:"marker,omitempty"`
 }
 
-func (*AccountNFTsRequest) Method() string {
+func (*NFTsRequest) Method() string {
 	return "account_nfts"
 }
 
-func (r *AccountNFTsRequest) UnmarshalJSON(data []byte) error {
+func (r *NFTsRequest) UnmarshalJSON(data []byte) error {
 	type anrHelper struct {
 		Account     types.Address     `json:"account"`
 		LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
@@ -31,7 +31,7 @@ func (r *AccountNFTsRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = AccountNFTsRequest{
+	*r = NFTsRequest{
 		Account:    h.Account,
 		LedgerHash: h.LedgerHash,
 		Limit:      h.Limit,

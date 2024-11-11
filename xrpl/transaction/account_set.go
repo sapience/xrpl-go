@@ -63,6 +63,12 @@ const (
 	tfDisallowXRP uint = 1048576 // 0x00100000
 	// The same as ClearFlag: asfDisallowXRP.
 	tfAllowXRP uint = 2097152 // 0x00200000
+
+	// Tick size to use for offers involving a currency issued by this address.
+	// The exchange rates of those offers is rounded to this many significant digits.
+	// Valid values are 3 to 15 inclusive, or 0 to disable.
+	MinTickSize = 3
+	MaxTickSize = 15
 )
 
 // An AccountSet transaction modifies the properties of an account in the XRP
@@ -76,7 +82,7 @@ type AccountSet struct {
 	Domain string `json:",omitempty"`
 	// Hash of an email address to be used for generating an avatar image.
 	EmailHash types.Hash128 `json:",omitempty"`
-	//Public key for sending encrypted messages to this account.
+	// Public key for sending encrypted messages to this account.
 	MessageKey string `json:",omitempty"`
 	// Sets an alternate account that is allowed to mint NFTokens on this
 	// account's behalf using NFTokenMint's `Issuer` field.
@@ -320,12 +326,6 @@ func (s *AccountSet) ClearAsfAllowTrustLineClawback() {
 	s.ClearFlag = asfAllowTrustLineClawback
 }
 
-// Tick size to use for offers involving a currency issued by this address.
-// The exchange rates of those offers is rounded to this many significant digits.
-// Valid values are 3 to 15 inclusive, or 0 to disable.
-const MIN_TICK_SIZE = 3
-const MAX_TICK_SIZE = 15
-
 // Validate the AccountSet transaction fields.
 func (s *AccountSet) Validate() (bool, error) {
 	flatten := s.Flatten()
@@ -394,7 +394,7 @@ func (s *AccountSet) Validate() (bool, error) {
 	}
 
 	// check if TickSize is within the valid range
-	if s.TickSize != 0 && (s.TickSize < MIN_TICK_SIZE || s.TickSize > MAX_TICK_SIZE) {
+	if s.TickSize != 0 && (s.TickSize < MinTickSize || s.TickSize > MaxTickSize) {
 		return false, errors.New("accountSet: TickSize must be between 3 and 15")
 	}
 

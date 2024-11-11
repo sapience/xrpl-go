@@ -79,6 +79,6 @@ type XChainOwnedCreateAccountClaimID struct {
 	XChainCreateAccountAttestations []XChainCreateAccountAttestation
 }
 
-func (x *XChainOwnedCreateAccountClaimID) EntryType() LedgerEntryType {
+func (x *XChainOwnedCreateAccountClaimID) EntryType() EntryType {
 	return XChainOwnedCreateAccountClaimIDEntry
 }

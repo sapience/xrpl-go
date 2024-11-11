@@ -20,7 +20,7 @@ func main() {
 	// Configure client
 	//
 	fmt.Println("⏳ Setting up client...")
-	client := websocket.NewWebsocketClient(
+	client := websocket.NewClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),

@@ -1,5 +1,5 @@
 package peer
 
-type PeerReservationsListResponse struct {
-	Reservations []*PeerReservation `json:"reservations"`
+type ReservationsListResponse struct {
+	Reservations []*Reservation `json:"reservations"`
 }

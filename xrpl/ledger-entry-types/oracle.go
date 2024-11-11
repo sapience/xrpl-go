@@ -8,14 +8,14 @@ type PriceData struct {
 	// bond CUSIP, or currency code is allowed.
 	BaseAsset string
 	// The quote asset in a trading pair. The quote asset denotes the
-	//price of one unit of the base asset.
+	// price of one unit of the base asset.
 	QuoteAsset string
 	// The asset price after applying the Scale precision level. It's not included if
 	// the last update transaction didn't include the BaseAsset/QuoteAsset pair.
 	AssetPrice uint64 `json:",omitempty"`
 	// The scaling factor to apply to an asset price. For example, if Scale is 6 and original price is 0.155,
-	//then the scaled price is 155000. Valid scale ranges are 0-10.
-	//It's not included if the last update transaction didn't include the BaseAsset/QuoteAsset pair.
+	// then the scaled price is 155000. Valid scale ranges are 0-10.
+	// It's not included if the last update transaction didn't include the BaseAsset/QuoteAsset pair.
 	Scale uint8 `json:",omitempty"`
 }
 
@@ -53,12 +53,12 @@ type Oracle struct {
 	// This field is a string, up to 256 ASCII hex encoded characters (0x20-0x7E).
 	Provider string
 	// An array of up to 10 PriceData objects, each representing the price information for a token pair.
-	//More than five PriceData objects require two owner reserves.
+	// More than five PriceData objects require two owner reserves.
 	PriceDataSeries []PriceData
 	// The time the data was last updated, represented in Unix time.
 	LastUpdateTime uint32
 	// An optional Universal Resource Identifier to reference price data off-chain.
-	//This field is limited to 256 bytes.
+	// This field is limited to 256 bytes.
 	URI string `json:",omitempty"`
 	// Describes the type of asset, such as "currency", "commodity", or "index". This field is a string,
 	// up to 16 ASCII hex encoded characters (0x20-0x7E).
@@ -73,6 +73,6 @@ type Oracle struct {
 }
 
 // EntryType returns the type of the ledger entry.
-func (*Oracle) EntryType() LedgerEntryType {
+func (*Oracle) EntryType() EntryType {
 	return OracleEntry
 }

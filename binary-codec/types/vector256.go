@@ -23,10 +23,10 @@ func (e *ErrInvalidVector256Type) Error() string {
 // Vector256 represents a 256 bit vector.
 type Vector256 struct{}
 
-// FromJson converts a JSON value into a serialized byte slice representing a Vector256.
+// FromJSON converts a JSON value into a serialized byte slice representing a Vector256.
 // The input value is assumed to be an array of strings representing Hash256 values.
 // If the serialization fails, an error is returned.
-func (v *Vector256) FromJson(json any) ([]byte, error) {
+func (v *Vector256) FromJSON(json any) ([]byte, error) {
 
 	if _, ok := json.([]string); !ok {
 		return nil, &ErrInvalidVector256Type{fmt.Sprintf("%T", json)}
@@ -46,7 +46,7 @@ func (v *Vector256) FromJson(json any) ([]byte, error) {
 func vector256FromValue(value []string) ([]byte, error) {
 	b := make([]byte, 0)
 	for _, s := range value {
-		hash256, err := NewHash256().FromJson(s)
+		hash256, err := NewHash256().FromJSON(s)
 
 		if err != nil {
 			return nil, err
@@ -58,10 +58,10 @@ func vector256FromValue(value []string) ([]byte, error) {
 	return b, nil
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into an array of JSON string values representing Hash256 values.
 // If the parsing fails, an error is returned.
-func (v *Vector256) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) {
+func (v *Vector256) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) {
 
 	b, err := p.ReadBytes(opts[0])
 	if err != nil {

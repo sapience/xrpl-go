@@ -11,7 +11,7 @@ type RippleState struct {
 	HighNode          string
 	HighQualityIn     uint `json:",omitempty"`
 	HighQualityOut    uint `json:",omitempty"`
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	LowLimit          types.IssuedCurrencyAmount
 	LowNode           string
 	LowQualityIn      uint `json:",omitempty"`
@@ -20,6 +20,6 @@ type RippleState struct {
 	PreviousTxnLgrSeq uint
 }
 
-func (*RippleState) EntryType() LedgerEntryType {
+func (*RippleState) EntryType() EntryType {
 	return RippleStateEntry
 }

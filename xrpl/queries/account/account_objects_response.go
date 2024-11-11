@@ -10,7 +10,7 @@ const (
 	ErrAccountObjectUnmarshal string = "Unmarshal JSON AccountObjects"
 )
 
-type AccountObjectsResponse struct {
+type ObjectsResponse struct {
 	Account            types.Address             `json:"account"`
 	AccountObjects     []ledger.FlatLedgerObject `json:"account_objects"`
 	LedgerHash         common.LedgerHash         `json:"ledger_hash,omitempty"`

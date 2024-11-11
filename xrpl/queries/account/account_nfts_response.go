@@ -5,7 +5,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountNFTsResponse struct {
+type NFTsResponse struct {
 	Account            types.Address      `json:"account"`
 	AccountNFTs        []NFT              `json:"account_nfts"`
 	LedgerIndex        common.LedgerIndex `json:"ledger_index,omitempty"`

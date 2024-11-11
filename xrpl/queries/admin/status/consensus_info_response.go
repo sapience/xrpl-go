@@ -29,7 +29,7 @@ type ConsensusInfo struct {
 
 type Position struct {
 	CloseTime       uint              `json:"close_time"`
-	PeerId          string            `json:"peer_id,omitempty"`
+	PeerID          string            `json:"peer_id,omitempty"`
 	PreviousLedger  common.LedgerHash `json:"previous_ledger"`
 	ProposeSeq      int               `json:"propose_seq"`
 	TransactionHash string            `json:"transaction_hash"`

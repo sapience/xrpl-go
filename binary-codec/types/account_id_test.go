@@ -39,7 +39,7 @@ func TestAccountID_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			accountID := &AccountID{}
-			actual, err := accountID.FromJson(tc.input)
+			actual, err := accountID.FromJSON(tc.input)
 			require.Equal(t, tc.expected, actual)
 			require.Equal(t, tc.expectedErr, err)
 		})
@@ -113,7 +113,7 @@ func TestAccountID_ToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			accountID, parser := tc.setup(t)
-			actual, err := accountID.ToJson(parser, tc.opts...)
+			actual, err := accountID.ToJSON(parser, tc.opts...)
 
 			if tc.err != nil {
 				require.Error(t, err)

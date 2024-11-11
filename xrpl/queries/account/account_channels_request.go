@@ -8,7 +8,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountChannelsRequest struct {
+type ChannelsRequest struct {
 	Account            types.Address          `json:"account"`
 	DestinationAccount types.Address          `json:"destination_account,omitempty"`
 	LedgerIndex        common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -17,20 +17,20 @@ type AccountChannelsRequest struct {
 	Marker             any                    `json:"marker,omitempty"`
 }
 
-func (*AccountChannelsRequest) Method() string {
+func (*ChannelsRequest) Method() string {
 	return "account_channels"
 }
 
 // Validate method to be added to each request struct
-func (a *AccountChannelsRequest) Validate() error {
-	if a.Account == "" {
+func (r *ChannelsRequest) Validate() error {
+	if r.Account == "" {
 		return errors.New("no account ID specified")
 	}
 
 	return nil
 }
 
-func (r *AccountChannelsRequest) UnmarshalJSON(data []byte) error {
+func (r *ChannelsRequest) UnmarshalJSON(data []byte) error {
 	type acrHelper struct {
 		Account            types.Address     `json:"account"`
 		DestinationAccount types.Address     `json:"destination_account"`
@@ -43,7 +43,7 @@ func (r *AccountChannelsRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = AccountChannelsRequest{
+	*r = ChannelsRequest{
 		Account:            h.Account,
 		DestinationAccount: h.DestinationAccount,
 		LedgerHash:         h.LedgerHash,

@@ -17,17 +17,17 @@ import (
 func TestSendRequest(t *testing.T) {
 	tt := []struct {
 		description    string
-		req            WebsocketXRPLRequest
-		res            WebsocketXRPLResponse
+		req            XRPLRequest
+		res            XRPLResponse
 		expectedErr    error
 		serverMessages []map[string]any
 	}{
 		{
 			description: "successful request",
-			req: &account.AccountChannelsRequest{
+			req: &account.ChannelsRequest{
 				Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 			},
-			res: &WebSocketClientXrplResponse{
+			res: &ClientXrplResponse{
 				ID: 1,
 				Result: map[string]any{
 					"account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -75,10 +75,10 @@ func TestSendRequest(t *testing.T) {
 		},
 		{
 			description: "Invalid ID",
-			req: &account.AccountChannelsRequest{
+			req: &account.ChannelsRequest{
 				Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 			},
-			res: &WebSocketClientXrplResponse{
+			res: &ClientXrplResponse{
 				Result: map[string]any{
 					"account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					"channels": []any{
@@ -98,7 +98,7 @@ func TestSendRequest(t *testing.T) {
 					"validated":    true,
 				},
 			},
-			expectedErr: ErrIncorrectId,
+			expectedErr: ErrIncorrectID,
 			serverMessages: []map[string]any{
 				{
 					"id": 2,
@@ -125,10 +125,10 @@ func TestSendRequest(t *testing.T) {
 		},
 		{
 			description: "Error response",
-			req: &account.AccountChannelsRequest{
+			req: &account.ChannelsRequest{
 				Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 			},
-			res: &WebSocketClientXrplResponse{
+			res: &ClientXrplResponse{
 				ID: 1,
 				Result: map[string]any{
 					"account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -179,8 +179,8 @@ func TestSendRequest(t *testing.T) {
 				}
 			})
 			defer s.Close()
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{cfg: ClientConfig{
 				host: url,
 			}}
 
@@ -197,10 +197,10 @@ func TestSendRequest(t *testing.T) {
 }
 
 func TestWebsocketClient_formatRequest(t *testing.T) {
-	ws := &WebsocketClient{}
+	ws := &Client{}
 	tt := []struct {
 		description string
-		req         WebsocketXRPLRequest
+		req         XRPLRequest
 		id          int
 		marker      any
 		expected    string
@@ -208,7 +208,7 @@ func TestWebsocketClient_formatRequest(t *testing.T) {
 	}{
 		{
 			description: "valid request",
-			req: &account.AccountChannelsRequest{
+			req: &account.ChannelsRequest{
 				Account:            "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				DestinationAccount: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				Limit:              70,
@@ -226,7 +226,7 @@ func TestWebsocketClient_formatRequest(t *testing.T) {
 		},
 		{
 			description: "valid request with marker",
-			req: &account.AccountChannelsRequest{
+			req: &account.ChannelsRequest{
 				Account:            "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				DestinationAccount: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				Limit:              70,
@@ -260,7 +260,7 @@ func TestWebsocketClient_formatRequest(t *testing.T) {
 }
 
 func TestWebsocketClient_convertTransactionAddressToClassicAddress(t *testing.T) {
-	ws := &WebsocketClient{}
+	ws := &Client{}
 	tests := []struct {
 		name      string
 		tx        transaction.FlatTransaction
@@ -300,7 +300,7 @@ func TestWebsocketClient_convertTransactionAddressToClassicAddress(t *testing.T)
 }
 
 func TestWebsocketClient_validateTransactionAddress(t *testing.T) {
-	ws := &WebsocketClient{}
+	ws := &Client{}
 	tests := []struct {
 		name         string
 		tx           transaction.FlatTransaction
@@ -393,7 +393,7 @@ func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
 		},
 	}
 
-	ws := &WebsocketClient{}
+	ws := &Client{}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -466,9 +466,9 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
@@ -590,12 +590,12 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host:       url,
 					feeCushion: tt.feeCushion,
-					maxFeeXRP:  DEFAULT_MAX_FEE_XRP,
+					maxFeeXRP:  DefaultMaxFeeXRP,
 				},
 			}
 
@@ -636,7 +636,7 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 				},
 			},
 			tx:          transaction.FlatTransaction{},
-			expectedTx:  transaction.FlatTransaction{"LastLedgerSequence": int(1000 + LEDGER_OFFSET)},
+			expectedTx:  transaction.FlatTransaction{"LastLedgerSequence": int(1000 + LedgerOffset)},
 			expectedErr: nil,
 		},
 	}
@@ -654,9 +654,9 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
@@ -717,9 +717,9 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
@@ -775,7 +775,7 @@ func TestWebsocketClient_setTransactionFlags(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &WebsocketClient{}
+			c := &Client{}
 			err := c.setTransactionFlags(&tt.tx)
 
 			if (err != nil) != tt.wantErr {

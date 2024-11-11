@@ -9,7 +9,7 @@ type DirectoryNode struct {
 	Indexes           []types.Hash256
 	IndexNext         string `json:",omitempty"`
 	IndexPrevious     string `json:",omitempty"`
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	Owner             types.Address `json:",omitempty"`
 	RootIndex         types.Hash256
 	TakerGetsCurrency string `json:",omitempty"`
@@ -18,6 +18,6 @@ type DirectoryNode struct {
 	TakerPaysIssuer   string `json:",omitempty"`
 }
 
-func (*DirectoryNode) EntryType() LedgerEntryType {
+func (*DirectoryNode) EntryType() EntryType {
 	return DirectoryNodeEntry
 }

@@ -7,14 +7,14 @@ import (
 )
 
 const (
-	DROPS_PER_XRP          float64 = 1000000
-	MAX_FRACTION_LENGTH    uint    = 6
-	NATIVE_CURRENCY_SYMBOL string  = "XRP"
+	DropsPerXrp          float64 = 1000000
+	MaxFractionLength    uint    = 6
+	NativeCurrencySymbol string  = "XRP"
 )
 
 // Convert an amount in XRP to an amount in drops.
 func XrpToDrops(value string) (string, error) {
-	if i := strings.IndexByte(value, '.'); i != -1 && len(value[i+1:]) > int(MAX_FRACTION_LENGTH) {
+	if i := strings.IndexByte(value, '.'); i != -1 && len(value[i+1:]) > int(MaxFractionLength) {
 		return "", errors.New("xrp to drops: value has too many decimals")
 	}
 
@@ -23,7 +23,7 @@ func XrpToDrops(value string) (string, error) {
 		return "", err
 	}
 
-	dropsFloat := xrpFloat * DROPS_PER_XRP
+	dropsFloat := xrpFloat * DropsPerXrp
 	return strconv.FormatFloat(dropsFloat, 'f', -1, 64), nil
 
 }
@@ -35,7 +35,7 @@ func DropsToXrp(value string) (string, error) {
 		return "", err
 	}
 
-	xrpFloat := float64(dropUint) / DROPS_PER_XRP
+	xrpFloat := float64(dropUint) / DropsPerXrp
 
 	return strconv.FormatFloat(xrpFloat, 'f', -1, 64), nil
 }

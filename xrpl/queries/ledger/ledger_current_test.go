@@ -9,7 +9,7 @@ import (
 // Ledger Current request has no fields to test
 
 func TestLedgerCurrentResponse(t *testing.T) {
-	s := LedgerCurrentResponse{
+	s := CurrentResponse{
 		LedgerCurrentIndex: 123,
 	}
 	j := `{

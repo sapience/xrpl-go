@@ -3,12 +3,12 @@ package ledger
 type NegativeUNL struct {
 	DisabledValidators  []DisabledValidatorEntry `json:",omitempty"`
 	Flags               uint
-	LedgerEntryType     LedgerEntryType
+	LedgerEntryType     EntryType
 	ValidatorToDisable  string `json:",omitempty"`
 	ValidatorToReEnable string `json:",omitempty"`
 }
 
-func (*NegativeUNL) EntryType() LedgerEntryType {
+func (*NegativeUNL) EntryType() EntryType {
 	return NegativeUNLEntry
 }
 

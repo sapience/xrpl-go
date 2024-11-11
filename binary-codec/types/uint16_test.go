@@ -69,8 +69,8 @@ func TestUint16_FromJson(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			uint16 := &UInt16{}
-			actual, err := uint16.FromJson(tc.input)
+			class := &UInt16{}
+			actual, err := class.FromJSON(tc.input)
 			if !reflect.DeepEqual(err, tc.expectedErr) {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}
@@ -141,8 +141,8 @@ func TestUint16_ToJson(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			uint16, mockParser := tc.setup(t)
-			actual, err := uint16.ToJson(mockParser)
+			class, mockParser := tc.setup(t)
+			actual, err := class.ToJSON(mockParser)
 			if !reflect.DeepEqual(err, tc.expectedErr) {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}

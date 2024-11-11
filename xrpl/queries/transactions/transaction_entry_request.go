@@ -6,17 +6,17 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type TransactionEntryRequest struct {
+type EntryRequest struct {
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 	TxHash      string                 `json:"tx_hash"`
 }
 
-func (*TransactionEntryRequest) Method() string {
+func (*EntryRequest) Method() string {
 	return "transaction_entry"
 }
 
-func (t *TransactionEntryRequest) UnmarshalJSON(data []byte) error {
+func (t *EntryRequest) UnmarshalJSON(data []byte) error {
 	type terHelper struct {
 		LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
 		LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
@@ -26,7 +26,7 @@ func (t *TransactionEntryRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*t = TransactionEntryRequest{
+	*t = EntryRequest{
 		LedgerHash: h.LedgerHash,
 		TxHash:     h.TxHash,
 	}

@@ -19,7 +19,7 @@ type Offer struct {
 	BookNode          string
 	Expiration        uint `json:",omitempty"`
 	Flags             OfferFlags
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	OwnerNode         string
 	PreviousTxnID     types.Hash256
 	PreviousTxnLgrSeq uint
@@ -28,7 +28,7 @@ type Offer struct {
 	TakerGets         types.CurrencyAmount
 }
 
-func (*Offer) EntryType() LedgerEntryType {
+func (*Offer) EntryType() EntryType {
 	return OfferEntry
 }
 
@@ -39,7 +39,7 @@ func (o *Offer) UnmarshalJSON(data []byte) error {
 		BookNode          string
 		Expiration        uint
 		Flags             OfferFlags
-		LedgerEntryType   LedgerEntryType
+		LedgerEntryType   EntryType
 		OwnerNode         string
 		PreviousTxnID     types.Hash256
 		PreviousTxnLgrSeq uint

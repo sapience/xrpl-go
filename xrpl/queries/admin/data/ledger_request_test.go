@@ -130,7 +130,7 @@ func TestLedgerRequestPartialResponse(t *testing.T) {
 
 func TestLedgerRequestCompleteResponse(t *testing.T) {
 	s := LedgerRequestResponse{
-		LedgerHeader: &ledger.LedgerHeader{
+		LedgerHeader: &ledger.Header{
 			AccountHash:         "84EBB27D9510AD5B9A3A328201921B3FD418D4A349E85D3DC69E33C7B506407F",
 			CloseTime:           486691300,
 			CloseTimeHuman:      "2015-Jun-04 00:01:40",

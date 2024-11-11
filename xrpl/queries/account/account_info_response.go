@@ -5,7 +5,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type AccountInfoResponse struct {
+type InfoResponse struct {
 	AccountData        ledger.AccountRoot  `json:"account_data"`
 	SignerLists        []ledger.SignerList `json:"signer_lists,omitempty"`
 	LedgerCurrentIndex common.LedgerIndex  `json:"ledger_current_index,omitempty"`

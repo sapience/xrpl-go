@@ -7,7 +7,7 @@ import (
 )
 
 func TestTicket(t *testing.T) {
-	var s LedgerObject = &Ticket{
+	var s Object = &Ticket{
 		Account:           "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
 		Flags:             0,
 		LedgerEntryType:   TicketEntry,

@@ -5,28 +5,28 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type JsonRpcResponse struct {
-	Result    AnyJson               `json:"result"`
+type Response struct {
+	Result    AnyJSON               `json:"result"`
 	Warning   string                `json:"warning,omitempty"`
 	Warnings  []XRPLResponseWarning `json:"warnings,omitempty"`
 	Forwarded bool                  `json:"forwarded,omitempty"`
 }
 
 type XRPLResponseWarning struct {
-	Id      int    `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 	Details any    `json:"details,omitempty"`
 }
 
-type AnyJson transaction.FlatTransaction
+type AnyJSON transaction.FlatTransaction
 
-type ApiWarning struct {
-	Id      int         `json:"id"`
+type APIWarning struct {
+	ID      int         `json:"id"`
 	Message string      `json:"message"`
 	Details interface{} `json:"details,omitempty"`
 }
 
-func (r JsonRpcResponse) GetResult(v any) error {
+func (r Response) GetResult(v any) error {
 	dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json",
 		Result: &v, DecodeHook: mapstructure.TextUnmarshallerHookFunc()})
 
@@ -40,6 +40,6 @@ func (r JsonRpcResponse) GetResult(v any) error {
 	return nil
 }
 
-type JsonRpcXRPLResponse interface {
+type XRPLResponse interface {
 	GetResult(v any) error
 }

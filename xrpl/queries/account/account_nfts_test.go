@@ -8,7 +8,7 @@ import (
 )
 
 func TestAccountNFTsRequest(t *testing.T) {
-	s := AccountNFTsRequest{
+	s := NFTsRequest{
 		Account:     "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		LedgerIndex: common.VALIDATED,
 		LedgerHash:  "123",
@@ -27,7 +27,7 @@ func TestAccountNFTsRequest(t *testing.T) {
 }
 
 func TestAccountNFTsResponse(t *testing.T) {
-	s := AccountNFTsResponse{
+	s := NFTsResponse{
 		Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		AccountNFTs: []NFT{
 			{Flags: Burnable | OnlyXRP,

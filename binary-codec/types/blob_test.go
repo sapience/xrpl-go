@@ -41,7 +41,7 @@ func TestBlob_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			blob := &Blob{}
-			actual, err := blob.FromJson(tc.input)
+			actual, err := blob.FromJSON(tc.input)
 			if err != tc.expectedErr {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}
@@ -104,7 +104,7 @@ func TestBlob_ToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			blob, parser := tc.setup(t)
-			actual, err := blob.ToJson(parser, tc.opts...)
+			actual, err := blob.ToJSON(parser, tc.opts...)
 			if err != nil && err.Error() != tc.expectedErr.Error() {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}

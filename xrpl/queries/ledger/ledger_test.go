@@ -9,7 +9,7 @@ import (
 )
 
 func TestLedgerRequest(t *testing.T) {
-	s := LedgerRequest{
+	s := Request{
 		LedgerHash:  "abc",
 		LedgerIndex: common.LedgerIndex(123),
 	}
@@ -23,8 +23,8 @@ func TestLedgerRequest(t *testing.T) {
 }
 
 func TestLedgerResponse(t *testing.T) {
-	s := LedgerResponse{
-		Ledger: LedgerHeader{
+	s := Response{
+		Ledger: Header{
 			AccountHash:         "53BD4650A024E27DEB52DBB6A52EDB26528B987EC61C895C48D1EB44CEDD9AD3",
 			CloseTime:           638329241,
 			CloseTimeHuman:      "2020-Mar-24 01:40:41.000000000 UTC",

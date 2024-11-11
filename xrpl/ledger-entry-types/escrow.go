@@ -14,13 +14,13 @@ type Escrow struct {
 	DestinationTag    uint   `json:",omitempty"`
 	FinishAfter       uint   `json:",omitempty"`
 	Flags             uint
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	OwnerNode         string
 	PreviousTxnID     types.Hash256
 	PreviousTxnLgrSeq uint
 	SourceTag         uint `json:",omitempty"`
 }
 
-func (*Escrow) EntryType() LedgerEntryType {
+func (*Escrow) EntryType() EntryType {
 	return EscrowEntry
 }

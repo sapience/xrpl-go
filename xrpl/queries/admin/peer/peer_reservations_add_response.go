@@ -1,5 +1,5 @@
 package peer
 
-type PeerReservationsAddResponse struct {
-	Previous *PeerReservation `json:"previous,omitempty"`
+type ReservationsAddResponse struct {
+	Previous *Reservation `json:"previous,omitempty"`
 }

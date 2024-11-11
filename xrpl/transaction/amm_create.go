@@ -7,7 +7,7 @@ import (
 )
 
 // The maximum value is 1000, indicating a 1% fee. The minimum value is 0. https://xrpl.org/docs/references/protocol/transactions/types/ammcreate#ammcreate-fields
-const AMM_MAX_TRADING_FEE = 1000
+const AmmMaxTradingFee = 1000
 
 // Create a new Automated Market Maker (AMM) instance for trading a pair of assets (fungible tokens or XRP).
 //
@@ -50,22 +50,22 @@ func (*AMMCreate) TxType() TxType {
 }
 
 // Flatten returns a map of the AMMCreate struct
-func (s *AMMCreate) Flatten() FlatTransaction {
+func (a *AMMCreate) Flatten() FlatTransaction {
 	// Add BaseTx fields
-	flattened := s.BaseTx.Flatten()
+	flattened := a.BaseTx.Flatten()
 
 	// Add AMMCreate-specific fields
 	flattened["TransactionType"] = "AMMCreate"
 
-	if s.Amount != nil {
-		flattened["Amount"] = s.Amount.Flatten()
+	if a.Amount != nil {
+		flattened["Amount"] = a.Amount.Flatten()
 	}
 
-	if s.Amount2 != nil {
-		flattened["Amount2"] = s.Amount2.Flatten()
+	if a.Amount2 != nil {
+		flattened["Amount2"] = a.Amount2.Flatten()
 	}
 
-	flattened["TradingFee"] = s.TradingFee
+	flattened["TradingFee"] = a.TradingFee
 
 	return flattened
 }
@@ -85,8 +85,8 @@ func (a *AMMCreate) Validate() (bool, error) {
 		return false, err
 	}
 
-	if a.TradingFee > AMM_MAX_TRADING_FEE {
-		return false, fmt.Errorf("trading fee is too high, max value is %d", AMM_MAX_TRADING_FEE)
+	if a.TradingFee > AmmMaxTradingFee {
+		return false, fmt.Errorf("trading fee is too high, max value is %d", AmmMaxTradingFee)
 	}
 
 	return true, nil

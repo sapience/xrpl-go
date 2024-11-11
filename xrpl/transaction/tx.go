@@ -68,7 +68,7 @@ type BaseTx struct {
 	//
 	Memos []MemoWrapper `json:",omitempty"`
 	// The network id of the transaction.
-	NetworkId uint `json:",omitempty"`
+	NetworkID uint `json:",omitempty"`
 	//
 	// Array of objects that represent a multi-signature which authorizes this
 	// transaction.
@@ -137,8 +137,8 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		}
 		flattened["Memos"] = flattenedMemos
 	}
-	if tx.NetworkId != 0 {
-		flattened["NetworkId"] = tx.NetworkId
+	if tx.NetworkID != 0 {
+		flattened["NetworkId"] = tx.NetworkID
 	}
 	if len(tx.Signers) > 0 {
 		flattenedSigners := make([]FlatSigner, 0)

@@ -72,7 +72,7 @@ func TestHash_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			hash := newHash(tc.length)
-			actual, err := hash.FromJson(tc.json)
+			actual, err := hash.FromJSON(tc.json)
 			require.Equal(t, tc.expected, actual)
 			if tc.expectedErr != nil {
 				require.Equal(t, tc.expectedErr.Error(), err.Error())
@@ -120,7 +120,7 @@ func TestHash_ToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			hash, parser := tc.setup(t)
-			actual, err := hash.ToJson(parser)
+			actual, err := hash.ToJSON(parser)
 			require.Equal(t, tc.expected, actual)
 			require.Equal(t, tc.expectedErr, err)
 		})
