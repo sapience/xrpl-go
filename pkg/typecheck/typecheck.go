@@ -59,3 +59,9 @@ func IsFloat64(s string) bool {
 	_, err := strconv.ParseFloat(s, 64)
 	return err == nil
 }
+
+// Checks if the given string is a valid number (Uint).
+func IsStringNumericUint(s string, base, bitSize int) bool {
+	_, err := strconv.ParseUint(s, base, bitSize)
+	return err == nil
+}

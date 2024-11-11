@@ -2,11 +2,9 @@ package types
 
 import (
 	"bytes"
-	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
@@ -28,19 +26,11 @@ func (u *UInt64) FromJSON(value any) ([]byte, error) {
 	}
 
 	if !isNumeric(value.(string)) {
-		if hex, err := hex.DecodeString(value.(string)); err == nil {
-			buf.Write(hex)
-			return buf.Bytes(), nil
-		}
-		stringToUint64, err := strconv.ParseUint(value.(string), 10, 64)
+		hex, err := hex.DecodeString(value.(string))
 		if err != nil {
 			return nil, err
 		}
-		value = stringToUint64
-		err = binary.Write(buf, binary.BigEndian, value)
-		if err != nil {
-			return nil, err
-		}
+		buf.Write(hex)
 		return buf.Bytes(), nil
 	}
 	value = strings.Repeat("0", 16-len(value.(string))) + value.(string) // right justify the string

@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"encoding/json"
 	"errors"
 
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -99,31 +98,6 @@ func (t *TrustSet) SetSetFreezeFlag() {
 // ClearFreeze: Unfreeze the trust line
 func (t *TrustSet) SetClearFreezeFlag() {
 	t.Flags |= tfClearFreeze
-}
-
-func (t *TrustSet) UnmarshalJSON(data []byte) error {
-	type tsHelper struct {
-		BaseTx
-		LimitAmount json.RawMessage
-		QualityIn   uint32 `json:",omitempty"`
-		QualityOut  uint32 `json:",omitempty"`
-	}
-	var h tsHelper
-	if err := json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*t = TrustSet{
-		BaseTx:     h.BaseTx,
-		QualityIn:  h.QualityIn,
-		QualityOut: h.QualityOut,
-	}
-	limit, err := types.UnmarshalCurrencyAmount(h.LimitAmount)
-	if err != nil {
-		return err
-	}
-	t.LimitAmount = limit
-
-	return nil
 }
 
 // Validates the TrustSet transaction.
