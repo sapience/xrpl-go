@@ -41,7 +41,7 @@ func (r *RipplePathFindRequest) UnmarshalJSON(data []byte) error {
 		SourceCurrencies:   h.SourceCurrencies,
 		LedgerHash:         h.LedgerHash,
 	}
-	var dst, max types.CurrencyAmount
+	var dst, sendMax types.CurrencyAmount
 	var err error
 
 	dst, err = types.UnmarshalCurrencyAmount(h.DestinationAmount)
@@ -50,11 +50,11 @@ func (r *RipplePathFindRequest) UnmarshalJSON(data []byte) error {
 	}
 	r.DestinationAmount = dst
 
-	max, err = types.UnmarshalCurrencyAmount(h.SendMax)
+	sendMax, err = types.UnmarshalCurrencyAmount(h.SendMax)
 	if err != nil {
 		return err
 	}
-	r.SendMax = max
+	r.SendMax = sendMax
 
 	var i common.LedgerSpecifier
 	i, err = common.UnmarshalLedgerSpecifier(h.LedgerIndex)
@@ -63,5 +63,4 @@ func (r *RipplePathFindRequest) UnmarshalJSON(data []byte) error {
 	}
 	r.LedgerIndex = i
 	return nil
-
 }
