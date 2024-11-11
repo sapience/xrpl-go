@@ -1,39 +1,139 @@
 package transaction
 
 import (
-	"encoding/json"
-	"reflect"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestSetRegularKeyTx(t *testing.T) {
-	s := SetRegularKey{
-		BaseTx: BaseTx{
-			Account:         "abc",
-			TransactionType: SetRegularKeyTx,
-			Fee:             types.XRPCurrencyAmount(10),
+func TestSetRegularKey_TxType(t *testing.T) {
+	entry := &SetRegularKey{}
+	assert.Equal(t, SetRegularKeyTx, entry.TxType())
+}
+
+func TestSetRegularKey_Flatten(t *testing.T) {
+	tests := []struct {
+		name       string
+		regularKey *SetRegularKey
+		want       string
+	}{
+		{
+			name: "Valid SetRegularKey",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SetRegularKeyTx,
+				},
+				RegularKey: "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+			},
+			want: `{
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"TransactionType": "SetRegularKey",
+				"RegularKey":      "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v"
+			}`,
 		},
-		RegularKey: "def",
+		{
+			name: "Without RegularKey",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SetRegularKeyTx,
+				},
+			},
+			want: `{
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"TransactionType": "SetRegularKey"
+			}`,
+		},
 	}
 
-	j := `{
-	"Account": "abc",
-	"TransactionType": "SetRegularKey",
-	"Fee": "10",
-	"RegularKey": "def"
-}`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
-		t.Error(err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := testutil.CompareFlattenAndExpected(tt.regularKey.Flatten(), []byte(tt.want))
+			if err != nil {
+				t.Error(err)
+			}
+		})
+	}
+}
+func TestSetRegularKey_Validate(t *testing.T) {
+	tests := []struct {
+		name       string
+		regularKey *SetRegularKey
+		wantValid  bool
+		wantErr    bool
+	}{
+		{
+			name: "Valid SetRegularKey",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SetRegularKeyTx,
+				},
+				RegularKey: "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "Invalid SetRegularKey BaseTx",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				},
+				RegularKey: "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "RegularKey same as Account",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SetRegularKeyTx,
+				},
+				RegularKey: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "Invalid RegularKey address",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SetRegularKeyTx,
+				},
+				RegularKey: "invalidAddress",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "Without RegularKey",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SetRegularKeyTx,
+				},
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
 	}
 
-	tx, err := UnmarshalTx(json.RawMessage(j))
-	if err != nil {
-		t.Errorf("UnmarshalTx error: %s", err.Error())
-	}
-	if !reflect.DeepEqual(tx, &s) {
-		t.Error("UnmarshalTx result differs from expected")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.regularKey.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if valid != tt.wantValid {
+				t.Errorf("Validate() = %v, want %v", valid, !tt.wantErr)
+			}
+		})
 	}
 }

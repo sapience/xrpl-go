@@ -77,7 +77,8 @@ func TestAMMBidFlatten(t *testing.T) {
 		t.Error(err)
 	}
 }
-func TestAMMBidValidate(t *testing.T) {
+
+func TestAMMBid_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
 		ammBid  AMMBid
@@ -87,7 +88,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Valid AMMBid",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -146,7 +147,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Invalid AMMBid with more than 4 AuthAccounts",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -191,7 +192,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Invalid AMMBid with more an AuthAccount with invalid address",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -231,7 +232,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Invalid AMMBid with invalid Asset, currency empty",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -261,7 +262,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Invalid AMMBid with invalid Asset2, issuer empty with currency non empty",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -291,7 +292,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Invalid AMMBid with invalid Asset and Asset2, two XRP assets",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -321,7 +322,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Invalid AMMBid with invalid BidMin, missing value and issuer",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,
@@ -351,7 +352,7 @@ func TestAMMBidValidate(t *testing.T) {
 			name: "Invalid AMMBid with invalid BidMax, missing value and issuer",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
-					Account:         "abcdef",
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 					TransactionType: AMMBidTx,
 					Fee:             types.XRPCurrencyAmount(1),
 					Sequence:        1234,

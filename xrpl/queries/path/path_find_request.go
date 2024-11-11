@@ -48,7 +48,7 @@ func (r *FindRequest) UnmarshalJSON(data []byte) error {
 		Paths:              h.Paths,
 	}
 
-	var dest, max types.CurrencyAmount
+	var dest, sendMax types.CurrencyAmount
 	var err error
 	dest, err = types.UnmarshalCurrencyAmount(h.DestinationAmount)
 	if err != nil {
@@ -56,11 +56,11 @@ func (r *FindRequest) UnmarshalJSON(data []byte) error {
 	}
 	r.DestinationAmount = dest
 
-	max, err = types.UnmarshalCurrencyAmount(h.SendMax)
+	sendMax, err = types.UnmarshalCurrencyAmount(h.SendMax)
 	if err != nil {
 		return err
 	}
-	r.SendMax = max
+	r.SendMax = sendMax
 
 	return nil
 }
