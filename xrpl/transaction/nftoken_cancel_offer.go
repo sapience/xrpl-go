@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"errors"
+
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -42,4 +44,18 @@ func (n *NFTokenCancelOffer) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate checks the validity of the NFTokenCancelOffer fields.
+func (n *NFTokenCancelOffer) Validate() (bool, error) {
+	ok, err := n.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	if len(n.NFTokenOffers) == 0 {
+		return false, errors.New("the NFTokenOffers array must have at least 1 entry")
+	}
+
+	return true, nil
 }
