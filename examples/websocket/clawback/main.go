@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
+	"github.com/Peersyst/xrpl-go/pkg/random"
 	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -32,7 +33,7 @@ func main() {
 	// Configure wallets
 	//
 	fmt.Println("⏳ Setting up wallets...")
-	coldWallet, err := xrpl.NewWallet(crypto.ED25519())
+	coldWallet, err := xrpl.NewWallet(crypto.ED25519(), random.NewRandomizer())
 	if err != nil {
 		fmt.Printf("❌ Error creating cold wallet: %s\n", err)
 		return
@@ -44,7 +45,7 @@ func main() {
 	}
 	fmt.Println("💸 Cold wallet funded!")
 
-	hotWallet, err := xrpl.NewWallet(crypto.ED25519())
+	hotWallet, err := xrpl.NewWallet(crypto.ED25519(), random.NewRandomizer())
 	if err != nil {
 		fmt.Printf("❌ Error creating hot wallet: %s\n", err)
 		return

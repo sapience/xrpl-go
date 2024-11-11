@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
+	"github.com/Peersyst/xrpl-go/pkg/random"
 	"github.com/Peersyst/xrpl-go/xrpl"
 	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -31,7 +32,7 @@ func main() {
 	fmt.Printf("Classic address: %s\n", mnemonicWallet.ClassicAddress)
 	fmt.Printf("Seed: %s\n", mnemonicWallet.Seed)
 
-	wallet, err := xrpl.NewWallet(crypto.ED25519())
+	wallet, err := xrpl.NewWallet(crypto.ED25519(), random.NewRandomizer())
 	if err != nil {
 		panic(err)
 	}
