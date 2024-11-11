@@ -135,7 +135,7 @@
 				
 				<option value="file39">github.com/Peersyst/xrpl-go/pkg/map_utils/map_utils.go (100.0%)</option>
 				
-				<option value="file40">github.com/Peersyst/xrpl-go/pkg/random/main.go (0.0%)</option>
+				<option value="file40">github.com/Peersyst/xrpl-go/pkg/random/main.go (83.3%)</option>
 				
 				<option value="file41">github.com/Peersyst/xrpl-go/pkg/typecheck/typecheck.go (90.9%)</option>
 				
@@ -4234,19 +4234,19 @@ type Randomizer struct {
         io.Reader
 }
 
-func NewRandomizer() *Randomizer <span class="cov0" title="0">{
+func NewRandomizer() *Randomizer <span class="cov8" title="1">{
         return &amp;Randomizer{
                 Reader: rand.Reader,
         }
 }</span>
 
-func (r *Randomizer) GenerateBytes(n int) ([]byte, error) <span class="cov0" title="0">{
+func (r *Randomizer) GenerateBytes(n int) ([]byte, error) <span class="cov8" title="1">{
         b := make([]byte, n)
-        _, err := r.Read(b) //nolint
+        _, err := r.Read(b)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">return b, nil</span>
+        <span class="cov8" title="1">return b, nil</span>
 }
 </pre>
 		
@@ -12027,7 +12027,7 @@ import (
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
         "github.com/Peersyst/xrpl-go/keypairs"
-        "github.com/Peersyst/xrpl-go/keypairs/interfaces"
+        "github.com/Peersyst/xrpl-go/pkg/random"
         "github.com/Peersyst/xrpl-go/xrpl/hash"
         "github.com/tyler-smith/go-bip32"
         "github.com/tyler-smith/go-bip39"
@@ -12045,8 +12045,8 @@ type Wallet struct {
 
 // Creates a new random Wallet. In order to make this a valid account on ledger, you must
 // Send XRP to it.
-func NewWallet(alg addresscodec.CryptoImplementation, randomizer interfaces.Randomizer) (Wallet, error) <span class="cov0" title="0">{
-        seed, err := keypairs.GenerateSeed("", alg, randomizer)
+func NewWallet(alg addresscodec.CryptoImplementation) (Wallet, error) <span class="cov0" title="0">{
+        seed, err := keypairs.GenerateSeed("", alg, random.NewRandomizer())
         if err != nil </span><span class="cov0" title="0">{
                 return Wallet{}, err
         }</span>
