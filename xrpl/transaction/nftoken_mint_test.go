@@ -137,3 +137,141 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 		})
 	}
 }
+func TestNFTokenMint_Validate(t *testing.T) {
+	tests := []struct {
+		name      string
+		nft       *NFTokenMint
+		setter    func(*NFTokenMint)
+		wantValid bool
+		wantErr   bool
+	}{
+		{
+			name: "pass - minimal fields",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "fail - invalid BaseTx fields, missing account",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - transfer fee exceeds max",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				TransferFee:  60000,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - issuer same as account",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Issuer:       "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - issuer invalid address",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Issuer:       "invalidAddress",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - URI not hexadecimal",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				URI:          "invalidURI",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - transfer fee set without transferable flag",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				TransferFee:  314,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "pass - transfer fee set with transferable flag",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				TransferFee:  314,
+			},
+			setter: func(n *NFTokenMint) {
+				n.SetTransferableFlag()
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setter != nil {
+				tt.setter(tt.nft)
+			}
+			valid, err := tt.nft.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if valid != tt.wantValid {
+				t.Errorf("Validate() valid = %v, wantValid %v", valid, tt.wantValid)
+			}
+		})
+	}
+}

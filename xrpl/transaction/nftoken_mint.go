@@ -1,6 +1,10 @@
 package transaction
 
 import (
+	"errors"
+
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -111,4 +115,44 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+const (
+	// Allowing a transfer fee of up to 50%.
+	MaxTransferFee = 50000
+)
+
+// Validate checks the validity of the NFTokenMint fields.
+func (n *NFTokenMint) Validate() (bool, error) {
+	ok, err := n.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	// check transfer fee is between 0 and 50000
+	if n.TransferFee > MaxTransferFee {
+		return false, errors.New("transferFee must be between 0 and 50000")
+	}
+
+	// check issuer is not the same as the account
+	if n.Issuer == n.Account {
+		return false, errors.New("issuer must be different from the account")
+	}
+
+	// check issuer is a valid xrpl address
+	if n.Issuer != "" && !addresscodec.IsValidClassicAddress(n.Issuer.String()) {
+		return false, errors.New("invalid xrpl address for the Issuer field")
+	}
+
+	// check URI is a valid hexadecimal string
+	if n.URI != "" && !typecheck.IsHex(n.URI.String()) {
+		return false, errors.New("invalid URI, must be an hexadecimal string")
+	}
+
+	// check transfer fee can only be set if the tfTransferable flag is enabled
+	if n.TransferFee > 0 && !IsFlagEnabled(n.Flags, tfTransferable) {
+		return false, errors.New("transferFee can only be set if the tfTransferable flag is enabled")
+	}
+
+	return true, nil
 }
