@@ -30,7 +30,7 @@ func TestNFTokenURI_String(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.input.String(); got != tt.expected {
-				t.Errorf("NFTokenID.String(), got: %v but we want: %v", got, tt.expected)
+				t.Errorf("NFTokenURI.String(), got: %v but we want: %v", got, tt.expected)
 			}
 		})
 	}
