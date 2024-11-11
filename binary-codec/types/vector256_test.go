@@ -35,7 +35,7 @@ func TestVector256_FromJson(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := (&Vector256{}).FromJson(tc.input)
+			got, err := (&Vector256{}).FromJSON(tc.input)
 			if tc.err != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.err, err)
@@ -76,7 +76,7 @@ func TestVector256_ToJson(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			parser, opts := tc.malleate(t)
-			got, err := (&Vector256{}).ToJson(parser, opts...)
+			got, err := (&Vector256{}).ToJSON(parser, opts...)
 			if tc.err != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.err, err)
