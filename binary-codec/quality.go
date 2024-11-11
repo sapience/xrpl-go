@@ -11,28 +11,28 @@ import (
 )
 
 const (
-	// ZeroQualityHex is the hex representation of the zero quality.
-	ZeroQualityHex = 0x5500000000000000
-	// MaxIOUPrecision is the maximum precision for an IOU.
-	MaxIOUPrecision = 16
-	// MinIOUExponent is the minimum exponent for an IOU.
-	MinIOUExponent = -96
-	// MaxIOUExponent is the maximum exponent for an IOU.
-	MaxIOUExponent = 80
+	// zeroQualityHex is the hex representation of the zero quality.
+	zeroQualityHex = 0x5500000000000000
+	// maxIOUPrecision is the maximum precision for an IOU.
+	maxIOUPrecision = 16
+	// minIOUExponent is the minimum exponent for an IOU.
+	minIOUExponent = -96
+	// maxIOUExponent is the maximum exponent for an IOU.
+	maxIOUExponent = 80
 )
 
 var (
-	ErrInvalidQuality = errors.New("invalid quality")
+	errInvalidQuality = errors.New("invalid quality")
 )
 
 // EncodeQuality encodes a quality amount to a hex string.
 func EncodeQuality(quality string) (string, error) {
 	if len(quality) == 0 {
-		return "", ErrInvalidQuality
+		return "", errInvalidQuality
 	}
 	if len(strings.Trim(strings.Trim(quality, "0"), ".")) == 0 {
 		zeroAmount := make([]byte, 8)
-		binary.BigEndian.PutUint64(zeroAmount, uint64(ZeroQualityHex))
+		binary.BigEndian.PutUint64(zeroAmount, uint64(zeroQualityHex))
 		return hex.EncodeToString(zeroAmount), nil
 	}
 
@@ -42,12 +42,12 @@ func EncodeQuality(quality string) (string, error) {
 	}
 
 	if !isValidQuality(*bigDecimal) {
-		return "", ErrInvalidQuality
+		return "", errInvalidQuality
 	}
 
 	if bigDecimal.UnscaledValue == "" {
 		zeroAmount := make([]byte, 8)
-		binary.BigEndian.PutUint64(zeroAmount, uint64(ZeroQualityHex))
+		binary.BigEndian.PutUint64(zeroAmount, uint64(zeroQualityHex))
 		// if the value is zero, then return the zero currency amount hex
 		return hex.EncodeToString(zeroAmount), nil
 	}
@@ -71,7 +71,7 @@ func EncodeQuality(quality string) (string, error) {
 // Decode a quality amount from a hex string to a string.
 func DecodeQuality(quality string) (string, error) {
 	if quality == "" {
-		return "", ErrInvalidQuality
+		return "", errInvalidQuality
 	}
 
 	decoded, err := hex.DecodeString(quality)
@@ -113,5 +113,5 @@ func DecodeQuality(quality string) (string, error) {
 }
 
 func isValidQuality(quality bigdecimal.BigDecimal) bool {
-	return quality.Precision <= MaxIOUPrecision && quality.Scale >= MinIOUExponent && quality.Scale <= MaxIOUExponent
+	return quality.Precision <= maxIOUPrecision && quality.Scale >= minIOUExponent && quality.Scale <= maxIOUExponent
 }
