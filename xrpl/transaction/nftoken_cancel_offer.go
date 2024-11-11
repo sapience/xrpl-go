@@ -32,13 +32,13 @@ func (*NFTokenCancelOffer) TxType() TxType {
 }
 
 // Flatten returns a map of the NFTokenCancelOffer transaction fields.
-func (s *NFTokenCancelOffer) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (n *NFTokenCancelOffer) Flatten() FlatTransaction {
+	flattened := n.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "NFTokenCancelOffer"
 
-	if len(s.NFTokenOffers) > 0 {
-		flattened["NFTokenOffers"] = s.NFTokenOffers
+	if len(n.NFTokenOffers) > 0 {
+		flattened["NFTokenOffers"] = n.NFTokenOffers
 	}
 
 	return flattened
