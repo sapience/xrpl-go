@@ -5,7 +5,7 @@ import (
 )
 
 type RipplePathFindResponse struct {
-	Alternatives          []PathAlternative `json:"alternatives"`
-	DestinationAccount    types.Address     `json:"destination_account"`
-	DestinationCurrencies []string          `json:"destination_currencies"`
+	Alternatives          []Alternative `json:"alternatives"`
+	DestinationAccount    types.Address `json:"destination_account"`
+	DestinationCurrencies []string      `json:"destination_currencies"`
 }

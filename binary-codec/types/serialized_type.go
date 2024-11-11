@@ -10,8 +10,8 @@ import (
 // The ToJson method takes a BinaryParser and optional parameters, and converts
 // the serialized byte data back to a JSON value.
 type SerializedType interface {
-	FromJson(json any) ([]byte, error)
-	ToJson(parser interfaces.BinaryParser, opts ...int) (any, error)
+	FromJSON(json any) ([]byte, error)
+	ToJSON(parser interfaces.BinaryParser, opts ...int) (any, error)
 }
 
 // GetSerializedType is a function that returns the correct SerializedType instance

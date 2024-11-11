@@ -6,12 +6,12 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type WebsocketXRPLResponse interface {
+type XRPLResponse interface {
 	GetResult(v any) error
 }
 
 type XRPLResponseWarning struct {
-	Id      int    `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 	Details any    `json:"details,omitempty"`
 }
@@ -25,7 +25,7 @@ func (e *ErrorWebsocketClientXrplResponse) Error() string {
 	return e.Type
 }
 
-type WebSocketClientXrplResponse struct {
+type ClientXrplResponse struct {
 	ID        int                   `json:"id"`
 	Status    string                `json:"status"`
 	Type      string                `json:"type"`
@@ -37,7 +37,7 @@ type WebSocketClientXrplResponse struct {
 	Forwarded bool                  `json:"forwarded,omitempty"`
 }
 
-func (r *WebSocketClientXrplResponse) GetResult(v any) error {
+func (r *ClientXrplResponse) GetResult(v any) error {
 	dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json", Result: &v, DecodeHook: mapstructure.TextUnmarshallerHookFunc()})
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func (r *WebSocketClientXrplResponse) GetResult(v any) error {
 	return nil
 }
 
-func (r *WebSocketClientXrplResponse) CheckError() error {
+func (r *ClientXrplResponse) CheckError() error {
 	if r.Error != "" {
 		return &ErrorWebsocketClientXrplResponse{
 			Type:    r.Error,

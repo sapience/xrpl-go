@@ -1,11 +1,11 @@
 package rpc
 
-type JsonRpcRequest struct {
+type Request struct {
 	Method string         `json:"method"`
 	Params [1]interface{} `json:"params,omitempty"`
 }
 
-type JsonRpcXRPLRequest interface {
+type XRPLRequest interface {
 	Method() string
 	Validate() error
 }

@@ -7,10 +7,10 @@ import (
 const (
 	// Minimum TicketCount value.
 	// https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
-	MIN_TICKET_COUNT = 1
+	MinTicketCount = 1
 	// Maximum TicketCount value.
 	// https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
-	MAX_TICKET_COUNT = 250
+	MaxTicketCount = 250
 )
 
 // A TicketCreate transaction sets aside one or more sequence numbers as Tickets.
@@ -31,7 +31,7 @@ const (
 type TicketCreate struct {
 	// Base transaction fields
 	BaseTx
-	//How many Tickets to create. This must be a positive number and cannot cause
+	// How many Tickets to create. This must be a positive number and cannot cause
 	// the account to own more than 250 Tickets after executing this transaction.
 	TicketCount uint32
 }
@@ -61,8 +61,8 @@ func (t *TicketCreate) Validate() (bool, error) {
 		return false, err
 	}
 
-	if t.TicketCount < MIN_TICKET_COUNT || t.TicketCount > MAX_TICKET_COUNT {
-		return false, fmt.Errorf("ticketCount must be equal or greater than %d and less than or equal to %d", MIN_TICKET_COUNT, MAX_TICKET_COUNT)
+	if t.TicketCount < MinTicketCount || t.TicketCount > MaxTicketCount {
+		return false, fmt.Errorf("ticketCount must be equal or greater than %d and less than or equal to %d", MinTicketCount, MaxTicketCount)
 	}
 
 	return true, nil

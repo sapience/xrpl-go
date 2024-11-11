@@ -17,13 +17,13 @@ func main() {
 		return
 	}
 
-	client := websocket.NewWebsocketClient(
+	client := websocket.NewClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 
-	accountInfo, err := client.GetAccountInfo(&account.AccountInfoRequest{
+	accountInfo, err := client.GetAccountInfo(&account.InfoRequest{
 		Account:    types.Address(wallet.GetAddress()),
 		SignerList: true,
 	})

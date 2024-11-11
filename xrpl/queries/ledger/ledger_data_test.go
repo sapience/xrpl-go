@@ -8,7 +8,7 @@ import (
 )
 
 func TestLedgerDataRequest(t *testing.T) {
-	s := LedgerDataRequest{
+	s := DataRequest{
 		LedgerIndex: common.CLOSED,
 		Binary:      true,
 		Limit:       5,

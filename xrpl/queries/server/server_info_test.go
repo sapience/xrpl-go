@@ -7,14 +7,14 @@ import (
 )
 
 func TestServerInfoResponse(t *testing.T) {
-	s := ServerInfoResponse{
-		Info: ServerInfo{
+	s := InfoResponse{
+		Info: Info{
 			BuildVersion:    "1.9.4",
 			CompleteLedgers: "32570-75801736",
 			HostID:          "ARMY",
 			IOLatencyMS:     1,
 			JQTransOverflow: "2282",
-			LastClose: &ServerClose{
+			LastClose: &Close{
 				ConvergeTimeS: 3.002,
 				Proposers:     35,
 			},
@@ -23,7 +23,7 @@ func TestServerInfoResponse(t *testing.T) {
 			PubkeyNode:            "n9KKBZvwPZ95rQi4BP3an1MRctTyavYkZiLpQwasmFYTE6RYdeX3",
 			ServerState:           "full",
 			ServerStateDurationUS: "69205850392",
-			StateAccounting: map[string]ServerInfoAccounting{
+			StateAccounting: map[string]InfoAccounting{
 				"connected": {
 					DurationUS:  "141058919",
 					Transitions: "7",
@@ -47,7 +47,7 @@ func TestServerInfoResponse(t *testing.T) {
 			},
 			Time:   "2022-Nov-16 21:50:22.711679 UTC",
 			Uptime: 4360976,
-			ValidatedLedger: &ServerLedgerInfo{
+			ValidatedLedger: &LedgerInfo{
 				Age:            1,
 				BaseFeeXRP:     0.00001,
 				Hash:           "3147A41F5F013209581FCDCBBB7A87A4F01EF6842963E13B2B14C8565E00A22B",

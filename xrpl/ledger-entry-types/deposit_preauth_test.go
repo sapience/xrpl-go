@@ -7,7 +7,7 @@ import (
 )
 
 func TestDepositPreauth(t *testing.T) {
-	var s LedgerObject = &DepositPreauthObj{
+	var s Object = &DepositPreauthObj{
 		LedgerEntryType:   DepositPreauthObjEntry,
 		Account:           "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
 		Authorize:         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",

@@ -1,13 +1,13 @@
 package stream
 
-type StreamType string
+type Type string
 
 const (
-	LedgerStreamType      StreamType = "ledgerClosed"
-	ValidationStreamType  StreamType = "validationReceived"
-	TransactionStreamType StreamType = "transaction"
-	PeerStatusStreamType  StreamType = "peerStatusChange"
+	LedgerStreamType      Type = "ledgerClosed"
+	ValidationStreamType  Type = "validationReceived"
+	TransactionStreamType Type = "transaction"
+	PeerStatusStreamType  Type = "peerStatusChange"
 	// TODO example lists OrderBookStreamType as "transaction"
-	OrderBookStreamType StreamType = TransactionStreamType
-	ConsensusStreamType StreamType = "consensusPhase"
+	OrderBookStreamType Type = TransactionStreamType
+	ConsensusStreamType Type = "consensusPhase"
 )

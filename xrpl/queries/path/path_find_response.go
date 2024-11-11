@@ -7,8 +7,8 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type PathFindResponse struct {
-	Alternatives       []PathAlternative    `json:"alternatives"`
+type FindResponse struct {
+	Alternatives       []Alternative        `json:"alternatives"`
 	DestinationAccount types.Address        `json:"destination_account"`
 	DestinationAmount  types.CurrencyAmount `json:"destination_amount"`
 	SourceAccount      types.Address        `json:"source_account"`
@@ -17,21 +17,21 @@ type PathFindResponse struct {
 	Status             bool                 `json:"status,omitempty"`
 }
 
-func (r *PathFindResponse) UnmarshalJSON(data []byte) error {
+func (r *FindResponse) UnmarshalJSON(data []byte) error {
 	type pfrHelper struct {
-		Alternatives       []PathAlternative `json:"alternatives"`
-		DestinationAccount types.Address     `json:"destination_account"`
-		DestinationAmount  json.RawMessage   `json:"destination_amount"`
-		SourceAccount      types.Address     `json:"source_account"`
-		FullReply          bool              `json:"full_reply"`
-		Closed             bool              `json:"closed,omitempty"`
-		Status             bool              `json:"status,omitempty"`
+		Alternatives       []Alternative   `json:"alternatives"`
+		DestinationAccount types.Address   `json:"destination_account"`
+		DestinationAmount  json.RawMessage `json:"destination_amount"`
+		SourceAccount      types.Address   `json:"source_account"`
+		FullReply          bool            `json:"full_reply"`
+		Closed             bool            `json:"closed,omitempty"`
+		Status             bool            `json:"status,omitempty"`
 	}
 	var h pfrHelper
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = PathFindResponse{
+	*r = FindResponse{
 		Alternatives:       h.Alternatives,
 		DestinationAccount: h.DestinationAccount,
 		SourceAccount:      h.SourceAccount,
@@ -49,13 +49,13 @@ func (r *PathFindResponse) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type PathAlternative struct {
+type Alternative struct {
 	PathsComputed     [][]transaction.PathStep `json:"paths_computed"`
 	SourceAmount      types.CurrencyAmount     `json:"source_amount"`
 	DestinationAmount types.CurrencyAmount     `json:"destination_amount,omitempty"`
 }
 
-func (p *PathAlternative) UnmarshalJSON(data []byte) error {
+func (p *Alternative) UnmarshalJSON(data []byte) error {
 	type paHelper struct {
 		PathsComputed     [][]transaction.PathStep `json:"paths_computed"`
 		SourceAmount      json.RawMessage          `json:"source_amount"`

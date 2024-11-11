@@ -55,9 +55,9 @@ func (h hash) getLength() int {
 	return h.Length
 }
 
-// FromJson method for hash converts a hexadecimal string from JSON to a byte array.
+// FromJSON method for hash converts a hexadecimal string from JSON to a byte array.
 // It returns an error if the conversion fails or the length of the decoded byte array is not as expected.
-func (h hash) FromJson(json any) ([]byte, error) {
+func (h hash) FromJSON(json any) ([]byte, error) {
 	v, ok := json.(string)
 	if !ok {
 		return nil, &ErrInvalidHashType{}
@@ -72,9 +72,9 @@ func (h hash) FromJson(json any) ([]byte, error) {
 	return decoded, nil
 }
 
-// ToJson method for hash reads a certain number of bytes from a BinaryParser and converts it into a hexadecimal string.
+// ToJSON method for hash reads a certain number of bytes from a BinaryParser and converts it into a hexadecimal string.
 // It returns an error if the read operation fails.
-func (h hash) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) {
+func (h hash) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	b, err := p.ReadBytes(h.Length)
 	if err != nil {
 		return nil, err

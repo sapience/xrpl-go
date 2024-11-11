@@ -66,7 +66,7 @@ func TestStObject_FromJson(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			stObject := &STObject{}
 
-			got, err := stObject.FromJson(tc.input)
+			got, err := stObject.FromJSON(tc.input)
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
 			} else {
@@ -129,7 +129,7 @@ func TestStObject_ToJson(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			stObject := &STObject{}
-			got, err := stObject.ToJson(tc.malleate(t))
+			got, err := stObject.ToJSON(tc.malleate(t))
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
 			} else {

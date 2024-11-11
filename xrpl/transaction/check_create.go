@@ -18,6 +18,6 @@ func (*CheckCreate) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *CheckCreate) Flatten() FlatTransaction {
+func (c *CheckCreate) Flatten() FlatTransaction {
 	return nil
 }

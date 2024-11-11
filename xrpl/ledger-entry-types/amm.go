@@ -58,7 +58,7 @@ import (
 //	    ]
 //	}
 type AMM struct {
-	LedgerEntryCommonFields
+	EntryCommonFields
 	// The address of the special account that holds this AMM's assets.
 	Account types.Address
 	// The definition for one of the two assets this AMM holds. In JSON, this is an object with currency and issuer fields.
@@ -164,6 +164,6 @@ type VoteEntry struct {
 	VoteWeight uint
 }
 
-func (*AMM) EntryType() LedgerEntryType {
+func (*AMM) EntryType() EntryType {
 	return AMMEntry
 }

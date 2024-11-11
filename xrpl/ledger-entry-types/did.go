@@ -45,6 +45,6 @@ type DID struct {
 }
 
 // EntryType returns the type of the ledger entry.
-func (*DID) EntryType() LedgerEntryType {
+func (*DID) EntryType() EntryType {
 	return DIDEntry
 }

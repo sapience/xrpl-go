@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	TESTNET_FAUCET_HOST = "faucet.altnet.rippletest.net"
-	TESTNET_FAUCET_PATH = "/accounts"
+	TestnetFaucetHost = "faucet.altnet.rippletest.net"
+	TestnetFaucetPath = "/accounts"
 )
 
 // TestnetFaucetProvider implements the FaucetProvider interface for the XRPL Testnet.
@@ -23,8 +23,8 @@ type TestnetFaucetProvider struct {
 // with predefined Testnet faucet host and account path.
 func NewTestnetFaucetProvider() *TestnetFaucetProvider {
 	return &TestnetFaucetProvider{
-		host:        TESTNET_FAUCET_HOST,
-		accountPath: TESTNET_FAUCET_PATH,
+		host:        TestnetFaucetHost,
+		accountPath: TestnetFaucetPath,
 	}
 }
 
@@ -32,14 +32,20 @@ func NewTestnetFaucetProvider() *TestnetFaucetProvider {
 // It returns an error if the funding request fails.
 func (fp *TestnetFaucetProvider) FundWallet(address string) error {
 	url := fmt.Sprintf("https://%s%s", fp.host, fp.accountPath)
-	payload := map[string]string{"destination": address, "userAgent": USER_AGENT}
+	payload := map[string]string{"destination": address, "userAgent": UserAgent}
 	jsonPayload, err := json.Marshal(payload)
 
 	if err != nil {
 		return fmt.Errorf("error marshaling payload: %v", err)
 	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonPayload))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending POST request: %v", err)
 	}

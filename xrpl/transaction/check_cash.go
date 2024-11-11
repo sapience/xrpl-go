@@ -16,6 +16,6 @@ func (*CheckCash) TxType() TxType {
 }
 
 // TODO: Implement flatten
-func (s *CheckCash) Flatten() FlatTransaction {
+func (c *CheckCash) Flatten() FlatTransaction {
 	return nil
 }

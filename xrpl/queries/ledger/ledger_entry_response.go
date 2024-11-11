@@ -5,7 +5,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type LedgerEntryResponse struct {
+type EntryResponse struct {
 	Index       string                  `json:"index"`
 	LedgerIndex common.LedgerIndex      `json:"ledger_index"`
 	Node        ledger.FlatLedgerObject `json:"node,omitempty"`

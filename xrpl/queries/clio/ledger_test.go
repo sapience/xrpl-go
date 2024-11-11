@@ -31,7 +31,7 @@ func TestLedgerRequest(t *testing.T) {
 func TestLedgerResponse(t *testing.T) {
 	// TODO  test AccountState
 	s := LedgerResponse{
-		Ledger: ClioLedger{
+		Ledger: Ledger{
 			AccountHash:         "10EFE192F59B3DE2A2BE5BCE2CA5DC83D066105696FCFC24C055359AAEBD6941",
 			CloseFlags:          0,
 			CloseTime:           711134782,

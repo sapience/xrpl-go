@@ -1,8 +1,8 @@
 package peer
 
-type PeerReservationsListRequest struct {
+type ReservationsListRequest struct {
 }
 
-func (*PeerReservationsListRequest) Method() string {
+func (*ReservationsListRequest) Method() string {
 	return "peer_reservations_list"
 }

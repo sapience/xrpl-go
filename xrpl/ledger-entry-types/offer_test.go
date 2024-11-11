@@ -8,7 +8,7 @@ import (
 )
 
 func TestOffer(t *testing.T) {
-	var s LedgerObject = &Offer{
+	var s Object = &Offer{
 		Account:           "rBqb89MRQJnMPq8wTwEbtz4kvxrEDfcYvt",
 		BookDirectory:     "ACC27DE91DBA86FC509069EAF4BC511D73128B780F2E54BF5E07A369E2446000",
 		BookNode:          "0000000000000000",

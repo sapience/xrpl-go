@@ -7,7 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountInfoRequest struct {
+type InfoRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -16,15 +16,15 @@ type AccountInfoRequest struct {
 	Strict      bool                   `json:"strict,omitempty"`
 }
 
-func (*AccountInfoRequest) Method() string {
+func (*InfoRequest) Method() string {
 	return "account_info"
 }
 
-func (*AccountInfoRequest) Validate() error {
+func (*InfoRequest) Validate() error {
 	return nil
 }
 
-func (r *AccountInfoRequest) UnmarshalJSON(data []byte) error {
+func (r *InfoRequest) UnmarshalJSON(data []byte) error {
 	type airHelper struct {
 		Account     types.Address     `json:"account"`
 		LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
@@ -37,7 +37,7 @@ func (r *AccountInfoRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = AccountInfoRequest{
+	*r = InfoRequest{
 		Account:    h.Account,
 		LedgerHash: h.LedgerHash,
 		Queue:      h.Queue,

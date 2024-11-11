@@ -7,7 +7,7 @@ import (
 )
 
 func TestLedgerEntryCommonFields_SerializeAndDeserialize(t *testing.T) {
-	ledgerEntryCommonFields := LedgerEntryCommonFields{
+	ledgerEntryCommonFields := EntryCommonFields{
 		Index:           "1",
 		LedgerEntryType: "AccountRoot",
 		Flags:           123,

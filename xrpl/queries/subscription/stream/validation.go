@@ -5,7 +5,7 @@ import (
 )
 
 type ValidationStream struct {
-	Type                StreamType         `json:"type"`
+	Type                Type               `json:"type"`
 	Amendments          []string           `json:"amendments,omitempty"`
 	BaseFee             int                `json:"base_fee,omitempty"`
 	Cookie              string             `json:"cookie,omitempty"`

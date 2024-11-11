@@ -72,7 +72,7 @@ func (d *Definitions) GetFieldHeaderByFieldName(n string) (*FieldHeader, error) 
 // Returns the field name associated with the given field header struct.
 func (d *Definitions) GetFieldNameByFieldHeader(fh FieldHeader) (string, error) {
 
-	fim, ok := definitions.FieldIdNameMap[fh]
+	fim, ok := definitions.FieldIDNameMap[fh]
 
 	if !ok {
 		return "", &NotFoundErrorFieldHeader{
@@ -84,7 +84,7 @@ func (d *Definitions) GetFieldNameByFieldHeader(fh FieldHeader) (string, error) 
 }
 
 // Returns the field info struct associated with the given field name.
-func (d *Definitions) GetFieldInfoByFieldName(n string) (*fieldInfo, error) {
+func (d *Definitions) GetFieldInfoByFieldName(n string) (*FieldInfo, error) {
 
 	fi, ok := d.Fields[n]
 
@@ -95,7 +95,7 @@ func (d *Definitions) GetFieldInfoByFieldName(n string) (*fieldInfo, error) {
 		}
 	}
 
-	return fi.fieldInfo, nil
+	return fi.FieldInfo, nil
 }
 
 // Returns the field instance struct associated with the given field name.

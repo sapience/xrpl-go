@@ -11,23 +11,23 @@ const (
 	ed25519Prefix = 0xED
 )
 
-type ed25519CryptoAlgorithm CryptoAlgorithm
+type ED25519CryptoAlgorithm Algorithm
 
-func ED25519() ed25519CryptoAlgorithm {
-	return ed25519CryptoAlgorithm{
+func ED25519() ED25519CryptoAlgorithm {
+	return ED25519CryptoAlgorithm{
 		prefix: ed25519Prefix,
 	}
 }
 
-func (c ed25519CryptoAlgorithm) Prefix() byte {
+func (c ED25519CryptoAlgorithm) Prefix() byte {
 	return c.prefix
 }
 
-func (c ed25519CryptoAlgorithm) FamilySeedPrefix() byte {
+func (c ED25519CryptoAlgorithm) FamilySeedPrefix() byte {
 	return c.familySeedPrefix
 }
 
-func (c ed25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error) {
+func (c ED25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error) {
 	if validator {
 		return "", "", &ed25519ValidatorError{}
 	}
@@ -43,7 +43,7 @@ func (c ed25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool
 	return private, public, nil
 }
 
-func (c ed25519CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
+func (c ED25519CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	b, err := hex.DecodeString(privKey)
 	if err != nil {
 		return "", err
@@ -53,7 +53,7 @@ func (c ed25519CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	return strings.ToUpper(hex.EncodeToString(signedMsg)), nil
 }
 
-func (c ed25519CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
+func (c ED25519CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 	bp, err := hex.DecodeString(pubkey)
 	if err != nil {
 		return false

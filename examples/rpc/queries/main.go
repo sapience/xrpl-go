@@ -11,16 +11,16 @@ import (
 func main() {
 	fmt.Println("Starting JSON RPC client")
 	// init new config object with desired node address
-	cfg, err := rpc.NewJsonRpcConfig("https://s.altnet.rippletest.net:51234/")
+	cfg, err := rpc.NewClientConfig("https://s.altnet.rippletest.net:51234/")
 	if err != nil {
 		log.Panicln(err)
 	}
 
 	// Initialise new json client with json config
-	client := rpc.NewJsonRpcClient(cfg)
+	client := rpc.NewClient(cfg)
 
 	// call the desired method
-	req := &account.AccountInfoRequest{
+	req := &account.InfoRequest{
 		Account: "rPUK1iYbtS6LP9sA2jbUDHtTnbnQqLBnac",
 	}
 

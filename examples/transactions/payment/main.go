@@ -24,7 +24,7 @@ func main() {
 		return
 	}
 
-	_ = websocket.NewWebsocketClient(
+	_ = websocket.NewClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),

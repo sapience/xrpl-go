@@ -53,7 +53,7 @@ func TestPathSet_FromJson(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			pathset := PathSet{}
-			act, err := pathset.FromJson(tc.input)
+			act, err := pathset.FromJSON(tc.input)
 			if tc.err != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.err, err)
@@ -116,7 +116,7 @@ func TestPathSet_ToJson(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			pathset := PathSet{}
-			act, err := pathset.ToJson(tc.malleate(t))
+			act, err := pathset.ToJSON(tc.malleate(t))
 			if tc.err != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.err, err)

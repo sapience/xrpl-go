@@ -58,7 +58,7 @@ func TestUint8_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			class := &UInt8{}
-			actual, err := class.FromJson(tc.input)
+			actual, err := class.FromJSON(tc.input)
 			if !reflect.DeepEqual(err, tc.expectedErr) {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}
@@ -131,7 +131,7 @@ func TestUint8_ToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			uint8, mockParser := tc.setup(t)
-			actual, err := uint8.ToJson(mockParser)
+			actual, err := uint8.ToJSON(mockParser)
 			if !reflect.DeepEqual(err, tc.expectedErr) {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}

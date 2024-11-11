@@ -17,7 +17,7 @@ func main() {
 	testnetClientCfg := websocket.NewWebsocketClientConfig().
 		WithHost("wss://s.altnet.rippletest.net:51233").
 		WithFaucetProvider(testnetFaucet)
-	testnetClient := websocket.NewWebsocketClient(testnetClientCfg)
+	testnetClient := websocket.NewClient(testnetClientCfg)
 
 	wallet, err := xrpl.NewWallet(crypto.ED25519())
 	if err != nil {
@@ -54,7 +54,7 @@ func main() {
 		WithHost("wss://s.devnet.rippletest.net:51233").
 		WithFaucetProvider(devnetFaucet)
 
-	devnetClient := websocket.NewWebsocketClient(clientCfg)
+	devnetClient := websocket.NewClient(clientCfg)
 
 	balance, err = devnetClient.GetXrpBalance(wallet.ClassicAddress)
 	if err != nil {

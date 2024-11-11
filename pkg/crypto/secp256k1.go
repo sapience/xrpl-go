@@ -19,24 +19,24 @@ const (
 	secp256K1FamilySeedPrefix = 0x21
 )
 
-type secp256K1CryptoAlgorithm CryptoAlgorithm
+type SECP256K1CryptoAlgorithm Algorithm
 
-func SECP256K1() secp256K1CryptoAlgorithm {
-	return secp256K1CryptoAlgorithm{
+func SECP256K1() SECP256K1CryptoAlgorithm {
+	return SECP256K1CryptoAlgorithm{
 		prefix:           secp256K1Prefix,
 		familySeedPrefix: secp256K1FamilySeedPrefix,
 	}
 }
 
-func (c secp256K1CryptoAlgorithm) Prefix() byte {
+func (c SECP256K1CryptoAlgorithm) Prefix() byte {
 	return c.prefix
 }
 
-func (c secp256K1CryptoAlgorithm) FamilySeedPrefix() byte {
+func (c SECP256K1CryptoAlgorithm) FamilySeedPrefix() byte {
 	return c.familySeedPrefix
 }
 
-func (c secp256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *big.Int {
+func (c SECP256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *big.Int {
 
 	order := btcec.S256().N
 	for i := 0; i <= 0xffffffff; i++ {
@@ -73,7 +73,7 @@ func (c secp256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *
 	panic("impossible unicorn ;)")
 }
 
-func (c secp256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (string, string, error) {
+func (c SECP256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (string, string, error) {
 	curve := btcec.S256()
 	order := curve.N
 
@@ -99,7 +99,7 @@ func (c secp256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (st
 	return "00" + private, strings.ToUpper(hex.EncodeToString(pubKeyBytes)), nil
 }
 
-func (c secp256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
+func (c SECP256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	if len(privKey) != 64 && len(privKey) != 66 {
 		return "", errors.New("invalid private key")
 	}
@@ -125,7 +125,7 @@ func (c secp256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	return strings.ToUpper(parsedSig), nil
 }
 
-func (c secp256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
+func (c SECP256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 	// Decode the signature from DERHex to a hex string
 	r, s, err := DERHexToSig(sig)
 	if err != nil {

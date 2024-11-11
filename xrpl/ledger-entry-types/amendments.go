@@ -7,11 +7,11 @@ import (
 type Amendments struct {
 	Amendments      []types.Hash256 `json:",omitempty"`
 	Flags           uint
-	LedgerEntryType LedgerEntryType
+	LedgerEntryType EntryType
 	Majorities      []MajorityEntry `json:",omitempty"`
 }
 
-func (*Amendments) EntryType() LedgerEntryType {
+func (*Amendments) EntryType() EntryType {
 	return AmendmentsEntry
 }
 

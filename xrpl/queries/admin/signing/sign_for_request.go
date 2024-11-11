@@ -7,7 +7,7 @@ import (
 
 type SignForRequest struct {
 	Account    types.Address               `json:"account"`
-	TxJson     transaction.FlatTransaction `json:"tx_json"`
+	TxJSON     transaction.FlatTransaction `json:"tx_json"`
 	Secret     string                      `json:"secret,omitempty"`
 	Seed       string                      `json:"seed,omitempty"`
 	SeedHex    string                      `json:"seed_hex,omitempty"`

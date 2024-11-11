@@ -7,29 +7,29 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type LedgerDataRequest struct {
+type DataRequest struct {
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 	Binary      bool                   `json:"binary,omitempty"`
 	Limit       int                    `json:"limit,omitempty"`
 	Marker      any                    `json:"marker,omitempty"`
-	Type        ledger.LedgerEntryType `json:"type,omitempty"`
+	Type        ledger.EntryType       `json:"type,omitempty"`
 }
 
-func (r *LedgerDataRequest) UnmarshalJSON(data []byte) error {
+func (r *DataRequest) UnmarshalJSON(data []byte) error {
 	type ldrHelper struct {
-		LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
-		LedgerIndex json.RawMessage        `json:"ledger_index,omitempty"`
-		Binary      bool                   `json:"binary,omitempty"`
-		Limit       int                    `json:"limit,omitempty"`
-		Marker      any                    `json:"marker,omitempty"`
-		Type        ledger.LedgerEntryType `json:"type,omitempty"`
+		LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
+		LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
+		Binary      bool              `json:"binary,omitempty"`
+		Limit       int               `json:"limit,omitempty"`
+		Marker      any               `json:"marker,omitempty"`
+		Type        ledger.EntryType  `json:"type,omitempty"`
 	}
 	var h ldrHelper
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = LedgerDataRequest{
+	*r = DataRequest{
 		LedgerHash: h.LedgerHash,
 		Binary:     h.Binary,
 		Limit:      h.Limit,

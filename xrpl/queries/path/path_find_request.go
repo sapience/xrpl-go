@@ -7,16 +7,16 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type PathSubCommand string
+type SubCommand string
 
 const (
-	CREATE PathSubCommand = "create"
-	CLOSE  PathSubCommand = "close"
-	STATUS PathSubCommand = "status"
+	CREATE SubCommand = "create"
+	CLOSE  SubCommand = "close"
+	STATUS SubCommand = "status"
 )
 
-type PathFindRequest struct {
-	Subcommand         PathSubCommand         `json:"subcommand"`
+type FindRequest struct {
+	Subcommand         SubCommand             `json:"subcommand"`
 	SourceAccount      types.Address          `json:"source_account,omitempty"`
 	DestinationAccount types.Address          `json:"destination_account,omitempty"`
 	DestinationAmount  types.CurrencyAmount   `json:"destination_amount,omitempty"`
@@ -24,13 +24,13 @@ type PathFindRequest struct {
 	Paths              []transaction.PathStep `json:"paths,omitempty"`
 }
 
-func (*PathFindRequest) Method() string {
+func (*FindRequest) Method() string {
 	return "path_find"
 }
 
-func (r *PathFindRequest) UnmarshalJSON(data []byte) error {
+func (r *FindRequest) UnmarshalJSON(data []byte) error {
 	type pfrHelper struct {
-		Subcommand         PathSubCommand         `json:"subcommand"`
+		Subcommand         SubCommand             `json:"subcommand"`
 		SourceAccount      types.Address          `json:"source_account,omitempty"`
 		DestinationAccount types.Address          `json:"destination_account,omitempty"`
 		DestinationAmount  json.RawMessage        `json:"destination_amount,omitempty"`
@@ -41,14 +41,14 @@ func (r *PathFindRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = PathFindRequest{
+	*r = FindRequest{
 		Subcommand:         h.Subcommand,
 		SourceAccount:      h.SourceAccount,
 		DestinationAccount: h.DestinationAccount,
 		Paths:              h.Paths,
 	}
 
-	var dest, max types.CurrencyAmount
+	var dest, sendMax types.CurrencyAmount
 	var err error
 	dest, err = types.UnmarshalCurrencyAmount(h.DestinationAmount)
 	if err != nil {
@@ -56,11 +56,11 @@ func (r *PathFindRequest) UnmarshalJSON(data []byte) error {
 	}
 	r.DestinationAmount = dest
 
-	max, err = types.UnmarshalCurrencyAmount(h.SendMax)
+	sendMax, err = types.UnmarshalCurrencyAmount(h.SendMax)
 	if err != nil {
 		return err
 	}
-	r.SendMax = max
+	r.SendMax = sendMax
 
 	return nil
 }
