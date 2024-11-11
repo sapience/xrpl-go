@@ -2,7 +2,7 @@
 // Source: interfaces/random.go
 
 // Package interfaces is a generated GoMock package.
-package testutil 
+package testutil
 
 import (
 	reflect "reflect"
