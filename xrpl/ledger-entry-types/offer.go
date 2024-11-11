@@ -6,7 +6,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type OfferFlags uint
+type OfferFlags uint32
 
 const (
 	PassiveOffer OfferFlags = 0x00010000
@@ -17,13 +17,13 @@ type Offer struct {
 	Account           types.Address
 	BookDirectory     types.Hash256
 	BookNode          string
-	Expiration        uint `json:",omitempty"`
+	Expiration        uint32 `json:",omitempty"`
 	Flags             OfferFlags
 	LedgerEntryType   EntryType
 	OwnerNode         string
 	PreviousTxnID     types.Hash256
-	PreviousTxnLgrSeq uint
-	Sequence          uint
+	PreviousTxnLgrSeq uint32
+	Sequence          uint32
 	TakerPays         types.CurrencyAmount
 	TakerGets         types.CurrencyAmount
 }
@@ -37,13 +37,13 @@ func (o *Offer) UnmarshalJSON(data []byte) error {
 		Account           types.Address
 		BookDirectory     types.Hash256
 		BookNode          string
-		Expiration        uint
+		Expiration        uint32
 		Flags             OfferFlags
 		LedgerEntryType   EntryType
 		OwnerNode         string
 		PreviousTxnID     types.Hash256
-		PreviousTxnLgrSeq uint
-		Sequence          uint
+		PreviousTxnLgrSeq uint32
+		Sequence          uint32
 		TakerPays         json.RawMessage
 		TakerGets         json.RawMessage
 	}

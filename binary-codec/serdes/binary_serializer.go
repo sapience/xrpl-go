@@ -4,16 +4,20 @@ import (
 	"errors"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes/interfaces"
 )
 
 var ErrLengthPrefixTooLong = errors.New("length of value must not exceed 918744 bytes of data")
 
 type BinarySerializer struct {
-	sink []byte
+	sink         []byte
+	fieldIDCodec interfaces.FieldIDCodec
 }
 
-func NewSerializer() *BinarySerializer {
-	return &BinarySerializer{}
+func NewBinarySerializer(fieldIDCodec interfaces.FieldIDCodec) *BinarySerializer {
+	return &BinarySerializer{
+		fieldIDCodec: fieldIDCodec,
+	}
 }
 
 func (s *BinarySerializer) put(v []byte) {
@@ -25,7 +29,7 @@ func (s *BinarySerializer) GetSink() []byte {
 }
 
 func (s *BinarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, value []byte) error {
-	h, err := encodeFieldID(fi.FieldName)
+	h, err := s.fieldIDCodec.Encode(fi.FieldName)
 
 	if err != nil {
 		return err

@@ -7,17 +7,17 @@ type Check struct {
 	Account           types.Address
 	Destination       types.Address
 	DestinationNode   string `json:",omitempty"`
-	DestinationTag    uint   `json:",omitempty"`
-	Expiration        uint   `json:",omitempty"`
-	Flags             uint
+	DestinationTag    uint32 `json:",omitempty"`
+	Expiration        uint32 `json:",omitempty"`
+	Flags             uint32
 	InvoiceID         types.Hash256 `json:",omitempty"`
 	LedgerEntryType   EntryType
 	OwnerNode         string
 	PreviousTxnID     types.Hash256
-	PreviousTxnLgrSeq uint
+	PreviousTxnLgrSeq uint32
 	SendMax           string
-	Sequence          uint
-	SourceTag         uint `json:",omitempty"`
+	Sequence          uint32
+	SourceTag         uint32 `json:",omitempty"`
 }
 
 func (*Check) EntryType() EntryType {

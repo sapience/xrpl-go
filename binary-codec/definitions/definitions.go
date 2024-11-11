@@ -8,7 +8,15 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
-var definitions *Definitions
+var (
+	// definitions is the singleton instance of the Definitions struct.
+	definitions *Definitions
+
+	// Errors
+
+	// ErrUnableToCastFieldInfo is returned when the field info cannot be cast.
+	ErrUnableToCastFieldInfo = errors.New("unable to cast to field info")
+)
 
 //go:embed definitions.json
 var docBytes []byte
@@ -60,22 +68,11 @@ type definitionsDoc struct {
 	TransactionTypes   map[string]int32 `json:"TRANSACTION_TYPES"`
 }
 
-type fieldInstanceMap map[string]*FieldInstance
-
-func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {}
-
-func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) {
-	var x [][]interface{}
-	d.MustDecode(&x)
-	y := convertToFieldInstanceMap(x)
-	*fi = y
-}
-
 // Loads JSON from the definitions file and converts it to a preferred format.
 // The definitions file contains information required for the XRP Ledger's
 // canonical binary serialization format:
 // `Serialization <https://xrpl.org/serialization.html>`_
-func loadDefinitions() error {
+func loadDefinitions() {
 
 	var jh codec.JsonHandle
 
@@ -84,10 +81,8 @@ func loadDefinitions() error {
 
 	dec := codec.NewDecoderBytes(docBytes, &jh)
 	var data definitionsDoc
-	err := dec.Decode(&data)
-	if err != nil {
-		return err
-	}
+	dec.MustDecode(&data)
+
 	definitions = &Definitions{
 		Types:              data.Types,
 		Fields:             data.Fields,
@@ -98,8 +93,6 @@ func loadDefinitions() error {
 
 	addFieldHeadersAndOrdinals()
 	createFieldIDNameMap()
-
-	return nil
 }
 
 func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance {
@@ -120,6 +113,8 @@ func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance {
 func castFieldInfo(v interface{}) (FieldInfo, error) {
 	if fi, ok := v.(map[string]interface{}); ok {
 		return FieldInfo{
+			// TODO: Check if this is still needed
+			//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 			Nth:            int32(fi["nth"].(int64)),
 			IsVLEncoded:    fi["isVLEncoded"].(bool),
 			IsSerialized:   fi["isSerialized"].(bool),
@@ -127,7 +122,7 @@ func castFieldInfo(v interface{}) (FieldInfo, error) {
 			Type:           fi["type"].(string),
 		}, nil
 	}
-	return FieldInfo{}, errors.New("unable to cast to field info")
+	return FieldInfo{}, ErrUnableToCastFieldInfo
 }
 
 func addFieldHeadersAndOrdinals() {

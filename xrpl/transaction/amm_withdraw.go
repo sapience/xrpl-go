@@ -57,9 +57,9 @@ type AMMWithdraw struct {
 
 const (
 	// Perform a double-asset withdrawal returning all your LP Tokens.
-	tfWithdrawAll uint = 131072
+	tfWithdrawAll uint32 = 131072
 	// Perform a single-asset withdrawal returning all of your LP Tokens.
-	tfOneAssetWithdrawAll uint = 262144
+	tfOneAssetWithdrawAll uint32 = 262144
 )
 
 // Perform a double-asset withdrawal and receive the specified amount of LP Tokens.

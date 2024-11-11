@@ -11,15 +11,15 @@ const (
 	// Do not use the default path; only use paths included in the Paths field.
 	// This is intended to force the transaction to take arbitrage opportunities.
 	// Most clients do not need this.
-	tfRippleNotDirect uint = 65536
+	tfRippleNotDirect uint32 = 65536
 	// If the specified Amount cannot be sent without spending more than SendMax,
 	// reduce the received amount instead of failing outright. See Partial
 	// Payments for more details.
-	tfPartialPayment uint = 131072
+	tfPartialPayment uint32 = 131072
 	// Only take paths where all the conversions have an input:output ratio that
 	// is equal or better than the ratio of Amount:SendMax. See Limit Quality for
 	// details.
-	tfLimitQuality uint = 262144
+	tfLimitQuality uint32 = 262144
 )
 
 // A Payment transaction represents a transfer of value from one account to another.
@@ -227,7 +227,7 @@ func checkPartialPayment(tx *Payment) (bool, error) {
 		return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
 	}
 
-	if !IsFlagEnabled(tx.Flags, uint(tfPartialPayment)) {
+	if !IsFlagEnabled(tx.Flags, tfPartialPayment) {
 		return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
 	}
 

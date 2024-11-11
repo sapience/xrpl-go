@@ -2,11 +2,11 @@ package ledger
 
 type FeeSettings struct {
 	BaseFee           string
-	Flags             uint
+	Flags             uint32
 	LedgerEntryType   EntryType
-	ReferenceFeeUnits uint
-	ReserveBase       uint
-	ReserveIncrement  uint
+	ReferenceFeeUnits uint32
+	ReserveBase       uint32
+	ReserveIncrement  uint32
 }
 
 func (*FeeSettings) EntryType() EntryType {

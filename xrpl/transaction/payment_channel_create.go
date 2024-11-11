@@ -8,10 +8,10 @@ type PaymentChannelCreate struct {
 	BaseTx
 	Amount         types.XRPCurrencyAmount
 	Destination    types.Address
-	SettleDelay    uint
+	SettleDelay    uint32
 	PublicKey      string
-	CancelAfter    uint `json:",omitempty"`
-	DestinationTag uint `json:",omitempty"`
+	CancelAfter    uint32 `json:",omitempty"`
+	DestinationTag uint32 `json:",omitempty"`
 }
 
 func (*PaymentChannelCreate) TxType() TxType {

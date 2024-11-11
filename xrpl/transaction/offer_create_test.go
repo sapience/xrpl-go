@@ -199,7 +199,7 @@ func TestOfferCreate_Flags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*OfferCreate)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "SetPassiveFlag",

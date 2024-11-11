@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
@@ -71,6 +72,8 @@ func TestUint64_FromJson(t *testing.T) {
 }
 
 func TestUint64_ToJson(t *testing.T) {
+	defs := definitions.Get()
+
 	tt := []struct {
 		name        string
 		input       []byte
@@ -94,7 +97,7 @@ func TestUint64_ToJson(t *testing.T) {
 			input:    []byte{0, 0, 0, 0, 0, 0, 0, 1},
 			expected: "0000000000000001",
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 1})
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 1}, defs)
 			},
 			expectedErr: nil,
 		},
@@ -104,7 +107,7 @@ func TestUint64_ToJson(t *testing.T) {
 			expected:    "0000000000000064",
 			expectedErr: nil,
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 100})
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 100}, defs)
 			},
 		},
 		{
@@ -113,7 +116,7 @@ func TestUint64_ToJson(t *testing.T) {
 			expected:    "00000000000000FF",
 			expectedErr: nil,
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 255})
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 0, 0, 0, 0, 255}, defs)
 			},
 		},
 		{
@@ -122,7 +125,7 @@ func TestUint64_ToJson(t *testing.T) {
 			expected:    "FFFFFFFFFFFFFFFF", // Max uint64 value
 			expectedErr: nil,
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{255, 255, 255, 255, 255, 255, 255, 255})
+				return serdes.NewBinaryParser([]byte{255, 255, 255, 255, 255, 255, 255, 255}, defs)
 			},
 		},
 	}

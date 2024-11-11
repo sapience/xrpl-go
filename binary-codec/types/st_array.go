@@ -3,6 +3,8 @@ package types
 import (
 	"errors"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
@@ -28,7 +30,7 @@ func (t *STArray) FromJSON(json any) ([]byte, error) {
 
 	var sink []byte
 	for _, v := range json.([]any) {
-		st := &STObject{}
+		st := NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
 		b, err := st.FromJSON(v)
 		if err != nil {
 			return nil, err

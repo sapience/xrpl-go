@@ -12,57 +12,57 @@ const (
 	// Account Set Flags
 	//
 	// Require a destination tag to send transactions to this account.
-	asfRequireDest uint = 1
+	asfRequireDest uint32 = 1
 	// Require authorization for users to hold balances issued by this address.
 	// Can only be enabled if the address has no trust lines connected to it.
-	asfRequireAuth uint = 2
+	asfRequireAuth uint32 = 2
 	// XRP should not be sent to this account.
-	asfDisallowXRP uint = 3
+	asfDisallowXRP uint32 = 3
 	// Disallow use of the master key pair. Can only be enabled if the account
 	// has configured another way to sign transactions, such as a Regular Key or a
 	// Signer List.
-	asfDisableMaster uint = 4
+	asfDisableMaster uint32 = 4
 	// Track the ID of this account's most recent transaction. Required for
 	// AccountTxnID.
-	asfAccountTxnID uint = 5
+	asfAccountTxnID uint32 = 5
 	// Permanently give up the ability to freeze individual trust lines or
 	// disable Global Freeze. This flag can never be disabled after being enabled.
-	asfNoFreeze uint = 6
+	asfNoFreeze uint32 = 6
 	// Freeze all assets issued by this account.
-	asfGlobalFreeze uint = 7
+	asfGlobalFreeze uint32 = 7
 	// Enable rippling on this account's trust lines by default.
-	asfDefaultRipple uint = 8
+	asfDefaultRipple uint32 = 8
 	// Enable Deposit Authorization on this account.
-	asfDepositAuth uint = 9
+	asfDepositAuth uint32 = 9
 	// Allow another account to mint and burn tokens on behalf of this account.
-	asfAuthorizedNFTokenMinter uint = 10
+	asfAuthorizedNFTokenMinter uint32 = 10
 	// asf 11 is reserved for Hooks amendment
 	// Disallow other accounts from creating incoming NFTOffers
-	asfDisallowIncomingNFTokenOffer uint = 12
+	asfDisallowIncomingNFTokenOffer uint32 = 12
 	// Disallow other accounts from creating incoming Checks
-	asfDisallowIncomingCheck uint = 13
+	asfDisallowIncomingCheck uint32 = 13
 	// Disallow other accounts from creating incoming Payment Channels
-	asfDisallowIncomingPayChan uint = 14
+	asfDisallowIncomingPayChan uint32 = 14
 	// Disallow other accounts from creating incoming TrustLines
-	asfDisallowIncomingTrustLine uint = 15
+	asfDisallowIncomingTrustLine uint32 = 15
 	// Permanently gain the ability to claw back issued IOUs
-	asfAllowTrustLineClawback uint = 16
+	asfAllowTrustLineClawback uint32 = 16
 
 	//
 	// Transaction Flags
 	//
 	// The same as SetFlag: asfRequireDest.
-	tfRequireDestTag uint = 65536 // 0x00010000
+	tfRequireDestTag uint32 = 65536 // 0x00010000
 	// The same as ClearFlag: asfRequireDestTag.
-	tfOptionalDestTag uint = 131072 // 0x00020000
+	tfOptionalDestTag uint32 = 131072 // 0x00020000
 	// The same as SetFlag: asfRequireAuth.
-	tfRequireAuth uint = 262144 // 0x00040000
+	tfRequireAuth uint32 = 262144 // 0x00040000
 	// The same as ClearFlag: asfRequireAuth.
-	tfOptionalAuth uint = 524288 // 0x00080000
+	tfOptionalAuth uint32 = 524288 // 0x00080000
 	// The same as SetFlag: asfDisallowXRP.
-	tfDisallowXRP uint = 1048576 // 0x00100000
+	tfDisallowXRP uint32 = 1048576 // 0x00100000
 	// The same as ClearFlag: asfDisallowXRP.
-	tfAllowXRP uint = 2097152 // 0x00200000
+	tfAllowXRP uint32 = 2097152 // 0x00200000
 
 	// Tick size to use for offers involving a currency issued by this address.
 	// The exchange rates of those offers is rounded to this many significant digits.
@@ -76,7 +76,7 @@ const (
 type AccountSet struct {
 	BaseTx
 	// ClearFlag: asfRequireDestTag, asfOptionalDestTag, asfRequireAuth, asfOptionalAuth, asfDisallowXRP, asfAllowXRP
-	ClearFlag uint `json:",omitempty"`
+	ClearFlag uint32 `json:",omitempty"`
 	// The domain that owns this account, as a string of hex representing the.
 	// ASCII for the domain in lowercase.
 	Domain string `json:",omitempty"`
@@ -88,17 +88,17 @@ type AccountSet struct {
 	// account's behalf using NFTokenMint's `Issuer` field.
 	NFTokenMinter string `json:",omitempty"`
 	// Integer flag to enable for this account.
-	SetFlag uint `json:",omitempty"`
+	SetFlag uint32 `json:",omitempty"`
 	// The fee to charge when users transfer this account's issued currencies,
 	// represented as billionths of a unit. Cannot be more than 2000000000 or less
 	// than 1000000000, except for the special case 0 meaning no fee.
-	TransferRate uint `json:",omitempty"`
+	TransferRate uint32 `json:",omitempty"`
 	// Tick size to use for offers involving a currency issued by this address.
 	// The exchange rates of those offers is rounded to this many significant
 	// digits. Valid values are 3 to 15 inclusive, or 0 to disable.
 	TickSize      uint8         `json:",omitempty"`
 	WalletLocator types.Hash256 `json:",omitempty"`
-	WalletSize    uint          `json:",omitempty"`
+	WalletSize    uint32        `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (AccountSet).

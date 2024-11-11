@@ -8,7 +8,7 @@ type PaymentChannelFund struct {
 	BaseTx
 	Channel    types.Hash256
 	Amount     types.XRPCurrencyAmount
-	Expiration uint `json:",omitempty"`
+	Expiration uint32 `json:",omitempty"`
 }
 
 func (*PaymentChannelFund) TxType() TxType {
