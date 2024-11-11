@@ -23,7 +23,7 @@ func TestStObject_FromJson(t *testing.T) {
 			name:        "fail - input is not a map",
 			input:       1,
 			output:      nil,
-			expectedErr: errors.New("not a valid json node"),
+			expectedErr: errors.New("not a valid json"),
 		},
 		// {}
 		{
