@@ -56,7 +56,7 @@ type NFTokenMint struct {
 }
 
 // **********************************
-// OfferCreate Flags
+// NFTokenMint Flags
 // **********************************
 
 const (
