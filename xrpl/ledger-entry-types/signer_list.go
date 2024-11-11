@@ -4,31 +4,105 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
 type SignerListFlags uint32
 
-const (
-	LsfOneOwnerCount SignerListFlags = 0x00010000
-)
-
+// A SignerList entry represents a list of parties that, as a group, are authorized to sign a transaction in place of an individual account.
+// You can create, replace, or remove a signer list using a SignerListSet transaction.
+//
+// Example:
+//
+// ```json
+//
+//	{
+//	    "Flags": 0,
+//	    "LedgerEntryType": "SignerList",
+//	    "OwnerNode": "0000000000000000",
+//	    "PreviousTxnID": "5904C0DC72C58A83AEFED2FFC5386356AA83FCA6A88C89D00646E51E687CDBE4",
+//	    "PreviousTxnLgrSeq": 16061435,
+//	    "SignerEntries": [
+//	        {
+//	            "SignerEntry": {
+//	                "Account": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+//	                "SignerWeight": 2
+//	            }
+//	        },
+//	        {
+//	            "SignerEntry": {
+//	                "Account": "raKEEVSGnKSD9Zyvxu4z6Pqpm4ABH8FS6n",
+//	                "SignerWeight": 1
+//	            }
+//	        },
+//	        {
+//	            "SignerEntry": {
+//	                "Account": "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+//	                "SignerWeight": 1
+//	            }
+//	        }
+//	    ],
+//	    "SignerListID": 0,
+//	    "SignerQuorum": 3,
+//	    "index": "A9C28A28B85CD533217F5C0A0C7767666B093FA58A0F2D80026FCC4CD932DDC7"
+//	}
+//
+// ```
 type SignerList struct {
-	LedgerEntryType   EntryType
-	Flags             SignerListFlags
-	PreviousTxnID     string
-	PreviousTxnLgrSeq uint64
-	OwnerNode         string
-	SignerEntries     []SignerEntryWrapper
-	SignerListID      uint64
-	SignerQuorum      uint64
+	// The value 0x0053, mapped to the string SignerList, indicates that this is a SignerList ledger entry.
+	LedgerEntryType EntryType
+	// The identifying hash of the transaction that most recently modified this object.
+	PreviousTxnID string
+	// The index of the ledger that contains the transaction that most recently modified this object.
+	PreviousTxnLgrSeq uint32
+	// A hint indicating which page of the owner directory links to this object, in case the directory consists of multiple pages.
+	OwnerNode string
+	// An array of Signer Entry objects representing the parties who are part of this signer list.
+	SignerEntries []SignerEntryWrapper
+	// An ID for this signer list. Currently always set to 0. If a future amendment allows multiple signer lists for an account, this may change.
+	SignerListID uint32
+	// A target number for signer weights. To produce a valid signature for the owner of this SignerList, the signers must provide valid signatures whose weights sum to this value or more.
+	SignerQuorum uint32
 }
 
+// Wrapper for SignerEntry
 type SignerEntryWrapper struct {
 	SignerEntry SignerEntry
 }
 
+// Flatten returns a map of the SignerEntryWrapper object
+func (s *SignerEntryWrapper) Flatten() FlatLedgerObject {
+	flattened := make(map[string]interface{})
+	flattened["SignerEntry"] = s.SignerEntry.Flatten()
+	return flattened
+}
+
+// Each member of the SignerEntries field is an object that describes that signer in the list.
+// https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/signerlist#signer-entry-object
 type SignerEntry struct {
-	Account       types.Address
-	SignerWeight  uint64
+	// An XRP Ledger address whose signature contributes to the multi-signature. It does not need to be a funded address in the ledger.
+	Account types.Address
+	// The weight of a signature from this signer. A multi-signature is only valid if the sum weight of the signatures provided meets or exceeds the signer list's SignerQuorum value.
+	SignerWeight uint16
+	// (Optional) Arbitrary hexadecimal data. This can be used to identify the signer or for other, related purposes. (Added by the ExpandedSignerList amendment.)
 	WalletLocator types.Hash256 `json:",omitempty"`
 }
 
+// Flatten returns a map of the SignerEntry object
+func (s *SignerEntry) Flatten() FlatLedgerObject {
+	flattened := make(map[string]interface{})
+
+	if s.Account != "" {
+		flattened["Account"] = s.Account
+	}
+
+	if s.SignerWeight != 0 {
+		flattened["SignerWeight"] = s.SignerWeight
+	}
+
+	if s.WalletLocator != "" {
+		flattened["WalletLocator"] = s.WalletLocator
+	}
+
+	return flattened
+}
+
+// EntryType returns the type of the ledger entry (SignerList)
 func (*SignerList) EntryType() EntryType {
 	return SignerListEntry
 }
