@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
-	"github.com/Peersyst/xrpl-go/keypairs"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
-// HashSignedTx hashes a signed transaction blob
+// TxBlob hashes a signed transaction blob
 // It takes a transaction blob and returns the hash of the signed transaction.
 // It returns an error if the transaction blob is invalid.
-func HashSignedTx(txBlob string) (string, error) {
+func TxBlob(txBlob string) (string, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return "", err
@@ -32,7 +32,7 @@ func HashSignedTx(txBlob string) (string, error) {
 	payload := make([]byte, 4+len(txBlob)/2)
 
 	// Convert TRANSACTION_PREFIX to big-endian bytes
-	binary.BigEndian.PutUint32(payload[:4], TRANSACTION_PREFIX)
+	binary.BigEndian.PutUint32(payload[:4], TransactionPrefix)
 
 	// Decode the txBlob into the rest of the payload
 	_, err = hex.Decode(payload[4:], []byte(txBlob))
@@ -40,5 +40,5 @@ func HashSignedTx(txBlob string) (string, error) {
 		return "", err
 	}
 
-	return strings.ToUpper(hex.EncodeToString(keypairs.Sha512Half(payload))), nil
+	return strings.ToUpper(hex.EncodeToString(crypto.Sha512Half(payload))), nil
 }

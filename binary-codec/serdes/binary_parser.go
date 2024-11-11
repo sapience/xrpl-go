@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ErrParserOutOfBound error = errors.New("parser out of bounds")
+	ErrParserOutOfBound = errors.New("parser out of bounds")
 )
 
 type BinaryParser struct {
@@ -47,7 +47,7 @@ func (p *BinaryParser) readFieldHeader() (*definitions.FieldHeader, error) {
 
 	// The field code is the last 4 bits of the first byte
 	fieldCode := typeCode & 15
-	typeCode = typeCode >> 4
+	typeCode >>= 4
 
 	// Read the type code if it's not in the first byte
 	if typeCode == 0 {

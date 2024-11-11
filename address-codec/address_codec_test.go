@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/stretchr/testify/require"
 )
 
@@ -120,56 +121,56 @@ func TestEncodeSeed(t *testing.T) {
 	tt := []struct {
 		description       string
 		input             []byte
-		inputEncodingType CryptoAlgorithm
+		inputEncodingType CryptoImplementation
 		expectedOutput    string
 		expectedErr       error
 	}{
 		{
 			description:       "successful encode - ED25519",
 			input:             []byte("yurtyurtyurtyurt"),
-			inputEncodingType: ED25519,
+			inputEncodingType: crypto.ED25519(),
 			expectedOutput:    "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1H",
 			expectedErr:       nil,
 		},
 		{
 			description:       "successful encode - SECP256K1",
 			input:             []byte("yurtyurtyurtyurt"),
-			inputEncodingType: SECP256K1,
+			inputEncodingType: crypto.SECP256K1(),
 			expectedOutput:    "shPSkLzQNWfyXjZ7bbwgCky6twagA",
 			expectedErr:       nil,
 		},
 		{
 			description:       "successful encode - ED25519 additional",
 			input:             []byte("testingsomething"),
-			inputEncodingType: ED25519,
+			inputEncodingType: crypto.ED25519(),
 			expectedOutput:    "sEdTvLVDRVJsrUyBiCPTHDs46GUKQAr",
 			expectedErr:       nil,
 		},
 		{
 			description:       "successful encode - SECP256K1 additional",
 			input:             []byte("testingsomething"),
-			inputEncodingType: SECP256K1,
+			inputEncodingType: crypto.SECP256K1(),
 			expectedOutput:    "shKMVJjV52uudwfS7HzzaiwmZqVeP",
 			expectedErr:       nil,
 		},
 		{
 			description:       "unsuccessful encode - invalid entropy length",
 			input:             []byte{0x00},
-			inputEncodingType: ED25519,
+			inputEncodingType: crypto.ED25519(),
 			expectedOutput:    "",
 			expectedErr:       &EncodeLengthError{Instance: "Entropy", Input: len([]byte{0x00}), Expected: FamilySeedLength},
 		},
 		{
 			description:       "unsuccessful encode - invalid encoding type",
 			input:             []byte("testingsomething"),
-			inputEncodingType: Undefined,
+			inputEncodingType: crypto.Algorithm{},
 			expectedOutput:    "",
 			expectedErr:       errors.New("encoding type must be `ed25519` or `secp256k1`"),
 		},
 		{
 			description:       "invalid CryptoAlgorithm Uint type returns err",
 			input:             []byte("testingsomething"),
-			inputEncodingType: CryptoAlgorithm(255),
+			inputEncodingType: crypto.Algorithm{},
 			expectedOutput:    "",
 			expectedErr:       errors.New("encoding type must be `ed25519` or `secp256k1`"),
 		},
@@ -193,42 +194,42 @@ func TestDecodeSeed(t *testing.T) {
 		description       string
 		input             string
 		expectedOutput    []byte
-		expectedAlgorithm CryptoAlgorithm
+		expectedAlgorithm CryptoImplementation
 		expectedErr       error
 	}{
 		{
 			description:       "successful decode - ED25519",
 			input:             "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1H",
 			expectedOutput:    []byte("yurtyurtyurtyurt"),
-			expectedAlgorithm: ED25519,
+			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       nil,
 		},
 		{
 			description:       "successful decode - SECP256K1",
 			input:             "shPSkLzQNWfyXjZ7bbwgCky6twagA",
 			expectedOutput:    []byte("yurtyurtyurtyurt"),
-			expectedAlgorithm: SECP256K1,
+			expectedAlgorithm: crypto.SECP256K1(),
 			expectedErr:       nil,
 		},
 		{
 			description:       "successful decode - ED25519 additional",
 			input:             "sEdTvLVDRVJsrUyBiCPTHDs46GUKQAr",
 			expectedOutput:    []byte("testingsomething"),
-			expectedAlgorithm: ED25519,
+			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       nil,
 		},
 		{
 			description:       "successful decode - SECP256K1 additional",
 			input:             "shKMVJjV52uudwfS7HzzaiwmZqVeP",
 			expectedOutput:    []byte("testingsomething"),
-			expectedAlgorithm: SECP256K1,
+			expectedAlgorithm: crypto.SECP256K1(),
 			expectedErr:       nil,
 		},
 		{
 			description:       "unsuccessful decode - invalid seed",
 			input:             "yurt",
 			expectedOutput:    nil,
-			expectedAlgorithm: Undefined,
+			expectedAlgorithm: crypto.Algorithm{},
 			expectedErr:       errors.New("invalid seed; could not determine encoding algorithm"),
 		},
 	}

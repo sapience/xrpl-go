@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
@@ -20,7 +20,7 @@ func main() {
 	// Configure client
 	//
 	fmt.Println("⏳ Setting up client...")
-	client := websocket.NewWebsocketClient(
+	client := websocket.NewClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
@@ -32,7 +32,7 @@ func main() {
 	// Configure wallets
 	//
 	fmt.Println("⏳ Setting up wallets...")
-	coldWallet, err := xrpl.NewWallet(addresscodec.ED25519)
+	coldWallet, err := xrpl.NewWallet(crypto.ED25519())
 	if err != nil {
 		fmt.Printf("❌ Error creating cold wallet: %s\n", err)
 		return
@@ -44,7 +44,7 @@ func main() {
 	}
 	fmt.Println("💸 Cold wallet funded!")
 
-	hotWallet, err := xrpl.NewWallet(addresscodec.ED25519)
+	hotWallet, err := xrpl.NewWallet(crypto.ED25519())
 	if err != nil {
 		fmt.Printf("❌ Error creating hot wallet: %s\n", err)
 		return
@@ -56,7 +56,7 @@ func main() {
 	}
 	fmt.Println("💸 Hot wallet funded!")
 
-	customerOneWallet, err := xrpl.NewWallet(addresscodec.ED25519)
+	customerOneWallet, err := xrpl.NewWallet(crypto.ED25519())
 	if err != nil {
 		fmt.Printf("❌ Error creating token wallet: %s\n", err)
 		return

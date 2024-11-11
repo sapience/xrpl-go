@@ -50,7 +50,7 @@ type Definitions struct {
 	Fields             fieldInstanceMap
 	TransactionResults map[string]int32
 	TransactionTypes   map[string]int32
-	FieldIdNameMap     map[FieldHeader]string
+	FieldIDNameMap     map[FieldHeader]string
 }
 type definitionsDoc struct {
 	Types              map[string]int32 `json:"TYPES"`
@@ -62,7 +62,7 @@ type definitionsDoc struct {
 
 type fieldInstanceMap map[string]*FieldInstance
 
-func (fi *fieldInstanceMap) CodecEncodeSelf(e *codec.Encoder) {}
+func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {}
 
 func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) {
 	var x [][]interface{}
@@ -97,7 +97,7 @@ func loadDefinitions() error {
 	}
 
 	addFieldHeadersAndOrdinals()
-	createFieldIdNameMap()
+	createFieldIDNameMap()
 
 	return nil
 }
@@ -110,16 +110,16 @@ func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance {
 		fi, _ := castFieldInfo(j[1])
 		nm[k] = &FieldInstance{
 			FieldName: k,
-			fieldInfo: &fi,
+			FieldInfo: &fi,
 			Ordinal:   fi.Nth,
 		}
 	}
 	return nm
 }
 
-func castFieldInfo(v interface{}) (fieldInfo, error) {
+func castFieldInfo(v interface{}) (FieldInfo, error) {
 	if fi, ok := v.(map[string]interface{}); ok {
-		return fieldInfo{
+		return FieldInfo{
 			Nth:            int32(fi["nth"].(int64)),
 			IsVLEncoded:    fi["isVLEncoded"].(bool),
 			IsSerialized:   fi["isSerialized"].(bool),
@@ -127,7 +127,7 @@ func castFieldInfo(v interface{}) (fieldInfo, error) {
 			Type:           fi["type"].(string),
 		}, nil
 	}
-	return fieldInfo{}, errors.New("unable to cast to field info")
+	return FieldInfo{}, errors.New("unable to cast to field info")
 }
 
 func addFieldHeadersAndOrdinals() {
@@ -144,11 +144,11 @@ func addFieldHeadersAndOrdinals() {
 	}
 }
 
-func createFieldIdNameMap() {
-	definitions.FieldIdNameMap = make(map[FieldHeader]string, len(definitions.Fields))
+func createFieldIDNameMap() {
+	definitions.FieldIDNameMap = make(map[FieldHeader]string, len(definitions.Fields))
 	for k := range definitions.Fields {
 		fh, _ := definitions.GetFieldHeaderByFieldName(k)
 
-		definitions.FieldIdNameMap[*fh] = k
+		definitions.FieldIDNameMap[*fh] = k
 	}
 }
