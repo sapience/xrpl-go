@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"errors"
+
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -66,4 +68,24 @@ func (n *NFTokenAcceptOffer) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate checks the validity of the NFTokenAcceptOffer fields.
+func (n *NFTokenAcceptOffer) Validate() (bool, error) {
+	ok, err := n.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	// check either NFTokenSellOffer or NFTokenBuyOffer is set
+	if n.NFTokenSellOffer == "" && n.NFTokenBuyOffer == "" {
+		return false, errors.New("either NFTokenSellOffer or NFTokenBuyOffer must be set")
+	}
+
+	// if NFTokenBrokerFee is set, then both NFTokenSellOffer and NFTokenBuyOffer must be set
+	if n.NFTokenBrokerFee != nil && (n.NFTokenSellOffer == "" || n.NFTokenBuyOffer == "") {
+		return false, errors.New("both NFTokenSellOffer and NFTokenBuyOffer must be set when NFTokenBrokerFee is set (brokered mode)")
+	}
+
+	return true, nil
 }

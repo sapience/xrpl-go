@@ -373,7 +373,7 @@
 				
 				<option value="file158">github.com/Peersyst/xrpl-go/xrpl/transaction/memo.go (92.3%)</option>
 				
-				<option value="file159">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go (0.0%)</option>
+				<option value="file159">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go (100.0%)</option>
 				
 				<option value="file160">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_burn.go (100.0%)</option>
 				
@@ -9872,24 +9872,94 @@ func (m *Memo) Flatten() map[string]interface{} <span class="cov8" title="1">{
 		<pre class="file" id="file159" style="display: none">package transaction
 
 import (
+        "errors"
+
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// The NFTokenAcceptOffer transaction is used to accept offers to buy or sell an NFToken. It can either:
+//
+// - Allow one offer to be accepted. This is called direct mode.
+//
+// - Allow two distinct offers, one offering to buy a given NFToken and the other offering to sell the same NFToken, to be accepted in an atomic fashion. This is called brokered mode.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "Account": "r9spUPhPBfB6kQeF6vPhwmtFwRhBh2JUCG",
+//                "Fee": "12",
+//                "LastLedgerSequence": 75447550,
+//                "Memos": [
+//                  {
+//                        "Memo": {
+//                          "MemoData": "61356534373538372D633134322D346663382D616466362D393666383562356435386437"
+//                        }
+//                  }
+//                ],
+//                "NFTokenSellOffer": "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77",
+//                "Sequence": 68549302,
+//                "TransactionType": "NFTokenAcceptOffer"
+//          }
+//
+// / ```
 type NFTokenAcceptOffer struct {
         BaseTx
-        NFTokenSellOffer types.Hash256        `json:",omitempty"`
-        NFTokenBuyOffer  types.Hash256        `json:",omitempty"`
+        // (Optional) Identifies the NFTokenOffer that offers to sell the NFToken.
+        NFTokenSellOffer types.Hash256 `json:",omitempty"`
+        // (Optional) Identifies the NFTokenOffer that offers to buy the NFToken.
+        NFTokenBuyOffer types.Hash256 `json:",omitempty"`
+        // (Optional) This field is only valid in brokered mode, and specifies the amount that the broker keeps as part of their fee for bringing the two offers together; the remaining amount is sent to the seller of the NFToken being bought.
+        // If specified, the fee must be such that, before applying the transfer fee, the amount that the seller would receive is at least as much as the amount indicated in the sell offer.
         NFTokenBrokerFee types.CurrencyAmount `json:",omitempty"`
 }
 
-func (*NFTokenAcceptOffer) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (NFTokenAcceptOffer).
+func (*NFTokenAcceptOffer) TxType() TxType <span class="cov8" title="1">{
         return NFTokenAcceptOfferTx
 }</span>
 
-// TODO: Implement flatten
-func (n *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the NFTokenAcceptOffer transaction fields.
+func (n *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := n.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "NFTokenAcceptOffer"
+
+        if n.NFTokenSellOffer != "" </span><span class="cov8" title="1">{
+                flattened["NFTokenSellOffer"] = n.NFTokenSellOffer
+        }</span>
+
+        <span class="cov8" title="1">if n.NFTokenBuyOffer != "" </span><span class="cov8" title="1">{
+                flattened["NFTokenBuyOffer"] = n.NFTokenBuyOffer
+        }</span>
+
+        <span class="cov8" title="1">if n.NFTokenBrokerFee != nil </span><span class="cov8" title="1">{
+                flattened["NFTokenBrokerFee"] = n.NFTokenBrokerFee
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks the validity of the NFTokenAcceptOffer fields.
+func (n *NFTokenAcceptOffer) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := n.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check either NFTokenSellOffer or NFTokenBuyOffer is set
+        <span class="cov8" title="1">if n.NFTokenSellOffer == "" &amp;&amp; n.NFTokenBuyOffer == "" </span><span class="cov8" title="1">{
+                return false, errors.New("either NFTokenSellOffer or NFTokenBuyOffer must be set")
+        }</span>
+
+        // if NFTokenBrokerFee is set, then both NFTokenSellOffer and NFTokenBuyOffer must be set
+        <span class="cov8" title="1">if n.NFTokenBrokerFee != nil &amp;&amp; (n.NFTokenSellOffer == "" || n.NFTokenBuyOffer == "") </span><span class="cov8" title="1">{
+                return false, errors.New("both NFTokenSellOffer and NFTokenBuyOffer must be set when NFTokenBrokerFee is set (brokered mode)")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file160" style="display: none">package transaction
