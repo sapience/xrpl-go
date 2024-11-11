@@ -181,7 +181,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, errors.New("invalid fee amount, not a uint")
 	}
 
-	err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
+	err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsInt)
 	if err != nil {
 		return false, err
 	}
