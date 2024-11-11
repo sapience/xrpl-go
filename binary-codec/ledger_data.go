@@ -32,7 +32,6 @@ func DecodeLedgerData(data string) (LedgerData, error) {
 	}
 
 	parser := serdes.NewBinaryParser(decoded, definitions.Get())
-
 	var ledgerData LedgerData
 
 	ledgerIndex, err := parser.ReadBytes(4)
