@@ -79,17 +79,17 @@ func (*OfferCreate) TxType() TxType {
 }
 
 // Flatten returns a map of the OfferCreate transaction fields.
-func (s *OfferCreate) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (o *OfferCreate) Flatten() FlatTransaction {
+	flattened := o.BaseTx.Flatten()
 
-	if s.Expiration != 0 {
-		flattened["Expiration"] = s.Expiration
+	if o.Expiration != 0 {
+		flattened["Expiration"] = o.Expiration
 	}
-	if s.OfferSequence != 0 {
-		flattened["OfferSequence"] = s.OfferSequence
+	if o.OfferSequence != 0 {
+		flattened["OfferSequence"] = o.OfferSequence
 	}
-	flattened["TakerGets"] = s.TakerGets.Flatten()
-	flattened["TakerPays"] = s.TakerPays.Flatten()
+	flattened["TakerGets"] = o.TakerGets.Flatten()
+	flattened["TakerPays"] = o.TakerPays.Flatten()
 
 	return flattened
 }

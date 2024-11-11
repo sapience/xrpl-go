@@ -23,28 +23,28 @@ import (
 )
 
 const (
-	DEFAULT_FEE_CUSHION float32 = 1.2
-	DEFAULT_MAX_FEE_XRP float32 = 2
+	DefaultFeeCushion float32 = 1.2
+	DefaultMaxFeeXRP  float32 = 2
 )
 
-var ErrIncorrectId = errors.New("incorrect id")
+var ErrIncorrectID = errors.New("incorrect id")
 
-type WebsocketClient struct {
-	cfg WebsocketClientConfig
+type Client struct {
+	cfg ClientConfig
 
 	idCounter atomic.Uint32
-	NetworkId uint32
+	NetworkID uint32
 }
 
 // Creates a new websocket client with cfg.
 // This client will open and close a websocket connection for each request.
-func NewWebsocketClient(cfg WebsocketClientConfig) *WebsocketClient {
-	return &WebsocketClient{
+func NewClient(cfg ClientConfig) *Client {
+	return &Client{
 		cfg: cfg,
 	}
 }
 
-func (c *WebsocketClient) Autofill(tx *transaction.FlatTransaction) error {
+func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 	if err := c.setValidTransactionAddresses(tx); err != nil {
 		return err
 	}
@@ -55,8 +55,8 @@ func (c *WebsocketClient) Autofill(tx *transaction.FlatTransaction) error {
 	}
 
 	if _, ok := (*tx)["NetworkID"]; !ok {
-		if c.NetworkId != 0 {
-			(*tx)["NetworkID"] = c.NetworkId
+		if c.NetworkID != 0 {
+			(*tx)["NetworkID"] = c.NetworkID
 		}
 	}
 	if _, ok := (*tx)["Sequence"]; !ok {
@@ -94,7 +94,7 @@ func (c *WebsocketClient) Autofill(tx *transaction.FlatTransaction) error {
 	return nil
 }
 
-func (c *WebsocketClient) FundWallet(wallet *xrpl.Wallet) error {
+func (c *Client) FundWallet(wallet *xrpl.Wallet) error {
 	if wallet.ClassicAddress == "" {
 		return errors.New("fund wallet: cannot fund a wallet without a classic address")
 	}
@@ -107,7 +107,7 @@ func (c *WebsocketClient) FundWallet(wallet *xrpl.Wallet) error {
 	return nil
 }
 
-func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLResponse, error) {
+func (c *Client) sendRequest(req XRPLRequest) (XRPLResponse, error) {
 	err := req.Validate()
 	if err != nil {
 		return nil, err
@@ -138,14 +138,14 @@ func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLRe
 	}
 	jDec := json.NewDecoder(bytes.NewReader(json.RawMessage(v)))
 	jDec.UseNumber()
-	var res WebSocketClientXrplResponse
+	var res ClientXrplResponse
 	err = jDec.Decode(&res)
 	if err != nil {
 		return nil, err
 	}
 
 	if res.ID != int(id) {
-		return nil, ErrIncorrectId
+		return nil, ErrIncorrectID
 	}
 	if err := res.CheckError(); err != nil {
 		return nil, err
@@ -154,7 +154,7 @@ func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLRe
 	return &res, nil
 }
 
-func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
+func (c *Client) SubmitTransactionBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return nil, err
@@ -180,7 +180,7 @@ func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (*
 	})
 }
 
-func (c *WebsocketClient) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
+func (c *Client) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
 	res, err := c.sendRequest(req)
 	if err != nil {
 		return nil, err
@@ -193,7 +193,7 @@ func (c *WebsocketClient) submitRequest(req *requests.SubmitRequest) (*requests.
 	return &subRes, nil
 }
 
-func (c *WebsocketClient) formatRequest(req WebsocketXRPLRequest, id int, marker any) ([]byte, error) {
+func (c *Client) formatRequest(req XRPLRequest, id int, marker any) ([]byte, error) {
 	m := make(map[string]any)
 	m["id"] = id
 	m["command"] = req.Method()
@@ -210,18 +210,18 @@ func (c *WebsocketClient) formatRequest(req WebsocketXRPLRequest, id int, marker
 }
 
 // TODO: Implement this when IsValidXAddress is implemented
-func (c *WebsocketClient) getClassicAccountAndTag(address string) (string, uint32) {
+func (c *Client) getClassicAccountAndTag(address string) (string, uint32) {
 	return address, 0
 }
 
-func (c *WebsocketClient) convertTransactionAddressToClassicAddress(tx *transaction.FlatTransaction, fieldName string) {
+func (c *Client) convertTransactionAddressToClassicAddress(tx *transaction.FlatTransaction, fieldName string) {
 	if address, ok := (*tx)[fieldName].(string); ok {
 		classicAddress, _ := c.getClassicAccountAndTag(address)
 		(*tx)[fieldName] = classicAddress
 	}
 }
 
-func (c *WebsocketClient) validateTransactionAddress(tx *transaction.FlatTransaction, addressField, tagField string) error {
+func (c *Client) validateTransactionAddress(tx *transaction.FlatTransaction, addressField, tagField string) error {
 	classicAddress, tag := c.getClassicAccountAndTag((*tx)[addressField].(string))
 	(*tx)[addressField] = classicAddress
 
@@ -236,7 +236,7 @@ func (c *WebsocketClient) validateTransactionAddress(tx *transaction.FlatTransac
 }
 
 // Sets valid addresses for the transaction.
-func (c *WebsocketClient) setValidTransactionAddresses(tx *transaction.FlatTransaction) error {
+func (c *Client) setValidTransactionAddresses(tx *transaction.FlatTransaction) error {
 	// Validate if "Account" address is an xAddress
 	if err := c.validateTransactionAddress(tx, "Account", "SourceTag"); err != nil {
 		return err
@@ -260,11 +260,11 @@ func (c *WebsocketClient) setValidTransactionAddresses(tx *transaction.FlatTrans
 }
 
 // Sets the next valid sequence number for a given transaction.
-func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *transaction.FlatTransaction) error {
+func (c *Client) setTransactionNextValidSequenceNumber(tx *transaction.FlatTransaction) error {
 	if _, ok := (*tx)["Account"].(string); !ok {
 		return errors.New("missing Account in transaction")
 	}
-	res, err := c.GetAccountInfo(&account.AccountInfoRequest{
+	res, err := c.GetAccountInfo(&account.InfoRequest{
 		Account:     types.Address((*tx)["Account"].(string)),
 		LedgerIndex: common.LedgerTitle("current"),
 	})
@@ -279,8 +279,8 @@ func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *transaction.
 
 // Calculates the current transaction fee for the ledger.
 // Note: This is a public API that can be called directly.
-func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) {
-	res, err := c.GetServerInfo(&server.ServerInfoRequest{})
+func (c *Client) getFeeXrp(cushion float32) (string, error) {
+	res, err := c.GetServerInfo(&server.InfoRequest{})
 	if err != nil {
 		return "", err
 	}
@@ -301,16 +301,16 @@ func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) {
 	}
 
 	// Round fee to NUM_DECIMAL_PLACES
-	roundedFee := float32(math.Round(float64(fee)*math.Pow10(int(currency.MAX_FRACTION_LENGTH)))) / float32(math.Pow10(int(currency.MAX_FRACTION_LENGTH)))
+	roundedFee := float32(math.Round(float64(fee)*math.Pow10(int(currency.MaxFractionLength)))) / float32(math.Pow10(int(currency.MaxFractionLength)))
 
 	// Convert the rounded fee back to a string with NUM_DECIMAL_PLACES
-	return fmt.Sprintf("%.*f", currency.MAX_FRACTION_LENGTH, roundedFee), nil
+	return fmt.Sprintf("%.*f", currency.MaxFractionLength, roundedFee), nil
 }
 
 // Calculates the fee per transaction type.
 //
 // TODO: Add fee support for `EscrowFinish` `AccountDelete`, `AMMCreate`, and multisigned transactions.
-func (c *WebsocketClient) calculateFeePerTransactionType(tx *transaction.FlatTransaction) error {
+func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction) error {
 	fee, err := c.getFeeXrp(c.cfg.feeCushion)
 	if err != nil {
 		return err
@@ -328,20 +328,20 @@ func (c *WebsocketClient) calculateFeePerTransactionType(tx *transaction.FlatTra
 
 // Sets the latest validated ledger sequence for the transaction.
 // Modifies the `LastLedgerSequence` field in the tx.
-func (c *WebsocketClient) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
+func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 	index, err := c.GetLedgerIndex()
 	if err != nil {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Int() + int(LEDGER_OFFSET)
+	(*tx)["LastLedgerSequence"] = index.Int() + int(LedgerOffset)
 	return err
 }
 
 // Checks for any blockers that prevent the deletion of an account.
 // Returns nil if there are no blockers, otherwise returns an error.
-func (c *WebsocketClient) checkAccountDeleteBlockers(address types.Address) error {
-	accObjects, err := c.GetAccountObjects(&account.AccountObjectsRequest{
+func (c *Client) checkAccountDeleteBlockers(address types.Address) error {
+	accObjects, err := c.GetAccountObjects(&account.ObjectsRequest{
 		Account:              address,
 		LedgerIndex:          common.LedgerTitle("validated"),
 		DeletionBlockersOnly: true,
@@ -356,14 +356,12 @@ func (c *WebsocketClient) checkAccountDeleteBlockers(address types.Address) erro
 	return nil
 }
 
-func (c *WebsocketClient) checkPaymentAmounts(tx *transaction.FlatTransaction) error {
+func (c *Client) checkPaymentAmounts(tx *transaction.FlatTransaction) error {
 	if _, ok := (*tx)["DeliverMax"]; ok {
 		if _, ok := (*tx)["Amount"]; !ok {
 			(*tx)["Amount"] = (*tx)["DeliverMax"]
-		} else {
-			if (*tx)["Amount"] != (*tx)["DeliverMax"] {
-				return errors.New("payment transaction: Amount and DeliverMax fields must be identical when both are provided")
-			}
+		} else if (*tx)["Amount"] != (*tx)["DeliverMax"] {
+			return errors.New("payment transaction: Amount and DeliverMax fields must be identical when both are provided")
 		}
 	}
 	return nil
@@ -372,7 +370,7 @@ func (c *WebsocketClient) checkPaymentAmounts(tx *transaction.FlatTransaction) e
 // Sets a transaction's flags to its numeric representation.
 // TODO: Add flag support for AMMDeposit, AMMWithdraw,
 // NFTTOkenCreateOffer, NFTokenMint, OfferCreate, XChainModifyBridge (not supported).
-func (c *WebsocketClient) setTransactionFlags(tx *transaction.FlatTransaction) error {
+func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error {
 	flags, ok := (*tx)["Flags"].(uint32)
 	if !ok && flags > 0 {
 		(*tx)["Flags"] = int(0)

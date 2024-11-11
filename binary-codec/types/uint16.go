@@ -19,10 +19,10 @@ func IsUint16(value int) bool {
 // UInt16 represents a 16-bit unsigned integer.
 type UInt16 struct{}
 
-// FromJson converts a JSON value into a serialized byte slice representing a 16-bit unsigned integer.
+// FromJSON converts a JSON value into a serialized byte slice representing a 16-bit unsigned integer.
 // If the input value is a string, it's assumed to be a transaction type or ledger entry type name, and the
 // method will attempt to convert it into a corresponding type code. If the conversion fails, an error is returned.
-func (u *UInt16) FromJson(value any) ([]byte, error) {
+func (u *UInt16) FromJSON(value any) ([]byte, error) {
 
 	if _, ok := value.(string); ok {
 		tc, err := definitions.Get().GetTransactionTypeCodeByTransactionTypeName(value.(string))
@@ -49,10 +49,10 @@ func (u *UInt16) FromJson(value any) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into a JSON integer value. This method assumes the parser contains data representing
 // a 16-bit unsigned integer. If the parsing fails, an error is returned.
-func (u *UInt16) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) {
+func (u *UInt16) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	b, err := p.ReadBytes(2)
 	if err != nil {
 		return nil, err

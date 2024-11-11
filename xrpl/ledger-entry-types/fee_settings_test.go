@@ -7,7 +7,7 @@ import (
 )
 
 func TestFeeSettings(t *testing.T) {
-	var s LedgerObject = &FeeSettings{
+	var s Object = &FeeSettings{
 		BaseFee:           "000000000000000A",
 		Flags:             0,
 		LedgerEntryType:   FeeSettingsEntry,

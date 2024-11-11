@@ -78,7 +78,7 @@ func TestXChainBridge_FromJson(t *testing.T) {
 			name: "not a valid json",
 			json: "not a valid json",
 			want: nil,
-			err:  &typeerrors.ErrNotValidJson{},
+			err:  &typeerrors.ErrNotValidJSON{},
 		},
 		{
 			name: "invalid xchain bridge",
@@ -95,7 +95,7 @@ func TestXChainBridge_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			xcb := &XChainBridge{}
-			got, err := xcb.FromJson(tc.json)
+			got, err := xcb.FromJSON(tc.json)
 			if err != tc.err {
 				t.Errorf("FromJson() error = %v, want %v", err.Error(), tc.err.Error())
 			}
@@ -162,7 +162,7 @@ func TestXChainBridge_ToJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			xcb, mock := tc.setup(t)
-			got, err := xcb.ToJson(mock, tc.opts...)
+			got, err := xcb.ToJSON(mock, tc.opts...)
 			if err != tc.err {
 				t.Errorf("ToJson() error = %v, want %v", err.Error(), tc.err.Error())
 			} else if tc.err == nil && !reflect.DeepEqual(got, tc.want) {
@@ -178,7 +178,7 @@ func TestErrNotValidXChainBridge_Error(t *testing.T) {
 }
 
 func TestErrNotValidJson_Error(t *testing.T) {
-	err := &typeerrors.ErrNotValidJson{}
+	err := &typeerrors.ErrNotValidJSON{}
 	require.Equal(t, "not a valid json", err.Error())
 }
 

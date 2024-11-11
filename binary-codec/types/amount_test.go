@@ -521,7 +521,7 @@ func TestAmount_FromJson(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			amount := &Amount{}
-			actual, err := amount.FromJson(tc.input)
+			actual, err := amount.FromJSON(tc.input)
 			require.Equal(t, tc.expected, actual)
 			if tc.expPass {
 				require.NoError(t, err)
@@ -601,7 +601,7 @@ func TestAmount_ToJson(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			amount := &Amount{}
 			mock := tc.malleate(t)
-			actual, err := amount.ToJson(mock)
+			actual, err := amount.ToJSON(mock)
 			require.Equal(t, tc.expected, actual)
 			if tc.expPass {
 				require.NoError(t, err)

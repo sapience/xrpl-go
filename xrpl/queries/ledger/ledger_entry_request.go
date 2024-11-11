@@ -7,7 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type LedgerEntryRequest struct {
+type EntryRequest struct {
 	Binary         bool                   `json:"binary,omitempty"`
 	LedgerHash     common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex    common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -87,7 +87,7 @@ func parseEntryRequestField(data []byte, target EntryRequestOrString) (EntryRequ
 	return target, err
 }
 
-func (r *LedgerEntryRequest) UnmarshalJSON(data []byte) error {
+func (r *EntryRequest) UnmarshalJSON(data []byte) error {
 	type lerHelper struct {
 		Binary         bool              `json:"binary,omitempty"`
 		LedgerHash     common.LedgerHash `json:"ledger_hash,omitempty"`
@@ -108,7 +108,7 @@ func (r *LedgerEntryRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	*r = LedgerEntryRequest{
+	*r = EntryRequest{
 		Binary:         h.Binary,
 		LedgerHash:     h.LedgerHash,
 		Index:          h.Index,

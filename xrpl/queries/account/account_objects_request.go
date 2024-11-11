@@ -7,23 +7,23 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountObjectType string
+type ObjectType string
 
 const (
-	CheckObject          AccountObjectType = "check"
-	DepositPreauthObject AccountObjectType = "deposit_preauth"
-	EscrowObject         AccountObjectType = "escrow"
-	NFTOfferObject       AccountObjectType = "nft_offer"
-	OfferObject          AccountObjectType = "offer"
-	PaymentChannelObject AccountObjectType = "payment_channel"
-	SignerListObject     AccountObjectType = "signer_list"
-	StateObject          AccountObjectType = "state"
-	TicketObject         AccountObjectType = "ticket"
+	CheckObject          ObjectType = "check"
+	DepositPreauthObject ObjectType = "deposit_preauth"
+	EscrowObject         ObjectType = "escrow"
+	NFTOfferObject       ObjectType = "nft_offer"
+	OfferObject          ObjectType = "offer"
+	PaymentChannelObject ObjectType = "payment_channel"
+	SignerListObject     ObjectType = "signer_list"
+	StateObject          ObjectType = "state"
+	TicketObject         ObjectType = "ticket"
 )
 
-type AccountObjectsRequest struct {
+type ObjectsRequest struct {
 	Account              types.Address          `json:"account"`
-	Type                 AccountObjectType      `json:"type,omitempty"`
+	Type                 ObjectType             `json:"type,omitempty"`
 	DeletionBlockersOnly bool                   `json:"deletion_blockers_only,omitempty"`
 	LedgerHash           common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex          common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -31,19 +31,19 @@ type AccountObjectsRequest struct {
 	Marker               any                    `json:"marker,omitempty"`
 }
 
-func (*AccountObjectsRequest) Method() string {
+func (*ObjectsRequest) Method() string {
 	return "account_objects"
 }
 
 // TODO: Implement
-func (*AccountObjectsRequest) Validate() error {
+func (*ObjectsRequest) Validate() error {
 	return nil
 }
 
-func (r *AccountObjectsRequest) UnmarshalJSON(data []byte) error {
+func (r *ObjectsRequest) UnmarshalJSON(data []byte) error {
 	type aorHelper struct {
 		Account              types.Address     `json:"account"`
-		Type                 AccountObjectType `json:"type,omitempty"`
+		Type                 ObjectType        `json:"type,omitempty"`
 		DeletionBlockersOnly bool              `json:"deletion_blockers_only,omitempty"`
 		LedgerHash           common.LedgerHash `json:"ledger_hash,omitempty"`
 		LedgerIndex          json.RawMessage   `json:"ledger_index,omitempty"`
@@ -54,7 +54,7 @@ func (r *AccountObjectsRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = AccountObjectsRequest{
+	*r = ObjectsRequest{
 		Account:              h.Account,
 		Type:                 h.Type,
 		DeletionBlockersOnly: h.DeletionBlockersOnly,

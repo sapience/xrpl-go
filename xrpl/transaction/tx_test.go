@@ -29,7 +29,7 @@ func TestTx_Validate(t *testing.T) {
 				SigningPubKey:      "abcdefg",
 				TicketSequence:     2,
 				TxnSignature:       "xyz123",
-				NetworkId:          1,
+				NetworkID:          1,
 				Memos: []MemoWrapper{
 					{
 						Memo: Memo{
@@ -183,7 +183,7 @@ func TestBaseTx_Flatten(t *testing.T) {
 						},
 					},
 				},
-				NetworkId:      1,
+				NetworkID:      1,
 				Signers:        []Signer{{SignerData{Account: "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC", TxnSignature: "abc123", SigningPubKey: "def456"}}},
 				SourceTag:      123,
 				SigningPubKey:  "abcdefg",

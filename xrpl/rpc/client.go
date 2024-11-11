@@ -15,28 +15,28 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type JsonRpcClient struct {
-	Config *JsonRpcConfig
+type Client struct {
+	Config *Config
 }
 
-type JsonRpcClientError struct {
+type ClientError struct {
 	ErrorString string
 }
 
-func (e *JsonRpcClientError) Error() string {
+func (e *ClientError) Error() string {
 	return e.ErrorString
 }
 
-var ErrIncorrectId = errors.New("incorrect id")
+var ErrIncorrectID = errors.New("incorrect id")
 
-func NewJsonRpcClient(cfg *JsonRpcConfig) *JsonRpcClient {
-	return &JsonRpcClient{
+func NewClient(cfg *Config) *Client {
+	return &Client{
 		Config: cfg,
 	}
 }
 
 // satisfy the Client interface
-func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLResponse, error) {
+func (c *Client) SendRequest(reqParams XRPLRequest) (XRPLResponse, error) {
 
 	err := reqParams.Validate()
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, c.Config.Url, bytes.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, c.Config.URL, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
 		return nil, err
 	}
 
-	// allow client to reuse persistant connection
+	// allow client to reuse persistent connection
 	defer response.Body.Close()
 
 	// Check for service unavailable response and retry if so
@@ -95,12 +95,12 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
 
 		if response.StatusCode == 503 {
 			// Return service unavailable error here after retry 3 times
-			return nil, &JsonRpcClientError{ErrorString: "Server is overloaded, rate limit exceeded"}
+			return nil, &ClientError{ErrorString: "Server is overloaded, rate limit exceeded"}
 		}
 
 	}
 
-	var jr JsonRpcResponse
+	var jr Response
 	jr, err = CheckForError(response)
 	if err != nil {
 		return nil, err
@@ -109,24 +109,24 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
 	return &jr, nil
 }
 
-func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (JsonRpcXRPLResponse, error) {
+func (c *Client) SubmitTransactionBlob(txBlob string, failHard bool) (XRPLResponse, error) {
 	submitRequest := &requests.SubmitRequest{
 		TxBlob:   txBlob,
 		FailHard: failHard,
 	}
 
-	response, error := c.SendRequest(submitRequest)
+	response, err := c.SendRequest(submitRequest)
 
-	return response, error
+	return response, err
 }
 
 // CreateRequest formats the parameters and method name ready for sending request
 // Params will have been serialised if required and added to request struct before being passed to this method
-func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) {
+func CreateRequest(reqParams XRPLRequest) ([]byte, error) {
 
-	var body JsonRpcRequest
+	var body Request
 
-	body = JsonRpcRequest{
+	body = Request{
 		Method: reqParams.Method(),
 		// each param object will have a struct with json serialising tags
 		Params: [1]interface{}{reqParams},
@@ -140,7 +140,7 @@ func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) {
 	paramString := string(paramBytes)
 	if strings.Compare(paramString, "[{}]") == 0 {
 		// need to remove params field from the body if it is empty
-		body = JsonRpcRequest{
+		body = Request{
 			Method: reqParams.Method(),
 		}
 
@@ -161,9 +161,9 @@ func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) {
 }
 
 // CheckForError reads the http response and formats the error if it exists
-func CheckForError(res *http.Response) (JsonRpcResponse, error) {
+func CheckForError(res *http.Response) (Response, error) {
 
-	var jr JsonRpcResponse
+	var jr Response
 
 	b, err := io.ReadAll(res.Body)
 	if err != nil || b == nil {
@@ -172,7 +172,7 @@ func CheckForError(res *http.Response) (JsonRpcResponse, error) {
 
 	// In case a different error code is returned
 	if res.StatusCode != 200 {
-		return jr, &JsonRpcClientError{ErrorString: string(b)}
+		return jr, &ClientError{ErrorString: string(b)}
 	}
 
 	jDec := json.NewDecoder(bytes.NewReader(b))
@@ -184,7 +184,7 @@ func CheckForError(res *http.Response) (JsonRpcResponse, error) {
 
 	// result will have 'error' if error response
 	if _, ok := jr.Result["error"]; ok {
-		return jr, &JsonRpcClientError{ErrorString: jr.Result["error"].(string)}
+		return jr, &ClientError{ErrorString: jr.Result["error"].(string)}
 	}
 
 	return jr, nil

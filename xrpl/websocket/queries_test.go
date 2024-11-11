@@ -17,7 +17,7 @@ func TestWebsocketClient_GetServerInfo(t *testing.T) {
 	tests := []struct {
 		name           string
 		serverMessages []map[string]any
-		expected       *server.ServerInfoResponse
+		expected       *server.InfoResponse
 		expectedErr    error
 	}{
 		{
@@ -39,8 +39,8 @@ func TestWebsocketClient_GetServerInfo(t *testing.T) {
 					},
 				},
 			},
-			expected: &server.ServerInfoResponse{
-				Info: server.ServerInfo{
+			expected: &server.InfoResponse{
+				Info: server.Info{
 					BuildVersion:     "1.9.4",
 					CompleteLedgers:  "32570-62964740",
 					HostID:           "MIST",
@@ -74,14 +74,14 @@ func TestWebsocketClient_GetServerInfo(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
 
-			result, err := cl.GetServerInfo(&server.ServerInfoRequest{})
+			result, err := cl.GetServerInfo(&server.InfoRequest{})
 
 			if tt.expectedErr != nil {
 				if err == nil || err.Error() != tt.expectedErr.Error() {
@@ -104,7 +104,7 @@ func TestGetAccountInfo(t *testing.T) {
 	tests := []struct {
 		name           string
 		serverMessages []map[string]any
-		expected       *account.AccountInfoResponse
+		expected       *account.InfoResponse
 		expectedErr    error
 	}{
 		{
@@ -127,7 +127,7 @@ func TestGetAccountInfo(t *testing.T) {
 					},
 				},
 			},
-			expected: &account.AccountInfoResponse{
+			expected: &account.InfoResponse{
 				AccountData: ledger.AccountRoot{
 					Account:           "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 					Flags:             0,
@@ -162,14 +162,14 @@ func TestGetAccountInfo(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
 
-			result, err := cl.GetAccountInfo(&account.AccountInfoRequest{
+			result, err := cl.GetAccountInfo(&account.InfoRequest{
 				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 			})
 
@@ -194,7 +194,7 @@ func TestGetAccountObjects(t *testing.T) {
 	tests := []struct {
 		name           string
 		serverMessages []map[string]any
-		expected       *account.AccountObjectsResponse
+		expected       *account.ObjectsResponse
 		expectedErr    error
 	}{
 		{
@@ -218,7 +218,7 @@ func TestGetAccountObjects(t *testing.T) {
 					"validated":    true,
 				},
 			}},
-			expected: &account.AccountObjectsResponse{
+			expected: &account.ObjectsResponse{
 				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 				AccountObjects: []ledger.FlatLedgerObject{
 					{
@@ -257,14 +257,14 @@ func TestGetAccountObjects(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
 
-			result, err := cl.GetAccountObjects(&account.AccountObjectsRequest{
+			result, err := cl.GetAccountObjects(&account.ObjectsRequest{
 				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 			})
 
@@ -328,9 +328,9 @@ func TestGetXrpBalance(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
@@ -358,7 +358,7 @@ func TestGetAccountLines(t *testing.T) {
 	tests := []struct {
 		name           string
 		serverMessages []map[string]any
-		expected       *account.AccountLinesResponse
+		expected       *account.LinesResponse
 		expectedErr    error
 	}{
 		{
@@ -378,7 +378,7 @@ func TestGetAccountLines(t *testing.T) {
 					"validated":            true,
 				},
 			}},
-			expected: &account.AccountLinesResponse{
+			expected: &account.LinesResponse{
 				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 				Lines: []account.TrustLine{
 					{
@@ -412,14 +412,14 @@ func TestGetAccountLines(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}
 
-			result, err := cl.GetAccountLines(&account.AccountLinesRequest{
+			result, err := cl.GetAccountLines(&account.LinesRequest{
 				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 			})
 
@@ -480,9 +480,9 @@ func TestGetLedgerIndex(t *testing.T) {
 			})
 			defer s.Close()
 
-			url, _ := testutil.ConvertHttpToWS(s.URL)
-			cl := &WebsocketClient{
-				cfg: WebsocketClientConfig{
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
 					host: url,
 				},
 			}

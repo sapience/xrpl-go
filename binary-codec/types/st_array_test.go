@@ -79,7 +79,7 @@ func TestSTArrayFromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			st := STArray{}
-			got, err := st.FromJson(tc.input)
+			got, err := st.FromJSON(tc.input)
 
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
@@ -172,7 +172,7 @@ func TestSTArrayToJson(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			st := STArray{}
 			parser := tc.malleate(t)
-			act, err := st.ToJson(parser)
+			act, err := st.ToJSON(parser)
 			if tc.expectedErr != nil {
 				require.Error(t, err, tc.expectedErr.Error())
 				require.Nil(t, act)

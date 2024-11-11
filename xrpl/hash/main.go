@@ -13,5 +13,5 @@ package hash
 
 const (
 	// Transaction plus signature to give transaction ID 'TXN'
-	TRANSACTION_PREFIX uint32 = 0x54584E00
+	TransactionPrefix uint32 = 0x54584E00
 )

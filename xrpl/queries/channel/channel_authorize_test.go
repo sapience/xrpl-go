@@ -8,7 +8,7 @@ import (
 )
 
 func TestChannelAuthorizeRequest(t *testing.T) {
-	s := ChannelAuthorizeRequest{
+	s := AuthorizeRequest{
 		ChannelID: "5DB01B7FFED6B67E6B0414DED11E051D2EE2B7619CE0EAA6286D67A3A4D5BDB3",
 		Seed:      "sabcdef123456abcdef12345",
 		KeyType:   "secp256k1",
@@ -27,7 +27,7 @@ func TestChannelAuthorizeRequest(t *testing.T) {
 }
 
 func TestChannelAuthorizeResponse(t *testing.T) {
-	s := ChannelAuthorizeResponse{
+	s := AuthorizeResponse{
 		Signature: "304402204EF0AFB78AC23ED1C472E74F4299C0C21F1B21D07EFC0A3838A420F76D783A400220154FB11B6F54320666E4C36CA7F686C16A3A0456800BBC43746F34AF50290064",
 	}
 

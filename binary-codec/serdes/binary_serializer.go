@@ -8,23 +8,23 @@ import (
 
 var ErrLengthPrefixTooLong = errors.New("length of value must not exceed 918744 bytes of data")
 
-type binarySerializer struct {
+type BinarySerializer struct {
 	sink []byte
 }
 
-func NewSerializer() *binarySerializer {
-	return &binarySerializer{}
+func NewSerializer() *BinarySerializer {
+	return &BinarySerializer{}
 }
 
-func (s *binarySerializer) put(v []byte) {
+func (s *BinarySerializer) put(v []byte) {
 	s.sink = append(s.sink, v...)
 }
 
-func (s *binarySerializer) GetSink() []byte {
+func (s *BinarySerializer) GetSink() []byte {
 	return s.sink
 }
 
-func (s *binarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, value []byte) error {
+func (s *BinarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, value []byte) error {
 	h, err := encodeFieldID(fi.FieldName)
 
 	if err != nil {
@@ -49,21 +49,21 @@ func (s *binarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, valu
 	return nil
 }
 
-func encodeVariableLength(len int) ([]byte, error) {
-	if len <= 192 {
-		return []byte{byte(len)}, nil
+func encodeVariableLength(length int) ([]byte, error) {
+	if length <= 192 {
+		return []byte{byte(length)}, nil
 	}
-	if len < 12480 {
-		len -= 193
-		b1 := byte((len >> 8) + 193)
-		b2 := byte((len & 0xFF))
+	if length < 12480 {
+		length -= 193
+		b1 := byte((length >> 8) + 193)
+		b2 := byte((length & 0xFF))
 		return []byte{b1, b2}, nil
 	}
-	if len <= 918744 {
-		len -= 12481
-		b1 := byte((len >> 16) + 241)
-		b2 := byte((len >> 8) & 0xFF)
-		b3 := byte(len & 0xFF)
+	if length <= 918744 {
+		length -= 12481
+		b1 := byte((length >> 16) + 241)
+		b2 := byte((length >> 8) & 0xFF)
+		b3 := byte(length & 0xFF)
 		return []byte{b1, b2, b3}, nil
 	}
 	return nil, ErrLengthPrefixTooLong

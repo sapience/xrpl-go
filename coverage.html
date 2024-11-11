@@ -79,7 +79,7 @@
 				
 				<option value="file11">github.com/Peersyst/xrpl-go/binary-codec/types/account_id.go (100.0%)</option>
 				
-				<option value="file12">github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (83.1%)</option>
+				<option value="file12">github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (83.4%)</option>
 				
 				<option value="file13">github.com/Peersyst/xrpl-go/binary-codec/types/blob.go (100.0%)</option>
 				
@@ -581,9 +581,8 @@ func EncodeSeed(entropy []byte, encodingType CryptoImplementation) (string, erro
         }</span> else<span class="cov8" title="1"> if secp256k1 := crypto.SECP256K1(); encodingType == secp256k1 </span><span class="cov8" title="1">{
                 prefix := []byte{secp256k1.FamilySeedPrefix()}
                 return Encode(entropy, prefix, FamilySeedLength), nil
-        }</span> else<span class="cov8" title="1"> {
-                return "", errors.New("encoding type must be `ed25519` or `secp256k1`")
         }</span>
+        <span class="cov8" title="1">return "", errors.New("encoding type must be `ed25519` or `secp256k1`")</span>
 
 }
 
@@ -594,14 +593,14 @@ func DecodeSeed(seed string) ([]byte, CryptoImplementation, error) <span class="
         decoded, err := Base58CheckDecode(seed)
 
         if err != nil </span><span class="cov8" title="1">{
-                return nil, crypto.CryptoAlgorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
+                return nil, crypto.Algorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
         }</span>
 
         <span class="cov8" title="1">if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) </span><span class="cov8" title="1">{
                 return decoded[3:], crypto.ED25519(), nil
-        }</span> else<span class="cov8" title="1"> {
-                return decoded[1:], crypto.SECP256K1(), nil
         }</span>
+
+        <span class="cov8" title="1">return decoded[1:], crypto.SECP256K1(), nil</span>
 
 }
 
@@ -907,7 +906,7 @@ type Definitions struct {
         Fields             fieldInstanceMap
         TransactionResults map[string]int32
         TransactionTypes   map[string]int32
-        FieldIdNameMap     map[FieldHeader]string
+        FieldIDNameMap     map[FieldHeader]string
 }
 type definitionsDoc struct {
         Types              map[string]int32 `json:"TYPES"`
@@ -919,7 +918,7 @@ type definitionsDoc struct {
 
 type fieldInstanceMap map[string]*FieldInstance
 
-func (fi *fieldInstanceMap) CodecEncodeSelf(e *codec.Encoder) {<span class="cov0" title="0">}</span>
+func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {<span class="cov0" title="0">}</span>
 
 func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) <span class="cov8" title="1">{
         var x [][]interface{}
@@ -954,7 +953,7 @@ func loadDefinitions() error <span class="cov8" title="1">{
         }
 
         addFieldHeadersAndOrdinals()
-        createFieldIdNameMap()
+        createFieldIDNameMap()
 
         return nil</span>
 }
@@ -967,16 +966,16 @@ func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance <spa
                 fi, _ := castFieldInfo(j[1])
                 nm[k] = &amp;FieldInstance{
                         FieldName: k,
-                        fieldInfo: &amp;fi,
+                        FieldInfo: &amp;fi,
                         Ordinal:   fi.Nth,
                 }
         }</span>
         <span class="cov8" title="1">return nm</span>
 }
 
-func castFieldInfo(v interface{}) (fieldInfo, error) <span class="cov8" title="1">{
+func castFieldInfo(v interface{}) (FieldInfo, error) <span class="cov8" title="1">{
         if fi, ok := v.(map[string]interface{}); ok </span><span class="cov8" title="1">{
-                return fieldInfo{
+                return FieldInfo{
                         Nth:            int32(fi["nth"].(int64)),
                         IsVLEncoded:    fi["isVLEncoded"].(bool),
                         IsSerialized:   fi["isSerialized"].(bool),
@@ -984,7 +983,7 @@ func castFieldInfo(v interface{}) (fieldInfo, error) <span class="cov8" title="1
                         Type:           fi["type"].(string),
                 }, nil
         }</span>
-        <span class="cov0" title="0">return fieldInfo{}, errors.New("unable to cast to field info")</span>
+        <span class="cov0" title="0">return FieldInfo{}, errors.New("unable to cast to field info")</span>
 }
 
 func addFieldHeadersAndOrdinals() <span class="cov8" title="1">{
@@ -1001,12 +1000,12 @@ func addFieldHeadersAndOrdinals() <span class="cov8" title="1">{
         }
 }
 
-func createFieldIdNameMap() <span class="cov8" title="1">{
-        definitions.FieldIdNameMap = make(map[FieldHeader]string, len(definitions.Fields))
+func createFieldIDNameMap() <span class="cov8" title="1">{
+        definitions.FieldIDNameMap = make(map[FieldHeader]string, len(definitions.Fields))
         for k := range definitions.Fields </span><span class="cov8" title="1">{
                 fh, _ := definitions.GetFieldHeaderByFieldName(k)
 
-                definitions.FieldIdNameMap[*fh] = k
+                definitions.FieldIDNameMap[*fh] = k
         }</span>
 }
 </pre>
@@ -1015,12 +1014,12 @@ func createFieldIdNameMap() <span class="cov8" title="1">{
 
 type FieldInstance struct {
         FieldName string
-        *fieldInfo
+        *FieldInfo
         FieldHeader *FieldHeader
         Ordinal     int32
 }
 
-type fieldInfo struct {
+type FieldInfo struct {
         Nth            int32
         IsVLEncoded    bool
         IsSerialized   bool
@@ -1115,7 +1114,7 @@ func (d *Definitions) GetFieldHeaderByFieldName(n string) (*FieldHeader, error) 
 // Returns the field name associated with the given field header struct.
 func (d *Definitions) GetFieldNameByFieldHeader(fh FieldHeader) (string, error) <span class="cov8" title="1">{
 
-        fim, ok := definitions.FieldIdNameMap[fh]
+        fim, ok := definitions.FieldIDNameMap[fh]
 
         if !ok </span><span class="cov8" title="1">{
                 return "", &amp;NotFoundErrorFieldHeader{
@@ -1127,7 +1126,7 @@ func (d *Definitions) GetFieldNameByFieldHeader(fh FieldHeader) (string, error) 
 }
 
 // Returns the field info struct associated with the given field name.
-func (d *Definitions) GetFieldInfoByFieldName(n string) (*fieldInfo, error) <span class="cov8" title="1">{
+func (d *Definitions) GetFieldInfoByFieldName(n string) (*FieldInfo, error) <span class="cov8" title="1">{
 
         fi, ok := d.Fields[n]
 
@@ -1138,7 +1137,7 @@ func (d *Definitions) GetFieldInfoByFieldName(n string) (*fieldInfo, error) <spa
                 }
         }</span>
 
-        <span class="cov8" title="1">return fi.fieldInfo, nil</span>
+        <span class="cov8" title="1">return fi.FieldInfo, nil</span>
 }
 
 // Returns the field instance struct associated with the given field name.
@@ -1294,7 +1293,7 @@ func Encode(json map[string]any) (string, error) <span class="cov8" title="1">{
                 }
         }
 
-        <span class="cov8" title="1">b, err := st.FromJson(json)
+        <span class="cov8" title="1">b, err := st.FromJSON(json)
         if err != nil </span><span class="cov8" title="1">{
                 return "", err
         }</span>
@@ -1313,7 +1312,7 @@ func EncodeForMultisigning(json map[string]any, xrpAccountID string) (string, er
 
         json["SigningPubKey"] = ""
 
-        suffix, err := st.FromJson(xrpAccountID)
+        suffix, err := st.FromJSON(xrpAccountID)
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
@@ -1346,14 +1345,14 @@ func EncodeForSigningClaim(json map[string]any) (string, error) <span class="cov
                 return "", ErrSigningClaimFieldNotFound
         }</span>
 
-        <span class="cov8" title="1">channel, err := types.NewHash256().FromJson(json["Channel"])
+        <span class="cov8" title="1">channel, err := types.NewHash256().FromJSON(json["Channel"])
 
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
 
         <span class="cov8" title="1">t := &amp;types.Amount{}
-        amount, err := t.FromJson(json["Amount"])
+        amount, err := t.FromJSON(json["Amount"])
 
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
@@ -1389,7 +1388,7 @@ func Decode(hexEncoded string) (map[string]any, error) <span class="cov8" title=
         }</span>
         <span class="cov8" title="1">p := serdes.NewBinaryParser(b)
         st := &amp;types.STObject{}
-        m, err := st.ToJson(p)
+        m, err := st.ToJSON(p)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
@@ -1407,7 +1406,7 @@ import (
 )
 
 var (
-        ErrParserOutOfBound error = errors.New("parser out of bounds")
+        ErrParserOutOfBound = errors.New("parser out of bounds")
 )
 
 type BinaryParser struct {
@@ -1447,7 +1446,7 @@ func (p *BinaryParser) readFieldHeader() (*definitions.FieldHeader, error) <span
 
         // The field code is the last 4 bits of the first byte
         fieldCode := typeCode &amp; 15
-        typeCode = typeCode &gt;&gt; 4
+        typeCode &gt;&gt;= 4
 
         // Read the type code if it's not in the first byte
         if typeCode == 0 </span><span class="cov0" title="0">{
@@ -1554,23 +1553,23 @@ import (
 
 var ErrLengthPrefixTooLong = errors.New("length of value must not exceed 918744 bytes of data")
 
-type binarySerializer struct {
+type BinarySerializer struct {
         sink []byte
 }
 
-func NewSerializer() *binarySerializer <span class="cov0" title="0">{
-        return &amp;binarySerializer{}
+func NewSerializer() *BinarySerializer <span class="cov0" title="0">{
+        return &amp;BinarySerializer{}
 }</span>
 
-func (s *binarySerializer) put(v []byte) <span class="cov0" title="0">{
+func (s *BinarySerializer) put(v []byte) <span class="cov0" title="0">{
         s.sink = append(s.sink, v...)
 }</span>
 
-func (s *binarySerializer) GetSink() []byte <span class="cov0" title="0">{
+func (s *BinarySerializer) GetSink() []byte <span class="cov0" title="0">{
         return s.sink
 }</span>
 
-func (s *binarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, value []byte) error <span class="cov0" title="0">{
+func (s *BinarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, value []byte) error <span class="cov0" title="0">{
         h, err := encodeFieldID(fi.FieldName)
 
         if err != nil </span><span class="cov0" title="0">{
@@ -1595,21 +1594,21 @@ func (s *binarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, valu
         <span class="cov0" title="0">return nil</span>
 }
 
-func encodeVariableLength(len int) ([]byte, error) <span class="cov8" title="1">{
-        if len &lt;= 192 </span><span class="cov8" title="1">{
-                return []byte{byte(len)}, nil
+func encodeVariableLength(length int) ([]byte, error) <span class="cov8" title="1">{
+        if length &lt;= 192 </span><span class="cov8" title="1">{
+                return []byte{byte(length)}, nil
         }</span>
-        <span class="cov8" title="1">if len &lt; 12480 </span><span class="cov8" title="1">{
-                len -= 193
-                b1 := byte((len &gt;&gt; 8) + 193)
-                b2 := byte((len &amp; 0xFF))
+        <span class="cov8" title="1">if length &lt; 12480 </span><span class="cov8" title="1">{
+                length -= 193
+                b1 := byte((length &gt;&gt; 8) + 193)
+                b2 := byte((length &amp; 0xFF))
                 return []byte{b1, b2}, nil
         }</span>
-        <span class="cov8" title="1">if len &lt;= 918744 </span><span class="cov8" title="1">{
-                len -= 12481
-                b1 := byte((len &gt;&gt; 16) + 241)
-                b2 := byte((len &gt;&gt; 8) &amp; 0xFF)
-                b3 := byte(len &amp; 0xFF)
+        <span class="cov8" title="1">if length &lt;= 918744 </span><span class="cov8" title="1">{
+                length -= 12481
+                b1 := byte((length &gt;&gt; 16) + 241)
+                b2 := byte((length &gt;&gt; 8) &amp; 0xFF)
+                b3 := byte(length &amp; 0xFF)
                 return []byte{b1, b2, b3}, nil
         }</span>
         <span class="cov8" title="1">return nil, ErrLengthPrefixTooLong</span>
@@ -1683,7 +1682,7 @@ import (
 // AccountID struct represents an account ID.
 type AccountID struct{}
 
-// FromJson is a method for the AccountID type that takes a value as a parameter,
+// FromJSON is a method for the AccountID type that takes a value as a parameter,
 // serializes it to a byte slice representing an AccountID.
 // Decodes the ClassicAddress to an AccountID and returns the byte representation.
 // AccountIDs that appear as stand-alone fields (such as Account and Destination)
@@ -1691,7 +1690,7 @@ type AccountID struct{}
 // the length indicator for these fields is always the byte 0x14.
 // AccountIDs that appear as children of special fields (Amount issuer and PathSet account) are not length-prefixed.
 // So in Amount and PathSet fields, don't use the length indicator 0x14.
-func (a *AccountID) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
+func (a *AccountID) FromJSON(value any) ([]byte, error) <span class="cov8" title="1">{
         _, accountID, err := addresscodec.DecodeClassicAddressToAccountID(value.(string))
 
         if err != nil </span><span class="cov8" title="1">{
@@ -1701,13 +1700,13 @@ func (a *AccountID) FromJson(value any) ([]byte, error) <span class="cov8" title
         <span class="cov8" title="1">return accountID, nil</span>
 }
 
-// ToJson is a method for the AccountID type that deserializes a byte slice
+// ToJSON is a method for the AccountID type that deserializes a byte slice
 // representation of an AccountID into a JSON value.
 // It takes a binary parser and an optional length prefix size as arguments.
 // The method reads the bytes using the binary parser,
 // then encodes the result to an AccountID format.
 // If no length prefix size is given, it returns an ErrNoLengthPrefix error.
-func (a *AccountID) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (a *AccountID) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         if opts == nil </span><span class="cov8" title="1">{
                 return nil, ErrNoLengthPrefix
         }</span>
@@ -1795,8 +1794,8 @@ func (e *InvalidCodeError) Error() string <span class="cov8" title="1">{
 // Amount is a struct that represents an XRPL Amount.
 type Amount struct{}
 
-// FromJson serializes an issued currency amount to its bytes representation from JSON.
-func (a *Amount) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
+// FromJSON serializes an issued currency amount to its bytes representation from JSON.
+func (a *Amount) FromJSON(value any) ([]byte, error) <span class="cov8" title="1">{
 
         switch value := value.(type) </span>{
         case string:<span class="cov8" title="1">
@@ -1808,8 +1807,8 @@ func (a *Amount) FromJson(value any) ([]byte, error) <span class="cov8" title="1
         }
 }
 
-// ToJson deserializes a binary-encoded Amount object from a BinaryParser into a JSON representation.
-func (a *Amount) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+// ToJSON deserializes a binary-encoded Amount object from a BinaryParser into a JSON representation.
+func (a *Amount) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.Peek()
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -1824,15 +1823,14 @@ func (a *Amount) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <sp
                         return nil, err
                 }</span>
                 <span class="cov8" title="1">xrpVal := binary.BigEndian.Uint64(xrp)
-                xrpVal = xrpVal &amp; 0x3FFFFFFFFFFFFFFF
+                xrpVal &amp;= 0x3FFFFFFFFFFFFFFF
                 return sign + strconv.FormatUint(xrpVal, 10), nil</span>
-        } else<span class="cov8" title="1"> {
-                token, err := p.ReadBytes(48)
-                if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
-                }</span>
-                <span class="cov8" title="1">return deserializeToken(token)</span>
         }
+        <span class="cov8" title="1">token, err := p.ReadBytes(48)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return deserializeToken(token)</span>
 }
 
 func deserializeToken(data []byte) (map[string]any, error) <span class="cov8" title="1">{
@@ -1847,11 +1845,8 @@ func deserializeToken(data []byte) (map[string]any, error) <span class="cov8" ti
                         return nil, err
                 }</span>
         }
-        <span class="cov8" title="1">issuer, err := deserializeIssuer(data[28:])
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-        <span class="cov8" title="1">curr, err := deserializeCurrencyCode(data[8:28])
+        <span class="cov8" title="1">issuer := deserializeIssuer(data[28:])
+        curr, err := deserializeCurrencyCode(data[8:28])
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
@@ -1867,15 +1862,15 @@ func deserializeValue(data []byte) (string, error) <span class="cov8" title="1">
         if !isPositive(data[0]) </span><span class="cov0" title="0">{
                 sign = "-"
         }</span>
-        <span class="cov8" title="1">value_bytes := data[:8]
-        b1 := value_bytes[0]
-        b2 := value_bytes[1]
+        <span class="cov8" title="1">valueBytes := data[:8]
+        b1 := valueBytes[0]
+        b2 := valueBytes[1]
         e1 := int((b1 &amp; 0x3F) &lt;&lt; 2)
         e2 := int(b2 &gt;&gt; 6)
         exponent := e1 + e2 - 97
-        sig_figs := append([]byte{0, (b2 &amp; 0x3F)}, value_bytes[2:]...)
-        sig_figs_int := binary.BigEndian.Uint64(sig_figs)
-        d, err := bigdecimal.NewBigDecimal(sign + strconv.Itoa(int(sig_figs_int)) + "e" + strconv.Itoa(exponent))
+        sigFigs := append([]byte{0, (b2 &amp; 0x3F)}, valueBytes[2:]...)
+        sigFigsInt := binary.BigEndian.Uint64(sigFigs)
+        d, err := bigdecimal.NewBigDecimal(sign + strconv.Itoa(int(sigFigsInt)) + "e" + strconv.Itoa(exponent))
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
@@ -1905,8 +1900,8 @@ func deserializeCurrencyCode(data []byte) (string, error) <span class="cov8" tit
         <span class="cov8" title="1">return iso, nil</span>
 }
 
-func deserializeIssuer(data []byte) (string, error) <span class="cov8" title="1">{
-        return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil
+func deserializeIssuer(data []byte) string <span class="cov8" title="1">{
+        return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
 }</span>
 
 // verifyXrpValue validates the format of an XRP amount value.
@@ -2114,7 +2109,7 @@ func serializeIssuedCurrencyCodeChars(currency string) ([]byte, error) <span cla
 
         <span class="cov8" title="1">currencyBytes := make([]byte, 20)
         copy(currencyBytes[12:], []byte(currency))
-        return currencyBytes[:], nil</span>
+        return currencyBytes, nil</span>
 }
 
 // SerializeIssuedCurrencyAmount serializes the currency field of an issued currency amount to its bytes representation
@@ -2183,13 +2178,13 @@ import (
 )
 
 // ErrNoLengthPrefix error is raised when no length prefix size is given.
-var ErrNoLengthPrefix error = errors.New("no length prefix size given")
+var ErrNoLengthPrefix = errors.New("no length prefix size given")
 
 // Blob struct is used for manipulating hexadecimal data.
 type Blob struct{}
 
-// FromJson method for Blob converts a hexadecimal string from JSON to a byte array.
-func (b *Blob) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+// FromJSON method for Blob converts a hexadecimal string from JSON to a byte array.
+func (b *Blob) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
         // Convert hexadecimal string to byte array.
         // Return an error if the conversion fails.
         v, err := hex.DecodeString(json.(string))
@@ -2199,10 +2194,10 @@ func (b *Blob) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return v, nil</span>
 }
 
-// ToJson method for Blob reads a certain number of bytes from a BinaryParser
+// ToJSON method for Blob reads a certain number of bytes from a BinaryParser
 // and converts it into a hexadecimal string.
 // It returns an error if no length prefix is specified or if the read operation fails.
-func (b *Blob) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (b *Blob) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         // If no length prefix is specified, return an error.
         if opts == nil </span><span class="cov8" title="1">{
                 return nil, ErrNoLengthPrefix
@@ -2220,11 +2215,11 @@ func (b *Blob) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span
 		
 		<pre class="file" id="file14" style="display: none">package errors
 
-// ErrNotValidJson is an error that occurs when the json is not valid.
-type ErrNotValidJson struct{}
+// ErrNotValidJSON is an error that occurs when the json is not valid.
+type ErrNotValidJSON struct{}
 
 // Error returns the error message for the ErrNotValidJson error.
-func (e *ErrNotValidJson) Error() string <span class="cov8" title="1">{
+func (e *ErrNotValidJSON) Error() string <span class="cov8" title="1">{
         return "not a valid json"
 }</span>
 </pre>
@@ -2286,9 +2281,9 @@ func (h hash) getLength() int <span class="cov8" title="1">{
         return h.Length
 }</span>
 
-// FromJson method for hash converts a hexadecimal string from JSON to a byte array.
+// FromJSON method for hash converts a hexadecimal string from JSON to a byte array.
 // It returns an error if the conversion fails or the length of the decoded byte array is not as expected.
-func (h hash) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+func (h hash) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
         v, ok := json.(string)
         if !ok </span><span class="cov8" title="1">{
                 return nil, &amp;ErrInvalidHashType{}
@@ -2303,9 +2298,9 @@ func (h hash) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return decoded, nil</span>
 }
 
-// ToJson method for hash reads a certain number of bytes from a BinaryParser and converts it into a hexadecimal string.
+// ToJSON method for hash reads a certain number of bytes from a BinaryParser and converts it into a hexadecimal string.
 // It returns an error if the read operation fails.
-func (h hash) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (h hash) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(h.Length)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -2373,10 +2368,10 @@ import (
 // This type is crucial for handling currency issuers in XRPL transactions and ledger entries.
 type Issue struct{}
 
-// FromJson parses a classic address string and returns the corresponding AccountID byte slice.
+// FromJSON parses a classic address string and returns the corresponding AccountID byte slice.
 // It uses the addresscodec package to decode the classic address.
 // If the input is not a valid classic address, it returns an error.
-func (i *Issue) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+func (i *Issue) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
         _, accountID, err := addresscodec.DecodeClassicAddressToAccountID(json.(string))
 
         if err != nil </span><span class="cov8" title="1">{
@@ -2386,10 +2381,10 @@ func (i *Issue) FromJson(json any) ([]byte, error) <span class="cov8" title="1">
         <span class="cov8" title="1">return accountID, nil</span>
 }
 
-// ToJson converts an AccountID byte slice back to a classic address string.
+// ToJSON converts an AccountID byte slice back to a classic address string.
 // It uses the addresscodec package to encode the byte slice.
 // If the input is not a valid AccountID byte slice, it returns an error.
-func (i *Issue) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (i *Issue) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         if opts == nil </span><span class="cov8" title="1">{
                 return nil, ErrNoLengthPrefix
         }</span>
@@ -2424,11 +2419,11 @@ const (
 type PathSet struct{}
 
 // ErrInvalidPathSet is an error that's thrown when an invalid path set is provided.
-var ErrInvalidPathSet error = errors.New("invalid type to construct PathSet from. Expected []any of []any")
+var ErrInvalidPathSet = errors.New("invalid type to construct PathSet from. Expected []any of []any")
 
-// FromJson attempts to serialize a path set from a JSON representation of a slice of paths to a byte array.
+// FromJSON attempts to serialize a path set from a JSON representation of a slice of paths to a byte array.
 // It returns the byte array representation of the path set, or an error if the provided json does not represent a valid path set.
-func (p PathSet) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+func (p PathSet) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
 
         if _, ok := json.([]any)[0].([]any); !ok </span><span class="cov8" title="1">{
                 return nil, ErrInvalidPathSet
@@ -2441,9 +2436,9 @@ func (p PathSet) FromJson(json any) ([]byte, error) <span class="cov8" title="1"
         <span class="cov8" title="1">return newPathSet(json.([]any)), nil</span>
 }
 
-// ToJson decodes a path set from a binary representation using a provided binary parser, then translates it to a JSON representation.
+// ToJSON decodes a path set from a binary representation using a provided binary parser, then translates it to a JSON representation.
 // It returns a slice representing the JSON format of the path set, or an error if the path set could not be decoded or if an invalid step is encountered.
-func (p PathSet) ToJson(parser interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (p PathSet) ToJSON(parser interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         var pathSet []any
 
         for parser.HasMore() </span><span class="cov8" title="1">{
@@ -2644,8 +2639,8 @@ import (
 // The ToJson method takes a BinaryParser and optional parameters, and converts
 // the serialized byte data back to a JSON value.
 type SerializedType interface {
-        FromJson(json any) ([]byte, error)
-        ToJson(parser interfaces.BinaryParser, opts ...int) (any, error)
+        FromJSON(json any) ([]byte, error)
+        ToJSON(parser interfaces.BinaryParser, opts ...int) (any, error)
 }
 
 // GetSerializedType is a function that returns the correct SerializedType instance
@@ -2710,12 +2705,12 @@ type STArray struct{}
 
 var ErrNotSTObjectInSTArray = errors.New("not STObject in STArray. Array fields must be STObjects")
 
-// FromJson is a method that takes a JSON value (which should be a slice of JSON objects),
+// FromJSON is a method that takes a JSON value (which should be a slice of JSON objects),
 // and converts it to a byte slice, representing the serialized form of the STArray.
-// It loops through the JSON slice, and for each element, calls the FromJson method
+// It loops through the JSON slice, and for each element, calls the FromJSON method
 // of an STObject, appending the resulting byte slice to a "sink" slice.
 // The method returns an error if the JSON value is not a slice.
-func (t *STArray) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+func (t *STArray) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
         if _, ok := json.([]any); !ok </span><span class="cov8" title="1">{
                 return nil, ErrNotSTObjectInSTArray
         }</span>
@@ -2723,7 +2718,7 @@ func (t *STArray) FromJson(json any) ([]byte, error) <span class="cov8" title="1
         <span class="cov8" title="1">var sink []byte
         for _, v := range json.([]any) </span><span class="cov8" title="1">{
                 st := &amp;STObject{}
-                b, err := st.FromJson(v)
+                b, err := st.FromJSON(v)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
@@ -2734,11 +2729,11 @@ func (t *STArray) FromJson(json any) ([]byte, error) <span class="cov8" title="1
         return sink, nil</span>
 }
 
-// ToJson is a method that takes a BinaryParser and optional parameters, and converts
+// ToJSON is a method that takes a BinaryParser and optional parameters, and converts
 // the serialized byte data back to a JSON value.
 // The method loops until the BinaryParser has no more data, and for each loop,
-// it calls the ToJson method of an STObject, appending the resulting JSON value to a "value" slice.
-func (t *STArray) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+// it calls the ToJSON method of an STObject, appending the resulting JSON value to a "value" slice.
+func (t *STArray) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         var value []any
         count := 0
 
@@ -2756,7 +2751,7 @@ func (t *STArray) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <s
                 }
                 <span class="cov8" title="1">fn := fi.FieldName
                 st := GetSerializedType(fi.Type)
-                res, err := st.ToJson(p)
+                res, err := st.ToJSON(p)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
@@ -2784,11 +2779,11 @@ import (
 // and complex structures of the Ripple protocol.
 type STObject struct{}
 
-// FromJson converts a JSON object into a serialized byte slice.
+// FromJSON converts a JSON object into a serialized byte slice.
 // It works by converting the JSON object into a map of field instances (which include the field definition
 // and value), and then serializing each field instance.
 // This method returns an error if the JSON input is not a valid object.
-func (t *STObject) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+func (t *STObject) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
         s := serdes.NewSerializer()
         if _, ok := json.(map[string]any); !ok </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("not a valid json node")
@@ -2807,7 +2802,7 @@ func (t *STObject) FromJson(json any) ([]byte, error) <span class="cov8" title="
                 }
 
                 <span class="cov8" title="1">st := GetSerializedType(v.Type)
-                b, err := st.FromJson(fimap[v])
+                b, err := st.FromJSON(fimap[v])
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
@@ -2819,10 +2814,10 @@ func (t *STObject) FromJson(json any) ([]byte, error) <span class="cov8" title="
         <span class="cov8" title="1">return s.GetSink(), nil</span>
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back to a JSON value. It will continue parsing until it encounters an end marker for an object
 // or an array, or until the parser has no more data.
-func (t *STObject) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (t *STObject) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         m := make(map[string]any)
 
         for p.HasMore() </span><span class="cov8" title="1">{
@@ -2844,13 +2839,13 @@ func (t *STObject) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <
                         if err != nil </span><span class="cov0" title="0">{
                                 return nil, err
                         }</span>
-                        <span class="cov8" title="1">res, err = st.ToJson(p, vlen)
+                        <span class="cov8" title="1">res, err = st.ToJSON(p, vlen)
                         if err != nil </span><span class="cov0" title="0">{
                                 return nil, err
                         }</span>
 
                 } else<span class="cov8" title="1"> {
-                        res, err = st.ToJson(p)
+                        res, err = st.ToJSON(p)
                         if err != nil </span><span class="cov0" title="0">{
                                 return nil, err
                         }</span>
@@ -2945,10 +2940,10 @@ func IsUint16(value int) bool <span class="cov8" title="1">{
 // UInt16 represents a 16-bit unsigned integer.
 type UInt16 struct{}
 
-// FromJson converts a JSON value into a serialized byte slice representing a 16-bit unsigned integer.
+// FromJSON converts a JSON value into a serialized byte slice representing a 16-bit unsigned integer.
 // If the input value is a string, it's assumed to be a transaction type or ledger entry type name, and the
 // method will attempt to convert it into a corresponding type code. If the conversion fails, an error is returned.
-func (u *UInt16) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
+func (u *UInt16) FromJSON(value any) ([]byte, error) <span class="cov8" title="1">{
 
         if _, ok := value.(string); ok </span><span class="cov8" title="1">{
                 tc, err := definitions.Get().GetTransactionTypeCodeByTransactionTypeName(value.(string))
@@ -2975,10 +2970,10 @@ func (u *UInt16) FromJson(value any) ([]byte, error) <span class="cov8" title="1
         <span class="cov8" title="1">return buf.Bytes(), nil</span>
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into a JSON integer value. This method assumes the parser contains data representing
 // a 16-bit unsigned integer. If the parsing fails, an error is returned.
-func (u *UInt16) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (u *UInt16) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(2)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -2999,9 +2994,9 @@ import (
 // UInt32 represents a 32-bit unsigned integer.
 type UInt32 struct{}
 
-// FromJson converts a JSON value into a serialized byte slice representing a 32-bit unsigned integer.
+// FromJSON converts a JSON value into a serialized byte slice representing a 32-bit unsigned integer.
 // The input value is assumed to be an integer. If the serialization fails, an error is returned.
-func (u *UInt32) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
+func (u *UInt32) FromJSON(value any) ([]byte, error) <span class="cov8" title="1">{
         buf := new(bytes.Buffer)
         err := binary.Write(buf, binary.BigEndian, uint32(value.(int)))
 
@@ -3011,10 +3006,10 @@ func (u *UInt32) FromJson(value any) ([]byte, error) <span class="cov8" title="1
         <span class="cov8" title="1">return buf.Bytes(), nil</span>
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into a JSON integer value. This method assumes the parser contains data representing
 // a 32-bit unsigned integer. If the parsing fails, an error is returned.
-func (u *UInt32) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (u *UInt32) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(4)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -3038,11 +3033,11 @@ import (
 // UInt64 represents a 64-bit unsigned integer.
 type UInt64 struct{}
 
-var ErrInvalidUInt64String error = errors.New("invalid UInt64 string, value should be a string representation of a UInt64")
+var ErrInvalidUInt64String = errors.New("invalid UInt64 string, value should be a string representation of a UInt64")
 
-// FromJson converts a JSON value into a serialized byte slice representing a 64-bit unsigned integer.
+// FromJSON converts a JSON value into a serialized byte slice representing a 64-bit unsigned integer.
 // The input value is assumed to be a string representation of an integer. If the serialization fails, an error is returned.
-func (u *UInt64) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
+func (u *UInt64) FromJSON(value any) ([]byte, error) <span class="cov8" title="1">{
 
         var buf = new(bytes.Buffer)
 
@@ -3057,22 +3052,21 @@ func (u *UInt64) FromJson(value any) ([]byte, error) <span class="cov8" title="1
                 }</span>
                 <span class="cov8" title="1">buf.Write(hex)
                 return buf.Bytes(), nil</span>
-        } else<span class="cov8" title="1"> {
-                value = strings.Repeat("0", 16-len(value.(string))) + value.(string) // right justify the string
-                decoded, err := hex.DecodeString(value.(string))
-                if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
-                }</span>
-                <span class="cov8" title="1">buf.Write(decoded)</span>
         }
+        <span class="cov8" title="1">value = strings.Repeat("0", 16-len(value.(string))) + value.(string) // right justify the string
+        decoded, err := hex.DecodeString(value.(string))
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">buf.Write(decoded)
 
-        <span class="cov8" title="1">return buf.Bytes(), nil</span>
+        return buf.Bytes(), nil</span>
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into a JSON string value. This method assumes the parser contains data representing
 // a 64-bit unsigned integer. If the parsing fails, an error is returned.
-func (u *UInt64) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (u *UInt64) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(8)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -3100,10 +3094,10 @@ import (
 // UInt8 represents an 8-bit unsigned integer.
 type UInt8 struct{}
 
-// FromJson converts a JSON value into a serialized byte slice representing an 8-bit unsigned integer.
+// FromJSON converts a JSON value into a serialized byte slice representing an 8-bit unsigned integer.
 // If the input value is a string, it's assumed to be a transaction result name, and the method will
 // attempt to convert it into a transaction result type code. If the conversion fails, an error is returned.
-func (u *UInt8) FromJson(value any) ([]byte, error) <span class="cov8" title="1">{
+func (u *UInt8) FromJSON(value any) ([]byte, error) <span class="cov8" title="1">{
         if s, ok := value.(string); ok </span><span class="cov8" title="1">{
                 tc, err := definitions.Get().GetTransactionResultTypeCodeByTransactionResultName(s)
                 if err != nil </span><span class="cov8" title="1">{
@@ -3129,10 +3123,10 @@ func (u *UInt8) FromJson(value any) ([]byte, error) <span class="cov8" title="1"
         <span class="cov8" title="1">return buf.Bytes(), nil</span>
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into a JSON integer value. This method assumes the parser contains data representing
 // an 8-bit unsigned integer. If the parsing fails, an error is returned.
-func (u *UInt8) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (u *UInt8) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span class="cov8" title="1">{
         b, err := p.ReadBytes(1)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -3166,10 +3160,10 @@ func (e *ErrInvalidVector256Type) Error() string <span class="cov0" title="0">{
 // Vector256 represents a 256 bit vector.
 type Vector256 struct{}
 
-// FromJson converts a JSON value into a serialized byte slice representing a Vector256.
+// FromJSON converts a JSON value into a serialized byte slice representing a Vector256.
 // The input value is assumed to be an array of strings representing Hash256 values.
 // If the serialization fails, an error is returned.
-func (v *Vector256) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+func (v *Vector256) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
 
         if _, ok := json.([]string); !ok </span><span class="cov8" title="1">{
                 return nil, &amp;ErrInvalidVector256Type{fmt.Sprintf("%T", json)}
@@ -3189,7 +3183,7 @@ func (v *Vector256) FromJson(json any) ([]byte, error) <span class="cov8" title=
 func vector256FromValue(value []string) ([]byte, error) <span class="cov8" title="1">{
         b := make([]byte, 0)
         for _, s := range value </span><span class="cov8" title="1">{
-                hash256, err := NewHash256().FromJson(s)
+                hash256, err := NewHash256().FromJSON(s)
 
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
@@ -3201,10 +3195,10 @@ func vector256FromValue(value []string) ([]byte, error) <span class="cov8" title
         <span class="cov8" title="1">return b, nil</span>
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back into an array of JSON string values representing Hash256 values.
 // If the parsing fails, an error is returned.
-func (v *Vector256) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (v *Vector256) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
 
         b, err := p.ReadBytes(opts[0])
         if err != nil </span><span class="cov8" title="1">{
@@ -3265,12 +3259,12 @@ func (e *ErrDecodeClassicAddress) Error() string <span class="cov8" title="1">{
 // XChainBridge is a struct that represents an xchain bridge.
 type XChainBridge struct{}
 
-// FromJson converts a json XChainBridge object to its byte slice representation.
+// FromJSON converts a json XChainBridge object to its byte slice representation.
 // It returns an error if the json is not valid or if the classic addresses are not valid.
-func (x *XChainBridge) FromJson(json any) ([]byte, error) <span class="cov8" title="1">{
+func (x *XChainBridge) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
         v, ok := json.(map[string]any)
         if !ok </span><span class="cov8" title="1">{
-                return nil, &amp;errors.ErrNotValidJson{}
+                return nil, &amp;errors.ErrNotValidJSON{}
         }</span>
 
         <span class="cov8" title="1">if v["LockingChainDoor"] == nil || v["LockingChainIssue"] == nil || v["IssuingChainDoor"] == nil || v["IssuingChainIssue"] == nil </span><span class="cov8" title="1">{
@@ -3307,9 +3301,9 @@ func (x *XChainBridge) FromJson(json any) ([]byte, error) <span class="cov8" tit
         return bytes, nil</span>
 }
 
-// ToJson converts a byte slice representation of an XChainBridge object to its json representation.
+// ToJSON converts a byte slice representation of an XChainBridge object to its json representation.
 // It returns an error if the bytes are not valid or if the classic addresses are not valid.
-func (x *XChainBridge) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
+func (x *XChainBridge) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <span class="cov8" title="1">{
         if opts == nil </span><span class="cov8" title="1">{
                 return nil, ErrNoLengthPrefix
         }</span>
@@ -3543,15 +3537,14 @@ func NewBigDecimal(value string) (bd *BigDecimal, err error) <span class="cov8" 
         return</span>
 }
 
-func getScaleAndUnscaledValNoE(p, s string) (sc int, uv string) <span class="cov8" title="1">{
-
+func getScaleAndUnscaledValNoE(p, _ string) (sc int, uv string) <span class="cov8" title="1">{
         // check if the value contains a decimal character and split the string into prefix and suffix accordingly
         decP, decS, decFound := strings.Cut(p, ".")
         if decFound </span><span class="cov8" title="1">{
                 return valHasDecimal(0, decP, decS)
-        }</span> else<span class="cov8" title="1"> {
-                return valNoDecimalNoE(0, p, decP)
         }</span>
+
+        <span class="cov8" title="1">return valNoDecimalNoE(0, p, decP)</span>
 }
 
 func getScaleAndUnscaledValWithE(p, s string) (sc int, uv string) <span class="cov8" title="1">{
@@ -3563,9 +3556,8 @@ func getScaleAndUnscaledValWithE(p, s string) (sc int, uv string) <span class="c
         }</span>
         <span class="cov8" title="1">if decFound </span><span class="cov8" title="1">{
                 return valHasDecimal(sc, decP, decS)
-        }</span> else<span class="cov8" title="1"> {
-                return valNoDecimalHasE(sc, p, decP)
         }</span>
+        <span class="cov8" title="1">return valNoDecimalHasE(sc, p, decP)</span>
 }
 
 func valHasDecimal(scale int, decP, decS string) (sc int, uv string) <span class="cov8" title="1">{
@@ -3577,13 +3569,13 @@ func valHasDecimal(scale int, decP, decS string) (sc int, uv string) <span class
         <span class="cov8" title="1">return</span>
 }
 
-func valNoDecimalNoE(scale int, prefix, decP string) (sc int, uv string) <span class="cov8" title="1">{
+func valNoDecimalNoE(_ int, prefix, decP string) (sc int, uv string) <span class="cov8" title="1">{
         uv = strings.Trim(decP, "0")
         sc = len(prefix) - len(strings.TrimRight(decP, "0"))
         return
 }</span>
 
-func valNoDecimalHasE(scale int, prefix, decP string) (sc int, uv string) <span class="cov8" title="1">{
+func valNoDecimalHasE(scale int, prefix, _ string) (sc int, uv string) <span class="cov8" title="1">{
         uv = strings.Trim(prefix, "0")
         sc = scale + len(strings.TrimLeft(prefix, "0")) - len(uv)
         return
@@ -3732,23 +3724,23 @@ const (
         ed25519Prefix = 0xED
 )
 
-type ed25519CryptoAlgorithm CryptoAlgorithm
+type ED25519CryptoAlgorithm Algorithm
 
-func ED25519() ed25519CryptoAlgorithm <span class="cov8" title="1">{
-        return ed25519CryptoAlgorithm{
+func ED25519() ED25519CryptoAlgorithm <span class="cov8" title="1">{
+        return ED25519CryptoAlgorithm{
                 prefix: ed25519Prefix,
         }
 }</span>
 
-func (c ed25519CryptoAlgorithm) Prefix() byte <span class="cov0" title="0">{
+func (c ED25519CryptoAlgorithm) Prefix() byte <span class="cov0" title="0">{
         return c.prefix
 }</span>
 
-func (c ed25519CryptoAlgorithm) FamilySeedPrefix() byte <span class="cov0" title="0">{
+func (c ED25519CryptoAlgorithm) FamilySeedPrefix() byte <span class="cov0" title="0">{
         return c.familySeedPrefix
 }</span>
 
-func (c ed25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error) <span class="cov8" title="1">{
+func (c ED25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error) <span class="cov8" title="1">{
         if validator </span><span class="cov8" title="1">{
                 return "", "", &amp;ed25519ValidatorError{}
         }</span>
@@ -3764,7 +3756,7 @@ func (c ed25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool
         return private, public, nil</span>
 }
 
-func (c ed25519CryptoAlgorithm) Sign(msg, privKey string) (string, error) <span class="cov8" title="1">{
+func (c ED25519CryptoAlgorithm) Sign(msg, privKey string) (string, error) <span class="cov8" title="1">{
         b, err := hex.DecodeString(privKey)
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
@@ -3774,7 +3766,7 @@ func (c ed25519CryptoAlgorithm) Sign(msg, privKey string) (string, error) <span 
         return strings.ToUpper(hex.EncodeToString(signedMsg)), nil</span>
 }
 
-func (c ed25519CryptoAlgorithm) Validate(msg, pubkey, sig string) bool <span class="cov8" title="1">{
+func (c ED25519CryptoAlgorithm) Validate(msg, pubkey, sig string) bool <span class="cov8" title="1">{
         bp, err := hex.DecodeString(pubkey)
         if err != nil </span><span class="cov0" title="0">{
                 return false
@@ -3816,24 +3808,24 @@ const (
         secp256K1FamilySeedPrefix = 0x21
 )
 
-type secp256K1CryptoAlgorithm CryptoAlgorithm
+type SECP256K1CryptoAlgorithm Algorithm
 
-func SECP256K1() secp256K1CryptoAlgorithm <span class="cov8" title="1">{
-        return secp256K1CryptoAlgorithm{
+func SECP256K1() SECP256K1CryptoAlgorithm <span class="cov8" title="1">{
+        return SECP256K1CryptoAlgorithm{
                 prefix:           secp256K1Prefix,
                 familySeedPrefix: secp256K1FamilySeedPrefix,
         }
 }</span>
 
-func (c secp256K1CryptoAlgorithm) Prefix() byte <span class="cov0" title="0">{
+func (c SECP256K1CryptoAlgorithm) Prefix() byte <span class="cov0" title="0">{
         return c.prefix
 }</span>
 
-func (c secp256K1CryptoAlgorithm) FamilySeedPrefix() byte <span class="cov0" title="0">{
+func (c SECP256K1CryptoAlgorithm) FamilySeedPrefix() byte <span class="cov0" title="0">{
         return c.familySeedPrefix
 }</span>
 
-func (c secp256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *big.Int <span class="cov8" title="1">{
+func (c SECP256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *big.Int <span class="cov8" title="1">{
 
         order := btcec.S256().N
         for i := 0; i &lt;= 0xffffffff; i++ </span><span class="cov8" title="1">{
@@ -3870,7 +3862,7 @@ func (c secp256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *
         <span class="cov0" title="0">panic("impossible unicorn ;)")</span>
 }
 
-func (c secp256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (string, string, error) <span class="cov8" title="1">{
+func (c SECP256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (string, string, error) <span class="cov8" title="1">{
         curve := btcec.S256()
         order := curve.N
 
@@ -3896,7 +3888,7 @@ func (c secp256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (st
         return "00" + private, strings.ToUpper(hex.EncodeToString(pubKeyBytes)), nil</span>
 }
 
-func (c secp256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) <span class="cov8" title="1">{
+func (c SECP256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) <span class="cov8" title="1">{
         if len(privKey) != 64 &amp;&amp; len(privKey) != 66 </span><span class="cov8" title="1">{
                 return "", errors.New("invalid private key")
         }</span>
@@ -3922,7 +3914,7 @@ func (c secp256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) <spa
         <span class="cov8" title="1">return strings.ToUpper(parsedSig), nil</span>
 }
 
-func (c secp256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool <span class="cov8" title="1">{
+func (c SECP256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool <span class="cov8" title="1">{
         // Decode the signature from DERHex to a hex string
         r, s, err := DERHexToSig(sig)
         if err != nil </span><span class="cov8" title="1">{
@@ -3973,28 +3965,28 @@ func Sha512Half(msg []byte) []byte <span class="cov8" title="1">{
 		
 		<pre class="file" id="file37" style="display: none">package crypto
 
-type CryptoAlgorithm struct {
+type Algorithm struct {
         prefix           uint8
         familySeedPrefix uint8
 }
 
-func (c CryptoAlgorithm) Prefix() uint8 <span class="cov0" title="0">{
+func (c Algorithm) Prefix() uint8 <span class="cov0" title="0">{
         return c.prefix
 }</span>
 
-func (c CryptoAlgorithm) FamilySeedPrefix() uint8 <span class="cov0" title="0">{
+func (c Algorithm) FamilySeedPrefix() uint8 <span class="cov0" title="0">{
         return c.familySeedPrefix
 }</span>
 
-func (c CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error) <span class="cov0" title="0">{
+func (c Algorithm) DeriveKeypair(_ []byte, _ bool) (string, string, error) <span class="cov0" title="0">{
         return "", "", nil
 }</span>
 
-func (c CryptoAlgorithm) Sign(msg, privKey string) (string, error) <span class="cov0" title="0">{
+func (c Algorithm) Sign(_ string, _ string) (string, error) <span class="cov0" title="0">{
         return "", nil
 }</span>
 
-func (c CryptoAlgorithm) Validate(msg, pubkey, sig string) bool <span class="cov0" title="0">{
+func (c Algorithm) Validate(_ string, _ string, _ string) bool <span class="cov0" title="0">{
         return false
 }</span>
 </pre>
@@ -4107,14 +4099,14 @@ import (
 )
 
 const (
-        DROPS_PER_XRP          float64 = 1000000
-        MAX_FRACTION_LENGTH    uint    = 6
-        NATIVE_CURRENCY_SYMBOL string  = "XRP"
+        DropsPerXrp          float64 = 1000000
+        MaxFractionLength    uint    = 6
+        NativeCurrencySymbol string  = "XRP"
 )
 
 // Convert an amount in XRP to an amount in drops.
 func XrpToDrops(value string) (string, error) <span class="cov8" title="1">{
-        if i := strings.IndexByte(value, '.'); i != -1 &amp;&amp; len(value[i+1:]) &gt; int(MAX_FRACTION_LENGTH) </span><span class="cov8" title="1">{
+        if i := strings.IndexByte(value, '.'); i != -1 &amp;&amp; len(value[i+1:]) &gt; int(MaxFractionLength) </span><span class="cov8" title="1">{
                 return "", errors.New("xrp to drops: value has too many decimals")
         }</span>
 
@@ -4123,7 +4115,7 @@ func XrpToDrops(value string) (string, error) <span class="cov8" title="1">{
                 return "", err
         }</span>
 
-        <span class="cov8" title="1">dropsFloat := xrpFloat * DROPS_PER_XRP
+        <span class="cov8" title="1">dropsFloat := xrpFloat * DropsPerXrp
         return strconv.FormatFloat(dropsFloat, 'f', -1, 64), nil</span>
 
 }
@@ -4135,7 +4127,7 @@ func DropsToXrp(value string) (string, error) <span class="cov8" title="1">{
                 return "", err
         }</span>
 
-        <span class="cov8" title="1">xrpFloat := float64(dropUint) / DROPS_PER_XRP
+        <span class="cov8" title="1">xrpFloat := float64(dropUint) / DropsPerXrp
 
         return strconv.FormatFloat(xrpFloat, 'f', -1, 64), nil</span>
 }
@@ -4148,11 +4140,11 @@ import (
         "strings"
 )
 
-// CurrencyStringToHex converts a string to a hexadecimal representation
+// ConvertStringToHex converts a string to a hexadecimal representation
 // with trailing zeros up to a length of 40 characters.
 // This is to support the non-standard currency codes for the XRPL.
 // See https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes
-func CurrencyStringToHex(input string) string <span class="cov8" title="1">{
+func ConvertStringToHex(input string) string <span class="cov8" title="1">{
         // non-standard currency codes are for currencies with more than 3 characters
         if len(input) &lt;= 3 </span><span class="cov8" title="1">{
                 return input
@@ -4170,10 +4162,10 @@ func CurrencyStringToHex(input string) string <span class="cov8" title="1">{
         return hexString</span>
 }
 
-// CurrencyHexToString converts a hexadecimal to a string.
+// ConvertHexToString converts a hexadecimal to a string.
 // This functions removes the null bytes from the string which come from the non-standard currency codes for the XRPL.
 // See https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes
-func CurrencyHexToString(input string) (string, error) <span class="cov8" title="1">{
+func ConvertHexToString(input string) (string, error) <span class="cov8" title="1">{
         // Convert the hexadecimal representation to bytes
         bytes, err := hex.DecodeString(input)
         if err != nil </span><span class="cov8" title="1">{
@@ -4222,10 +4214,10 @@ import (
         "github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
-// HashTxBlob hashes a signed transaction blob
+// TxBlob hashes a signed transaction blob
 // It takes a transaction blob and returns the hash of the signed transaction.
 // It returns an error if the transaction blob is invalid.
-func HashTxBlob(txBlob string) (string, error) <span class="cov8" title="1">{
+func TxBlob(txBlob string) (string, error) <span class="cov8" title="1">{
         tx, err := binarycodec.Decode(txBlob)
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
@@ -4244,7 +4236,7 @@ func HashTxBlob(txBlob string) (string, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">payload := make([]byte, 4+len(txBlob)/2)
 
         // Convert TRANSACTION_PREFIX to big-endian bytes
-        binary.BigEndian.PutUint32(payload[:4], TRANSACTION_PREFIX)
+        binary.BigEndian.PutUint32(payload[:4], TransactionPrefix)
 
         // Decode the txBlob into the rest of the payload
         _, err = hex.Decode(payload[4:], []byte(txBlob))
@@ -4270,7 +4262,7 @@ type AccountRoot struct {
         Domain            string                  `json:",omitempty"`
         EmailHash         types.Hash128           `json:",omitempty"`
         Flags             uint64
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         MessageKey        string        `json:",omitempty"`
         MintedNFTokens    uint32        `json:",omitempty"`
         NFTokenMinter     types.Address `json:",omitempty"`
@@ -4282,11 +4274,11 @@ type AccountRoot struct {
         TicketCount       uint32 `json:",omitempty"`
         TickSize          uint8  `json:",omitempty"`
         TransferRate      uint32 `json:",omitempty"`
-        // TODO determine if this is a required field
-        //Index             types.Hash256 `json:"index,omitempty"`
+        // TODO: determine if this is a required field
+        // Index             types.Hash256 `json:"index,omitempty"`
 }
 
-func (*AccountRoot) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*AccountRoot) EntryType() EntryType <span class="cov0" title="0">{
         return AccountRootEntry
 }</span>
 </pre>
@@ -4300,11 +4292,11 @@ import (
 type Amendments struct {
         Amendments      []types.Hash256 `json:",omitempty"`
         Flags           uint
-        LedgerEntryType LedgerEntryType
+        LedgerEntryType EntryType
         Majorities      []MajorityEntry `json:",omitempty"`
 }
 
-func (*Amendments) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*Amendments) EntryType() EntryType <span class="cov0" title="0">{
         return AmendmentsEntry
 }</span>
 
@@ -4378,7 +4370,7 @@ import (
 //            ]
 //        }
 type AMM struct {
-        LedgerEntryCommonFields
+        EntryCommonFields
         // The address of the special account that holds this AMM's assets.
         Account types.Address
         // The definition for one of the two assets this AMM holds. In JSON, this is an object with currency and issuer fields.
@@ -4484,7 +4476,7 @@ type VoteEntry struct {
         VoteWeight uint
 }
 
-func (*AMM) EntryType() LedgerEntryType <span class="cov8" title="1">{
+func (*AMM) EntryType() EntryType <span class="cov8" title="1">{
         return AMMEntry
 }</span>
 </pre>
@@ -4550,7 +4542,7 @@ type Bridge struct {
 }
 
 // EntryType returns the type of the ledger entry.
-func (*Bridge) EntryType() LedgerEntryType <span class="cov8" title="1">{
+func (*Bridge) EntryType() EntryType <span class="cov8" title="1">{
         return BridgeEntry
 }</span>
 </pre>
@@ -4568,7 +4560,7 @@ type Check struct {
         Expiration        uint   `json:",omitempty"`
         Flags             uint
         InvoiceID         types.Hash256 `json:",omitempty"`
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
         PreviousTxnLgrSeq uint
@@ -4577,7 +4569,7 @@ type Check struct {
         SourceTag         uint `json:",omitempty"`
 }
 
-func (*Check) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*Check) EntryType() EntryType <span class="cov0" title="0">{
         return CheckEntry
 }</span>
 </pre>
@@ -4592,13 +4584,13 @@ type DepositPreauthObj struct {
         Account           types.Address
         Authorize         types.Address
         Flags             uint
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
         PreviousTxnLgrSeq uint
 }
 
-func (*DepositPreauthObj) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*DepositPreauthObj) EntryType() EntryType <span class="cov0" title="0">{
         return DepositPreauthObjEntry
 }</span>
 </pre>
@@ -4650,7 +4642,7 @@ type DID struct {
 }
 
 // EntryType returns the type of the ledger entry.
-func (*DID) EntryType() LedgerEntryType <span class="cov8" title="1">{
+func (*DID) EntryType() EntryType <span class="cov8" title="1">{
         return DIDEntry
 }</span>
 </pre>
@@ -4666,7 +4658,7 @@ type DirectoryNode struct {
         Indexes           []types.Hash256
         IndexNext         string `json:",omitempty"`
         IndexPrevious     string `json:",omitempty"`
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         Owner             types.Address `json:",omitempty"`
         RootIndex         types.Hash256
         TakerGetsCurrency string `json:",omitempty"`
@@ -4675,7 +4667,7 @@ type DirectoryNode struct {
         TakerPaysIssuer   string `json:",omitempty"`
 }
 
-func (*DirectoryNode) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*DirectoryNode) EntryType() EntryType <span class="cov0" title="0">{
         return DirectoryNodeEntry
 }</span>
 </pre>
@@ -4696,14 +4688,14 @@ type Escrow struct {
         DestinationTag    uint   `json:",omitempty"`
         FinishAfter       uint   `json:",omitempty"`
         Flags             uint
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
         PreviousTxnLgrSeq uint
         SourceTag         uint `json:",omitempty"`
 }
 
-func (*Escrow) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*Escrow) EntryType() EntryType <span class="cov0" title="0">{
         return EscrowEntry
 }</span>
 </pre>
@@ -4713,13 +4705,13 @@ func (*Escrow) EntryType() LedgerEntryType <span class="cov0" title="0">{
 type FeeSettings struct {
         BaseFee           string
         Flags             uint
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         ReferenceFeeUnits uint
         ReserveBase       uint
         ReserveIncrement  uint
 }
 
-func (*FeeSettings) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*FeeSettings) EntryType() EntryType <span class="cov0" title="0">{
         return FeeSettingsEntry
 }</span>
 </pre>
@@ -4728,15 +4720,15 @@ func (*FeeSettings) EntryType() LedgerEntryType <span class="cov0" title="0">{
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
-type LedgerHashes struct {
+type Hashes struct {
         FirstLedgerSequence uint
         Flags               uint
         Hashes              []types.Hash256
         LastLedgerSequence  uint
-        LedgerEntryType     LedgerEntryType
+        LedgerEntryType     EntryType
 }
 
-func (*LedgerHashes) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*Hashes) EntryType() EntryType <span class="cov0" title="0">{
         return LedgerHashesEntry
 }</span>
 </pre>
@@ -4748,45 +4740,45 @@ import (
         "fmt"
 )
 
-type LedgerEntryType string
+type EntryType string
 
 const (
-        AccountRootEntry                     LedgerEntryType = "AccountRoot"
-        AmendmentsEntry                      LedgerEntryType = "Amendments"
-        AMMEntry                             LedgerEntryType = "AMM"
-        BridgeEntry                          LedgerEntryType = "Bridge"
-        CheckEntry                           LedgerEntryType = "Check"
-        DepositPreauthObjEntry               LedgerEntryType = "DepositPreauth"
-        DIDEntry                             LedgerEntryType = "DID"
-        DirectoryNodeEntry                   LedgerEntryType = "DirectoryNode"
-        EscrowEntry                          LedgerEntryType = "Escrow"
-        FeeSettingsEntry                     LedgerEntryType = "FeeSettings"
-        LedgerHashesEntry                    LedgerEntryType = "LedgerHashes"
-        NegativeUNLEntry                     LedgerEntryType = "NegativeUNL"
-        NFTokenOfferEntry                    LedgerEntryType = "NFTokenOffer"
-        NFTokenPageEntry                     LedgerEntryType = "NFTokenPage"
-        OfferEntry                           LedgerEntryType = "Offer"
-        OracleEntry                          LedgerEntryType = "Oracle"
-        PayChannelEntry                      LedgerEntryType = "PayChannel"
-        RippleStateEntry                     LedgerEntryType = "RippleState"
-        SignerListEntry                      LedgerEntryType = "SignerList"
-        TicketEntry                          LedgerEntryType = "Ticket"
-        XChainOwnedClaimIDEntry              LedgerEntryType = "XChainOwnedClaimID"
-        XChainOwnedCreateAccountClaimIDEntry LedgerEntryType = "XChainOwnedCreateAccountClaimID"
+        AccountRootEntry                     EntryType = "AccountRoot"
+        AmendmentsEntry                      EntryType = "Amendments"
+        AMMEntry                             EntryType = "AMM"
+        BridgeEntry                          EntryType = "Bridge"
+        CheckEntry                           EntryType = "Check"
+        DepositPreauthObjEntry               EntryType = "DepositPreauth"
+        DIDEntry                             EntryType = "DID"
+        DirectoryNodeEntry                   EntryType = "DirectoryNode"
+        EscrowEntry                          EntryType = "Escrow"
+        FeeSettingsEntry                     EntryType = "FeeSettings"
+        LedgerHashesEntry                    EntryType = "LedgerHashes"
+        NegativeUNLEntry                     EntryType = "NegativeUNL"
+        NFTokenOfferEntry                    EntryType = "NFTokenOffer"
+        NFTokenPageEntry                     EntryType = "NFTokenPage"
+        OfferEntry                           EntryType = "Offer"
+        OracleEntry                          EntryType = "Oracle"
+        PayChannelEntry                      EntryType = "PayChannel"
+        RippleStateEntry                     EntryType = "RippleState"
+        SignerListEntry                      EntryType = "SignerList"
+        TicketEntry                          EntryType = "Ticket"
+        XChainOwnedClaimIDEntry              EntryType = "XChainOwnedClaimID"
+        XChainOwnedCreateAccountClaimIDEntry EntryType = "XChainOwnedCreateAccountClaimID"
 )
 
 type FlatLedgerObject map[string]interface{}
 
-func (f FlatLedgerObject) EntryType() LedgerEntryType <span class="cov0" title="0">{
-        return LedgerEntryType(f["LedgerEntryType"].(string))
+func (f FlatLedgerObject) EntryType() EntryType <span class="cov0" title="0">{
+        return EntryType(f["LedgerEntryType"].(string))
 }</span>
 
-type LedgerObject interface {
-        EntryType() LedgerEntryType
+type Object interface {
+        EntryType() EntryType
 }
 
-func EmptyLedgerObject(t string) (LedgerObject, error) <span class="cov0" title="0">{
-        switch LedgerEntryType(t) </span>{
+func EmptyLedgerObject(t string) (Object, error) <span class="cov0" title="0">{
+        switch EntryType(t) </span>{
         case AccountRootEntry:<span class="cov0" title="0">
                 return &amp;AccountRoot{}, nil</span>
         case AmendmentsEntry:<span class="cov0" title="0">
@@ -4808,7 +4800,7 @@ func EmptyLedgerObject(t string) (LedgerObject, error) <span class="cov0" title=
         case FeeSettingsEntry:<span class="cov0" title="0">
                 return &amp;FeeSettings{}, nil</span>
         case LedgerHashesEntry:<span class="cov0" title="0">
-                return &amp;LedgerHashes{}, nil</span>
+                return &amp;Hashes{}, nil</span>
         case NegativeUNLEntry:<span class="cov0" title="0">
                 return &amp;NegativeUNL{}, nil</span>
         case NFTokenOfferEntry:<span class="cov0" title="0">
@@ -4835,18 +4827,18 @@ func EmptyLedgerObject(t string) (LedgerObject, error) <span class="cov0" title=
         <span class="cov0" title="0">return nil, fmt.Errorf("unrecognized LedgerObject type \"%s\"", t)</span>
 }
 
-func UnmarshalLedgerObject(data []byte) (LedgerObject, error) <span class="cov0" title="0">{
+func UnmarshalLedgerObject(data []byte) (Object, error) <span class="cov0" title="0">{
         if len(data) == 0 </span><span class="cov0" title="0">{
                 return nil, nil
         }</span>
         <span class="cov0" title="0">type helper struct {
-                LedgerEntryType LedgerEntryType
+                LedgerEntryType EntryType
         }
         var h helper
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var o LedgerObject
+        <span class="cov0" title="0">var o Object
         switch h.LedgerEntryType </span>{
         case AccountRootEntry:<span class="cov0" title="0">
                 o = &amp;AccountRoot{}</span>
@@ -4867,7 +4859,7 @@ func UnmarshalLedgerObject(data []byte) (LedgerObject, error) <span class="cov0"
         case FeeSettingsEntry:<span class="cov0" title="0">
                 o = &amp;FeeSettings{}</span>
         case LedgerHashesEntry:<span class="cov0" title="0">
-                o = &amp;LedgerHashes{}</span>
+                o = &amp;Hashes{}</span>
         case NegativeUNLEntry:<span class="cov0" title="0">
                 o = &amp;NegativeUNL{}</span>
         case NFTokenOfferEntry:<span class="cov0" title="0">
@@ -4905,12 +4897,12 @@ func UnmarshalLedgerObject(data []byte) (LedgerObject, error) <span class="cov0"
 type NegativeUNL struct {
         DisabledValidators  []DisabledValidatorEntry `json:",omitempty"`
         Flags               uint
-        LedgerEntryType     LedgerEntryType
+        LedgerEntryType     EntryType
         ValidatorToDisable  string `json:",omitempty"`
         ValidatorToReEnable string `json:",omitempty"`
 }
 
-func (*NegativeUNL) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*NegativeUNL) EntryType() EntryType <span class="cov0" title="0">{
         return NegativeUNLEntry
 }</span>
 
@@ -4937,7 +4929,7 @@ type NFTokenOffer struct {
         Destination       types.Address `json:",omitempty"`
         Expiration        uint          `json:",omitempty"`
         Flags             uint
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         NFTokenID         types.Hash256
         NFTokenOfferNode  string `json:",omitempty"`
         Owner             types.Address
@@ -4946,7 +4938,7 @@ type NFTokenOffer struct {
         PreviousTxnLgrSeq uint
 }
 
-func (*NFTokenOffer) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*NFTokenOffer) EntryType() EntryType <span class="cov0" title="0">{
         return NFTokenOfferEntry
 
 }</span>
@@ -4957,7 +4949,7 @@ func (n *NFTokenOffer) UnmarshalJSON(data []byte) error <span class="cov8" title
                 Destination       types.Address
                 Expiration        uint
                 Flags             uint
-                LedgerEntryType   LedgerEntryType
+                LedgerEntryType   EntryType
                 NFTokenID         types.Hash256
                 NFTokenOfferNode  string
                 Owner             types.Address
@@ -4995,7 +4987,7 @@ func (n *NFTokenOffer) UnmarshalJSON(data []byte) error <span class="cov8" title
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
 type NFTokenPage struct {
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         NextPageMin       types.Hash256 `json:",omitempty"`
         PreviousPageMin   types.Hash256 `json:",omitempty"`
         PreviousTxnID     types.Hash256 `json:",omitempty"`
@@ -5003,7 +4995,7 @@ type NFTokenPage struct {
         NFTokens          []types.NFToken
 }
 
-func (*NFTokenPage) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*NFTokenPage) EntryType() EntryType <span class="cov0" title="0">{
         return NFTokenPageEntry
 }</span>
 </pre>
@@ -5029,7 +5021,7 @@ type Offer struct {
         BookNode          string
         Expiration        uint `json:",omitempty"`
         Flags             OfferFlags
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
         PreviousTxnLgrSeq uint
@@ -5038,7 +5030,7 @@ type Offer struct {
         TakerGets         types.CurrencyAmount
 }
 
-func (*Offer) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*Offer) EntryType() EntryType <span class="cov0" title="0">{
         return OfferEntry
 }</span>
 
@@ -5049,7 +5041,7 @@ func (o *Offer) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
                 BookNode          string
                 Expiration        uint
                 Flags             OfferFlags
-                LedgerEntryType   LedgerEntryType
+                LedgerEntryType   EntryType
                 OwnerNode         string
                 PreviousTxnID     types.Hash256
                 PreviousTxnLgrSeq uint
@@ -5097,14 +5089,14 @@ type PriceData struct {
         // bond CUSIP, or currency code is allowed.
         BaseAsset string
         // The quote asset in a trading pair. The quote asset denotes the
-        //price of one unit of the base asset.
+        // price of one unit of the base asset.
         QuoteAsset string
         // The asset price after applying the Scale precision level. It's not included if
         // the last update transaction didn't include the BaseAsset/QuoteAsset pair.
         AssetPrice uint64 `json:",omitempty"`
         // The scaling factor to apply to an asset price. For example, if Scale is 6 and original price is 0.155,
-        //then the scaled price is 155000. Valid scale ranges are 0-10.
-        //It's not included if the last update transaction didn't include the BaseAsset/QuoteAsset pair.
+        // then the scaled price is 155000. Valid scale ranges are 0-10.
+        // It's not included if the last update transaction didn't include the BaseAsset/QuoteAsset pair.
         Scale uint8 `json:",omitempty"`
 }
 
@@ -5142,12 +5134,12 @@ type Oracle struct {
         // This field is a string, up to 256 ASCII hex encoded characters (0x20-0x7E).
         Provider string
         // An array of up to 10 PriceData objects, each representing the price information for a token pair.
-        //More than five PriceData objects require two owner reserves.
+        // More than five PriceData objects require two owner reserves.
         PriceDataSeries []PriceData
         // The time the data was last updated, represented in Unix time.
         LastUpdateTime uint32
         // An optional Universal Resource Identifier to reference price data off-chain.
-        //This field is limited to 256 bytes.
+        // This field is limited to 256 bytes.
         URI string `json:",omitempty"`
         // Describes the type of asset, such as "currency", "commodity", or "index". This field is a string,
         // up to 16 ASCII hex encoded characters (0x20-0x7E).
@@ -5162,7 +5154,7 @@ type Oracle struct {
 }
 
 // EntryType returns the type of the ledger entry.
-func (*Oracle) EntryType() LedgerEntryType <span class="cov8" title="1">{
+func (*Oracle) EntryType() EntryType <span class="cov8" title="1">{
         return OracleEntry
 }</span>
 </pre>
@@ -5181,7 +5173,7 @@ type PayChannel struct {
         DestinationNode   string `json:",omitempty"`
         Expiration        uint   `json:",omitempty"`
         Flags             uint
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
         PreviousTxnLgrSeq uint
@@ -5190,7 +5182,7 @@ type PayChannel struct {
         SourceTag         uint `json:",omitempty"`
 }
 
-func (*PayChannel) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*PayChannel) EntryType() EntryType <span class="cov0" title="0">{
         return PayChannelEntry
 }</span>
 </pre>
@@ -5208,7 +5200,7 @@ type RippleState struct {
         HighNode          string
         HighQualityIn     uint `json:",omitempty"`
         HighQualityOut    uint `json:",omitempty"`
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         LowLimit          types.IssuedCurrencyAmount
         LowNode           string
         LowQualityIn      uint `json:",omitempty"`
@@ -5217,7 +5209,7 @@ type RippleState struct {
         PreviousTxnLgrSeq uint
 }
 
-func (*RippleState) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*RippleState) EntryType() EntryType <span class="cov0" title="0">{
         return RippleStateEntry
 }</span>
 </pre>
@@ -5269,7 +5261,7 @@ type SignerListFlags uint32
 // ```
 type SignerList struct {
         // The value 0x0053, mapped to the string SignerList, indicates that this is a SignerList ledger entry.
-        LedgerEntryType LedgerEntryType
+        LedgerEntryType EntryType
         // The identifying hash of the transaction that most recently modified this object.
         PreviousTxnID string
         // The index of the ledger that contains the transaction that most recently modified this object.
@@ -5327,7 +5319,7 @@ func (s *SignerEntry) Flatten() FlatLedgerObject <span class="cov0" title="0">{
 }
 
 // EntryType returns the type of the ledger entry (SignerList)
-func (*SignerList) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*SignerList) EntryType() EntryType <span class="cov0" title="0">{
         return SignerListEntry
 }</span>
 </pre>
@@ -5339,14 +5331,14 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 type Ticket struct {
         Account           types.Address
         Flags             uint
-        LedgerEntryType   LedgerEntryType
+        LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
         PreviousTxnLgrSeq uint
         TicketSequence    uint
 }
 
-func (*Ticket) EntryType() LedgerEntryType <span class="cov0" title="0">{
+func (*Ticket) EntryType() EntryType <span class="cov0" title="0">{
         return TicketEntry
 }</span>
 </pre>
@@ -5432,13 +5424,13 @@ type XChainClaimAttestation struct {
 type XChainOwnedClaimID struct {
         // The account that owns this object.
         Account types.Address
-        //         The ledger index is a hash of a unique prefix for XChainOwnedClaimIDs,
+        // The ledger index is a hash of a unique prefix for XChainOwnedClaimIDs,
         // the actual XChainClaimID value, and the fields in XChainBridge.
         LedgerIndex string
         // The account that must send the corresponding XChainCommit on the source chain. The destination may be specified
         // in the XChainCommit transaction, which means that if the OtherChainSource isn't specified, another account can
-        //try to specify a different destination and steal the funds. This also allows tracking only a single set of signatures,
-        //since we know which account will send the XChainCommit transaction.
+        // try to specify a different destination and steal the funds. This also allows tracking only a single set of signatures,
+        // since we know which account will send the XChainCommit transaction.
         OtherChainSource types.Address
         // The total amount to pay the witness servers for their signatures. It must be at least the value of SignatureReward in the Bridge ledger object.
         SignatureReward types.CurrencyAmount
@@ -5447,12 +5439,12 @@ type XChainOwnedClaimID struct {
         // Attestations collected from the witness servers. This includes the parameters needed to recreate the message
         // that was signed, including the amount, which chain (locking or issuing), optional destination, and reward account for that signature.
         XChainClaimAttestations []XChainClaimAttestation
-        //The unique sequence number for a cross-chain transfer.
+        // The unique sequence number for a cross-chain transfer.
         XChainClaimID uint64
 }
 
 // EntryType returns the type of the ledger entry.
-func (*XChainOwnedClaimID) EntryType() LedgerEntryType <span class="cov8" title="1">{
+func (*XChainOwnedClaimID) EntryType() EntryType <span class="cov8" title="1">{
         return XChainOwnedClaimIDEntry
 }</span>
 </pre>
@@ -5538,7 +5530,7 @@ type XChainOwnedCreateAccountClaimID struct {
         XChainCreateAccountAttestations []XChainCreateAccountAttestation
 }
 
-func (x *XChainOwnedCreateAccountClaimID) EntryType() LedgerEntryType <span class="cov8" title="1">{
+func (x *XChainOwnedCreateAccountClaimID) EntryType() EntryType <span class="cov8" title="1">{
         return XChainOwnedCreateAccountClaimIDEntry
 }</span>
 </pre>
@@ -5553,7 +5545,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountChannelsRequest struct {
+type ChannelsRequest struct {
         Account            types.Address          `json:"account"`
         DestinationAccount types.Address          `json:"destination_account,omitempty"`
         LedgerIndex        common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -5562,20 +5554,20 @@ type AccountChannelsRequest struct {
         Marker             any                    `json:"marker,omitempty"`
 }
 
-func (*AccountChannelsRequest) Method() string <span class="cov0" title="0">{
+func (*ChannelsRequest) Method() string <span class="cov0" title="0">{
         return "account_channels"
 }</span>
 
 // Validate method to be added to each request struct
-func (a *AccountChannelsRequest) Validate() error <span class="cov8" title="1">{
-        if a.Account == "" </span><span class="cov8" title="1">{
+func (r *ChannelsRequest) Validate() error <span class="cov8" title="1">{
+        if r.Account == "" </span><span class="cov8" title="1">{
                 return errors.New("no account ID specified")
         }</span>
 
         <span class="cov0" title="0">return nil</span>
 }
 
-func (r *AccountChannelsRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *ChannelsRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type acrHelper struct {
                 Account            types.Address     `json:"account"`
                 DestinationAccount types.Address     `json:"destination_account"`
@@ -5588,7 +5580,7 @@ func (r *AccountChannelsRequest) UnmarshalJSON(data []byte) error <span class="c
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = AccountChannelsRequest{
+        <span class="cov8" title="1">*r = ChannelsRequest{
                 Account:            h.Account,
                 DestinationAccount: h.DestinationAccount,
                 LedgerHash:         h.LedgerHash,
@@ -5614,18 +5606,18 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountCurrenciesRequest struct {
+type CurrenciesRequest struct {
         Account     types.Address          `json:"account"`
         LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
         Strict      bool                   `json:"strict,omitempty"`
 }
 
-func (*AccountCurrenciesRequest) Method() string <span class="cov0" title="0">{
+func (*CurrenciesRequest) Method() string <span class="cov0" title="0">{
         return "account_currencies"
 }</span>
 
-func (r *AccountCurrenciesRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *CurrenciesRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type acrHelper struct {
                 Account     types.Address     `json:"account"`
                 LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
@@ -5636,7 +5628,7 @@ func (r *AccountCurrenciesRequest) UnmarshalJSON(data []byte) error <span class=
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = AccountCurrenciesRequest{
+        <span class="cov8" title="1">*r = CurrenciesRequest{
                 Account:    h.Account,
                 LedgerHash: h.LedgerHash,
                 Strict:     h.Strict,
@@ -5660,7 +5652,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountInfoRequest struct {
+type InfoRequest struct {
         Account     types.Address          `json:"account"`
         LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
         LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -5669,15 +5661,15 @@ type AccountInfoRequest struct {
         Strict      bool                   `json:"strict,omitempty"`
 }
 
-func (*AccountInfoRequest) Method() string <span class="cov0" title="0">{
+func (*InfoRequest) Method() string <span class="cov0" title="0">{
         return "account_info"
 }</span>
 
-func (*AccountInfoRequest) Validate() error <span class="cov0" title="0">{
+func (*InfoRequest) Validate() error <span class="cov0" title="0">{
         return nil
 }</span>
 
-func (r *AccountInfoRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *InfoRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type airHelper struct {
                 Account     types.Address     `json:"account"`
                 LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
@@ -5690,7 +5682,7 @@ func (r *AccountInfoRequest) UnmarshalJSON(data []byte) error <span class="cov8"
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = AccountInfoRequest{
+        <span class="cov8" title="1">*r = InfoRequest{
                 Account:    h.Account,
                 LedgerHash: h.LedgerHash,
                 Queue:      h.Queue,
@@ -5716,7 +5708,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountLinesRequest struct {
+type LinesRequest struct {
         Account     types.Address          `json:"account"`
         LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -5725,15 +5717,15 @@ type AccountLinesRequest struct {
         Marker      any                    `json:"marker,omitempty"`
 }
 
-func (*AccountLinesRequest) Method() string <span class="cov0" title="0">{
+func (*LinesRequest) Method() string <span class="cov0" title="0">{
         return "account_lines"
 }</span>
 
-func (*AccountLinesRequest) Validate() error <span class="cov0" title="0">{
+func (*LinesRequest) Validate() error <span class="cov0" title="0">{
         return nil
 }</span>
 
-func (r *AccountLinesRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *LinesRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type alrHelper struct {
                 Account     types.Address     `json:"account"`
                 LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
@@ -5746,7 +5738,7 @@ func (r *AccountLinesRequest) UnmarshalJSON(data []byte) error <span class="cov8
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = AccountLinesRequest{
+        <span class="cov8" title="1">*r = LinesRequest{
                 Account:    h.Account,
                 LedgerHash: h.LedgerHash,
                 Peer:       h.Peer,
@@ -5772,7 +5764,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountNFTsRequest struct {
+type NFTsRequest struct {
         Account     types.Address          `json:"account"`
         LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
         LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -5780,11 +5772,11 @@ type AccountNFTsRequest struct {
         Marker      any                    `json:"marker,omitempty"`
 }
 
-func (*AccountNFTsRequest) Method() string <span class="cov0" title="0">{
+func (*NFTsRequest) Method() string <span class="cov0" title="0">{
         return "account_nfts"
 }</span>
 
-func (r *AccountNFTsRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *NFTsRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type anrHelper struct {
                 Account     types.Address     `json:"account"`
                 LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
@@ -5796,7 +5788,7 @@ func (r *AccountNFTsRequest) UnmarshalJSON(data []byte) error <span class="cov8"
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = AccountNFTsRequest{
+        <span class="cov8" title="1">*r = NFTsRequest{
                 Account:    h.Account,
                 LedgerHash: h.LedgerHash,
                 Limit:      h.Limit,
@@ -5821,23 +5813,23 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountObjectType string
+type ObjectType string
 
 const (
-        CheckObject          AccountObjectType = "check"
-        DepositPreauthObject AccountObjectType = "deposit_preauth"
-        EscrowObject         AccountObjectType = "escrow"
-        NFTOfferObject       AccountObjectType = "nft_offer"
-        OfferObject          AccountObjectType = "offer"
-        PaymentChannelObject AccountObjectType = "payment_channel"
-        SignerListObject     AccountObjectType = "signer_list"
-        StateObject          AccountObjectType = "state"
-        TicketObject         AccountObjectType = "ticket"
+        CheckObject          ObjectType = "check"
+        DepositPreauthObject ObjectType = "deposit_preauth"
+        EscrowObject         ObjectType = "escrow"
+        NFTOfferObject       ObjectType = "nft_offer"
+        OfferObject          ObjectType = "offer"
+        PaymentChannelObject ObjectType = "payment_channel"
+        SignerListObject     ObjectType = "signer_list"
+        StateObject          ObjectType = "state"
+        TicketObject         ObjectType = "ticket"
 )
 
-type AccountObjectsRequest struct {
+type ObjectsRequest struct {
         Account              types.Address          `json:"account"`
-        Type                 AccountObjectType      `json:"type,omitempty"`
+        Type                 ObjectType             `json:"type,omitempty"`
         DeletionBlockersOnly bool                   `json:"deletion_blockers_only,omitempty"`
         LedgerHash           common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex          common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -5845,19 +5837,19 @@ type AccountObjectsRequest struct {
         Marker               any                    `json:"marker,omitempty"`
 }
 
-func (*AccountObjectsRequest) Method() string <span class="cov0" title="0">{
+func (*ObjectsRequest) Method() string <span class="cov0" title="0">{
         return "account_objects"
 }</span>
 
 // TODO: Implement
-func (*AccountObjectsRequest) Validate() error <span class="cov0" title="0">{
+func (*ObjectsRequest) Validate() error <span class="cov0" title="0">{
         return nil
 }</span>
 
-func (r *AccountObjectsRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *ObjectsRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type aorHelper struct {
                 Account              types.Address     `json:"account"`
-                Type                 AccountObjectType `json:"type,omitempty"`
+                Type                 ObjectType        `json:"type,omitempty"`
                 DeletionBlockersOnly bool              `json:"deletion_blockers_only,omitempty"`
                 LedgerHash           common.LedgerHash `json:"ledger_hash,omitempty"`
                 LedgerIndex          json.RawMessage   `json:"ledger_index,omitempty"`
@@ -5868,7 +5860,7 @@ func (r *AccountObjectsRequest) UnmarshalJSON(data []byte) error <span class="co
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = AccountObjectsRequest{
+        <span class="cov8" title="1">*r = ObjectsRequest{
                 Account:              h.Account,
                 Type:                 h.Type,
                 DeletionBlockersOnly: h.DeletionBlockersOnly,
@@ -5895,7 +5887,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountOffersRequest struct {
+type OffersRequest struct {
         Account     types.Address          `json:"account"`
         LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -5904,11 +5896,11 @@ type AccountOffersRequest struct {
         Strict      bool                   `json:"strict,omitempty"`
 }
 
-func (*AccountOffersRequest) Method() string <span class="cov0" title="0">{
+func (*OffersRequest) Method() string <span class="cov0" title="0">{
         return "account_offers"
 }</span>
 
-func (r *AccountOffersRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *OffersRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type aorHelper struct {
                 Account     types.Address     `json:"account"`
                 LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
@@ -5921,7 +5913,7 @@ func (r *AccountOffersRequest) UnmarshalJSON(data []byte) error <span class="cov
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = AccountOffersRequest{
+        <span class="cov8" title="1">*r = OffersRequest{
                 Account:    h.Account,
                 LedgerHash: h.LedgerHash,
                 Limit:      h.Limit,
@@ -5947,7 +5939,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountTransactionsRequest struct {
+type TransactionsRequest struct {
         Account        types.Address          `json:"account"`
         LedgerIndexMin int                    `json:"ledger_index_min,omitempty"`
         LedgerIndexMax int                    `json:"ledger_index_max,omitempty"`
@@ -5959,11 +5951,11 @@ type AccountTransactionsRequest struct {
         Marker         any                    `json:"marker,omitempty"`
 }
 
-func (*AccountTransactionsRequest) Method() string <span class="cov0" title="0">{
+func (*TransactionsRequest) Method() string <span class="cov0" title="0">{
         return "account_tx"
 }</span>
 
-func (r *AccountTransactionsRequest) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
+func (r *TransactionsRequest) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
         type atrHelper struct {
                 Account        types.Address     `json:"account"`
                 LedgerIndexMin int               `json:"ledger_index_min,omitempty"`
@@ -5979,7 +5971,7 @@ func (r *AccountTransactionsRequest) UnmarshalJSON(data []byte) error <span clas
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov0" title="0">*r = AccountTransactionsRequest{
+        <span class="cov0" title="0">*r = TransactionsRequest{
                 Account:        h.Account,
                 LedgerIndexMin: h.LedgerIndexMin,
                 LedgerIndexMax: h.LedgerIndexMax,
@@ -6159,9 +6151,9 @@ import (
 )
 
 type LedgerRequestResponse struct {
-        LedgerHeader  *ledger.LedgerHeader `json:"ledger,omitempty"`
-        LedgerRequest *LedgerRequest       `json:"-"`
-        Acquiring     *LedgerRequest       `json:"acquiring,omitempty"`
+        LedgerHeader  *ledger.Header `json:"ledger,omitempty"`
+        LedgerRequest *LedgerRequest `json:"-"`
+        Acquiring     *LedgerRequest `json:"acquiring,omitempty"`
 }
 
 type LedgerRequest struct {
@@ -6293,33 +6285,33 @@ func (*ConnectRequest) Method() string <span class="cov0" title="0">{
 		
 		<pre class="file" id="file88" style="display: none">package peer
 
-type PeerReservationAddRequest struct {
+type ReservationAddRequest struct {
         PublicKey   string `json:"public_key"`
         Description string `json:"description,omitempty"`
 }
 
-func (*PeerReservationAddRequest) Method() string <span class="cov0" title="0">{
+func (*ReservationAddRequest) Method() string <span class="cov0" title="0">{
         return "peer_reservations_add"
 }</span>
 </pre>
 		
 		<pre class="file" id="file89" style="display: none">package peer
 
-type PeerReservationDelRequest struct {
+type ReservationDelRequest struct {
         PublicKey string `json:"public_key"`
 }
 
-func (*PeerReservationDelRequest) Method() string <span class="cov0" title="0">{
+func (*ReservationDelRequest) Method() string <span class="cov0" title="0">{
         return "peer_reservations_del"
 }</span>
 </pre>
 		
 		<pre class="file" id="file90" style="display: none">package peer
 
-type PeerReservationsListRequest struct {
+type ReservationsListRequest struct {
 }
 
-func (*PeerReservationsListRequest) Method() string <span class="cov0" title="0">{
+func (*ReservationsListRequest) Method() string <span class="cov0" title="0">{
         return "peer_reservations_list"
 }</span>
 </pre>
@@ -6363,7 +6355,7 @@ import (
 
 type SignForRequest struct {
         Account    types.Address               `json:"account"`
-        TxJson     transaction.FlatTransaction `json:"tx_json"`
+        TxJSON     transaction.FlatTransaction `json:"tx_json"`
         Secret     string                      `json:"secret,omitempty"`
         Seed       string                      `json:"seed,omitempty"`
         SeedHex    string                      `json:"seed_hex,omitempty"`
@@ -6381,7 +6373,7 @@ func (*SignForRequest) Method() string <span class="cov0" title="0">{
 import "github.com/Peersyst/xrpl-go/xrpl/transaction"
 
 type SignRequest struct {
-        TxJson     transaction.FlatTransaction `json:"tx_json"`
+        TxJSON     transaction.FlatTransaction `json:"tx_json"`
         Secret     string                      `json:"secret,omitempty"`
         Seed       string                      `json:"seed,omitempty"`
         SeedHex    string                      `json:"seed_hex,omitempty"`
@@ -6480,7 +6472,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type ChannelAuthorizeRequest struct {
+type AuthorizeRequest struct {
         ChannelID  string                  `json:"channel_id"`
         Secret     string                  `json:"secret,omitempty"`
         Seed       string                  `json:"seed,omitempty"`
@@ -6490,12 +6482,12 @@ type ChannelAuthorizeRequest struct {
         Amount     types.XRPCurrencyAmount `json:"amount"`
 }
 
-func (*ChannelAuthorizeRequest) Method() string <span class="cov0" title="0">{
+func (*AuthorizeRequest) Method() string <span class="cov0" title="0">{
         return "channel_authorize"
 }</span>
 
 // do not allow secrets to be printed
-func (c *ChannelAuthorizeRequest) Format(s fmt.State, v rune) <span class="cov0" title="0">{
+func (c *AuthorizeRequest) Format(s fmt.State, v rune) <span class="cov0" title="0">{
         type fHelper struct {
                 ChannelID string                  `json:"channel_id"`
                 KeyType   string                  `json:"key_type,omitempty"`
@@ -6514,14 +6506,14 @@ func (c *ChannelAuthorizeRequest) Format(s fmt.State, v rune) <span class="cov0"
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
-type ChannelVerifyRequest struct {
+type VerifyRequest struct {
         Amount    types.XRPCurrencyAmount `json:"amount"`
         ChannelID string                  `json:"channel_id"`
         PublicKey string                  `json:"public_key"`
         Signature string                  `json:"signature"`
 }
 
-func (*ChannelVerifyRequest) Method() string <span class="cov0" title="0">{
+func (*VerifyRequest) Method() string <span class="cov0" title="0">{
         return "channel_verify"
 }</span>
 </pre>
@@ -6709,20 +6701,20 @@ type LedgerHash string
 		
 		<pre class="file" id="file109" style="display: none">package ledger
 
-type LedgerClosedRequest struct {
+type ClosedRequest struct {
 }
 
-func (*LedgerClosedRequest) Method() string <span class="cov0" title="0">{
+func (*ClosedRequest) Method() string <span class="cov0" title="0">{
         return "ledger_closed"
 }</span>
 </pre>
 		
 		<pre class="file" id="file110" style="display: none">package ledger
 
-type LedgerCurrentRequest struct {
+type CurrentRequest struct {
 }
 
-func (*LedgerCurrentRequest) Method() string <span class="cov0" title="0">{
+func (*CurrentRequest) Method() string <span class="cov0" title="0">{
         return "ledger_current"
 }</span>
 </pre>
@@ -6736,29 +6728,29 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type LedgerDataRequest struct {
+type DataRequest struct {
         LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
         Binary      bool                   `json:"binary,omitempty"`
         Limit       int                    `json:"limit,omitempty"`
         Marker      any                    `json:"marker,omitempty"`
-        Type        ledger.LedgerEntryType `json:"type,omitempty"`
+        Type        ledger.EntryType       `json:"type,omitempty"`
 }
 
-func (r *LedgerDataRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *DataRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type ldrHelper struct {
-                LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
-                LedgerIndex json.RawMessage        `json:"ledger_index,omitempty"`
-                Binary      bool                   `json:"binary,omitempty"`
-                Limit       int                    `json:"limit,omitempty"`
-                Marker      any                    `json:"marker,omitempty"`
-                Type        ledger.LedgerEntryType `json:"type,omitempty"`
+                LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
+                LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
+                Binary      bool              `json:"binary,omitempty"`
+                Limit       int               `json:"limit,omitempty"`
+                Marker      any               `json:"marker,omitempty"`
+                Type        ledger.EntryType  `json:"type,omitempty"`
         }
         var h ldrHelper
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = LedgerDataRequest{
+        <span class="cov8" title="1">*r = DataRequest{
                 LedgerHash: h.LedgerHash,
                 Binary:     h.Binary,
                 Limit:      h.Limit,
@@ -6784,7 +6776,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type LedgerEntryRequest struct {
+type EntryRequest struct {
         Binary         bool                   `json:"binary,omitempty"`
         LedgerHash     common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex    common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -6864,7 +6856,7 @@ func parseEntryRequestField(data []byte, target EntryRequestOrString) (EntryRequ
         return target, err</span>
 }
 
-func (r *LedgerEntryRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *EntryRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type lerHelper struct {
                 Binary         bool              `json:"binary,omitempty"`
                 LedgerHash     common.LedgerHash `json:"ledger_hash,omitempty"`
@@ -6885,7 +6877,7 @@ func (r *LedgerEntryRequest) UnmarshalJSON(data []byte) error <span class="cov8"
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = LedgerEntryRequest{
+        <span class="cov8" title="1">*r = EntryRequest{
                 Binary:         h.Binary,
                 LedgerHash:     h.LedgerHash,
                 Index:          h.Index,
@@ -6932,7 +6924,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type LedgerRequest struct {
+type Request struct {
         LedgerHash   common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex  common.LedgerSpecifier `json:"ledger_index,omitempty"`
         Full         bool                   `json:"full,omitempty"`
@@ -6941,35 +6933,35 @@ type LedgerRequest struct {
         OwnerFunds   bool                   `json:"owner_funds,omitempty"`
         Binary       bool                   `json:"binary,omitempty"`
         Queue        bool                   `json:"queue,omitempty"`
-        Type         ledger.LedgerEntryType `json:"type,omitempty"`
+        Type         ledger.EntryType       `json:"type,omitempty"`
 }
 
-func (*LedgerRequest) Method() string <span class="cov0" title="0">{
+func (*Request) Method() string <span class="cov0" title="0">{
         return "ledger"
 }</span>
 
 // TODO: Implement
-func (*LedgerRequest) Validate() error <span class="cov0" title="0">{
+func (*Request) Validate() error <span class="cov0" title="0">{
         return nil
 }</span>
 
-func (r *LedgerRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *Request) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type lrHelper struct {
-                LedgerHash   common.LedgerHash      `json:"ledger_hash,omitempty"`
-                LedgerIndex  json.RawMessage        `json:"ledger_index,omitempty"`
-                Full         bool                   `json:"full,omitempty"`
-                Accounts     bool                   `json:"accounts,omitempty"`
-                Transactions bool                   `json:"transactions,omitempty"`
-                OwnerFunds   bool                   `json:"owner_funds,omitempty"`
-                Binary       bool                   `json:"binary,omitempty"`
-                Queue        bool                   `json:"queue,omitempty"`
-                Type         ledger.LedgerEntryType `json:"type,omitempty"`
+                LedgerHash   common.LedgerHash `json:"ledger_hash,omitempty"`
+                LedgerIndex  json.RawMessage   `json:"ledger_index,omitempty"`
+                Full         bool              `json:"full,omitempty"`
+                Accounts     bool              `json:"accounts,omitempty"`
+                Transactions bool              `json:"transactions,omitempty"`
+                OwnerFunds   bool              `json:"owner_funds,omitempty"`
+                Binary       bool              `json:"binary,omitempty"`
+                Queue        bool              `json:"queue,omitempty"`
+                Type         ledger.EntryType  `json:"type,omitempty"`
         }
         var h lrHelper
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = LedgerRequest{
+        <span class="cov8" title="1">*r = Request{
                 LedgerHash:   h.LedgerHash,
                 Full:         h.Full,
                 Accounts:     h.Accounts,
@@ -7304,16 +7296,16 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type PathSubCommand string
+type SubCommand string
 
 const (
-        CREATE PathSubCommand = "create"
-        CLOSE  PathSubCommand = "close"
-        STATUS PathSubCommand = "status"
+        CREATE SubCommand = "create"
+        CLOSE  SubCommand = "close"
+        STATUS SubCommand = "status"
 )
 
-type PathFindRequest struct {
-        Subcommand         PathSubCommand         `json:"subcommand"`
+type FindRequest struct {
+        Subcommand         SubCommand             `json:"subcommand"`
         SourceAccount      types.Address          `json:"source_account,omitempty"`
         DestinationAccount types.Address          `json:"destination_account,omitempty"`
         DestinationAmount  types.CurrencyAmount   `json:"destination_amount,omitempty"`
@@ -7321,13 +7313,13 @@ type PathFindRequest struct {
         Paths              []transaction.PathStep `json:"paths,omitempty"`
 }
 
-func (*PathFindRequest) Method() string <span class="cov0" title="0">{
+func (*FindRequest) Method() string <span class="cov0" title="0">{
         return "path_find"
 }</span>
 
-func (r *PathFindRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *FindRequest) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type pfrHelper struct {
-                Subcommand         PathSubCommand         `json:"subcommand"`
+                Subcommand         SubCommand             `json:"subcommand"`
                 SourceAccount      types.Address          `json:"source_account,omitempty"`
                 DestinationAccount types.Address          `json:"destination_account,omitempty"`
                 DestinationAmount  json.RawMessage        `json:"destination_amount,omitempty"`
@@ -7338,7 +7330,7 @@ func (r *PathFindRequest) UnmarshalJSON(data []byte) error <span class="cov8" ti
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = PathFindRequest{
+        <span class="cov8" title="1">*r = FindRequest{
                 Subcommand:         h.Subcommand,
                 SourceAccount:      h.SourceAccount,
                 DestinationAccount: h.DestinationAccount,
@@ -7372,8 +7364,8 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type PathFindResponse struct {
-        Alternatives       []PathAlternative    `json:"alternatives"`
+type FindResponse struct {
+        Alternatives       []Alternative        `json:"alternatives"`
         DestinationAccount types.Address        `json:"destination_account"`
         DestinationAmount  types.CurrencyAmount `json:"destination_amount"`
         SourceAccount      types.Address        `json:"source_account"`
@@ -7382,21 +7374,21 @@ type PathFindResponse struct {
         Status             bool                 `json:"status,omitempty"`
 }
 
-func (r *PathFindResponse) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (r *FindResponse) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type pfrHelper struct {
-                Alternatives       []PathAlternative `json:"alternatives"`
-                DestinationAccount types.Address     `json:"destination_account"`
-                DestinationAmount  json.RawMessage   `json:"destination_amount"`
-                SourceAccount      types.Address     `json:"source_account"`
-                FullReply          bool              `json:"full_reply"`
-                Closed             bool              `json:"closed,omitempty"`
-                Status             bool              `json:"status,omitempty"`
+                Alternatives       []Alternative   `json:"alternatives"`
+                DestinationAccount types.Address   `json:"destination_account"`
+                DestinationAmount  json.RawMessage `json:"destination_amount"`
+                SourceAccount      types.Address   `json:"source_account"`
+                FullReply          bool            `json:"full_reply"`
+                Closed             bool            `json:"closed,omitempty"`
+                Status             bool            `json:"status,omitempty"`
         }
         var h pfrHelper
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov8" title="1">*r = PathFindResponse{
+        <span class="cov8" title="1">*r = FindResponse{
                 Alternatives:       h.Alternatives,
                 DestinationAccount: h.DestinationAccount,
                 SourceAccount:      h.SourceAccount,
@@ -7414,13 +7406,13 @@ func (r *PathFindResponse) UnmarshalJSON(data []byte) error <span class="cov8" t
         return nil</span>
 }
 
-type PathAlternative struct {
+type Alternative struct {
         PathsComputed     [][]transaction.PathStep `json:"paths_computed"`
         SourceAmount      types.CurrencyAmount     `json:"source_amount"`
         DestinationAmount types.CurrencyAmount     `json:"destination_amount,omitempty"`
 }
 
-func (p *PathAlternative) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
+func (p *Alternative) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         type paHelper struct {
                 PathsComputed     [][]transaction.PathStep `json:"paths_computed"`
                 SourceAmount      json.RawMessage          `json:"source_amount"`
@@ -7543,25 +7535,25 @@ func (*ManifestRequest) Method() string <span class="cov0" title="0">{
 		
 		<pre class="file" id="file125" style="display: none">package server
 
-type ServerInfoRequest struct {
+type InfoRequest struct {
 }
 
-func (*ServerInfoRequest) Method() string <span class="cov0" title="0">{
+func (*InfoRequest) Method() string <span class="cov0" title="0">{
         return "server_info"
 }</span>
 
 // TODO: Implement
-func (*ServerInfoRequest) Validate() error <span class="cov0" title="0">{
+func (*InfoRequest) Validate() error <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
 		
 		<pre class="file" id="file126" style="display: none">package server
 
-type ServerStateRequest struct {
+type StateRequest struct {
 }
 
-func (*ServerStateRequest) Method() string <span class="cov0" title="0">{
+func (*StateRequest) Method() string <span class="cov0" title="0">{
         return "server_state"
 }</span>
 </pre>
@@ -7570,21 +7562,21 @@ func (*ServerStateRequest) Method() string <span class="cov0" title="0">{
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
-type SubscribeRequest struct {
-        Streams          []string             `json:"streams,omitempty"`
-        Accounts         []types.Address      `json:"accounts,omitempty"`
-        AccountsProposed []types.Address      `json:"accounts_proposed,omitempty"`
-        Books            []SubscribeOrderBook `json:"books,omitempty"`
-        Url              string               `json:"url,omitempty"`
-        UrlUsername      string               `json:"url_username,omitempty"`
-        UrlPassword      string               `json:"url_password,omitempty"`
+type Request struct {
+        Streams          []string        `json:"streams,omitempty"`
+        Accounts         []types.Address `json:"accounts,omitempty"`
+        AccountsProposed []types.Address `json:"accounts_proposed,omitempty"`
+        Books            []OrderBook     `json:"books,omitempty"`
+        URL              string          `json:"url,omitempty"`
+        URLUsername      string          `json:"url_username,omitempty"`
+        URLPassword      string          `json:"url_password,omitempty"`
 }
 
-func (*SubscribeRequest) Method() string <span class="cov0" title="0">{
+func (*Request) Method() string <span class="cov0" title="0">{
         return "subscribe"
 }</span>
 
-type SubscribeOrderBook struct {
+type OrderBook struct {
         TakerGets types.IssuedCurrencyAmount `json:"taker_gets"`
         TakerPays types.IssuedCurrencyAmount `json:"taker_pays"`
         Taker     types.Address              `json:"taker"`
@@ -7658,17 +7650,17 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type TransactionEntryRequest struct {
+type EntryRequest struct {
         LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
         LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
         TxHash      string                 `json:"tx_hash"`
 }
 
-func (*TransactionEntryRequest) Method() string <span class="cov0" title="0">{
+func (*EntryRequest) Method() string <span class="cov0" title="0">{
         return "transaction_entry"
 }</span>
 
-func (t *TransactionEntryRequest) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
+func (t *EntryRequest) UnmarshalJSON(data []byte) error <span class="cov0" title="0">{
         type terHelper struct {
                 LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
                 LedgerIndex json.RawMessage   `json:"ledger_index,omitempty"`
@@ -7678,7 +7670,7 @@ func (t *TransactionEntryRequest) UnmarshalJSON(data []byte) error <span class="
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov0" title="0">*t = TransactionEntryRequest{
+        <span class="cov0" title="0">*t = EntryRequest{
                 LedgerHash: h.LedgerHash,
                 TxHash:     h.TxHash,
         }
@@ -7747,28 +7739,28 @@ import (
         jsoniter "github.com/json-iterator/go"
 )
 
-type JsonRpcClient struct {
-        Config *JsonRpcConfig
+type Client struct {
+        Config *Config
 }
 
-type JsonRpcClientError struct {
+type ClientError struct {
         ErrorString string
 }
 
-func (e *JsonRpcClientError) Error() string <span class="cov8" title="1">{
+func (e *ClientError) Error() string <span class="cov8" title="1">{
         return e.ErrorString
 }</span>
 
-var ErrIncorrectId = errors.New("incorrect id")
+var ErrIncorrectID = errors.New("incorrect id")
 
-func NewJsonRpcClient(cfg *JsonRpcConfig) *JsonRpcClient <span class="cov8" title="1">{
-        return &amp;JsonRpcClient{
+func NewClient(cfg *Config) *Client <span class="cov8" title="1">{
+        return &amp;Client{
                 Config: cfg,
         }
 }</span>
 
 // satisfy the Client interface
-func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLResponse, error) <span class="cov8" title="1">{
+func (c *Client) SendRequest(reqParams XRPLRequest) (XRPLResponse, error) <span class="cov8" title="1">{
 
         err := reqParams.Validate()
         if err != nil </span><span class="cov0" title="0">{
@@ -7780,7 +7772,7 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
                 return nil, err
         }</span>
 
-        <span class="cov8" title="1">req, err := http.NewRequest(http.MethodPost, c.Config.Url, bytes.NewReader(body))
+        <span class="cov8" title="1">req, err := http.NewRequest(http.MethodPost, c.Config.URL, bytes.NewReader(body))
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
@@ -7799,7 +7791,7 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
                 return nil, err
         }</span>
 
-        // allow client to reuse persistant connection
+        // allow client to reuse persistent connection
         <span class="cov8" title="1">defer response.Body.Close()
 
         // Check for service unavailable response and retry if so
@@ -7827,12 +7819,12 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
 
                 <span class="cov8" title="1">if response.StatusCode == 503 </span><span class="cov8" title="1">{
                         // Return service unavailable error here after retry 3 times
-                        return nil, &amp;JsonRpcClientError{ErrorString: "Server is overloaded, rate limit exceeded"}
+                        return nil, &amp;ClientError{ErrorString: "Server is overloaded, rate limit exceeded"}
                 }</span>
 
         }
 
-        <span class="cov8" title="1">var jr JsonRpcResponse
+        <span class="cov8" title="1">var jr Response
         jr, err = CheckForError(response)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -7841,24 +7833,24 @@ func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLRe
         <span class="cov8" title="1">return &amp;jr, nil</span>
 }
 
-func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (JsonRpcXRPLResponse, error) <span class="cov0" title="0">{
+func (c *Client) SubmitTransactionBlob(txBlob string, failHard bool) (XRPLResponse, error) <span class="cov0" title="0">{
         submitRequest := &amp;requests.SubmitRequest{
                 TxBlob:   txBlob,
                 FailHard: failHard,
         }
 
-        response, error := c.SendRequest(submitRequest)
+        response, err := c.SendRequest(submitRequest)
 
-        return response, error
+        return response, err
 }</span>
 
 // CreateRequest formats the parameters and method name ready for sending request
 // Params will have been serialised if required and added to request struct before being passed to this method
-func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) <span class="cov8" title="1">{
+func CreateRequest(reqParams XRPLRequest) ([]byte, error) <span class="cov8" title="1">{
 
-        var body JsonRpcRequest
+        var body Request
 
-        body = JsonRpcRequest{
+        body = Request{
                 Method: reqParams.Method(),
                 // each param object will have a struct with json serialising tags
                 Params: [1]interface{}{reqParams},
@@ -7872,7 +7864,7 @@ func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) <span class="co
         <span class="cov8" title="1">paramString := string(paramBytes)
         if strings.Compare(paramString, "[{}]") == 0 </span><span class="cov8" title="1">{
                 // need to remove params field from the body if it is empty
-                body = JsonRpcRequest{
+                body = Request{
                         Method: reqParams.Method(),
                 }
 
@@ -7893,9 +7885,9 @@ func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) <span class="co
 }
 
 // CheckForError reads the http response and formats the error if it exists
-func CheckForError(res *http.Response) (JsonRpcResponse, error) <span class="cov8" title="1">{
+func CheckForError(res *http.Response) (Response, error) <span class="cov8" title="1">{
 
-        var jr JsonRpcResponse
+        var jr Response
 
         b, err := io.ReadAll(res.Body)
         if err != nil || b == nil </span><span class="cov0" title="0">{
@@ -7904,7 +7896,7 @@ func CheckForError(res *http.Response) (JsonRpcResponse, error) <span class="cov
 
         // In case a different error code is returned
         <span class="cov8" title="1">if res.StatusCode != 200 </span><span class="cov8" title="1">{
-                return jr, &amp;JsonRpcClientError{ErrorString: string(b)}
+                return jr, &amp;ClientError{ErrorString: string(b)}
         }</span>
 
         <span class="cov8" title="1">jDec := json.NewDecoder(bytes.NewReader(b))
@@ -7916,7 +7908,7 @@ func CheckForError(res *http.Response) (JsonRpcResponse, error) <span class="cov
 
         // result will have 'error' if error response
         <span class="cov8" title="1">if _, ok := jr.Result["error"]; ok </span><span class="cov8" title="1">{
-                return jr, &amp;JsonRpcClientError{ErrorString: jr.Result["error"].(string)}
+                return jr, &amp;ClientError{ErrorString: jr.Result["error"].(string)}
         }</span>
 
         <span class="cov8" title="1">return jr, nil</span>
@@ -7932,40 +7924,40 @@ import (
         "time"
 )
 
-var ErrEmptyUrl = errors.New("empty port and IP provided")
+var ErrEmptyURL = errors.New("empty port and IP provided")
 
 type HTTPClient interface {
         Do(req *http.Request) (*http.Response, error)
 }
 
-type JsonRpcConfig struct {
+type Config struct {
         HTTPClient HTTPClient
-        Url        string
+        URL        string
         Headers    map[string][]string
 }
 
-type JsonRpcConfigOpt func(c *JsonRpcConfig)
+type ConfigOpt func(c *Config)
 
-func WithHttpClient(cl HTTPClient) JsonRpcConfigOpt <span class="cov8" title="1">{
-        return func(c *JsonRpcConfig) </span><span class="cov8" title="1">{
+func WithHTTPClient(cl HTTPClient) ConfigOpt <span class="cov8" title="1">{
+        return func(c *Config) </span><span class="cov8" title="1">{
                 c.HTTPClient = cl
         }</span>
 }
 
-func NewJsonRpcConfig(url string, opts ...JsonRpcConfigOpt) (*JsonRpcConfig, error) <span class="cov8" title="1">{
+func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) <span class="cov8" title="1">{
 
         // validate a url has been passed in
         if len(url) == 0 </span><span class="cov8" title="1">{
-                return nil, ErrEmptyUrl
+                return nil, ErrEmptyURL
         }</span>
         // add slash if doesn't already end with one
         <span class="cov8" title="1">if !strings.HasSuffix(url, "/") </span><span class="cov8" title="1">{
                 url += "/"
         }</span>
 
-        <span class="cov8" title="1">cfg := &amp;JsonRpcConfig{
+        <span class="cov8" title="1">cfg := &amp;Config{
                 HTTPClient: &amp;http.Client{Timeout: time.Duration(1) * time.Second}, // default timeout value - allow custom timme out?
-                Url:        url,
+                URL:        url,
                 Headers: map[string][]string{
                         "Content-Type": {"application/json"},
                 },
@@ -7989,12 +7981,12 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-func (r *JsonRpcClient) GetAccountChannels(req *account.AccountChannelsRequest) (*account.AccountChannelsResponse, error) <span class="cov0" title="0">{
+func (r *Client) GetAccountChannels(req *account.ChannelsRequest) (*account.ChannelsResponse, error) <span class="cov0" title="0">{
         res, err := r.SendRequest(req)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var acr account.AccountChannelsResponse
+        <span class="cov0" title="0">var acr account.ChannelsResponse
         err = res.GetResult(&amp;acr)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -8005,12 +7997,12 @@ func (r *JsonRpcClient) GetAccountChannels(req *account.AccountChannelsRequest) 
 // GetAccountInfo retrieves information about an account on the XRP Ledger.
 // It takes an AccountInfoRequest as input and returns an AccountInfoResponse,
 // along with the raw XRPL response and any error encountered.
-func (r *JsonRpcClient) GetAccountInfo(req *account.AccountInfoRequest) (*account.AccountInfoResponse, error) <span class="cov0" title="0">{
+func (r *Client) GetAccountInfo(req *account.InfoRequest) (*account.InfoResponse, error) <span class="cov0" title="0">{
         res, err := r.SendRequest(req)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var air account.AccountInfoResponse
+        <span class="cov0" title="0">var air account.InfoResponse
         err = res.GetResult(&amp;air)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -8021,12 +8013,12 @@ func (r *JsonRpcClient) GetAccountInfo(req *account.AccountInfoRequest) (*accoun
 // GetAccountObjects retrieves a list of objects owned by an account on the XRP Ledger.
 // It takes an AccountObjectsRequest as input and returns an AccountObjectsResponse,
 // along with any error encountered.
-func (r *JsonRpcClient) GetAccountObjects(req *account.AccountObjectsRequest) (*account.AccountObjectsResponse, error) <span class="cov0" title="0">{
+func (r *Client) GetAccountObjects(req *account.ObjectsRequest) (*account.ObjectsResponse, error) <span class="cov0" title="0">{
         res, err := r.SendRequest(req)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var acr account.AccountObjectsResponse
+        <span class="cov0" title="0">var acr account.ObjectsResponse
         err = res.GetResult(&amp;acr)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -8037,12 +8029,12 @@ func (r *JsonRpcClient) GetAccountObjects(req *account.AccountObjectsRequest) (*
 // GetAccountLines retrieves the lines associated with an account on the XRP Ledger.
 // It takes an AccountLinesRequest as input and returns an AccountLinesResponse,
 // along with any error encountered.
-func (r *JsonRpcClient) GetAccountLines(req *account.AccountLinesRequest) (*account.AccountLinesResponse, error) <span class="cov0" title="0">{
+func (r *Client) GetAccountLines(req *account.LinesRequest) (*account.LinesResponse, error) <span class="cov0" title="0">{
         res, err := r.SendRequest(req)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var alr account.AccountLinesResponse
+        <span class="cov0" title="0">var alr account.LinesResponse
         err = res.GetResult(&amp;alr)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -8052,8 +8044,8 @@ func (r *JsonRpcClient) GetAccountLines(req *account.AccountLinesRequest) (*acco
 
 // GetXrpBalance retrieves the XRP balance of a given account address.
 // It returns the balance as a string in XRP (not drops) and any error encountered.
-func (r *JsonRpcClient) GetXrpBalance(address string) (string, error) <span class="cov0" title="0">{
-        res, err := r.GetAccountInfo(&amp;account.AccountInfoRequest{
+func (r *Client) GetXrpBalance(address string) (string, error) <span class="cov0" title="0">{
+        res, err := r.GetAccountInfo(&amp;account.InfoRequest{
                 Account: types.Address(address),
         })
         if err != nil </span><span class="cov0" title="0">{
@@ -8067,14 +8059,14 @@ func (r *JsonRpcClient) GetXrpBalance(address string) (string, error) <span clas
 }
 
 // Returns the index of the most recently validated ledger.
-func (r *JsonRpcClient) GetLedgerIndex() (*common.LedgerIndex, error) <span class="cov0" title="0">{
-        res, err := r.SendRequest(&amp;ledger.LedgerRequest{
+func (r *Client) GetLedgerIndex() (*common.LedgerIndex, error) <span class="cov0" title="0">{
+        res, err := r.SendRequest(&amp;ledger.Request{
                 LedgerIndex: common.LedgerTitle("validated"),
         })
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var lr ledger.LedgerResponse
+        <span class="cov0" title="0">var lr ledger.Response
         err = res.GetResult(&amp;lr)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -8085,12 +8077,12 @@ func (r *JsonRpcClient) GetLedgerIndex() (*common.LedgerIndex, error) <span clas
 // GetServerInfo retrieves information about the server.
 // It takes a ServerInfoRequest as input and returns a ServerInfoResponse,
 // along with any error encountered.
-func (r *JsonRpcClient) GetServerInfo(req *server.ServerInfoRequest) (*server.ServerInfoResponse, error) <span class="cov0" title="0">{
+func (r *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, error) <span class="cov0" title="0">{
         res, err := r.SendRequest(req)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var sir server.ServerInfoResponse
+        <span class="cov0" title="0">var sir server.InfoResponse
         err = res.GetResult(&amp;sir)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -8106,28 +8098,28 @@ import (
         "github.com/mitchellh/mapstructure"
 )
 
-type JsonRpcResponse struct {
-        Result    AnyJson               `json:"result"`
+type Response struct {
+        Result    AnyJSON               `json:"result"`
         Warning   string                `json:"warning,omitempty"`
         Warnings  []XRPLResponseWarning `json:"warnings,omitempty"`
         Forwarded bool                  `json:"forwarded,omitempty"`
 }
 
 type XRPLResponseWarning struct {
-        Id      int    `json:"id"`
+        ID      int    `json:"id"`
         Message string `json:"message"`
         Details any    `json:"details,omitempty"`
 }
 
-type AnyJson transaction.FlatTransaction
+type AnyJSON transaction.FlatTransaction
 
-type ApiWarning struct {
-        Id      int         `json:"id"`
+type APIWarning struct {
+        ID      int         `json:"id"`
         Message string      `json:"message"`
         Details interface{} `json:"details,omitempty"`
 }
 
-func (r JsonRpcResponse) GetResult(v any) error <span class="cov8" title="1">{
+func (r Response) GetResult(v any) error <span class="cov8" title="1">{
         dec, err := mapstructure.NewDecoder(&amp;mapstructure.DecoderConfig{TagName: "json",
                 Result: &amp;v, DecodeHook: mapstructure.TextUnmarshallerHookFunc()})
 
@@ -8141,7 +8133,7 @@ func (r JsonRpcResponse) GetResult(v any) error <span class="cov8" title="1">{
         <span class="cov8" title="1">return nil</span>
 }
 
-type JsonRpcXRPLResponse interface {
+type XRPLResponse interface {
         GetResult(v any) error
 }
 </pre>
@@ -8188,7 +8180,7 @@ func RippleTimeToISOTime(rippleTime int64) string <span class="cov8" title="1">{
         return time.Unix(int64(unixTime/1000), 0).UTC().Format(ISO8601Format)
 }</span>
 
-// IsoTimeToRippleTime converts an ISO8601 timestmap to a ripple timestamp.
+// IsoTimeToRippleTime converts an ISO8601 timestamp to a ripple timestamp.
 //
 // iso8601 is the ISO 8601 formatted string.
 //
@@ -8298,6 +8290,12 @@ const (
         tfDisallowXRP uint = 1048576 // 0x00100000
         // The same as ClearFlag: asfDisallowXRP.
         tfAllowXRP uint = 2097152 // 0x00200000
+
+        // Tick size to use for offers involving a currency issued by this address.
+        // The exchange rates of those offers is rounded to this many significant digits.
+        // Valid values are 3 to 15 inclusive, or 0 to disable.
+        MinTickSize = 3
+        MaxTickSize = 15
 )
 
 // An AccountSet transaction modifies the properties of an account in the XRP
@@ -8311,7 +8309,7 @@ type AccountSet struct {
         Domain string `json:",omitempty"`
         // Hash of an email address to be used for generating an avatar image.
         EmailHash types.Hash128 `json:",omitempty"`
-        //Public key for sending encrypted messages to this account.
+        // Public key for sending encrypted messages to this account.
         MessageKey string `json:",omitempty"`
         // Sets an alternate account that is allowed to mint NFTokens on this
         // account's behalf using NFTokenMint's `Issuer` field.
@@ -8555,12 +8553,6 @@ func (s *AccountSet) ClearAsfAllowTrustLineClawback() <span class="cov0" title="
         s.ClearFlag = asfAllowTrustLineClawback
 }</span>
 
-// Tick size to use for offers involving a currency issued by this address.
-// The exchange rates of those offers is rounded to this many significant digits.
-// Valid values are 3 to 15 inclusive, or 0 to disable.
-const MIN_TICK_SIZE = 3
-const MAX_TICK_SIZE = 15
-
 // Validate the AccountSet transaction fields.
 func (s *AccountSet) Validate() (bool, error) <span class="cov8" title="1">{
         flatten := s.Flatten()
@@ -8629,7 +8621,7 @@ func (s *AccountSet) Validate() (bool, error) <span class="cov8" title="1">{
         }
 
         // check if TickSize is within the valid range
-        <span class="cov8" title="1">if s.TickSize != 0 &amp;&amp; (s.TickSize &lt; MIN_TICK_SIZE || s.TickSize &gt; MAX_TICK_SIZE) </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if s.TickSize != 0 &amp;&amp; (s.TickSize &lt; MinTickSize || s.TickSize &gt; MaxTickSize) </span><span class="cov8" title="1">{
                 return false, errors.New("accountSet: TickSize must be between 3 and 15")
         }</span>
 
@@ -8794,7 +8786,7 @@ import (
 )
 
 // The maximum value is 1000, indicating a 1% fee. The minimum value is 0. https://xrpl.org/docs/references/protocol/transactions/types/ammcreate#ammcreate-fields
-const AMM_MAX_TRADING_FEE = 1000
+const AmmMaxTradingFee = 1000
 
 // Create a new Automated Market Maker (AMM) instance for trading a pair of assets (fungible tokens or XRP).
 //
@@ -8837,22 +8829,22 @@ func (*AMMCreate) TxType() TxType <span class="cov8" title="1">{
 }</span>
 
 // Flatten returns a map of the AMMCreate struct
-func (s *AMMCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
+func (a *AMMCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
         // Add BaseTx fields
-        flattened := s.BaseTx.Flatten()
+        flattened := a.BaseTx.Flatten()
 
         // Add AMMCreate-specific fields
         flattened["TransactionType"] = "AMMCreate"
 
-        if s.Amount != nil </span><span class="cov8" title="1">{
-                flattened["Amount"] = s.Amount.Flatten()
+        if a.Amount != nil </span><span class="cov8" title="1">{
+                flattened["Amount"] = a.Amount.Flatten()
         }</span>
 
-        <span class="cov8" title="1">if s.Amount2 != nil </span><span class="cov8" title="1">{
-                flattened["Amount2"] = s.Amount2.Flatten()
+        <span class="cov8" title="1">if a.Amount2 != nil </span><span class="cov8" title="1">{
+                flattened["Amount2"] = a.Amount2.Flatten()
         }</span>
 
-        <span class="cov8" title="1">flattened["TradingFee"] = s.TradingFee
+        <span class="cov8" title="1">flattened["TradingFee"] = a.TradingFee
 
         return flattened</span>
 }
@@ -8872,8 +8864,8 @@ func (a *AMMCreate) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if a.TradingFee &gt; AMM_MAX_TRADING_FEE </span><span class="cov8" title="1">{
-                return false, fmt.Errorf("trading fee is too high, max value is %d", AMM_MAX_TRADING_FEE)
+        <span class="cov8" title="1">if a.TradingFee &gt; AmmMaxTradingFee </span><span class="cov8" title="1">{
+                return false, fmt.Errorf("trading fee is too high, max value is %d", AmmMaxTradingFee)
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -9107,13 +9099,14 @@ func (a *AMMDeposit) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if a.Amount2 != nil &amp;&amp; a.Amount == nil </span><span class="cov8" title="1">{
-                return false, errors.New("ammDeposit: must set Amount with Amount2")
-        }</span> else<span class="cov8" title="1"> if a.EPrice != nil &amp;&amp; a.Amount == nil </span><span class="cov8" title="1">{
-                return false, errors.New("ammDeposit: must set Amount with EPrice")
-        }</span> else<span class="cov8" title="1"> if a.LPTokenOut == nil &amp;&amp; a.Amount == nil </span><span class="cov8" title="1">{
-                return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")
-        }</span>
+        <span class="cov8" title="1">switch </span>{
+        case a.Amount2 != nil &amp;&amp; a.Amount == nil:<span class="cov8" title="1">
+                return false, errors.New("ammDeposit: must set Amount with Amount2")</span>
+        case a.EPrice != nil &amp;&amp; a.Amount == nil:<span class="cov8" title="1">
+                return false, errors.New("ammDeposit: must set Amount with EPrice")</span>
+        case a.LPTokenOut == nil &amp;&amp; a.Amount == nil:<span class="cov8" title="1">
+                return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")</span>
+        }
 
         <span class="cov8" title="1">if ok, err := IsAmount(a.Amount, "Amount", false); !ok </span><span class="cov8" title="1">{
                 return false, err
@@ -9426,7 +9419,7 @@ func (*CheckCash) TxType() TxType <span class="cov0" title="0">{
 }</span>
 
 // TODO: Implement flatten
-func (s *CheckCash) Flatten() FlatTransaction <span class="cov0" title="0">{
+func (c *CheckCash) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
@@ -9451,7 +9444,7 @@ func (*CheckCreate) TxType() TxType <span class="cov0" title="0">{
 }</span>
 
 // TODO: Implement flatten
-func (s *CheckCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
+func (c *CheckCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
@@ -9485,13 +9478,13 @@ func (*Clawback) TxType() TxType <span class="cov0" title="0">{
         return ClawbackTx
 }</span>
 
-func (s *Clawback) Flatten() FlatTransaction <span class="cov8" title="1">{
-        flattened := s.BaseTx.Flatten()
+func (c *Clawback) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := c.BaseTx.Flatten()
 
         flattened["TransactionType"] = "Clawback"
 
-        if s.Amount != nil </span><span class="cov8" title="1">{
-                flattened["Amount"] = s.Amount.Flatten()
+        if c.Amount != nil </span><span class="cov8" title="1">{
+                flattened["Amount"] = c.Amount.Flatten()
         }</span>
 
         <span class="cov8" title="1">return flattened</span>
@@ -9891,7 +9884,7 @@ func (*NFTokenAcceptOffer) TxType() TxType <span class="cov0" title="0">{
 }</span>
 
 // TODO: Implement flatten
-func (s *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
+func (n *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
@@ -9959,7 +9952,7 @@ func (*NFTokenCreateOffer) TxType() TxType <span class="cov0" title="0">{
 }</span>
 
 // TODO: Implement flatten
-func (s *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
+func (n *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
@@ -10123,17 +10116,17 @@ func (*OfferCreate) TxType() TxType <span class="cov8" title="1">{
 }</span>
 
 // Flatten returns a map of the OfferCreate transaction fields.
-func (s *OfferCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
-        flattened := s.BaseTx.Flatten()
+func (o *OfferCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := o.BaseTx.Flatten()
 
-        if s.Expiration != 0 </span><span class="cov8" title="1">{
-                flattened["Expiration"] = s.Expiration
+        if o.Expiration != 0 </span><span class="cov8" title="1">{
+                flattened["Expiration"] = o.Expiration
         }</span>
-        <span class="cov8" title="1">if s.OfferSequence != 0 </span><span class="cov8" title="1">{
-                flattened["OfferSequence"] = s.OfferSequence
+        <span class="cov8" title="1">if o.OfferSequence != 0 </span><span class="cov8" title="1">{
+                flattened["OfferSequence"] = o.OfferSequence
         }</span>
-        <span class="cov8" title="1">flattened["TakerGets"] = s.TakerGets.Flatten()
-        flattened["TakerPays"] = s.TakerPays.Flatten()
+        <span class="cov8" title="1">flattened["TakerGets"] = o.TakerGets.Flatten()
+        flattened["TakerPays"] = o.TakerPays.Flatten()
 
         return flattened</span>
 }
@@ -10342,22 +10335,22 @@ func (p *Payment) SetLimitQualityFlag() <span class="cov8" title="1">{
 }</span>
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
-func (tx *Payment) Validate() (bool, error) <span class="cov8" title="1">{
-        flattenTx := tx.Flatten()
+func (p *Payment) Validate() (bool, error) <span class="cov8" title="1">{
+        flattenTx := p.Flatten()
 
         // Validate the base transaction
-        _, err := tx.BaseTx.Validate()
+        _, err := p.BaseTx.Validate()
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
         // Check if the field Amount is set
-        <span class="cov8" title="1">if tx.Amount == nil </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if p.Amount == nil </span><span class="cov8" title="1">{
                 return false, errors.New("missing field Amount")
         }</span>
 
         // Check if the field Amount is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(tx.Amount, "Amount", true); !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ok, err := IsAmount(p.Amount, "Amount", true); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
@@ -10380,29 +10373,29 @@ func (tx *Payment) Validate() (bool, error) <span class="cov8" title="1">{
         }</span>
 
         // Check if the field Paths is valid
-        <span class="cov8" title="1">if tx.Paths != nil </span><span class="cov8" title="1">{
-                if ok, err := IsPaths(tx.Paths); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if p.Paths != nil </span><span class="cov8" title="1">{
+                if ok, err := IsPaths(p.Paths); !ok </span><span class="cov8" title="1">{
                         return false, err
                 }</span>
         }
 
         // Check if the field SendMax is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(tx.SendMax, "SendMax", false); !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ok, err := IsAmount(p.SendMax, "SendMax", false); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
         // Check if the field DeliverMax is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(tx.DeliverMax, "DeliverMax", false); !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ok, err := IsAmount(p.DeliverMax, "DeliverMax", false); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
         // Check if the field DeliverMin is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(tx.DeliverMin, "DeliverMin", false); !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ok, err := IsAmount(p.DeliverMin, "DeliverMin", false); !ok </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
         // Check partial payment fields
-        <span class="cov8" title="1">if ok, err := checkPartialPayment(tx); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ok, err := checkPartialPayment(p); !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
@@ -10829,10 +10822,10 @@ import (
 const (
         // Minimum TicketCount value.
         // https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
-        MIN_TICKET_COUNT = 1
+        MinTicketCount = 1
         // Maximum TicketCount value.
         // https://xrpl.org/docs/references/protocol/transactions/types/ticketcreate#ticketcreate-fields
-        MAX_TICKET_COUNT = 250
+        MaxTicketCount = 250
 )
 
 // A TicketCreate transaction sets aside one or more sequence numbers as Tickets.
@@ -10853,7 +10846,7 @@ const (
 type TicketCreate struct {
         // Base transaction fields
         BaseTx
-        //How many Tickets to create. This must be a positive number and cannot cause
+        // How many Tickets to create. This must be a positive number and cannot cause
         // the account to own more than 250 Tickets after executing this transaction.
         TicketCount uint32
 }
@@ -10883,8 +10876,8 @@ func (t *TicketCreate) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">if t.TicketCount &lt; MIN_TICKET_COUNT || t.TicketCount &gt; MAX_TICKET_COUNT </span><span class="cov8" title="1">{
-                return false, fmt.Errorf("ticketCount must be equal or greater than %d and less than or equal to %d", MIN_TICKET_COUNT, MAX_TICKET_COUNT)
+        <span class="cov8" title="1">if t.TicketCount &lt; MinTicketCount || t.TicketCount &gt; MaxTicketCount </span><span class="cov8" title="1">{
+                return false, fmt.Errorf("ticketCount must be equal or greater than %d and less than or equal to %d", MinTicketCount, MaxTicketCount)
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -10919,13 +10912,13 @@ type AffectedNode struct {
 }
 
 type CreatedNode struct {
-        LedgerEntryType ledger.LedgerEntryType  `json:"LedgerEntryType,omitempty"`
+        LedgerEntryType ledger.EntryType        `json:"LedgerEntryType,omitempty"`
         LedgerIndex     string                  `json:"LedgerIndex,omitempty"`
         NewFields       ledger.FlatLedgerObject `json:"NewFields,omitempty"`
 }
 
 type ModifiedNode struct {
-        LedgerEntryType   ledger.LedgerEntryType  `json:"LedgerEntryType,omitempty"`
+        LedgerEntryType   ledger.EntryType        `json:"LedgerEntryType,omitempty"`
         LedgerIndex       string                  `json:"LedgerIndex,omitempty"`
         FinalFields       ledger.FlatLedgerObject `json:"FinalFields,omitempty"`
         PreviousFields    ledger.FlatLedgerObject `json:"PreviousFields,omitempty"`
@@ -10934,7 +10927,7 @@ type ModifiedNode struct {
 }
 
 type DeletedNode struct {
-        LedgerEntryType ledger.LedgerEntryType  `json:"LedgerEntryType,omitempty"`
+        LedgerEntryType ledger.EntryType        `json:"LedgerEntryType,omitempty"`
         LedgerIndex     string                  `json:"LedgerIndex,omitempty"`
         FinalFields     ledger.FlatLedgerObject `json:"FinalFields,omitempty"`
 }
@@ -10968,7 +10961,7 @@ const (
 type TrustSet struct {
         // Base transaction fields
         BaseTx
-        //Object defining the trust line to create or modify, in the format of a Currency Amount.
+        // Object defining the trust line to create or modify, in the format of a Currency Amount.
         LimitAmount types.CurrencyAmount
         // (Optional) Value incoming balances on this trust line at the ratio of this number per 1,000,000,000 units.
         // A value of 0 is shorthand for treating balances at face value. For example, if you set the value to 10,000,000, 1% of incoming funds remain with the sender.
@@ -11043,29 +11036,29 @@ func (t *TrustSet) SetClearFreezeFlag() <span class="cov0" title="0">{
 }</span>
 
 // Validates the TrustSet transaction.
-func (tx *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
+func (t *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
         // Validate the base transaction
-        _, err := tx.BaseTx.Validate()
+        _, err := t.BaseTx.Validate()
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
         // Check if the field LimitAmount is set
-        <span class="cov8" title="1">if tx.LimitAmount == nil </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if t.LimitAmount == nil </span><span class="cov8" title="1">{
                 return false, errors.New("trustSet: missing field LimitAmount")
         }</span>
 
-        <span class="cov8" title="1">if ok, err := IsAmount(tx.LimitAmount, "LimitAmount", true); !ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ok, err := IsAmount(t.LimitAmount, "LimitAmount", true); !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
         // Check if QualityIn is a number
-        <span class="cov8" title="1">if tx.QualityIn != 0 &amp;&amp; !typecheck.IsUint32(tx.QualityIn) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if t.QualityIn != 0 &amp;&amp; !typecheck.IsUint32(t.QualityIn) </span><span class="cov0" title="0">{
                 return false, errors.New("trustSet: QualityIn must be a number")
         }</span>
 
         // Check if QualityOut is a number
-        <span class="cov8" title="1">if tx.QualityOut != 0 &amp;&amp; !typecheck.IsUint32(tx.QualityOut) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if t.QualityOut != 0 &amp;&amp; !typecheck.IsUint32(t.QualityOut) </span><span class="cov0" title="0">{
                 return false, errors.New("trustSet: QualityOut must be a number")
         }</span>
 
@@ -11143,7 +11136,7 @@ type BaseTx struct {
         //
         Memos []MemoWrapper `json:",omitempty"`
         // The network id of the transaction.
-        NetworkId uint `json:",omitempty"`
+        NetworkID uint `json:",omitempty"`
         //
         // Array of objects that represent a multi-signature which authorizes this
         // transaction.
@@ -11212,8 +11205,8 @@ func (tx *BaseTx) Flatten() FlatTransaction <span class="cov8" title="1">{
                 }
                 <span class="cov8" title="1">flattened["Memos"] = flattenedMemos</span>
         }
-        <span class="cov8" title="1">if tx.NetworkId != 0 </span><span class="cov8" title="1">{
-                flattened["NetworkId"] = tx.NetworkId
+        <span class="cov8" title="1">if tx.NetworkID != 0 </span><span class="cov8" title="1">{
+                flattened["NetworkId"] = tx.NetworkID
         }</span>
         <span class="cov8" title="1">if len(tx.Signers) &gt; 0 </span><span class="cov8" title="1">{
                 flattenedSigners := make([]FlatSigner, 0)
@@ -11585,11 +11578,11 @@ const (
         // It is presented as an array of objects. Each object has only one field, Memo,
         // which in turn contains another object with one or more of the following fields:
         // MemoData, MemoFormat, and MemoType. https://xrpl.org/docs/references/protocol/transactions/common-fields#memos-field
-        MEMO_SIZE   = 3
-        SIGNER_SIZE = 3
+        MemoSize   = 3
+        SignerSize = 3
         // For a token, must have the following fields: currency, issuer, value. https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-currency-amounts
-        ISSUED_CURRENCY_SIZE       = 3
-        STANDARD_CURRENCY_CODE_LEN = 3
+        IssuedCurrencySize      = 3
+        StandardCurrencyCodeLen = 3
 )
 
 // IsMemo checks if the given object is a valid Memo object.
@@ -11622,7 +11615,7 @@ func IsMemo(memo Memo) (bool, error) <span class="cov8" title="1">{
 // IsSigner checks if the given object is a valid Signer object.
 func IsSigner(signerData SignerData) (bool, error) <span class="cov8" title="1">{
         size := len(maputils.GetKeys(signerData.Flatten()))
-        if size != SIGNER_SIZE </span><span class="cov8" title="1">{
+        if size != SignerSize </span><span class="cov8" title="1">{
                 return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")
         }</span>
 
@@ -11676,14 +11669,14 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) <span class="cov
         <span class="cov8" title="1">issuedAmount, _ := input.(types.IssuedCurrencyAmount)
 
         numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
-        if numOfKeys != ISSUED_CURRENCY_SIZE </span><span class="cov8" title="1">{
+        if numOfKeys != IssuedCurrencySize </span><span class="cov8" title="1">{
                 return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
         }</span>
 
         <span class="cov8" title="1">if strings.TrimSpace(issuedAmount.Currency) == "" </span><span class="cov8" title="1">{
                 return false, errors.New("currency field is required for an issued currency")
         }</span>
-        <span class="cov8" title="1">if strings.ToUpper(issuedAmount.Currency) == currency.NATIVE_CURRENCY_SYMBOL </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if strings.ToUpper(issuedAmount.Currency) == currency.NativeCurrencySymbol </span><span class="cov8" title="1">{
                 return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
         }</span>
 
@@ -11724,13 +11717,18 @@ func IsPath(path []PathStep) (bool, error) <span class="cov8" title="1">{
 
                 https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications
                 */
-                if (hasAccount &amp;&amp; !hasCurrency &amp;&amp; !hasIssuer) || (hasCurrency &amp;&amp; !hasAccount &amp;&amp; !hasIssuer) || (hasIssuer &amp;&amp; !hasAccount &amp;&amp; !hasCurrency) </span><span class="cov8" title="1">{
-                        return true, nil
-                }</span> else<span class="cov8" title="1"> if hasIssuer &amp;&amp; hasCurrency &amp;&amp; pathStep.Currency != currency.NATIVE_CURRENCY_SYMBOL </span><span class="cov8" title="1">{
-                        return true, nil
-                }</span> else<span class="cov8" title="1"> {
-                        return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
-                }</span>
+                switch </span>{
+                case hasAccount &amp;&amp; !hasCurrency &amp;&amp; !hasIssuer:<span class="cov8" title="1">
+                        return true, nil</span>
+                case hasCurrency &amp;&amp; !hasAccount &amp;&amp; !hasIssuer:<span class="cov8" title="1">
+                        return true, nil</span>
+                case hasIssuer &amp;&amp; !hasAccount &amp;&amp; !hasCurrency:<span class="cov8" title="1">
+                        return true, nil</span>
+                case hasIssuer &amp;&amp; hasCurrency &amp;&amp; pathStep.Currency != currency.NativeCurrencySymbol:<span class="cov8" title="1">
+                        return true, nil</span>
+                default:<span class="cov8" title="1">
+                        return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")</span>
+                }
 
         }
         <span class="cov8" title="1">return true, nil</span>
@@ -11768,11 +11766,11 @@ func IsAsset(asset ledger.Asset) (bool, error) <span class="cov8" title="1">{
                 return false, errors.New("currency field is required for an asset")
         }</span>
 
-        <span class="cov8" title="1">if strings.ToUpper(asset.Currency) == currency.NATIVE_CURRENCY_SYMBOL &amp;&amp; strings.TrimSpace(asset.Issuer.String()) == "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if strings.ToUpper(asset.Currency) == currency.NativeCurrencySymbol &amp;&amp; strings.TrimSpace(asset.Issuer.String()) == "" </span><span class="cov8" title="1">{
                 return true, nil
         }</span>
 
-        <span class="cov8" title="1">if strings.ToUpper(asset.Currency) == currency.NATIVE_CURRENCY_SYMBOL &amp;&amp; asset.Issuer != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if strings.ToUpper(asset.Currency) == currency.NativeCurrencySymbol &amp;&amp; asset.Issuer != "" </span><span class="cov8" title="1">{
                 return false, errors.New("issuer field should be omitted for XRP currency")
         }</span>
 
@@ -11938,7 +11936,7 @@ func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) <span c
                 return "", "", err
         }</span>
 
-        <span class="cov8" title="1">txHash, err = hash.HashTxBlob(txBlob)
+        <span class="cov8" title="1">txHash, err = hash.TxBlob(txBlob)
         if err != nil </span><span class="cov0" title="0">{
                 return "", "", err
         }</span>
@@ -11989,28 +11987,28 @@ import (
 )
 
 const (
-        DEFAULT_FEE_CUSHION float32 = 1.2
-        DEFAULT_MAX_FEE_XRP float32 = 2
+        DefaultFeeCushion float32 = 1.2
+        DefaultMaxFeeXRP  float32 = 2
 )
 
-var ErrIncorrectId = errors.New("incorrect id")
+var ErrIncorrectID = errors.New("incorrect id")
 
-type WebsocketClient struct {
-        cfg WebsocketClientConfig
+type Client struct {
+        cfg ClientConfig
 
         idCounter atomic.Uint32
-        NetworkId uint32
+        NetworkID uint32
 }
 
 // Creates a new websocket client with cfg.
 // This client will open and close a websocket connection for each request.
-func NewWebsocketClient(cfg WebsocketClientConfig) *WebsocketClient <span class="cov0" title="0">{
-        return &amp;WebsocketClient{
+func NewClient(cfg ClientConfig) *Client <span class="cov0" title="0">{
+        return &amp;Client{
                 cfg: cfg,
         }
 }</span>
 
-func (c *WebsocketClient) Autofill(tx *transaction.FlatTransaction) error <span class="cov0" title="0">{
+func (c *Client) Autofill(tx *transaction.FlatTransaction) error <span class="cov0" title="0">{
         if err := c.setValidTransactionAddresses(tx); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
@@ -12021,8 +12019,8 @@ func (c *WebsocketClient) Autofill(tx *transaction.FlatTransaction) error <span 
         }</span>
 
         <span class="cov0" title="0">if _, ok := (*tx)["NetworkID"]; !ok </span><span class="cov0" title="0">{
-                if c.NetworkId != 0 </span><span class="cov0" title="0">{
-                        (*tx)["NetworkID"] = c.NetworkId
+                if c.NetworkID != 0 </span><span class="cov0" title="0">{
+                        (*tx)["NetworkID"] = c.NetworkID
                 }</span>
         }
         <span class="cov0" title="0">if _, ok := (*tx)["Sequence"]; !ok </span><span class="cov0" title="0">{
@@ -12060,7 +12058,7 @@ func (c *WebsocketClient) Autofill(tx *transaction.FlatTransaction) error <span 
         <span class="cov0" title="0">return nil</span>
 }
 
-func (c *WebsocketClient) FundWallet(wallet *xrpl.Wallet) error <span class="cov0" title="0">{
+func (c *Client) FundWallet(wallet *xrpl.Wallet) error <span class="cov0" title="0">{
         if wallet.ClassicAddress == "" </span><span class="cov0" title="0">{
                 return errors.New("fund wallet: cannot fund a wallet without a classic address")
         }</span>
@@ -12073,7 +12071,7 @@ func (c *WebsocketClient) FundWallet(wallet *xrpl.Wallet) error <span class="cov
         <span class="cov0" title="0">return nil</span>
 }
 
-func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLResponse, error) <span class="cov8" title="1">{
+func (c *Client) sendRequest(req XRPLRequest) (XRPLResponse, error) <span class="cov8" title="1">{
         err := req.Validate()
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -12104,14 +12102,14 @@ func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLRe
         }</span>
         <span class="cov8" title="1">jDec := json.NewDecoder(bytes.NewReader(json.RawMessage(v)))
         jDec.UseNumber()
-        var res WebSocketClientXrplResponse
+        var res ClientXrplResponse
         err = jDec.Decode(&amp;res)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
         <span class="cov8" title="1">if res.ID != int(id) </span><span class="cov8" title="1">{
-                return nil, ErrIncorrectId
+                return nil, ErrIncorrectID
         }</span>
         <span class="cov8" title="1">if err := res.CheckError(); err != nil </span><span class="cov8" title="1">{
                 return nil, err
@@ -12120,7 +12118,7 @@ func (c *WebsocketClient) sendRequest(req WebsocketXRPLRequest) (WebsocketXRPLRe
         <span class="cov8" title="1">return &amp;res, nil</span>
 }
 
-func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) <span class="cov0" title="0">{
+func (c *Client) SubmitTransactionBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) <span class="cov0" title="0">{
         tx, err := binarycodec.Decode(txBlob)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -12146,7 +12144,7 @@ func (c *WebsocketClient) SubmitTransactionBlob(txBlob string, failHard bool) (*
         })</span>
 }
 
-func (c *WebsocketClient) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) <span class="cov0" title="0">{
+func (c *Client) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) <span class="cov0" title="0">{
         res, err := c.sendRequest(req)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -12159,7 +12157,7 @@ func (c *WebsocketClient) submitRequest(req *requests.SubmitRequest) (*requests.
         <span class="cov0" title="0">return &amp;subRes, nil</span>
 }
 
-func (c *WebsocketClient) formatRequest(req WebsocketXRPLRequest, id int, marker any) ([]byte, error) <span class="cov8" title="1">{
+func (c *Client) formatRequest(req XRPLRequest, id int, marker any) ([]byte, error) <span class="cov8" title="1">{
         m := make(map[string]any)
         m["id"] = id
         m["command"] = req.Method()
@@ -12176,18 +12174,18 @@ func (c *WebsocketClient) formatRequest(req WebsocketXRPLRequest, id int, marker
 }
 
 // TODO: Implement this when IsValidXAddress is implemented
-func (c *WebsocketClient) getClassicAccountAndTag(address string) (string, uint32) <span class="cov8" title="1">{
+func (c *Client) getClassicAccountAndTag(address string) (string, uint32) <span class="cov8" title="1">{
         return address, 0
 }</span>
 
-func (c *WebsocketClient) convertTransactionAddressToClassicAddress(tx *transaction.FlatTransaction, fieldName string) <span class="cov8" title="1">{
+func (c *Client) convertTransactionAddressToClassicAddress(tx *transaction.FlatTransaction, fieldName string) <span class="cov8" title="1">{
         if address, ok := (*tx)[fieldName].(string); ok </span><span class="cov8" title="1">{
                 classicAddress, _ := c.getClassicAccountAndTag(address)
                 (*tx)[fieldName] = classicAddress
         }</span>
 }
 
-func (c *WebsocketClient) validateTransactionAddress(tx *transaction.FlatTransaction, addressField, tagField string) error <span class="cov8" title="1">{
+func (c *Client) validateTransactionAddress(tx *transaction.FlatTransaction, addressField, tagField string) error <span class="cov8" title="1">{
         classicAddress, tag := c.getClassicAccountAndTag((*tx)[addressField].(string))
         (*tx)[addressField] = classicAddress
 
@@ -12202,7 +12200,7 @@ func (c *WebsocketClient) validateTransactionAddress(tx *transaction.FlatTransac
 }
 
 // Sets valid addresses for the transaction.
-func (c *WebsocketClient) setValidTransactionAddresses(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
+func (c *Client) setValidTransactionAddresses(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
         // Validate if "Account" address is an xAddress
         if err := c.validateTransactionAddress(tx, "Account", "SourceTag"); err != nil </span><span class="cov0" title="0">{
                 return err
@@ -12226,11 +12224,11 @@ func (c *WebsocketClient) setValidTransactionAddresses(tx *transaction.FlatTrans
 }
 
 // Sets the next valid sequence number for a given transaction.
-func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
+func (c *Client) setTransactionNextValidSequenceNumber(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
         if _, ok := (*tx)["Account"].(string); !ok </span><span class="cov8" title="1">{
                 return errors.New("missing Account in transaction")
         }</span>
-        <span class="cov8" title="1">res, err := c.GetAccountInfo(&amp;account.AccountInfoRequest{
+        <span class="cov8" title="1">res, err := c.GetAccountInfo(&amp;account.InfoRequest{
                 Account:     types.Address((*tx)["Account"].(string)),
                 LedgerIndex: common.LedgerTitle("current"),
         })
@@ -12245,8 +12243,8 @@ func (c *WebsocketClient) setTransactionNextValidSequenceNumber(tx *transaction.
 
 // Calculates the current transaction fee for the ledger.
 // Note: This is a public API that can be called directly.
-func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) <span class="cov8" title="1">{
-        res, err := c.GetServerInfo(&amp;server.ServerInfoRequest{})
+func (c *Client) getFeeXrp(cushion float32) (string, error) <span class="cov8" title="1">{
+        res, err := c.GetServerInfo(&amp;server.InfoRequest{})
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
@@ -12267,16 +12265,16 @@ func (c *WebsocketClient) getFeeXrp(cushion float32) (string, error) <span class
         }</span>
 
         // Round fee to NUM_DECIMAL_PLACES
-        <span class="cov8" title="1">roundedFee := float32(math.Round(float64(fee)*math.Pow10(int(currency.MAX_FRACTION_LENGTH)))) / float32(math.Pow10(int(currency.MAX_FRACTION_LENGTH)))
+        <span class="cov8" title="1">roundedFee := float32(math.Round(float64(fee)*math.Pow10(int(currency.MaxFractionLength)))) / float32(math.Pow10(int(currency.MaxFractionLength)))
 
         // Convert the rounded fee back to a string with NUM_DECIMAL_PLACES
-        return fmt.Sprintf("%.*f", currency.MAX_FRACTION_LENGTH, roundedFee), nil</span>
+        return fmt.Sprintf("%.*f", currency.MaxFractionLength, roundedFee), nil</span>
 }
 
 // Calculates the fee per transaction type.
 //
 // TODO: Add fee support for `EscrowFinish` `AccountDelete`, `AMMCreate`, and multisigned transactions.
-func (c *WebsocketClient) calculateFeePerTransactionType(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
+func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
         fee, err := c.getFeeXrp(c.cfg.feeCushion)
         if err != nil </span><span class="cov0" title="0">{
                 return err
@@ -12294,20 +12292,20 @@ func (c *WebsocketClient) calculateFeePerTransactionType(tx *transaction.FlatTra
 
 // Sets the latest validated ledger sequence for the transaction.
 // Modifies the `LastLedgerSequence` field in the tx.
-func (c *WebsocketClient) setLastLedgerSequence(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
+func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
         index, err := c.GetLedgerIndex()
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
 
-        <span class="cov8" title="1">(*tx)["LastLedgerSequence"] = index.Int() + int(LEDGER_OFFSET)
+        <span class="cov8" title="1">(*tx)["LastLedgerSequence"] = index.Int() + int(LedgerOffset)
         return err</span>
 }
 
 // Checks for any blockers that prevent the deletion of an account.
 // Returns nil if there are no blockers, otherwise returns an error.
-func (c *WebsocketClient) checkAccountDeleteBlockers(address types.Address) error <span class="cov8" title="1">{
-        accObjects, err := c.GetAccountObjects(&amp;account.AccountObjectsRequest{
+func (c *Client) checkAccountDeleteBlockers(address types.Address) error <span class="cov8" title="1">{
+        accObjects, err := c.GetAccountObjects(&amp;account.ObjectsRequest{
                 Account:              address,
                 LedgerIndex:          common.LedgerTitle("validated"),
                 DeletionBlockersOnly: true,
@@ -12322,15 +12320,13 @@ func (c *WebsocketClient) checkAccountDeleteBlockers(address types.Address) erro
         <span class="cov8" title="1">return nil</span>
 }
 
-func (c *WebsocketClient) checkPaymentAmounts(tx *transaction.FlatTransaction) error <span class="cov0" title="0">{
+func (c *Client) checkPaymentAmounts(tx *transaction.FlatTransaction) error <span class="cov0" title="0">{
         if _, ok := (*tx)["DeliverMax"]; ok </span><span class="cov0" title="0">{
                 if _, ok := (*tx)["Amount"]; !ok </span><span class="cov0" title="0">{
                         (*tx)["Amount"] = (*tx)["DeliverMax"]
-                }</span> else<span class="cov0" title="0"> {
-                        if (*tx)["Amount"] != (*tx)["DeliverMax"] </span><span class="cov0" title="0">{
-                                return errors.New("payment transaction: Amount and DeliverMax fields must be identical when both are provided")
-                        }</span>
-                }
+                }</span> else<span class="cov0" title="0"> if (*tx)["Amount"] != (*tx)["DeliverMax"] </span><span class="cov0" title="0">{
+                        return errors.New("payment transaction: Amount and DeliverMax fields must be identical when both are provided")
+                }</span>
         }
         <span class="cov0" title="0">return nil</span>
 }
@@ -12338,7 +12334,7 @@ func (c *WebsocketClient) checkPaymentAmounts(tx *transaction.FlatTransaction) e
 // Sets a transaction's flags to its numeric representation.
 // TODO: Add flag support for AMMDeposit, AMMWithdraw,
 // NFTTOkenCreateOffer, NFTokenMint, OfferCreate, XChainModifyBridge (not supported).
-func (c *WebsocketClient) setTransactionFlags(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
+func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error <span class="cov8" title="1">{
         flags, ok := (*tx)["Flags"].(uint32)
         if !ok &amp;&amp; flags &gt; 0 </span><span class="cov0" title="0">{
                 (*tx)["Flags"] = int(0)
@@ -12356,7 +12352,7 @@ func (c *WebsocketClient) setTransactionFlags(tx *transaction.FlatTransaction) e
 		
 		<pre class="file" id="file187" style="display: none">package websocket
 
-type WebsocketClientConfig struct {
+type ClientConfig struct {
         // Connection config
         host string
 
@@ -12368,38 +12364,38 @@ type WebsocketClientConfig struct {
         faucetProvider FaucetProvider
 }
 
-func NewWebsocketClientConfig() *WebsocketClientConfig <span class="cov0" title="0">{
-        return &amp;WebsocketClientConfig{
+func NewWebsocketClientConfig() *ClientConfig <span class="cov0" title="0">{
+        return &amp;ClientConfig{
                 host:       "localhost",
-                feeCushion: DEFAULT_FEE_CUSHION,
-                maxFeeXRP:  DEFAULT_MAX_FEE_XRP,
+                feeCushion: DefaultFeeCushion,
+                maxFeeXRP:  DefaultMaxFeeXRP,
         }
 }</span>
 
 // WithHost sets the host of the websocket client.
 // Default: "localhost"
-func (wc WebsocketClientConfig) WithHost(host string) WebsocketClientConfig <span class="cov0" title="0">{
+func (wc ClientConfig) WithHost(host string) ClientConfig <span class="cov0" title="0">{
         wc.host = host
         return wc
 }</span>
 
 // WithFeeCushion sets the fee cushion of the websocket client.
 // Default: 1.2
-func (wc WebsocketClientConfig) WithFeeCushion(feeCushion float32) WebsocketClientConfig <span class="cov0" title="0">{
+func (wc ClientConfig) WithFeeCushion(feeCushion float32) ClientConfig <span class="cov0" title="0">{
         wc.feeCushion = feeCushion
         return wc
 }</span>
 
 // WithMaxFeeXRP sets the maximum fee in XRP that the websocket client will use.
 // Default: 2
-func (wc WebsocketClientConfig) WithMaxFeeXRP(maxFeeXrp float32) WebsocketClientConfig <span class="cov0" title="0">{
+func (wc ClientConfig) WithMaxFeeXRP(maxFeeXrp float32) ClientConfig <span class="cov0" title="0">{
         wc.maxFeeXRP = maxFeeXrp
         return wc
 }</span>
 
 // WithFaucetProvider sets the faucet provider of the websocket client.
 // Default: faucet.NewLocalFaucetProvider()
-func (wc WebsocketClientConfig) WithFaucetProvider(fp FaucetProvider) WebsocketClientConfig <span class="cov0" title="0">{
+func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig <span class="cov0" title="0">{
         wc.faucetProvider = fp
         return wc
 }</span>
@@ -12419,12 +12415,12 @@ import (
 // GetAccountInfo retrieves information about an account on the XRP Ledger.
 // It takes an AccountInfoRequest as input and returns an AccountInfoResponse,
 // along with the raw XRPL response and any error encountered.
-func (c *WebsocketClient) GetAccountInfo(req *account.AccountInfoRequest) (*account.AccountInfoResponse, error) <span class="cov8" title="1">{
+func (c *Client) GetAccountInfo(req *account.InfoRequest) (*account.InfoResponse, error) <span class="cov8" title="1">{
         res, err := c.sendRequest(req)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">var air account.AccountInfoResponse
+        <span class="cov8" title="1">var air account.InfoResponse
         err = res.GetResult(&amp;air)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -12435,12 +12431,12 @@ func (c *WebsocketClient) GetAccountInfo(req *account.AccountInfoRequest) (*acco
 // GetAccountObjects retrieves a list of objects owned by an account on the XRP Ledger.
 // It takes an AccountObjectsRequest as input and returns an AccountObjectsResponse,
 // along with any error encountered.
-func (c *WebsocketClient) GetAccountObjects(req *account.AccountObjectsRequest) (*account.AccountObjectsResponse, error) <span class="cov8" title="1">{
+func (c *Client) GetAccountObjects(req *account.ObjectsRequest) (*account.ObjectsResponse, error) <span class="cov8" title="1">{
         res, err := c.sendRequest(req)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">var acr account.AccountObjectsResponse
+        <span class="cov8" title="1">var acr account.ObjectsResponse
         err = res.GetResult(&amp;acr)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -12450,8 +12446,8 @@ func (c *WebsocketClient) GetAccountObjects(req *account.AccountObjectsRequest) 
 
 // GetXrpBalance retrieves the XRP balance of a given account address.
 // It returns the balance as a string in XRP (not drops) and any error encountered.
-func (c *WebsocketClient) GetXrpBalance(address string) (string, error) <span class="cov8" title="1">{
-        res, err := c.GetAccountInfo(&amp;account.AccountInfoRequest{
+func (c *Client) GetXrpBalance(address string) (string, error) <span class="cov8" title="1">{
+        res, err := c.GetAccountInfo(&amp;account.InfoRequest{
                 Account: types.Address(address),
         })
         if err != nil </span><span class="cov8" title="1">{
@@ -12469,12 +12465,12 @@ func (c *WebsocketClient) GetXrpBalance(address string) (string, error) <span cl
 // GetAccountLines retrieves the lines associated with an account on the XRP Ledger.
 // It takes an AccountLinesRequest as input and returns an AccountLinesResponse,
 // along with any error encountered.
-func (c *WebsocketClient) GetAccountLines(req *account.AccountLinesRequest) (*account.AccountLinesResponse, error) <span class="cov8" title="1">{
+func (c *Client) GetAccountLines(req *account.LinesRequest) (*account.LinesResponse, error) <span class="cov8" title="1">{
         res, err := c.sendRequest(req)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">var acr account.AccountLinesResponse
+        <span class="cov8" title="1">var acr account.LinesResponse
         err = res.GetResult(&amp;acr)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -12483,15 +12479,15 @@ func (c *WebsocketClient) GetAccountLines(req *account.AccountLinesRequest) (*ac
 }
 
 // Returns the index of the most recently validated ledger.
-func (c *WebsocketClient) GetLedgerIndex() (common.LedgerIndex, error) <span class="cov8" title="1">{
-        res, err := c.sendRequest(&amp;ledger.LedgerRequest{
+func (c *Client) GetLedgerIndex() (common.LedgerIndex, error) <span class="cov8" title="1">{
+        res, err := c.sendRequest(&amp;ledger.Request{
                 LedgerIndex: common.LedgerTitle("validated"),
         })
         if err != nil </span><span class="cov8" title="1">{
                 return 0, err
         }</span>
 
-        <span class="cov8" title="1">var lr ledger.LedgerResponse
+        <span class="cov8" title="1">var lr ledger.Response
         err = res.GetResult(&amp;lr)
         if err != nil </span><span class="cov0" title="0">{
                 return 0, err
@@ -12502,12 +12498,12 @@ func (c *WebsocketClient) GetLedgerIndex() (common.LedgerIndex, error) <span cla
 // GetServerInfo retrieves information about the server.
 // It takes a ServerInfoRequest as input and returns a ServerInfoResponse,
 // along with any error encountered.
-func (c *WebsocketClient) GetServerInfo(req *server.ServerInfoRequest) (*server.ServerInfoResponse, error) <span class="cov8" title="1">{
+func (c *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, error) <span class="cov8" title="1">{
         res, err := c.sendRequest(req)
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">var sir server.ServerInfoResponse
+        <span class="cov8" title="1">var sir server.InfoResponse
         err = res.GetResult(&amp;sir)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -12524,12 +12520,12 @@ import (
         "github.com/mitchellh/mapstructure"
 )
 
-type WebsocketXRPLResponse interface {
+type XRPLResponse interface {
         GetResult(v any) error
 }
 
 type XRPLResponseWarning struct {
-        Id      int    `json:"id"`
+        ID      int    `json:"id"`
         Message string `json:"message"`
         Details any    `json:"details,omitempty"`
 }
@@ -12543,7 +12539,7 @@ func (e *ErrorWebsocketClientXrplResponse) Error() string <span class="cov8" tit
         return e.Type
 }</span>
 
-type WebSocketClientXrplResponse struct {
+type ClientXrplResponse struct {
         ID        int                   `json:"id"`
         Status    string                `json:"status"`
         Type      string                `json:"type"`
@@ -12555,7 +12551,7 @@ type WebSocketClientXrplResponse struct {
         Forwarded bool                  `json:"forwarded,omitempty"`
 }
 
-func (r *WebSocketClientXrplResponse) GetResult(v any) error <span class="cov8" title="1">{
+func (r *ClientXrplResponse) GetResult(v any) error <span class="cov8" title="1">{
         dec, err := mapstructure.NewDecoder(&amp;mapstructure.DecoderConfig{TagName: "json", Result: &amp;v, DecodeHook: mapstructure.TextUnmarshallerHookFunc()})
         if err != nil </span><span class="cov0" title="0">{
                 return err
@@ -12568,7 +12564,7 @@ func (r *WebSocketClientXrplResponse) GetResult(v any) error <span class="cov8" 
         <span class="cov8" title="1">return nil</span>
 }
 
-func (r *WebSocketClientXrplResponse) CheckError() error <span class="cov8" title="1">{
+func (r *ClientXrplResponse) CheckError() error <span class="cov8" title="1">{
         if r.Error != "" </span><span class="cov8" title="1">{
                 return &amp;ErrorWebsocketClientXrplResponse{
                         Type:    r.Error,

@@ -2,14 +2,14 @@ package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
-type LedgerHashes struct {
+type Hashes struct {
 	FirstLedgerSequence uint
 	Flags               uint
 	Hashes              []types.Hash256
 	LastLedgerSequence  uint
-	LedgerEntryType     LedgerEntryType
+	LedgerEntryType     EntryType
 }
 
-func (*LedgerHashes) EntryType() LedgerEntryType {
+func (*Hashes) EntryType() EntryType {
 	return LedgerHashesEntry
 }

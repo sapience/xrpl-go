@@ -5,7 +5,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 )
 
-type SubscribeResponse struct {
+type Response struct {
 	LoadBase         uint               `json:"load_base,omitempty"`
 	LoadFactor       uint               `json:"load_factor,omitempty"`
 	Random           string             `json:"random,omitempty"`

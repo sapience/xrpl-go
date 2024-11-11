@@ -8,12 +8,12 @@ type DepositPreauthObj struct {
 	Account           types.Address
 	Authorize         types.Address
 	Flags             uint
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	OwnerNode         string
 	PreviousTxnID     types.Hash256
 	PreviousTxnLgrSeq uint
 }
 
-func (*DepositPreauthObj) EntryType() LedgerEntryType {
+func (*DepositPreauthObj) EntryType() EntryType {
 	return DepositPreauthObjEntry
 }

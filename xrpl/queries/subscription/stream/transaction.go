@@ -6,7 +6,7 @@ import (
 )
 
 type TransactionStream struct {
-	Type                StreamType                   `json:"type"`
+	Type                Type                         `json:"type"`
 	EngineResult        string                       `json:"engine_result"`
 	EngineResultCode    int                          `json:"engine_result_code"`
 	EngineResultMessage string                       `json:"engine_result_message"`

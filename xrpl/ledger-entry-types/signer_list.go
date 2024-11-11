@@ -45,7 +45,7 @@ type SignerListFlags uint32
 // ```
 type SignerList struct {
 	// The value 0x0053, mapped to the string SignerList, indicates that this is a SignerList ledger entry.
-	LedgerEntryType LedgerEntryType
+	LedgerEntryType EntryType
 	// The identifying hash of the transaction that most recently modified this object.
 	PreviousTxnID string
 	// The index of the ledger that contains the transaction that most recently modified this object.
@@ -103,6 +103,6 @@ func (s *SignerEntry) Flatten() FlatLedgerObject {
 }
 
 // EntryType returns the type of the ledger entry (SignerList)
-func (*SignerList) EntryType() LedgerEntryType {
+func (*SignerList) EntryType() EntryType {
 	return SignerListEntry
 }

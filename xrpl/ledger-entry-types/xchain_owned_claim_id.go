@@ -79,13 +79,13 @@ type XChainClaimAttestation struct {
 type XChainOwnedClaimID struct {
 	// The account that owns this object.
 	Account types.Address
-	// 	The ledger index is a hash of a unique prefix for XChainOwnedClaimIDs,
+	// The ledger index is a hash of a unique prefix for XChainOwnedClaimIDs,
 	// the actual XChainClaimID value, and the fields in XChainBridge.
 	LedgerIndex string
 	// The account that must send the corresponding XChainCommit on the source chain. The destination may be specified
 	// in the XChainCommit transaction, which means that if the OtherChainSource isn't specified, another account can
-	//try to specify a different destination and steal the funds. This also allows tracking only a single set of signatures,
-	//since we know which account will send the XChainCommit transaction.
+	// try to specify a different destination and steal the funds. This also allows tracking only a single set of signatures,
+	// since we know which account will send the XChainCommit transaction.
 	OtherChainSource types.Address
 	// The total amount to pay the witness servers for their signatures. It must be at least the value of SignatureReward in the Bridge ledger object.
 	SignatureReward types.CurrencyAmount
@@ -94,11 +94,11 @@ type XChainOwnedClaimID struct {
 	// Attestations collected from the witness servers. This includes the parameters needed to recreate the message
 	// that was signed, including the amount, which chain (locking or issuing), optional destination, and reward account for that signature.
 	XChainClaimAttestations []XChainClaimAttestation
-	//The unique sequence number for a cross-chain transfer.
+	// The unique sequence number for a cross-chain transfer.
 	XChainClaimID uint64
 }
 
 // EntryType returns the type of the ledger entry.
-func (*XChainOwnedClaimID) EntryType() LedgerEntryType {
+func (*XChainOwnedClaimID) EntryType() EntryType {
 	return XChainOwnedClaimIDEntry
 }

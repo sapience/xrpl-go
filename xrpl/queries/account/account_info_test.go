@@ -10,7 +10,7 @@ import (
 )
 
 func TestAccountInfoRequest(t *testing.T) {
-	s := AccountInfoRequest{
+	s := InfoRequest{
 		Account:     "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 		LedgerIndex: common.CLOSED,
 		Queue:       true,
@@ -31,7 +31,7 @@ func TestAccountInfoRequest(t *testing.T) {
 }
 
 func TestAccountInfoResponse(t *testing.T) {
-	s := AccountInfoResponse{
+	s := InfoResponse{
 		AccountData: ledger.AccountRoot{
 			Account:           "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 			Balance:           types.XRPCurrencyAmount(999999999960),

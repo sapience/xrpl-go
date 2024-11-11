@@ -132,9 +132,8 @@ func EncodeSeed(entropy []byte, encodingType CryptoImplementation) (string, erro
 	} else if secp256k1 := crypto.SECP256K1(); encodingType == secp256k1 {
 		prefix := []byte{secp256k1.FamilySeedPrefix()}
 		return Encode(entropy, prefix, FamilySeedLength), nil
-	} else {
-		return "", errors.New("encoding type must be `ed25519` or `secp256k1`")
 	}
+	return "", errors.New("encoding type must be `ed25519` or `secp256k1`")
 
 }
 
@@ -145,14 +144,14 @@ func DecodeSeed(seed string) ([]byte, CryptoImplementation, error) {
 	decoded, err := Base58CheckDecode(seed)
 
 	if err != nil {
-		return nil, crypto.CryptoAlgorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
+		return nil, crypto.Algorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
 	}
 
 	if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) {
 		return decoded[3:], crypto.ED25519(), nil
-	} else {
-		return decoded[1:], crypto.SECP256K1(), nil
 	}
+
+	return decoded[1:], crypto.SECP256K1(), nil
 
 }
 

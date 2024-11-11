@@ -1,8 +1,8 @@
 package server
 
-type ServerStateRequest struct {
+type StateRequest struct {
 }
 
-func (*ServerStateRequest) Method() string {
+func (*StateRequest) Method() string {
 	return "server_state"
 }

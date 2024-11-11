@@ -1,8 +1,8 @@
 package ledger
 
-type LedgerClosedRequest struct {
+type ClosedRequest struct {
 }
 
-func (*LedgerClosedRequest) Method() string {
+func (*ClosedRequest) Method() string {
 	return "ledger_closed"
 }

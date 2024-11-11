@@ -8,10 +8,10 @@ import (
 
 func TestServerInfoResponseLocalhost(t *testing.T) {
 	s := ServerInfoResponse{
-		Info: ClioServerInfo{
+		Info: ServerInfo{
 			CompleteLedgers: "19499132-19977628",
-			Counters: &ClioCounters{
-				RPC: map[string]ClioRPC{
+			Counters: &Counters{
+				RPC: map[string]RPC{
 					"account_objects": {
 						Started:    "1",
 						Finished:   "1",
@@ -153,7 +153,7 @@ func TestServerInfoResponseLocalhost(t *testing.T) {
 						DurationUS: "494131",
 					},
 				},
-				Subscriptions: ClioSubscriptions{
+				Subscriptions: Subscriptions{
 					Ledger:               0,
 					Transactions:         0,
 					TransactionsProposed: 0,
@@ -168,7 +168,7 @@ func TestServerInfoResponseLocalhost(t *testing.T) {
 			ClioVersion:      "0.3.0-b2",
 			ValidationQuorum: 8,
 			RippledVersion:   "1.9.1-rc1",
-			ValidatedLedger: &ClioLedgerInfo{
+			ValidatedLedger: &LedgerInfo{
 				Age:            4,
 				Hash:           "4CD25FB70D45646EE5822E76E58B66D39D5AE6BA0F70491FA803DA0DA218F434",
 				Seq:            19977628,
@@ -176,13 +176,13 @@ func TestServerInfoResponseLocalhost(t *testing.T) {
 				ReserveBaseXRP: 1e1,
 				ReserveIncXRP:  2e0,
 			},
-			Cache: ClioCache{
+			Cache: Cache{
 				Size:            8812733,
 				IsFull:          true,
 				LatestLedgerSeq: 19977629,
 			},
-			ETL: &ClioETL{
-				ETLSources: []ClioETLSource{
+			ETL: &ETL{
+				ETLSources: []ETLSource{
 					{
 						ValidatedRange:    "19405538-19977629",
 						IsConnected:       "1",
@@ -399,13 +399,13 @@ func TestServerInfoResponseLocalhost(t *testing.T) {
 
 func TestServerInfoResponseRemote(t *testing.T) {
 	s := ServerInfoResponse{
-		Info: ClioServerInfo{
+		Info: ServerInfo{
 			CompleteLedgers:  "32570-73737719",
 			LoadFactor:       1,
 			ClioVersion:      "1.0.2",
 			ValidationQuorum: 28,
 			RippledVersion:   "1.9.1",
-			ValidatedLedger: &ClioLedgerInfo{
+			ValidatedLedger: &LedgerInfo{
 				Age:            7,
 				BaseFeeXRP:     0.00001,
 				Hash:           "4ECDEAF9E6F8B37EFDE297953168AAB42DEED1082A565639EBB2D29E047341B4",
@@ -413,7 +413,7 @@ func TestServerInfoResponseRemote(t *testing.T) {
 				ReserveIncXRP:  2,
 				Seq:            73737719,
 			},
-			Cache: ClioCache{
+			Cache: Cache{
 				Size:            15258947,
 				IsFull:          true,
 				LatestLedgerSeq: 73737719,

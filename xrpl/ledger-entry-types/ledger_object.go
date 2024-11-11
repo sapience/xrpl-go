@@ -5,45 +5,45 @@ import (
 	"fmt"
 )
 
-type LedgerEntryType string
+type EntryType string
 
 const (
-	AccountRootEntry                     LedgerEntryType = "AccountRoot"
-	AmendmentsEntry                      LedgerEntryType = "Amendments"
-	AMMEntry                             LedgerEntryType = "AMM"
-	BridgeEntry                          LedgerEntryType = "Bridge"
-	CheckEntry                           LedgerEntryType = "Check"
-	DepositPreauthObjEntry               LedgerEntryType = "DepositPreauth"
-	DIDEntry                             LedgerEntryType = "DID"
-	DirectoryNodeEntry                   LedgerEntryType = "DirectoryNode"
-	EscrowEntry                          LedgerEntryType = "Escrow"
-	FeeSettingsEntry                     LedgerEntryType = "FeeSettings"
-	LedgerHashesEntry                    LedgerEntryType = "LedgerHashes"
-	NegativeUNLEntry                     LedgerEntryType = "NegativeUNL"
-	NFTokenOfferEntry                    LedgerEntryType = "NFTokenOffer"
-	NFTokenPageEntry                     LedgerEntryType = "NFTokenPage"
-	OfferEntry                           LedgerEntryType = "Offer"
-	OracleEntry                          LedgerEntryType = "Oracle"
-	PayChannelEntry                      LedgerEntryType = "PayChannel"
-	RippleStateEntry                     LedgerEntryType = "RippleState"
-	SignerListEntry                      LedgerEntryType = "SignerList"
-	TicketEntry                          LedgerEntryType = "Ticket"
-	XChainOwnedClaimIDEntry              LedgerEntryType = "XChainOwnedClaimID"
-	XChainOwnedCreateAccountClaimIDEntry LedgerEntryType = "XChainOwnedCreateAccountClaimID"
+	AccountRootEntry                     EntryType = "AccountRoot"
+	AmendmentsEntry                      EntryType = "Amendments"
+	AMMEntry                             EntryType = "AMM"
+	BridgeEntry                          EntryType = "Bridge"
+	CheckEntry                           EntryType = "Check"
+	DepositPreauthObjEntry               EntryType = "DepositPreauth"
+	DIDEntry                             EntryType = "DID"
+	DirectoryNodeEntry                   EntryType = "DirectoryNode"
+	EscrowEntry                          EntryType = "Escrow"
+	FeeSettingsEntry                     EntryType = "FeeSettings"
+	LedgerHashesEntry                    EntryType = "LedgerHashes"
+	NegativeUNLEntry                     EntryType = "NegativeUNL"
+	NFTokenOfferEntry                    EntryType = "NFTokenOffer"
+	NFTokenPageEntry                     EntryType = "NFTokenPage"
+	OfferEntry                           EntryType = "Offer"
+	OracleEntry                          EntryType = "Oracle"
+	PayChannelEntry                      EntryType = "PayChannel"
+	RippleStateEntry                     EntryType = "RippleState"
+	SignerListEntry                      EntryType = "SignerList"
+	TicketEntry                          EntryType = "Ticket"
+	XChainOwnedClaimIDEntry              EntryType = "XChainOwnedClaimID"
+	XChainOwnedCreateAccountClaimIDEntry EntryType = "XChainOwnedCreateAccountClaimID"
 )
 
 type FlatLedgerObject map[string]interface{}
 
-func (f FlatLedgerObject) EntryType() LedgerEntryType {
-	return LedgerEntryType(f["LedgerEntryType"].(string))
+func (f FlatLedgerObject) EntryType() EntryType {
+	return EntryType(f["LedgerEntryType"].(string))
 }
 
-type LedgerObject interface {
-	EntryType() LedgerEntryType
+type Object interface {
+	EntryType() EntryType
 }
 
-func EmptyLedgerObject(t string) (LedgerObject, error) {
-	switch LedgerEntryType(t) {
+func EmptyLedgerObject(t string) (Object, error) {
+	switch EntryType(t) {
 	case AccountRootEntry:
 		return &AccountRoot{}, nil
 	case AmendmentsEntry:
@@ -65,7 +65,7 @@ func EmptyLedgerObject(t string) (LedgerObject, error) {
 	case FeeSettingsEntry:
 		return &FeeSettings{}, nil
 	case LedgerHashesEntry:
-		return &LedgerHashes{}, nil
+		return &Hashes{}, nil
 	case NegativeUNLEntry:
 		return &NegativeUNL{}, nil
 	case NFTokenOfferEntry:
@@ -92,18 +92,18 @@ func EmptyLedgerObject(t string) (LedgerObject, error) {
 	return nil, fmt.Errorf("unrecognized LedgerObject type \"%s\"", t)
 }
 
-func UnmarshalLedgerObject(data []byte) (LedgerObject, error) {
+func UnmarshalLedgerObject(data []byte) (Object, error) {
 	if len(data) == 0 {
 		return nil, nil
 	}
 	type helper struct {
-		LedgerEntryType LedgerEntryType
+		LedgerEntryType EntryType
 	}
 	var h helper
 	if err := json.Unmarshal(data, &h); err != nil {
 		return nil, err
 	}
-	var o LedgerObject
+	var o Object
 	switch h.LedgerEntryType {
 	case AccountRootEntry:
 		o = &AccountRoot{}
@@ -124,7 +124,7 @@ func UnmarshalLedgerObject(data []byte) (LedgerObject, error) {
 	case FeeSettingsEntry:
 		o = &FeeSettings{}
 	case LedgerHashesEntry:
-		o = &LedgerHashes{}
+		o = &Hashes{}
 	case NegativeUNLEntry:
 		o = &NegativeUNL{}
 	case NFTokenOfferEntry:

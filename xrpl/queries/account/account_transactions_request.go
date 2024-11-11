@@ -7,7 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountTransactionsRequest struct {
+type TransactionsRequest struct {
 	Account        types.Address          `json:"account"`
 	LedgerIndexMin int                    `json:"ledger_index_min,omitempty"`
 	LedgerIndexMax int                    `json:"ledger_index_max,omitempty"`
@@ -19,11 +19,11 @@ type AccountTransactionsRequest struct {
 	Marker         any                    `json:"marker,omitempty"`
 }
 
-func (*AccountTransactionsRequest) Method() string {
+func (*TransactionsRequest) Method() string {
 	return "account_tx"
 }
 
-func (r *AccountTransactionsRequest) UnmarshalJSON(data []byte) error {
+func (r *TransactionsRequest) UnmarshalJSON(data []byte) error {
 	type atrHelper struct {
 		Account        types.Address     `json:"account"`
 		LedgerIndexMin int               `json:"ledger_index_min,omitempty"`
@@ -39,7 +39,7 @@ func (r *AccountTransactionsRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = AccountTransactionsRequest{
+	*r = TransactionsRequest{
 		Account:        h.Account,
 		LedgerIndexMin: h.LedgerIndexMin,
 		LedgerIndexMax: h.LedgerIndexMax,

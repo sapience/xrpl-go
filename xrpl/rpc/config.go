@@ -7,40 +7,40 @@ import (
 	"time"
 )
 
-var ErrEmptyUrl = errors.New("empty port and IP provided")
+var ErrEmptyURL = errors.New("empty port and IP provided")
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type JsonRpcConfig struct {
+type Config struct {
 	HTTPClient HTTPClient
-	Url        string
+	URL        string
 	Headers    map[string][]string
 }
 
-type JsonRpcConfigOpt func(c *JsonRpcConfig)
+type ConfigOpt func(c *Config)
 
-func WithHttpClient(cl HTTPClient) JsonRpcConfigOpt {
-	return func(c *JsonRpcConfig) {
+func WithHTTPClient(cl HTTPClient) ConfigOpt {
+	return func(c *Config) {
 		c.HTTPClient = cl
 	}
 }
 
-func NewJsonRpcConfig(url string, opts ...JsonRpcConfigOpt) (*JsonRpcConfig, error) {
+func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) {
 
 	// validate a url has been passed in
 	if len(url) == 0 {
-		return nil, ErrEmptyUrl
+		return nil, ErrEmptyURL
 	}
 	// add slash if doesn't already end with one
 	if !strings.HasSuffix(url, "/") {
 		url += "/"
 	}
 
-	cfg := &JsonRpcConfig{
+	cfg := &Config{
 		HTTPClient: &http.Client{Timeout: time.Duration(1) * time.Second}, // default timeout value - allow custom timme out?
-		Url:        url,
+		URL:        url,
 		Headers: map[string][]string{
 			"Content-Type": {"application/json"},
 		},

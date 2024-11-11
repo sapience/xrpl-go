@@ -26,13 +26,13 @@ type AffectedNode struct {
 }
 
 type CreatedNode struct {
-	LedgerEntryType ledger.LedgerEntryType  `json:"LedgerEntryType,omitempty"`
+	LedgerEntryType ledger.EntryType        `json:"LedgerEntryType,omitempty"`
 	LedgerIndex     string                  `json:"LedgerIndex,omitempty"`
 	NewFields       ledger.FlatLedgerObject `json:"NewFields,omitempty"`
 }
 
 type ModifiedNode struct {
-	LedgerEntryType   ledger.LedgerEntryType  `json:"LedgerEntryType,omitempty"`
+	LedgerEntryType   ledger.EntryType        `json:"LedgerEntryType,omitempty"`
 	LedgerIndex       string                  `json:"LedgerIndex,omitempty"`
 	FinalFields       ledger.FlatLedgerObject `json:"FinalFields,omitempty"`
 	PreviousFields    ledger.FlatLedgerObject `json:"PreviousFields,omitempty"`
@@ -41,7 +41,7 @@ type ModifiedNode struct {
 }
 
 type DeletedNode struct {
-	LedgerEntryType ledger.LedgerEntryType  `json:"LedgerEntryType,omitempty"`
+	LedgerEntryType ledger.EntryType        `json:"LedgerEntryType,omitempty"`
 	LedgerIndex     string                  `json:"LedgerIndex,omitempty"`
 	FinalFields     ledger.FlatLedgerObject `json:"FinalFields,omitempty"`
 }

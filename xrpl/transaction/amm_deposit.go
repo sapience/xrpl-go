@@ -147,11 +147,12 @@ func (a *AMMDeposit) Validate() (bool, error) {
 		return false, err
 	}
 
-	if a.Amount2 != nil && a.Amount == nil {
+	switch {
+	case a.Amount2 != nil && a.Amount == nil:
 		return false, errors.New("ammDeposit: must set Amount with Amount2")
-	} else if a.EPrice != nil && a.Amount == nil {
+	case a.EPrice != nil && a.Amount == nil:
 		return false, errors.New("ammDeposit: must set Amount with EPrice")
-	} else if a.LPTokenOut == nil && a.Amount == nil {
+	case a.LPTokenOut == nil && a.Amount == nil:
 		return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")
 	}
 

@@ -43,12 +43,12 @@ func (e *ErrDecodeClassicAddress) Error() string {
 // XChainBridge is a struct that represents an xchain bridge.
 type XChainBridge struct{}
 
-// FromJson converts a json XChainBridge object to its byte slice representation.
+// FromJSON converts a json XChainBridge object to its byte slice representation.
 // It returns an error if the json is not valid or if the classic addresses are not valid.
-func (x *XChainBridge) FromJson(json any) ([]byte, error) {
+func (x *XChainBridge) FromJSON(json any) ([]byte, error) {
 	v, ok := json.(map[string]any)
 	if !ok {
-		return nil, &errors.ErrNotValidJson{}
+		return nil, &errors.ErrNotValidJSON{}
 	}
 
 	if v["LockingChainDoor"] == nil || v["LockingChainIssue"] == nil || v["IssuingChainDoor"] == nil || v["IssuingChainIssue"] == nil {
@@ -85,9 +85,9 @@ func (x *XChainBridge) FromJson(json any) ([]byte, error) {
 	return bytes, nil
 }
 
-// ToJson converts a byte slice representation of an XChainBridge object to its json representation.
+// ToJSON converts a byte slice representation of an XChainBridge object to its json representation.
 // It returns an error if the bytes are not valid or if the classic addresses are not valid.
-func (x *XChainBridge) ToJson(p interfaces.BinaryParser, opts ...int) (any, error) {
+func (x *XChainBridge) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) {
 	if opts == nil {
 		return nil, ErrNoLengthPrefix
 	}

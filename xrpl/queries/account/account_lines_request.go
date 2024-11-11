@@ -7,7 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type AccountLinesRequest struct {
+type LinesRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -16,15 +16,15 @@ type AccountLinesRequest struct {
 	Marker      any                    `json:"marker,omitempty"`
 }
 
-func (*AccountLinesRequest) Method() string {
+func (*LinesRequest) Method() string {
 	return "account_lines"
 }
 
-func (*AccountLinesRequest) Validate() error {
+func (*LinesRequest) Validate() error {
 	return nil
 }
 
-func (r *AccountLinesRequest) UnmarshalJSON(data []byte) error {
+func (r *LinesRequest) UnmarshalJSON(data []byte) error {
 	type alrHelper struct {
 		Account     types.Address     `json:"account"`
 		LedgerHash  common.LedgerHash `json:"ledger_hash,omitempty"`
@@ -37,7 +37,7 @@ func (r *AccountLinesRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &h); err != nil {
 		return err
 	}
-	*r = AccountLinesRequest{
+	*r = LinesRequest{
 		Account:    h.Account,
 		LedgerHash: h.LedgerHash,
 		Peer:       h.Peer,

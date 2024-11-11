@@ -45,7 +45,7 @@ func TestUint32_FromJson(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			uint32 := &UInt32{}
-			actual, err := uint32.FromJson(tc.input)
+			actual, err := uint32.FromJSON(tc.input)
 			if err != tc.expectedErr {
 				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
 			}
@@ -106,9 +106,9 @@ func TestUint32_ToJson(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			uint32 := &UInt32{}
+			class := &UInt32{}
 			parser := tc.malleate(t)
-			actual, err := uint32.ToJson(parser)
+			actual, err := class.ToJSON(parser)
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
 			} else {

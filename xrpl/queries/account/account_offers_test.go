@@ -9,7 +9,7 @@ import (
 )
 
 func TestAccountOffersRequest(t *testing.T) {
-	s := AccountOffersRequest{
+	s := OffersRequest{
 		Account:     "abc",
 		LedgerIndex: common.LedgerIndex(10),
 		Marker:      "123",
@@ -26,7 +26,7 @@ func TestAccountOffersRequest(t *testing.T) {
 }
 
 func TestAccountOffersResponse(t *testing.T) {
-	s := AccountOffersResponse{
+	s := OffersResponse{
 		Account: "abc",
 		Offers: []OfferResult{
 			{Flags: 0,

@@ -59,8 +59,8 @@ func TestUint64_FromJson(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			u64 := &UInt64{}
-			actual, err := u64.FromJson(tc.input)
+			class := &UInt64{}
+			actual, err := class.FromJSON(tc.input)
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
 			} else {
@@ -129,9 +129,9 @@ func TestUint64_ToJson(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			uint64 := &UInt64{}
+			class := &UInt64{}
 			parser := tc.malleate(t)
-			actual, err := uint64.ToJson(parser)
+			actual, err := class.ToJSON(parser)
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
 			} else {

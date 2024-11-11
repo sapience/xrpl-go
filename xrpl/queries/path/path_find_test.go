@@ -9,7 +9,7 @@ import (
 )
 
 func TestPathFindRequest(t *testing.T) {
-	s := PathFindRequest{
+	s := FindRequest{
 		Subcommand:         CREATE,
 		SourceAccount:      "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 		DestinationAccount: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
@@ -37,8 +37,8 @@ func TestPathFindRequest(t *testing.T) {
 }
 
 func TestPathFindResponse(t *testing.T) {
-	s := PathFindResponse{
-		Alternatives: []PathAlternative{
+	s := FindResponse{
+		Alternatives: []Alternative{
 			{
 				PathsComputed: [][]transaction.PathStep{
 					{

@@ -51,7 +51,7 @@ func TestRipplePathFindRequest(t *testing.T) {
 
 func TestRipplePathFindResponse(t *testing.T) {
 	s := RipplePathFindResponse{
-		Alternatives: []PathAlternative{
+		Alternatives: []Alternative{
 			{
 				PathsComputed: [][]transaction.PathStep{
 					{

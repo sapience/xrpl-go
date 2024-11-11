@@ -11,7 +11,7 @@ type NFTokenOffer struct {
 	Destination       types.Address `json:",omitempty"`
 	Expiration        uint          `json:",omitempty"`
 	Flags             uint
-	LedgerEntryType   LedgerEntryType
+	LedgerEntryType   EntryType
 	NFTokenID         types.Hash256
 	NFTokenOfferNode  string `json:",omitempty"`
 	Owner             types.Address
@@ -20,7 +20,7 @@ type NFTokenOffer struct {
 	PreviousTxnLgrSeq uint
 }
 
-func (*NFTokenOffer) EntryType() LedgerEntryType {
+func (*NFTokenOffer) EntryType() EntryType {
 	return NFTokenOfferEntry
 
 }
@@ -31,7 +31,7 @@ func (n *NFTokenOffer) UnmarshalJSON(data []byte) error {
 		Destination       types.Address
 		Expiration        uint
 		Flags             uint
-		LedgerEntryType   LedgerEntryType
+		LedgerEntryType   EntryType
 		NFTokenID         types.Hash256
 		NFTokenOfferNode  string
 		Owner             types.Address

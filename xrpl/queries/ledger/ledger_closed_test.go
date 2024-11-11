@@ -9,7 +9,7 @@ import (
 // Ledger closed request does not have any fields to test
 
 func TestLedgerClosedResponse(t *testing.T) {
-	s := LedgerClosedResponse{
+	s := ClosedResponse{
 		LedgerHash:  "abc",
 		LedgerIndex: 123,
 	}
