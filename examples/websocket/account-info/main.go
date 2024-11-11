@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl"
-	"github.com/Peersyst/xrpl-go/xrpl/client/websocket"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 
-	accountInfo, _, err := client.GetAccountInfo(&account.AccountInfoRequest{
+	accountInfo, err := client.GetAccountInfo(&account.AccountInfoRequest{
 		Account:    types.Address(wallet.GetAddress()),
 		SignerList: true,
 	})

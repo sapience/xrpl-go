@@ -1,4 +1,4 @@
-package jsonrpcclient
+package rpc
 
 import (
 	"bytes"
@@ -11,15 +11,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Peersyst/xrpl-go/xrpl/client"
-	jsonrpcmodels "github.com/Peersyst/xrpl-go/xrpl/client/jsonrpc/models"
 	requests "github.com/Peersyst/xrpl-go/xrpl/model/requests/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	jsoniter "github.com/json-iterator/go"
 )
 
 type JsonRpcClient struct {
-	Config *client.JsonRpcConfig
+	Config *JsonRpcConfig
 }
 
 type JsonRpcClientError struct {
@@ -32,21 +30,14 @@ func (e *JsonRpcClientError) Error() string {
 
 var ErrIncorrectId = errors.New("incorrect id")
 
-func NewJsonRpcClient(cfg *client.JsonRpcConfig) *JsonRpcClient {
+func NewJsonRpcClient(cfg *JsonRpcConfig) *JsonRpcClient {
 	return &JsonRpcClient{
 		Config: cfg,
 	}
 }
 
-func NewClient(cfg *client.JsonRpcConfig) *client.XRPLClient {
-	jc := &JsonRpcClient{
-		Config: cfg,
-	}
-	return client.NewXRPLClient(jc)
-}
-
 // satisfy the Client interface
-func (c *JsonRpcClient) SendRequest(reqParams client.XRPLRequest) (client.XRPLResponse, error) {
+func (c *JsonRpcClient) SendRequest(reqParams JsonRpcXRPLRequest) (JsonRpcXRPLResponse, error) {
 
 	err := reqParams.Validate()
 	if err != nil {
@@ -110,7 +101,7 @@ func (c *JsonRpcClient) SendRequest(reqParams client.XRPLRequest) (client.XRPLRe
 
 	}
 
-	var jr jsonrpcmodels.JsonRpcResponse
+	var jr JsonRpcResponse
 	jr, err = CheckForError(response)
 	if err != nil {
 		return nil, err
@@ -119,7 +110,7 @@ func (c *JsonRpcClient) SendRequest(reqParams client.XRPLRequest) (client.XRPLRe
 	return &jr, nil
 }
 
-func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (client.XRPLResponse, error) {
+func (c *JsonRpcClient) SubmitTransactionBlob(txBlob string, failHard bool) (JsonRpcXRPLResponse, error) {
 	submitRequest := &requests.SubmitRequest{
 		TxBlob:   txBlob,
 		FailHard: failHard,
@@ -138,11 +129,11 @@ func (c *JsonRpcClient) Autofill(tx *transactions.FlatTransaction) error {
 
 // CreateRequest formats the parameters and method name ready for sending request
 // Params will have been serialised if required and added to request struct before being passed to this method
-func CreateRequest(reqParams client.XRPLRequest) ([]byte, error) {
+func CreateRequest(reqParams JsonRpcXRPLRequest) ([]byte, error) {
 
-	var body jsonrpcmodels.JsonRpcRequest
+	var body JsonRpcRequest
 
-	body = jsonrpcmodels.JsonRpcRequest{
+	body = JsonRpcRequest{
 		Method: reqParams.Method(),
 		// each param object will have a struct with json serialising tags
 		Params: [1]interface{}{reqParams},
@@ -156,7 +147,7 @@ func CreateRequest(reqParams client.XRPLRequest) ([]byte, error) {
 	paramString := string(paramBytes)
 	if strings.Compare(paramString, "[{}]") == 0 {
 		// need to remove params field from the body if it is empty
-		body = jsonrpcmodels.JsonRpcRequest{
+		body = JsonRpcRequest{
 			Method: reqParams.Method(),
 		}
 
@@ -177,9 +168,9 @@ func CreateRequest(reqParams client.XRPLRequest) ([]byte, error) {
 }
 
 // CheckForError reads the http response and formats the error if it exists
-func CheckForError(res *http.Response) (jsonrpcmodels.JsonRpcResponse, error) {
+func CheckForError(res *http.Response) (JsonRpcResponse, error) {
 
-	var jr jsonrpcmodels.JsonRpcResponse
+	var jr JsonRpcResponse
 
 	b, err := io.ReadAll(res.Body)
 	if err != nil || b == nil {

@@ -6,12 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/client"
 	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
+	"github.com/Peersyst/xrpl-go/xrpl/test"
 
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
-	"github.com/Peersyst/xrpl-go/xrpl/test"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +19,7 @@ func TestWebsocketClient_formatRequest(t *testing.T) {
 	ws := &WebsocketClient{}
 	tt := []struct {
 		description string
-		req         client.XRPLRequest
+		req         WebsocketXRPLRequest
 		id          int
 		marker      any
 		expected    string
