@@ -1,6 +1,10 @@
 package transaction
 
 import (
+	"errors"
+
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -53,4 +57,24 @@ func (n *NFTokenBurn) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate checks the validity of the NFTokenBurn fields.
+func (n *NFTokenBurn) Validate() (bool, error) {
+	ok, err := n.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	// check owner is a valid xrpl address
+	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
+		return false, errors.New("invalid xrpl address for the Owner field")
+	}
+
+	// check NFTokenID is a valid hexadecimal string
+	if !typecheck.IsHex(n.NFTokenID.String()) {
+		return false, errors.New("invalid NFTokenID, must be an hexadecimal string")
+	}
+
+	return true, nil
 }
