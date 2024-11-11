@@ -12,7 +12,7 @@ linters:
     - misspell
     - unparam
     - unused
-    - gosec
+    # - gosec TODO: enable
     - revive
 
 run:

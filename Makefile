@@ -26,33 +26,33 @@ lint-fix:
 
 test-all:
 	@echo "Running Go tests..."
-	@go test -v $(EXCLUDED_TEST_PACKAGES)
+	@go test $(EXCLUDED_TEST_PACKAGES)
 	@echo "Tests complete!"
 
 test-binary-codec:
 	@echo "Running Go tests for binary codec package..."
-	@go test -v ./binary-codec/...
+	@go test ./binary-codec/...
 	@echo "Tests complete!"
 
 test-address-codec:
 	@echo "Running Go tests for address codec package..."
-	@go test -v ./address-codec/...
+	@go test ./address-codec/...
 	@echo "Tests complete!"
 
 test-keypairs:
 	@echo "Running Go tests for keypairs package..."
-	@go test -v ./keypairs/...
+	@go test ./keypairs/...
 	@echo "Tests complete!"
 
 test-xrpl:
 	@echo "Running Go tests for xrpl package..."
-	@go test -v ./xrpl/...
+	@go test ./xrpl/...
 	@echo "Tests complete!"
 
 test-ci:
 	@echo "Running Go tests..."
 	@go clean -testcache
-	@go test -v $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
+	@go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
 	@echo "Tests complete!"
 
 coverage-unit:
