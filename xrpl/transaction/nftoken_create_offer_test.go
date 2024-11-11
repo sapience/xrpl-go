@@ -17,7 +17,7 @@ func TestNFTokenCreateOffer_Flags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*NFTokenCreateOffer)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "pass - SetSellNFTokenFlag",

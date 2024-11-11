@@ -17,7 +17,7 @@ func TestNFTokenMint_Flags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*NFTokenMint)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "pass - SetBurnableFlag",
