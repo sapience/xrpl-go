@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
@@ -26,7 +25,7 @@ func NewSTObject(bs interfaces.BinarySerializer) *STObject {
 // This method returns an error if the JSON input is not a valid object.
 func (t *STObject) FromJSON(json any) ([]byte, error) {
 	if _, ok := json.(map[string]any); !ok {
-		return nil, fmt.Errorf("not a valid json node")
+		return nil, errNotValidJSON
 	}
 	fimap, err := createFieldInstanceMapFromJson(json.(map[string]any))
 

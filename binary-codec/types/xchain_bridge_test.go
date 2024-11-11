@@ -6,10 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	typeerrors "github.com/Peersyst/xrpl-go/binary-codec/types/errors"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestXChainBridge_FromJson(t *testing.T) {
@@ -39,7 +37,7 @@ func TestXChainBridge_FromJson(t *testing.T) {
 				"IssuingChainIssue": "r3e7qTG44Mg8pHXgxPtyRx286Re5Urtx2p",
 			},
 			want: nil,
-			err:  &ErrDecodeClassicAddress{},
+			err:  errDecodeClassicAddress,
 		},
 		{
 			name: "invalid LockingChainIssue classic address",
@@ -50,7 +48,7 @@ func TestXChainBridge_FromJson(t *testing.T) {
 				"IssuingChainIssue": "r3e7qTG44Mg8pHXgxPtyRx286Re5Urtx2p",
 			},
 			want: nil,
-			err:  &ErrDecodeClassicAddress{},
+			err:  errDecodeClassicAddress,
 		},
 		{
 			name: "invalid IssuingChainDoor classic address",
@@ -61,7 +59,7 @@ func TestXChainBridge_FromJson(t *testing.T) {
 				"IssuingChainIssue": "r3e7qTG44Mg8pHXgxPtyRx286Re5Urtx2p",
 			},
 			want: nil,
-			err:  &ErrDecodeClassicAddress{},
+			err:  errDecodeClassicAddress,
 		},
 		{
 			name: "invalid IssuingChainIssue classic address",
@@ -72,13 +70,13 @@ func TestXChainBridge_FromJson(t *testing.T) {
 				"IssuingChainIssue": "r3e7qTG44Mg8pHXgxPtyRx286Re5Urtx2p1",
 			},
 			want: nil,
-			err:  &ErrDecodeClassicAddress{},
+			err:  errDecodeClassicAddress,
 		},
 		{
 			name: "not a valid json",
 			json: "not a valid json",
 			want: nil,
-			err:  &typeerrors.ErrNotValidJSON{},
+			err:  errNotValidJSON,
 		},
 		{
 			name: "invalid xchain bridge",
@@ -88,7 +86,7 @@ func TestXChainBridge_FromJson(t *testing.T) {
 				"IssuingChainIssue": "r3e7qTG44Mg8pHXgxPtyRx286Re5Urtx2p",
 			},
 			want: nil,
-			err:  &ErrNotValidXChainBridge{},
+			err:  errNotValidXChainBridge,
 		},
 	}
 
@@ -149,11 +147,11 @@ func TestXChainBridge_ToJson(t *testing.T) {
 			input: []byte{83, 223, 129, 195, 127, 70, 21, 146, 66, 247, 202, 145, 99, 224, 159, 4, 64, 41, 204, 18, 83, 223, 129, 195, 127, 70, 21, 146, 66, 247, 202, 145, 99, 224, 159, 4, 64, 41, 204, 18, 83, 223, 129, 195, 127, 70, 21, 146, 66, 247, 202, 145, 99, 224, 159, 4, 64, 41, 204, 18, 83, 223, 129, 195, 127, 70, 21, 146, 66, 247, 202, 145, 99, 224, 159, 4, 64, 41, 204, 18},
 			opts:  []int{80},
 			want:  nil,
-			err:   &ErrReadBytes{},
+			err:   errReadBytes,
 			setup: func(t *testing.T) (*XChainBridge, *testutil.MockBinaryParser) {
 				ctrl := gomock.NewController(t)
 				mock := testutil.NewMockBinaryParser(ctrl)
-				mock.EXPECT().ReadBytes(80).Return([]byte{}, errors.New("read bytes error"))
+				mock.EXPECT().ReadBytes(80).Return([]byte{}, errors.New("errReadBytes"))
 				return &XChainBridge{}, mock
 			},
 		},
@@ -170,24 +168,4 @@ func TestXChainBridge_ToJson(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestErrNotValidXChainBridge_Error(t *testing.T) {
-	err := &ErrNotValidXChainBridge{}
-	require.Equal(t, "not a valid xchain bridge", err.Error())
-}
-
-func TestErrNotValidJson_Error(t *testing.T) {
-	err := &typeerrors.ErrNotValidJSON{}
-	require.Equal(t, "not a valid json", err.Error())
-}
-
-func TestErrDecodeClassicAddress_Error(t *testing.T) {
-	err := &ErrDecodeClassicAddress{}
-	require.Equal(t, "decode classic address error", err.Error())
-}
-
-func TestErrReadBytes_Error(t *testing.T) {
-	err := &ErrReadBytes{}
-	require.Equal(t, "read bytes error", err.Error())
 }

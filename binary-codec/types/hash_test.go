@@ -107,11 +107,11 @@ func TestHash_ToJson(t *testing.T) {
 			hash:        []byte{0x03, 0x16, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 			length:      32,
 			expected:    nil,
-			expectedErr: errors.New("read bytes error"),
+			expectedErr: errors.New("errReadBytes"),
 			setup: func(t *testing.T) (*hash, *testutil.MockBinaryParser) {
 				ctrl := gomock.NewController(t)
 				mock := testutil.NewMockBinaryParser(ctrl)
-				mock.EXPECT().ReadBytes(32).Return([]byte{}, errors.New("read bytes error"))
+				mock.EXPECT().ReadBytes(32).Return([]byte{}, errors.New("errReadBytes"))
 				return &hash{Length: 32}, mock
 			},
 		},

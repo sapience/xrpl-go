@@ -79,11 +79,11 @@ func TestBlob_ToJson(t *testing.T) {
 			input:       []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f},
 			expected:    nil,
 			opts:        []int{16},
-			expectedErr: errors.New("read bytes error"),
+			expectedErr: errors.New("errReadBytes"),
 			setup: func(t *testing.T) (*Blob, *testutil.MockBinaryParser) {
 				ctrl := gomock.NewController(t)
 				mock := testutil.NewMockBinaryParser(ctrl)
-				mock.EXPECT().ReadBytes(16).Return([]byte{}, errors.New("read bytes error"))
+				mock.EXPECT().ReadBytes(16).Return([]byte{}, errors.New("errReadBytes"))
 				return &Blob{}, mock
 			},
 		},
