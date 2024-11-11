@@ -150,7 +150,7 @@ func deserializeValue(data []byte) (string, error) {
 	exponent := e1 + e2 - 97
 	sigFigs := append([]byte{0, (b2 & 0x3F)}, valueBytes[2:]...)
 	sigFigsInt := binary.BigEndian.Uint64(sigFigs)
-	d, err := bigdecimal.NewBigDecimal(sign + strconv.Itoa(int(sigFigsInt)) + "e" + strconv.Itoa(exponent))
+	d, err := bigdecimal.NewBigDecimal(sign + strconv.FormatUint(sigFigsInt, 10) + "e" + strconv.Itoa(exponent))
 	if err != nil {
 		return "", err
 	}
@@ -327,6 +327,8 @@ func SerializeIssuedCurrencyValue(value string) ([]byte, error) {
 	if bigDecimal.Sign == 0 {
 		serial |= PosSignBitMask // if the sign is positive, set the sign (second) bit to 1
 	}
+	// TODO: Check if this is still needed
+	//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 	serial |= (uint64(exp+97) << 54) // if the exponent is positive, set the exponent bits to the exponent + 97
 	serial |= uint64(mantissa)       // last 54 bits are mantissa
 

@@ -1,6 +1,8 @@
 package types
 
 import (
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
@@ -44,7 +46,7 @@ func GetSerializedType(t string) SerializedType {
 	case "Blob":
 		return &Blob{}
 	case "STObject":
-		return &STObject{}
+		return NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
 	case "STArray":
 		return &STArray{}
 	case "PathSet":

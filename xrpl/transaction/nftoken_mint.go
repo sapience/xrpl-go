@@ -61,13 +61,13 @@ type NFTokenMint struct {
 
 const (
 	// Allow the issuer (or an entity authorized by the issuer) to destroy the minted NFToken. (The NFToken's owner can always do so.)
-	tfBurnable uint = 1
+	tfBurnable uint32 = 1
 	// The minted NFToken can only be bought or sold for XRP. This can be desirable if the token has a transfer fee and the issuer does not want to receive fees in non-XRP currencies.
-	tfOnlyXRP uint = 2
+	tfOnlyXRP uint32 = 2
 	// DEPRECATED Automatically create trust lines from the issuer to hold transfer fees received from transferring the minted NFToken. The fixRemoveNFTokenAutoTrustLine amendment makes it invalid to set this flag.
-	tfTrustLine uint = 4
+	tfTrustLine uint32 = 4
 	// The minted NFToken can be transferred to others. If this flag is not enabled, the token can still be transferred from or to the issuer, but a transfer to the issuer must be made based on a buy offer from the issuer and not a sell offer from the NFT holder.
-	tfTransferable uint = 8
+	tfTransferable uint32 = 8
 )
 
 // Allow the issuer (or an entity authorized by the issuer) to destroy the minted NFToken. (The NFToken's owner can always do so.)

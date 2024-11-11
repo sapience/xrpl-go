@@ -1,457 +1,982 @@
-
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>address-codec: Go Coverage Report</title>
-		<style>
-			body {
-				background: black;
-				color: rgb(80, 80, 80);
-			}
-			body, pre, #legend span {
-				font-family: Menlo, monospace;
-				font-weight: bold;
-			}
-			#topbar {
-				background: black;
-				position: fixed;
-				top: 0; left: 0; right: 0;
-				height: 42px;
-				border-bottom: 1px solid rgb(80, 80, 80);
-			}
-			#content {
-				margin-top: 50px;
-			}
-			#nav, #legend {
-				float: left;
-				margin-left: 10px;
-			}
-			#legend {
-				margin-top: 12px;
-			}
-			#nav {
-				margin-top: 10px;
-			}
-			#legend span {
-				margin: 0 5px;
-			}
-			.cov0 { color: rgb(192, 0, 0) }
-.cov1 { color: rgb(128, 128, 128) }
-.cov2 { color: rgb(116, 140, 131) }
-.cov3 { color: rgb(104, 152, 134) }
-.cov4 { color: rgb(92, 164, 137) }
-.cov5 { color: rgb(80, 176, 140) }
-.cov6 { color: rgb(68, 188, 143) }
-.cov7 { color: rgb(56, 200, 146) }
-.cov8 { color: rgb(44, 212, 149) }
-.cov9 { color: rgb(32, 224, 152) }
-.cov10 { color: rgb(20, 236, 155) }
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>address-codec: Go Coverage Report</title>
+    <style>
+      body {
+        background: black;
+        color: rgb(80, 80, 80);
+      }
+      body,
+      pre,
+      #legend span {
+        font-family: Menlo, monospace;
+        font-weight: bold;
+      }
+      #topbar {
+        background: black;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 42px;
+        border-bottom: 1px solid rgb(80, 80, 80);
+      }
+      #content {
+        margin-top: 50px;
+      }
+      #nav,
+      #legend {
+        float: left;
+        margin-left: 10px;
+      }
+      #legend {
+        margin-top: 12px;
+      }
+      #nav {
+        margin-top: 10px;
+      }
+      #legend span {
+        margin: 0 5px;
+      }
+      .cov0 {
+        color: rgb(192, 0, 0);
+      }
+      .cov1 {
+        color: rgb(128, 128, 128);
+      }
+      .cov2 {
+        color: rgb(116, 140, 131);
+      }
+      .cov3 {
+        color: rgb(104, 152, 134);
+      }
+      .cov4 {
+        color: rgb(92, 164, 137);
+      }
+      .cov5 {
+        color: rgb(80, 176, 140);
+      }
+      .cov6 {
+        color: rgb(68, 188, 143);
+      }
+      .cov7 {
+        color: rgb(56, 200, 146);
+      }
+      .cov8 {
+        color: rgb(44, 212, 149);
+      }
+      .cov9 {
+        color: rgb(32, 224, 152);
+      }
+      .cov10 {
+        color: rgb(20, 236, 155);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="topbar">
+      <div id="nav">
+        <select id="files">
+          <option value="file0">
+            github.com/Peersyst/xrpl-go/address-codec/address_codec.go (93.9%)
+          </option>
 
-		</style>
-	</head>
-	<body>
-		<div id="topbar">
-			<div id="nav">
-				<select id="files">
-				
-				<option value="file0">github.com/Peersyst/xrpl-go/address-codec/address_codec.go (93.9%)</option>
-				
-				<option value="file1">github.com/Peersyst/xrpl-go/address-codec/base58.go (98.0%)</option>
-				
-				<option value="file2">github.com/Peersyst/xrpl-go/address-codec/base58check.go (94.7%)</option>
-				
-				<option value="file3">github.com/Peersyst/xrpl-go/binary-codec/definitions/definitions.go (92.1%)</option>
-				
-				<option value="file4">github.com/Peersyst/xrpl-go/binary-codec/definitions/field_instance.go (0.0%)</option>
-				
-				<option value="file5">github.com/Peersyst/xrpl-go/binary-codec/definitions/helpers.go (100.0%)</option>
-				
-				<option value="file6">github.com/Peersyst/xrpl-go/binary-codec/definitions/init.go (66.7%)</option>
-				
-				<option value="file7">github.com/Peersyst/xrpl-go/binary-codec/main.go (81.6%)</option>
-				
-				<option value="file8">github.com/Peersyst/xrpl-go/binary-codec/serdes/binary_parser.go (32.8%)</option>
-				
-				<option value="file9">github.com/Peersyst/xrpl-go/binary-codec/serdes/binary_serializer.go (46.7%)</option>
-				
-				<option value="file10">github.com/Peersyst/xrpl-go/binary-codec/serdes/field_id_codec.go (0.0%)</option>
-				
-				<option value="file11">github.com/Peersyst/xrpl-go/binary-codec/types/account_id.go (100.0%)</option>
-				
-				<option value="file12">github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (83.4%)</option>
-				
-				<option value="file13">github.com/Peersyst/xrpl-go/binary-codec/types/blob.go (100.0%)</option>
-				
-				<option value="file14">github.com/Peersyst/xrpl-go/binary-codec/types/errors/json.go (100.0%)</option>
-				
-				<option value="file15">github.com/Peersyst/xrpl-go/binary-codec/types/hash.go (100.0%)</option>
-				
-				<option value="file16">github.com/Peersyst/xrpl-go/binary-codec/types/hash128.go (100.0%)</option>
-				
-				<option value="file17">github.com/Peersyst/xrpl-go/binary-codec/types/hash160.go (100.0%)</option>
-				
-				<option value="file18">github.com/Peersyst/xrpl-go/binary-codec/types/hash256.go (100.0%)</option>
-				
-				<option value="file19">github.com/Peersyst/xrpl-go/binary-codec/types/issue.go (100.0%)</option>
-				
-				<option value="file20">github.com/Peersyst/xrpl-go/binary-codec/types/pathset.go (93.8%)</option>
-				
-				<option value="file21">github.com/Peersyst/xrpl-go/binary-codec/types/serialized_type.go (88.9%)</option>
-				
-				<option value="file22">github.com/Peersyst/xrpl-go/binary-codec/types/st_array.go (90.3%)</option>
-				
-				<option value="file23">github.com/Peersyst/xrpl-go/binary-codec/types/st_object.go (88.3%)</option>
-				
-				<option value="file24">github.com/Peersyst/xrpl-go/binary-codec/types/uint16.go (94.7%)</option>
-				
-				<option value="file25">github.com/Peersyst/xrpl-go/binary-codec/types/uint32.go (88.9%)</option>
-				
-				<option value="file26">github.com/Peersyst/xrpl-go/binary-codec/types/uint64.go (95.2%)</option>
-				
-				<option value="file27">github.com/Peersyst/xrpl-go/binary-codec/types/uint8.go (94.4%)</option>
-				
-				<option value="file28">github.com/Peersyst/xrpl-go/binary-codec/types/vector256.go (85.7%)</option>
-				
-				<option value="file29">github.com/Peersyst/xrpl-go/binary-codec/types/xchain_bridge.go (100.0%)</option>
-				
-				<option value="file30">github.com/Peersyst/xrpl-go/keypairs/crypto.go (44.4%)</option>
-				
-				<option value="file31">github.com/Peersyst/xrpl-go/keypairs/keypairs.go (75.9%)</option>
-				
-				<option value="file32">github.com/Peersyst/xrpl-go/pkg/big-decimal/big_decimal.go (96.6%)</option>
-				
-				<option value="file33">github.com/Peersyst/xrpl-go/pkg/crypto/der.go (85.7%)</option>
-				
-				<option value="file34">github.com/Peersyst/xrpl-go/pkg/crypto/ed25519.go (78.6%)</option>
-				
-				<option value="file35">github.com/Peersyst/xrpl-go/pkg/crypto/secp256k1.go (90.3%)</option>
-				
-				<option value="file36">github.com/Peersyst/xrpl-go/pkg/crypto/sha512.go (100.0%)</option>
-				
-				<option value="file37">github.com/Peersyst/xrpl-go/pkg/crypto/types.go (0.0%)</option>
-				
-				<option value="file38">github.com/Peersyst/xrpl-go/pkg/map_utils/map_utils.go (100.0%)</option>
-				
-				<option value="file39">github.com/Peersyst/xrpl-go/pkg/random/main.go (80.0%)</option>
-				
-				<option value="file40">github.com/Peersyst/xrpl-go/pkg/typecheck/typecheck.go (100.0%)</option>
-				
-				<option value="file41">github.com/Peersyst/xrpl-go/xrpl/currency/native.go (100.0%)</option>
-				
-				<option value="file42">github.com/Peersyst/xrpl-go/xrpl/currency/non-standard.go (95.0%)</option>
-				
-				<option value="file43">github.com/Peersyst/xrpl-go/xrpl/hash/tx.go (85.7%)</option>
-				
-				<option value="file44">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/account_root.go (0.0%)</option>
-				
-				<option value="file45">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/amendments.go (0.0%)</option>
-				
-				<option value="file46">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/amm.go (100.0%)</option>
-				
-				<option value="file47">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/bridge.go (100.0%)</option>
-				
-				<option value="file48">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/check.go (0.0%)</option>
-				
-				<option value="file49">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/deposit_preauth.go (0.0%)</option>
-				
-				<option value="file50">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/did.go (100.0%)</option>
-				
-				<option value="file51">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/directory_node.go (0.0%)</option>
-				
-				<option value="file52">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/escrow.go (0.0%)</option>
-				
-				<option value="file53">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/fee_settings.go (0.0%)</option>
-				
-				<option value="file54">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ledger_hashes.go (0.0%)</option>
-				
-				<option value="file55">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ledger_object.go (0.0%)</option>
-				
-				<option value="file56">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/negative_unl.go (0.0%)</option>
-				
-				<option value="file57">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/nftoken_offer.go (72.7%)</option>
-				
-				<option value="file58">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/nftoken_page.go (0.0%)</option>
-				
-				<option value="file59">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/offer.go (73.3%)</option>
-				
-				<option value="file60">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/oracle.go (100.0%)</option>
-				
-				<option value="file61">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/pay_channel.go (0.0%)</option>
-				
-				<option value="file62">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ripple_state.go (0.0%)</option>
-				
-				<option value="file63">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/signer_list.go (0.0%)</option>
-				
-				<option value="file64">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ticket.go (0.0%)</option>
-				
-				<option value="file65">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/xchain_owned_claim_id.go (100.0%)</option>
-				
-				<option value="file66">github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/xchain_owned_create_account_claim_id.go (100.0%)</option>
-				
-				<option value="file67">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_channels_request.go (71.4%)</option>
-				
-				<option value="file68">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_currencies_request.go (72.7%)</option>
-				
-				<option value="file69">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_info_request.go (66.7%)</option>
-				
-				<option value="file70">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_lines_request.go (66.7%)</option>
-				
-				<option value="file71">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_nfts_request.go (72.7%)</option>
-				
-				<option value="file72">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_objects_request.go (66.7%)</option>
-				
-				<option value="file73">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_offers_request.go (72.7%)</option>
-				
-				<option value="file74">github.com/Peersyst/xrpl-go/xrpl/queries/account/account_transactions_request.go (0.0%)</option>
-				
-				<option value="file75">github.com/Peersyst/xrpl-go/xrpl/queries/account/offer_result.go (81.2%)</option>
-				
-				<option value="file76">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/can_delete_request.go (75.0%)</option>
-				
-				<option value="file77">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/crawl_shards_request.go (0.0%)</option>
-				
-				<option value="file78">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/download_shard_request.go (0.0%)</option>
-				
-				<option value="file79">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/ledger_cleaner_request.go (0.0%)</option>
-				
-				<option value="file80">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/ledger_request_request.go (0.0%)</option>
-				
-				<option value="file81">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/ledger_request_response.go (77.8%)</option>
-				
-				<option value="file82">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/log_level_request.go (0.0%)</option>
-				
-				<option value="file83">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/logrotate_request.go (0.0%)</option>
-				
-				<option value="file84">github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/node_to_shard_request.go (0.0%)</option>
-				
-				<option value="file85">github.com/Peersyst/xrpl-go/xrpl/queries/admin/key/validation_create_request.go (0.0%)</option>
-				
-				<option value="file86">github.com/Peersyst/xrpl-go/xrpl/queries/admin/key/wallet_propose_request.go (0.0%)</option>
-				
-				<option value="file87">github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/connect_request.go (0.0%)</option>
-				
-				<option value="file88">github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peer_reservations_add_request.go (0.0%)</option>
-				
-				<option value="file89">github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peer_reservations_del_request.go (0.0%)</option>
-				
-				<option value="file90">github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peer_reservations_list_request.go (0.0%)</option>
-				
-				<option value="file91">github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peers_request.go (0.0%)</option>
-				
-				<option value="file92">github.com/Peersyst/xrpl-go/xrpl/queries/admin/server/ledger_accept_request.go (0.0%)</option>
-				
-				<option value="file93">github.com/Peersyst/xrpl-go/xrpl/queries/admin/server/stop_request.go (0.0%)</option>
-				
-				<option value="file94">github.com/Peersyst/xrpl-go/xrpl/queries/admin/signing/sign_for_request.go (0.0%)</option>
-				
-				<option value="file95">github.com/Peersyst/xrpl-go/xrpl/queries/admin/signing/sign_request.go (0.0%)</option>
-				
-				<option value="file96">github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/consensus_info_request.go (0.0%)</option>
-				
-				<option value="file97">github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/feature_request.go (0.0%)</option>
-				
-				<option value="file98">github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/fetch_info_request.go (0.0%)</option>
-				
-				<option value="file99">github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/get_counts_request.go (0.0%)</option>
-				
-				<option value="file100">github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/validator_info_request.go (0.0%)</option>
-				
-				<option value="file101">github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/validator_list_sites_request.go (0.0%)</option>
-				
-				<option value="file102">github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/validators_request.go (0.0%)</option>
-				
-				<option value="file103">github.com/Peersyst/xrpl-go/xrpl/queries/channel/channel_authorize_request.go (0.0%)</option>
-				
-				<option value="file104">github.com/Peersyst/xrpl-go/xrpl/queries/channel/channel_verify_request.go (0.0%)</option>
-				
-				<option value="file105">github.com/Peersyst/xrpl-go/xrpl/queries/clio/ledger_request.go (72.7%)</option>
-				
-				<option value="file106">github.com/Peersyst/xrpl-go/xrpl/queries/clio/nft_info_request.go (77.8%)</option>
-				
-				<option value="file107">github.com/Peersyst/xrpl-go/xrpl/queries/clio/server_info_request.go (0.0%)</option>
-				
-				<option value="file108">github.com/Peersyst/xrpl-go/xrpl/queries/common/ledger.go (73.7%)</option>
-				
-				<option value="file109">github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_closed_request.go (0.0%)</option>
-				
-				<option value="file110">github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_current_request.go (0.0%)</option>
-				
-				<option value="file111">github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_data_request.go (80.0%)</option>
-				
-				<option value="file112">github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_entry_request.go (70.6%)</option>
-				
-				<option value="file113">github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_request.go (66.7%)</option>
-				
-				<option value="file114">github.com/Peersyst/xrpl-go/xrpl/queries/path/book_offers_request.go (76.9%)</option>
-				
-				<option value="file115">github.com/Peersyst/xrpl-go/xrpl/queries/path/book_offers_response.go (80.0%)</option>
-				
-				<option value="file116">github.com/Peersyst/xrpl-go/xrpl/queries/path/deposit_authorized_request.go (76.9%)</option>
-				
-				<option value="file117">github.com/Peersyst/xrpl-go/xrpl/queries/path/nftoken_buy_offers_request.go (76.9%)</option>
-				
-				<option value="file118">github.com/Peersyst/xrpl-go/xrpl/queries/path/nftoken_offer.go (83.3%)</option>
-				
-				<option value="file119">github.com/Peersyst/xrpl-go/xrpl/queries/path/nftoken_sell_offers_request.go (76.9%)</option>
-				
-				<option value="file120">github.com/Peersyst/xrpl-go/xrpl/queries/path/path_find_request.go (76.5%)</option>
-				
-				<option value="file121">github.com/Peersyst/xrpl-go/xrpl/queries/path/path_find_response.go (80.8%)</option>
-				
-				<option value="file122">github.com/Peersyst/xrpl-go/xrpl/queries/path/ripple_path_find_request.go (77.3%)</option>
-				
-				<option value="file123">github.com/Peersyst/xrpl-go/xrpl/queries/server/fee_request.go (0.0%)</option>
-				
-				<option value="file124">github.com/Peersyst/xrpl-go/xrpl/queries/server/manifest_request.go (0.0%)</option>
-				
-				<option value="file125">github.com/Peersyst/xrpl-go/xrpl/queries/server/server_info_request.go (0.0%)</option>
-				
-				<option value="file126">github.com/Peersyst/xrpl-go/xrpl/queries/server/server_state_request.go (0.0%)</option>
-				
-				<option value="file127">github.com/Peersyst/xrpl-go/xrpl/queries/subscription/subscribe_request.go (0.0%)</option>
-				
-				<option value="file128">github.com/Peersyst/xrpl-go/xrpl/queries/subscription/unsubscribe_request.go (0.0%)</option>
-				
-				<option value="file129">github.com/Peersyst/xrpl-go/xrpl/queries/transactions/submit_multisigned_request.go (0.0%)</option>
-				
-				<option value="file130">github.com/Peersyst/xrpl-go/xrpl/queries/transactions/submit_request.go (0.0%)</option>
-				
-				<option value="file131">github.com/Peersyst/xrpl-go/xrpl/queries/transactions/transaction_entry_request.go (0.0%)</option>
-				
-				<option value="file132">github.com/Peersyst/xrpl-go/xrpl/queries/transactions/tx_request.go (0.0%)</option>
-				
-				<option value="file133">github.com/Peersyst/xrpl-go/xrpl/queries/utility/ping_request.go (0.0%)</option>
-				
-				<option value="file134">github.com/Peersyst/xrpl-go/xrpl/queries/utility/random_request.go (0.0%)</option>
-				
-				<option value="file135">github.com/Peersyst/xrpl-go/xrpl/rpc/client.go (83.1%)</option>
-				
-				<option value="file136">github.com/Peersyst/xrpl-go/xrpl/rpc/config.go (100.0%)</option>
-				
-				<option value="file137">github.com/Peersyst/xrpl-go/xrpl/rpc/queries.go (0.0%)</option>
-				
-				<option value="file138">github.com/Peersyst/xrpl-go/xrpl/rpc/response.go (85.7%)</option>
-				
-				<option value="file139">github.com/Peersyst/xrpl-go/xrpl/time.go (100.0%)</option>
-				
-				<option value="file140">github.com/Peersyst/xrpl-go/xrpl/transaction/account_delete.go (0.0%)</option>
-				
-				<option value="file141">github.com/Peersyst/xrpl-go/xrpl/transaction/account_set.go (53.0%)</option>
-				
-				<option value="file142">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_bid.go (100.0%)</option>
-				
-				<option value="file143">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_create.go (100.0%)</option>
-				
-				<option value="file144">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_delete.go (100.0%)</option>
-				
-				<option value="file145">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_deposit.go (100.0%)</option>
-				
-				<option value="file146">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_vote.go (100.0%)</option>
-				
-				<option value="file147">github.com/Peersyst/xrpl-go/xrpl/transaction/amm_withdraw.go (100.0%)</option>
-				
-				<option value="file148">github.com/Peersyst/xrpl-go/xrpl/transaction/check_cancel.go (0.0%)</option>
-				
-				<option value="file149">github.com/Peersyst/xrpl-go/xrpl/transaction/check_cash.go (0.0%)</option>
-				
-				<option value="file150">github.com/Peersyst/xrpl-go/xrpl/transaction/check_create.go (0.0%)</option>
-				
-				<option value="file151">github.com/Peersyst/xrpl-go/xrpl/transaction/clawback.go (87.5%)</option>
-				
-				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/deposit_preauth.go (0.0%)</option>
-				
-				<option value="file153">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_cancel.go (100.0%)</option>
-				
-				<option value="file154">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_create.go (100.0%)</option>
-				
-				<option value="file155">github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_finish.go (100.0%)</option>
-				
-				<option value="file156">github.com/Peersyst/xrpl-go/xrpl/transaction/flags.go (100.0%)</option>
-				
-				<option value="file157">github.com/Peersyst/xrpl-go/xrpl/transaction/flat_tx.go (0.0%)</option>
-				
-				<option value="file158">github.com/Peersyst/xrpl-go/xrpl/transaction/memo.go (92.3%)</option>
-				
-				<option value="file159">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go (100.0%)</option>
-				
-				<option value="file160">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_burn.go (100.0%)</option>
-				
-				<option value="file161">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_cancel_offer.go (100.0%)</option>
-				
-				<option value="file162">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go (100.0%)</option>
-				
-				<option value="file163">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_mint.go (100.0%)</option>
-				
-				<option value="file164">github.com/Peersyst/xrpl-go/xrpl/transaction/offer_cancel.go (100.0%)</option>
-				
-				<option value="file165">github.com/Peersyst/xrpl-go/xrpl/transaction/offer_create.go (100.0%)</option>
-				
-				<option value="file166">github.com/Peersyst/xrpl-go/xrpl/transaction/path_step.go (100.0%)</option>
-				
-				<option value="file167">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (79.7%)</option>
-				
-				<option value="file168">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go (12.5%)</option>
-				
-				<option value="file169">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_create.go (0.0%)</option>
-				
-				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_fund.go (0.0%)</option>
-				
-				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/set_regular_key.go (100.0%)</option>
-				
-				<option value="file172">github.com/Peersyst/xrpl-go/xrpl/transaction/signer.go (100.0%)</option>
-				
-				<option value="file173">github.com/Peersyst/xrpl-go/xrpl/transaction/signer_list_set.go (100.0%)</option>
-				
-				<option value="file174">github.com/Peersyst/xrpl-go/xrpl/transaction/ticket_create.go (100.0%)</option>
-				
-				<option value="file175">github.com/Peersyst/xrpl-go/xrpl/transaction/transaction_metadata.go (0.0%)</option>
-				
-				<option value="file176">github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (70.4%)</option>
-				
-				<option value="file177">github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (88.9%)</option>
-				
-				<option value="file178">github.com/Peersyst/xrpl-go/xrpl/transaction/tx_type.go (100.0%)</option>
-				
-				<option value="file179">github.com/Peersyst/xrpl-go/xrpl/transaction/types/address.go (0.0%)</option>
-				
-				<option value="file180">github.com/Peersyst/xrpl-go/xrpl/transaction/types/currency_amount.go (2.5%)</option>
-				
-				<option value="file181">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash128.go (0.0%)</option>
-				
-				<option value="file182">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash256.go (0.0%)</option>
-				
-				<option value="file183">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_id.go (0.0%)</option>
-				
-				<option value="file184">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (0.0%)</option>
-				
-				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
-				
-				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
-				
-				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
-				
-				<option value="file188">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
-				
-				<option value="file189">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
-				
-				<option value="file190">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
-				
-				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
-				
-				</select>
-			</div>
-			<div id="legend">
-				<span>not tracked</span>
-			
-				<span class="cov0">not covered</span>
-				<span class="cov8">covered</span>
-			
-			</div>
-		</div>
-		<div id="content">
-		
-		<pre class="file" id="file0" style="display: none">package addresscodec
+          <option value="file1">
+            github.com/Peersyst/xrpl-go/address-codec/base58.go (98.0%)
+          </option>
+
+          <option value="file2">
+            github.com/Peersyst/xrpl-go/address-codec/base58check.go (94.7%)
+          </option>
+
+          <option value="file3">
+            github.com/Peersyst/xrpl-go/binary-codec/definitions/definitions.go
+            (96.8%)
+          </option>
+
+          <option value="file4">
+            github.com/Peersyst/xrpl-go/binary-codec/definitions/field_instance.go
+            (100.0%)
+          </option>
+
+          <option value="file5">
+            github.com/Peersyst/xrpl-go/binary-codec/definitions/helpers.go
+            (100.0%)
+          </option>
+
+          <option value="file6">
+            github.com/Peersyst/xrpl-go/binary-codec/definitions/init.go
+            (100.0%)
+          </option>
+
+          <option value="file7">
+            github.com/Peersyst/xrpl-go/binary-codec/main.go (81.6%)
+          </option>
+
+          <option value="file8">
+            github.com/Peersyst/xrpl-go/binary-codec/serdes/binary_parser.go
+            (100.0%)
+          </option>
+
+          <option value="file9">
+            github.com/Peersyst/xrpl-go/binary-codec/serdes/binary_serializer.go
+            (100.0%)
+          </option>
+
+          <option value="file10">
+            github.com/Peersyst/xrpl-go/binary-codec/serdes/field_id_codec.go
+            (100.0%)
+          </option>
+
+          <option value="file11">
+            github.com/Peersyst/xrpl-go/binary-codec/types/account_id.go
+            (100.0%)
+          </option>
+
+          <option value="file12">
+            github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (83.4%)
+          </option>
+
+          <option value="file13">
+            github.com/Peersyst/xrpl-go/binary-codec/types/blob.go (100.0%)
+          </option>
+
+          <option value="file14">
+            github.com/Peersyst/xrpl-go/binary-codec/types/errors/json.go
+            (100.0%)
+          </option>
+
+          <option value="file15">
+            github.com/Peersyst/xrpl-go/binary-codec/types/hash.go (100.0%)
+          </option>
+
+          <option value="file16">
+            github.com/Peersyst/xrpl-go/binary-codec/types/hash128.go (100.0%)
+          </option>
+
+          <option value="file17">
+            github.com/Peersyst/xrpl-go/binary-codec/types/hash160.go (100.0%)
+          </option>
+
+          <option value="file18">
+            github.com/Peersyst/xrpl-go/binary-codec/types/hash256.go (100.0%)
+          </option>
+
+          <option value="file19">
+            github.com/Peersyst/xrpl-go/binary-codec/types/issue.go (100.0%)
+          </option>
+
+          <option value="file20">
+            github.com/Peersyst/xrpl-go/binary-codec/types/pathset.go (93.8%)
+          </option>
+
+          <option value="file21">
+            github.com/Peersyst/xrpl-go/binary-codec/types/serialized_type.go
+            (88.9%)
+          </option>
+
+          <option value="file22">
+            github.com/Peersyst/xrpl-go/binary-codec/types/st_array.go (90.3%)
+          </option>
+
+          <option value="file23">
+            github.com/Peersyst/xrpl-go/binary-codec/types/st_object.go (88.3%)
+          </option>
+
+          <option value="file24">
+            github.com/Peersyst/xrpl-go/binary-codec/types/uint16.go (93.8%)
+          </option>
+
+          <option value="file25">
+            github.com/Peersyst/xrpl-go/binary-codec/types/uint32.go (88.9%)
+          </option>
+
+          <option value="file26">
+            github.com/Peersyst/xrpl-go/binary-codec/types/uint64.go (95.2%)
+          </option>
+
+          <option value="file27">
+            github.com/Peersyst/xrpl-go/binary-codec/types/uint8.go (94.4%)
+          </option>
+
+          <option value="file28">
+            github.com/Peersyst/xrpl-go/binary-codec/types/vector256.go (85.7%)
+          </option>
+
+          <option value="file29">
+            github.com/Peersyst/xrpl-go/binary-codec/types/xchain_bridge.go
+            (100.0%)
+          </option>
+
+          <option value="file30">
+            github.com/Peersyst/xrpl-go/keypairs/crypto.go (44.4%)
+          </option>
+
+          <option value="file31">
+            github.com/Peersyst/xrpl-go/keypairs/keypairs.go (75.9%)
+          </option>
+
+          <option value="file32">
+            github.com/Peersyst/xrpl-go/pkg/big-decimal/big_decimal.go (96.6%)
+          </option>
+
+          <option value="file33">
+            github.com/Peersyst/xrpl-go/pkg/crypto/der.go (85.7%)
+          </option>
+
+          <option value="file34">
+            github.com/Peersyst/xrpl-go/pkg/crypto/ed25519.go (78.6%)
+          </option>
+
+          <option value="file35">
+            github.com/Peersyst/xrpl-go/pkg/crypto/secp256k1.go (90.3%)
+          </option>
+
+          <option value="file36">
+            github.com/Peersyst/xrpl-go/pkg/crypto/sha512.go (100.0%)
+          </option>
+
+          <option value="file37">
+            github.com/Peersyst/xrpl-go/pkg/crypto/types.go (0.0%)
+          </option>
+
+          <option value="file38">
+            github.com/Peersyst/xrpl-go/pkg/map_utils/map_utils.go (100.0%)
+          </option>
+
+          <option value="file39">
+            github.com/Peersyst/xrpl-go/pkg/random/main.go (80.0%)
+          </option>
+
+          <option value="file40">
+            github.com/Peersyst/xrpl-go/pkg/typecheck/typecheck.go (90.9%)
+          </option>
+
+          <option value="file41">
+            github.com/Peersyst/xrpl-go/xrpl/currency/native.go (100.0%)
+          </option>
+
+          <option value="file42">
+            github.com/Peersyst/xrpl-go/xrpl/currency/non-standard.go (95.0%)
+          </option>
+
+          <option value="file43">
+            github.com/Peersyst/xrpl-go/xrpl/hash/tx.go (85.7%)
+          </option>
+
+          <option value="file44">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/account_root.go
+            (0.0%)
+          </option>
+
+          <option value="file45">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/amendments.go
+            (0.0%)
+          </option>
+
+          <option value="file46">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/amm.go (100.0%)
+          </option>
+
+          <option value="file47">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/bridge.go
+            (100.0%)
+          </option>
+
+          <option value="file48">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/check.go (0.0%)
+          </option>
+
+          <option value="file49">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/deposit_preauth.go
+            (0.0%)
+          </option>
+
+          <option value="file50">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/did.go (100.0%)
+          </option>
+
+          <option value="file51">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/directory_node.go
+            (0.0%)
+          </option>
+
+          <option value="file52">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/escrow.go (0.0%)
+          </option>
+
+          <option value="file53">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/fee_settings.go
+            (0.0%)
+          </option>
+
+          <option value="file54">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ledger_hashes.go
+            (0.0%)
+          </option>
+
+          <option value="file55">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ledger_object.go
+            (0.0%)
+          </option>
+
+          <option value="file56">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/negative_unl.go
+            (0.0%)
+          </option>
+
+          <option value="file57">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/nftoken_offer.go
+            (72.7%)
+          </option>
+
+          <option value="file58">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/nftoken_page.go
+            (0.0%)
+          </option>
+
+          <option value="file59">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/offer.go (73.3%)
+          </option>
+
+          <option value="file60">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/oracle.go
+            (100.0%)
+          </option>
+
+          <option value="file61">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/pay_channel.go
+            (0.0%)
+          </option>
+
+          <option value="file62">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ripple_state.go
+            (0.0%)
+          </option>
+
+          <option value="file63">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/signer_list.go
+            (0.0%)
+          </option>
+
+          <option value="file64">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/ticket.go (0.0%)
+          </option>
+
+          <option value="file65">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/xchain_owned_claim_id.go
+            (100.0%)
+          </option>
+
+          <option value="file66">
+            github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types/xchain_owned_create_account_claim_id.go
+            (100.0%)
+          </option>
+
+          <option value="file67">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_channels_request.go
+            (71.4%)
+          </option>
+
+          <option value="file68">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_currencies_request.go
+            (72.7%)
+          </option>
+
+          <option value="file69">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_info_request.go
+            (66.7%)
+          </option>
+
+          <option value="file70">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_lines_request.go
+            (66.7%)
+          </option>
+
+          <option value="file71">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_nfts_request.go
+            (72.7%)
+          </option>
+
+          <option value="file72">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_objects_request.go
+            (66.7%)
+          </option>
+
+          <option value="file73">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_offers_request.go
+            (72.7%)
+          </option>
+
+          <option value="file74">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/account_transactions_request.go
+            (0.0%)
+          </option>
+
+          <option value="file75">
+            github.com/Peersyst/xrpl-go/xrpl/queries/account/offer_result.go
+            (81.2%)
+          </option>
+
+          <option value="file76">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/can_delete_request.go
+            (75.0%)
+          </option>
+
+          <option value="file77">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/crawl_shards_request.go
+            (0.0%)
+          </option>
+
+          <option value="file78">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/download_shard_request.go
+            (0.0%)
+          </option>
+
+          <option value="file79">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/ledger_cleaner_request.go
+            (0.0%)
+          </option>
+
+          <option value="file80">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/ledger_request_request.go
+            (0.0%)
+          </option>
+
+          <option value="file81">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/ledger_request_response.go
+            (77.8%)
+          </option>
+
+          <option value="file82">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/log_level_request.go
+            (0.0%)
+          </option>
+
+          <option value="file83">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/logrotate_request.go
+            (0.0%)
+          </option>
+
+          <option value="file84">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/data/node_to_shard_request.go
+            (0.0%)
+          </option>
+
+          <option value="file85">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/key/validation_create_request.go
+            (0.0%)
+          </option>
+
+          <option value="file86">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/key/wallet_propose_request.go
+            (0.0%)
+          </option>
+
+          <option value="file87">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/connect_request.go
+            (0.0%)
+          </option>
+
+          <option value="file88">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peer_reservations_add_request.go
+            (0.0%)
+          </option>
+
+          <option value="file89">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peer_reservations_del_request.go
+            (0.0%)
+          </option>
+
+          <option value="file90">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peer_reservations_list_request.go
+            (0.0%)
+          </option>
+
+          <option value="file91">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/peer/peers_request.go
+            (0.0%)
+          </option>
+
+          <option value="file92">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/server/ledger_accept_request.go
+            (0.0%)
+          </option>
+
+          <option value="file93">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/server/stop_request.go
+            (0.0%)
+          </option>
+
+          <option value="file94">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/signing/sign_for_request.go
+            (0.0%)
+          </option>
+
+          <option value="file95">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/signing/sign_request.go
+            (0.0%)
+          </option>
+
+          <option value="file96">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/consensus_info_request.go
+            (0.0%)
+          </option>
+
+          <option value="file97">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/feature_request.go
+            (0.0%)
+          </option>
+
+          <option value="file98">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/fetch_info_request.go
+            (0.0%)
+          </option>
+
+          <option value="file99">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/get_counts_request.go
+            (0.0%)
+          </option>
+
+          <option value="file100">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/validator_info_request.go
+            (0.0%)
+          </option>
+
+          <option value="file101">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/validator_list_sites_request.go
+            (0.0%)
+          </option>
+
+          <option value="file102">
+            github.com/Peersyst/xrpl-go/xrpl/queries/admin/status/validators_request.go
+            (0.0%)
+          </option>
+
+          <option value="file103">
+            github.com/Peersyst/xrpl-go/xrpl/queries/channel/channel_authorize_request.go
+            (0.0%)
+          </option>
+
+          <option value="file104">
+            github.com/Peersyst/xrpl-go/xrpl/queries/channel/channel_verify_request.go
+            (0.0%)
+          </option>
+
+          <option value="file105">
+            github.com/Peersyst/xrpl-go/xrpl/queries/clio/ledger_request.go
+            (72.7%)
+          </option>
+
+          <option value="file106">
+            github.com/Peersyst/xrpl-go/xrpl/queries/clio/nft_info_request.go
+            (77.8%)
+          </option>
+
+          <option value="file107">
+            github.com/Peersyst/xrpl-go/xrpl/queries/clio/server_info_request.go
+            (0.0%)
+          </option>
+
+          <option value="file108">
+            github.com/Peersyst/xrpl-go/xrpl/queries/common/ledger.go (73.7%)
+          </option>
+
+          <option value="file109">
+            github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_closed_request.go
+            (0.0%)
+          </option>
+
+          <option value="file110">
+            github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_current_request.go
+            (0.0%)
+          </option>
+
+          <option value="file111">
+            github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_data_request.go
+            (80.0%)
+          </option>
+
+          <option value="file112">
+            github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_entry_request.go
+            (70.6%)
+          </option>
+
+          <option value="file113">
+            github.com/Peersyst/xrpl-go/xrpl/queries/ledger/ledger_request.go
+            (66.7%)
+          </option>
+
+          <option value="file114">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/book_offers_request.go
+            (76.9%)
+          </option>
+
+          <option value="file115">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/book_offers_response.go
+            (80.0%)
+          </option>
+
+          <option value="file116">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/deposit_authorized_request.go
+            (76.9%)
+          </option>
+
+          <option value="file117">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/nftoken_buy_offers_request.go
+            (76.9%)
+          </option>
+
+          <option value="file118">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/nftoken_offer.go
+            (83.3%)
+          </option>
+
+          <option value="file119">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/nftoken_sell_offers_request.go
+            (76.9%)
+          </option>
+
+          <option value="file120">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/path_find_request.go
+            (76.5%)
+          </option>
+
+          <option value="file121">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/path_find_response.go
+            (80.8%)
+          </option>
+
+          <option value="file122">
+            github.com/Peersyst/xrpl-go/xrpl/queries/path/ripple_path_find_request.go
+            (77.3%)
+          </option>
+
+          <option value="file123">
+            github.com/Peersyst/xrpl-go/xrpl/queries/server/fee_request.go
+            (0.0%)
+          </option>
+
+          <option value="file124">
+            github.com/Peersyst/xrpl-go/xrpl/queries/server/manifest_request.go
+            (0.0%)
+          </option>
+
+          <option value="file125">
+            github.com/Peersyst/xrpl-go/xrpl/queries/server/server_info_request.go
+            (0.0%)
+          </option>
+
+          <option value="file126">
+            github.com/Peersyst/xrpl-go/xrpl/queries/server/server_state_request.go
+            (0.0%)
+          </option>
+
+          <option value="file127">
+            github.com/Peersyst/xrpl-go/xrpl/queries/subscription/subscribe_request.go
+            (0.0%)
+          </option>
+
+          <option value="file128">
+            github.com/Peersyst/xrpl-go/xrpl/queries/subscription/unsubscribe_request.go
+            (0.0%)
+          </option>
+
+          <option value="file129">
+            github.com/Peersyst/xrpl-go/xrpl/queries/transactions/submit_multisigned_request.go
+            (0.0%)
+          </option>
+
+          <option value="file130">
+            github.com/Peersyst/xrpl-go/xrpl/queries/transactions/submit_request.go
+            (0.0%)
+          </option>
+
+          <option value="file131">
+            github.com/Peersyst/xrpl-go/xrpl/queries/transactions/transaction_entry_request.go
+            (0.0%)
+          </option>
+
+          <option value="file132">
+            github.com/Peersyst/xrpl-go/xrpl/queries/transactions/tx_request.go
+            (0.0%)
+          </option>
+
+          <option value="file133">
+            github.com/Peersyst/xrpl-go/xrpl/queries/utility/ping_request.go
+            (0.0%)
+          </option>
+
+          <option value="file134">
+            github.com/Peersyst/xrpl-go/xrpl/queries/utility/random_request.go
+            (0.0%)
+          </option>
+
+          <option value="file135">
+            github.com/Peersyst/xrpl-go/xrpl/rpc/client.go (83.1%)
+          </option>
+
+          <option value="file136">
+            github.com/Peersyst/xrpl-go/xrpl/rpc/config.go (100.0%)
+          </option>
+
+          <option value="file137">
+            github.com/Peersyst/xrpl-go/xrpl/rpc/queries.go (0.0%)
+          </option>
+
+          <option value="file138">
+            github.com/Peersyst/xrpl-go/xrpl/rpc/response.go (85.7%)
+          </option>
+
+          <option value="file139">
+            github.com/Peersyst/xrpl-go/xrpl/time.go (100.0%)
+          </option>
+
+          <option value="file140">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/account_delete.go
+            (0.0%)
+          </option>
+
+          <option value="file141">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/account_set.go (53.0%)
+          </option>
+
+          <option value="file142">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/amm_bid.go (100.0%)
+          </option>
+
+          <option value="file143">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/amm_create.go (100.0%)
+          </option>
+
+          <option value="file144">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/amm_delete.go (100.0%)
+          </option>
+
+          <option value="file145">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/amm_deposit.go (100.0%)
+          </option>
+
+          <option value="file146">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/amm_vote.go (100.0%)
+          </option>
+
+          <option value="file147">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/amm_withdraw.go
+            (100.0%)
+          </option>
+
+          <option value="file148">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/check_cancel.go (0.0%)
+          </option>
+
+          <option value="file149">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/check_cash.go (0.0%)
+          </option>
+
+          <option value="file150">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/check_create.go (0.0%)
+          </option>
+
+          <option value="file151">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/clawback.go (87.5%)
+          </option>
+
+          <option value="file152">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/deposit_preauth.go
+            (0.0%)
+          </option>
+
+          <option value="file153">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_cancel.go
+            (100.0%)
+          </option>
+
+          <option value="file154">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_create.go
+            (100.0%)
+          </option>
+
+          <option value="file155">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/escrow_finish.go
+            (100.0%)
+          </option>
+
+          <option value="file156">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/flags.go (100.0%)
+          </option>
+
+          <option value="file157">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/flat_tx.go (0.0%)
+          </option>
+
+          <option value="file158">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/memo.go (92.3%)
+          </option>
+
+          <option value="file159">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go
+            (100.0%)
+          </option>
+
+          <option value="file160">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_burn.go
+            (100.0%)
+          </option>
+
+          <option value="file161">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_cancel_offer.go
+            (100.0%)
+          </option>
+
+          <option value="file162">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go
+            (100.0%)
+          </option>
+
+          <option value="file163">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_mint.go
+            (100.0%)
+          </option>
+
+          <option value="file164">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/offer_cancel.go
+            (100.0%)
+          </option>
+
+          <option value="file165">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/offer_create.go
+            (100.0%)
+          </option>
+
+          <option value="file166">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/path_step.go (100.0%)
+          </option>
+
+          <option value="file167">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (79.7%)
+          </option>
+
+          <option value="file168">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go
+            (12.5%)
+          </option>
+
+          <option value="file169">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_create.go
+            (0.0%)
+          </option>
+
+          <option value="file170">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_fund.go
+            (0.0%)
+          </option>
+
+          <option value="file171">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/set_regular_key.go
+            (100.0%)
+          </option>
+
+          <option value="file172">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/signer.go (100.0%)
+          </option>
+
+          <option value="file173">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/signer_list_set.go
+            (100.0%)
+          </option>
+
+          <option value="file174">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/ticket_create.go
+            (100.0%)
+          </option>
+
+          <option value="file175">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/transaction_metadata.go
+            (0.0%)
+          </option>
+
+          <option value="file176">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/trust_set.go (70.4%)
+          </option>
+
+          <option value="file177">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/tx.go (88.9%)
+          </option>
+
+          <option value="file178">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/tx_type.go (100.0%)
+          </option>
+
+          <option value="file179">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/types/address.go (0.0%)
+          </option>
+
+          <option value="file180">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/types/currency_amount.go
+            (2.5%)
+          </option>
+
+          <option value="file181">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash128.go (0.0%)
+          </option>
+
+          <option value="file182">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash256.go (0.0%)
+          </option>
+
+          <option value="file183">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_id.go
+            (0.0%)
+          </option>
+
+          <option value="file184">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go
+            (0.0%)
+          </option>
+
+          <option value="file185">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go
+            (81.0%)
+          </option>
+
+          <option value="file186">
+            github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go
+            (100.0%)
+          </option>
+
+          <option value="file187">
+            github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)
+          </option>
+
+          <option value="file188">
+            github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)
+          </option>
+
+          <option value="file189">
+            github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)
+          </option>
+
+          <option value="file190">
+            github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)
+          </option>
+
+          <option value="file191">
+            github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)
+          </option>
+        </select>
+      </div>
+      <div id="legend">
+        <span>not tracked</span>
+
+        <span class="cov0">not covered</span>
+        <span class="cov8">covered</span>
+      </div>
+    </div>
+    <div id="content">
+      <pre class="file" id="file0" style="display: none">package addresscodec
 
 import (
         "bytes"
@@ -614,6 +1139,8 @@ func Sha256RipeMD160(b []byte) []byte <span class="cov8" title="1">{
         sha256 := sha256.New()
         sha256.Write(b)
 
+        // TODO: Check if this is still needed
+        //nolint:gosec // G406: Use of deprecated weak cryptographic primitive (gosec)
         ripemd160 := ripemd160.New()
         ripemd160.Write(sha256.Sum(nil))
 
@@ -666,8 +1193,8 @@ func DecodeAccountPublicKey(key string) ([]byte, error) <span class="cov8" title
         <span class="cov8" title="1">return decodedAccountKey, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file1" style="display: none">package addresscodec
+
+      <pre class="file" id="file1" style="display: none">package addresscodec
 
 import (
         "math/big"
@@ -804,8 +1331,8 @@ func DecodeBase58(b string) []byte <span class="cov8" title="1">{
         return val</span>
 }
 </pre>
-		
-		<pre class="file" id="file2" style="display: none">package addresscodec
+
+      <pre class="file" id="file2" style="display: none">package addresscodec
 
 import (
         "crypto/sha256"
@@ -857,8 +1384,8 @@ func Base58CheckDecode(input string) (result []byte, err error) <span class="cov
         return</span>
 }
 </pre>
-		
-		<pre class="file" id="file3" style="display: none">package definitions
+
+      <pre class="file" id="file3" style="display: none">package definitions
 
 import (
         _ "embed"
@@ -868,12 +1395,20 @@ import (
         "github.com/ugorji/go/codec"
 )
 
-var definitions *Definitions
+var (
+        // definitions is the singleton instance of the Definitions struct.
+        definitions *Definitions
+
+        // Errors
+
+        // ErrUnableToCastFieldInfo is returned when the field info cannot be cast.
+        ErrUnableToCastFieldInfo = errors.New("unable to cast to field info")
+)
 
 //go:embed definitions.json
 var docBytes []byte
 
-func Get() *Definitions <span class="cov0" title="0">{
+func Get() *Definitions <span class="cov8" title="1">{
         return definitions
 }</span>
 
@@ -920,22 +1455,11 @@ type definitionsDoc struct {
         TransactionTypes   map[string]int32 `json:"TRANSACTION_TYPES"`
 }
 
-type fieldInstanceMap map[string]*FieldInstance
-
-func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {<span class="cov0" title="0">}</span>
-
-func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) <span class="cov8" title="1">{
-        var x [][]interface{}
-        d.MustDecode(&amp;x)
-        y := convertToFieldInstanceMap(x)
-        *fi = y
-}</span>
-
 // Loads JSON from the definitions file and converts it to a preferred format.
 // The definitions file contains information required for the XRP Ledger's
 // canonical binary serialization format:
 // `Serialization &lt;https://xrpl.org/serialization.html&gt;`_
-func loadDefinitions() error <span class="cov8" title="1">{
+func loadDefinitions() <span class="cov8" title="1">{
 
         var jh codec.JsonHandle
 
@@ -944,11 +1468,9 @@ func loadDefinitions() error <span class="cov8" title="1">{
 
         dec := codec.NewDecoderBytes(docBytes, &amp;jh)
         var data definitionsDoc
-        err := dec.Decode(&amp;data)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">definitions = &amp;Definitions{
+        dec.MustDecode(&amp;data)
+
+        definitions = &amp;Definitions{
                 Types:              data.Types,
                 Fields:             data.Fields,
                 LedgerEntryTypes:   data.LedgerEntryTypes,
@@ -958,9 +1480,7 @@ func loadDefinitions() error <span class="cov8" title="1">{
 
         addFieldHeadersAndOrdinals()
         createFieldIDNameMap()
-
-        return nil</span>
-}
+}</span>
 
 func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance <span class="cov8" title="1">{
         nm := make(map[string]*FieldInstance, len(m))
@@ -980,6 +1500,8 @@ func convertToFieldInstanceMap(m [][]interface{}) map[string]*FieldInstance <spa
 func castFieldInfo(v interface{}) (FieldInfo, error) <span class="cov8" title="1">{
         if fi, ok := v.(map[string]interface{}); ok </span><span class="cov8" title="1">{
                 return FieldInfo{
+                        // TODO: Check if this is still needed
+                        //nolint:gosec // G115: Potential hardcoded credentials (gosec)
                         Nth:            int32(fi["nth"].(int64)),
                         IsVLEncoded:    fi["isVLEncoded"].(bool),
                         IsSerialized:   fi["isSerialized"].(bool),
@@ -987,7 +1509,7 @@ func castFieldInfo(v interface{}) (FieldInfo, error) <span class="cov8" title="1
                         Type:           fi["type"].(string),
                 }, nil
         }</span>
-        <span class="cov0" title="0">return FieldInfo{}, errors.New("unable to cast to field info")</span>
+        <span class="cov0" title="0">return FieldInfo{}, ErrUnableToCastFieldInfo</span>
 }
 
 func addFieldHeadersAndOrdinals() <span class="cov8" title="1">{
@@ -1013,8 +1535,10 @@ func createFieldIDNameMap() <span class="cov8" title="1">{
         }</span>
 }
 </pre>
-		
-		<pre class="file" id="file4" style="display: none">package definitions
+
+      <pre class="file" id="file4" style="display: none">package definitions
+
+import "github.com/ugorji/go/codec"
 
 type FieldInstance struct {
         FieldName string
@@ -1036,15 +1560,28 @@ type FieldHeader struct {
         FieldCode int32
 }
 
-func CreateFieldHeader(tc, fc int32) FieldHeader <span class="cov0" title="0">{
+func (d *Definitions) CreateFieldHeader(tc, fc int32) FieldHeader <span class="cov8" title="1">{
         return FieldHeader{
                 TypeCode:  tc,
                 FieldCode: fc,
         }
 }</span>
+
+type fieldInstanceMap map[string]*FieldInstance
+
+// CodecEncodeSelf implements the codec.SelfEncoder interface.
+func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {<span class="cov0" title="0">}</span>
+
+// CodecDecodeSelf implements the codec.SelfDecoder interface.
+func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) <span class="cov8" title="1">{
+        var x [][]interface{}
+        d.MustDecode(&amp;x)
+        y := convertToFieldInstanceMap(x)
+        *fi = y
+}</span>
 </pre>
-		
-		<pre class="file" id="file5" style="display: none">package definitions
+
+      <pre class="file" id="file5" style="display: none">package definitions
 
 // Returns the serialization data type for the given field name.
 func (d *Definitions) GetTypeNameByFieldName(n string) (string, error) <span class="cov8" title="1">{
@@ -1244,18 +1781,15 @@ func (d *Definitions) GetLedgerEntryTypeNameByLedgerEntryTypeCode(c int32) (stri
         }</span>
 }
 </pre>
-		
-		<pre class="file" id="file6" style="display: none">package definitions
+
+      <pre class="file" id="file6" style="display: none">package definitions
 
 func init() <span class="cov8" title="1">{
-        err := loadDefinitions()
-        if err != nil </span><span class="cov0" title="0">{
-                return
-        }</span>
-}
+        loadDefinitions()
+}</span>
 </pre>
-		
-		<pre class="file" id="file7" style="display: none">package binarycodec
+
+      <pre class="file" id="file7" style="display: none">package binarycodec
 
 import (
         "bytes"
@@ -1281,7 +1815,7 @@ const (
 // The binary format is defined in XRPL's core codebase.
 func Encode(json map[string]any) (string, error) <span class="cov8" title="1">{
 
-        st := &amp;types.STObject{}
+        st := types.NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
 
         // Iterate over the keys in the provided JSON
         for k := range json </span><span class="cov8" title="1">{
@@ -1390,8 +1924,8 @@ func Decode(hexEncoded string) (map[string]any, error) <span class="cov8" title=
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">p := serdes.NewBinaryParser(b)
-        st := &amp;types.STObject{}
+        <span class="cov8" title="1">p := serdes.NewBinaryParser(b, definitions.Get())
+        st := types.NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
         m, err := st.ToJSON(p)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -1400,76 +1934,90 @@ func Decode(hexEncoded string) (map[string]any, error) <span class="cov8" title=
         <span class="cov8" title="1">return m.(map[string]any), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file8" style="display: none">package serdes
+
+      <pre class="file" id="file8" style="display: none">package serdes
 
 import (
         "errors"
 
         "github.com/Peersyst/xrpl-go/binary-codec/definitions"
+        "github.com/Peersyst/xrpl-go/binary-codec/serdes/interfaces"
 )
 
 var (
         ErrParserOutOfBound = errors.New("parser out of bounds")
+        ErrInvalidTypecode  = errors.New("invalid typecode")
+        ErrInvalidFieldcode = errors.New("invalid fieldcode")
 )
 
 type BinaryParser struct {
-        data []byte
+        data        []byte
+        definitions interfaces.Definitions
 }
 
 // NewBinaryParser returns a new BinaryParser initialized with the given data.
-func NewBinaryParser(d []byte) *BinaryParser <span class="cov8" title="1">{
+func NewBinaryParser(d []byte, definitions interfaces.Definitions) *BinaryParser <span class="cov8" title="1">{
         return &amp;BinaryParser{
-                data: d,
+                data:        d,
+                definitions: definitions,
         }
 }</span>
 
 // ReadField reads the next field in the data.
 // It reads the field's header, fetches the field's name based on its header,
 // and then gets the FieldInstance for that field name.
-func (p *BinaryParser) ReadField() (*definitions.FieldInstance, error) <span class="cov0" title="0">{
+func (p *BinaryParser) ReadField() (*definitions.FieldInstance, error) <span class="cov8" title="1">{
         fh, err := p.readFieldHeader()
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">fn, err := definitions.Get().GetFieldNameByFieldHeader(*fh)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">fn, err := p.definitions.GetFieldNameByFieldHeader(*fh)
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">f, err := definitions.Get().GetFieldInstanceByFieldName(fn)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">f, err := p.definitions.GetFieldInstanceByFieldName(fn)
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">return f, nil</span>
+        <span class="cov8" title="1">return f, nil</span>
 }
 
 // readFieldHeader reads the header of the next field in the data.
-func (p *BinaryParser) readFieldHeader() (*definitions.FieldHeader, error) <span class="cov0" title="0">{
+func (p *BinaryParser) readFieldHeader() (*definitions.FieldHeader, error) <span class="cov8" title="1">{
         // Read the first byte of the field header
-        typeCode, _ := p.ReadByte()
+        typeCode, err := p.ReadByte()
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
 
         // The field code is the last 4 bits of the first byte
-        fieldCode := typeCode &amp; 15
+        <span class="cov8" title="1">fieldCode := typeCode &amp; 15
         typeCode &gt;&gt;= 4
 
         // Read the type code if it's not in the first byte
-        if typeCode == 0 </span><span class="cov0" title="0">{
-                typeCode, _ = p.ReadByte()
-                if typeCode == 0 || typeCode &lt; 16 </span><span class="cov0" title="0">{
-                        return nil, errors.New("invalid typecode")
+        if typeCode == 0 </span><span class="cov8" title="1">{
+                typeCode, err = p.ReadByte()
+                if err != nil </span><span class="cov8" title="1">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">if typeCode == 0 || typeCode &lt; 16 </span><span class="cov8" title="1">{
+                        return nil, ErrInvalidTypecode
                 }</span>
         }
 
         // Read the field code if it's not in the first byte
-        <span class="cov0" title="0">if fieldCode == 0 </span><span class="cov0" title="0">{
-                fieldCode, _ = p.ReadByte()
-                if fieldCode == 0 || fieldCode &lt; 16 </span><span class="cov0" title="0">{
-                        return nil, errors.New("invalid fieldcode")
+        <span class="cov8" title="1">if fieldCode == 0 </span><span class="cov8" title="1">{
+                fieldCode, err = p.ReadByte()
+                if err != nil </span><span class="cov8" title="1">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">if fieldCode == 0 || fieldCode &lt; 16 </span><span class="cov8" title="1">{
+                        return nil, ErrInvalidFieldcode
                 }</span>
         }
 
         // Return the field header
-        <span class="cov0" title="0">return &amp;definitions.FieldHeader{
+        <span class="cov8" title="1">return &amp;definitions.FieldHeader{
                 TypeCode:  int32(typeCode),
                 FieldCode: int32(fieldCode),
         }, nil</span>
@@ -1478,7 +2026,7 @@ func (p *BinaryParser) readFieldHeader() (*definitions.FieldHeader, error) <span
 // ReadByte reads the next byte in the data.
 // It returns an error if no more data is available.
 func (p *BinaryParser) ReadByte() (byte, error) <span class="cov8" title="1">{
-        if len(p.data) &lt; 1 </span><span class="cov0" title="0">{
+        if len(p.data) &lt; 1 </span><span class="cov8" title="1">{
                 return 0, ErrParserOutOfBound
         }</span>
         <span class="cov8" title="1">b := p.data[0]
@@ -1488,29 +2036,29 @@ func (p *BinaryParser) ReadByte() (byte, error) <span class="cov8" title="1">{
 
 // Peek returns the next byte in the data without advancing the read cursor.
 // It returns an error if no more data is available.
-func (p *BinaryParser) Peek() (byte, error) <span class="cov0" title="0">{
-        if len(p.data) &lt; 1 </span><span class="cov0" title="0">{
+func (p *BinaryParser) Peek() (byte, error) <span class="cov8" title="1">{
+        if len(p.data) &lt; 1 </span><span class="cov8" title="1">{
                 return 0, ErrParserOutOfBound
         }</span>
-        <span class="cov0" title="0">return p.data[0], nil</span>
+        <span class="cov8" title="1">return p.data[0], nil</span>
 }
 
 // ReadBytes reads the next n bytes in the data.
 // It returns an error if fewer than n bytes are available.
-func (p *BinaryParser) ReadBytes(n int) ([]byte, error) <span class="cov0" title="0">{
+func (p *BinaryParser) ReadBytes(n int) ([]byte, error) <span class="cov8" title="1">{
         var bytes []byte
-        for i := 0; i &lt; n; i++ </span><span class="cov0" title="0">{
+        for i := 0; i &lt; n; i++ </span><span class="cov8" title="1">{
                 b, err := p.ReadByte()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">bytes = append(bytes, b)</span>
+                <span class="cov8" title="1">bytes = append(bytes, b)</span>
         }
-        <span class="cov0" title="0">return bytes, nil</span>
+        <span class="cov8" title="1">return bytes, nil</span>
 }
 
 // HasMore returns true if there is more data to read, and false otherwise.
-func (p *BinaryParser) HasMore() bool <span class="cov0" title="0">{
+func (p *BinaryParser) HasMore() bool <span class="cov8" title="1">{
         return len(p.data) != 0
 }</span>
 
@@ -1519,83 +2067,83 @@ func (p *BinaryParser) HasMore() bool <span class="cov0" title="0">{
 // 1 to 3 bytes length prefix according to XRPL documentation.
 func (p *BinaryParser) ReadVariableLength() (int, error) <span class="cov8" title="1">{
         b1, err := p.ReadByte()
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return 0, err
-        }</span>
-        <span class="cov8" title="1">if b1 &lt; 193 </span><span class="cov8" title="1">{
-                return int(b1), nil
         }</span>
         <span class="cov8" title="1">if b1 &gt; 192 &amp;&amp; b1 &lt; 241 </span><span class="cov8" title="1">{
                 b2, err := p.ReadByte()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return 0, err
                 }</span>
                 <span class="cov8" title="1">return 193 + ((int(b1) - 193) * 256) + int(b2), nil</span>
-        }
-        <span class="cov8" title="1">if b1 &gt; 240 &amp;&amp; b1 &lt; 255 </span><span class="cov8" title="1">{
+        } else<span class="cov8" title="1"> if b1 &gt; 240 &amp;&amp; b1 &lt; 255 </span><span class="cov8" title="1">{
                 b2, err := p.ReadByte()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return 0, err
                 }</span>
                 <span class="cov8" title="1">b3, err := p.ReadByte()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return 0, err
                 }</span>
                 <span class="cov8" title="1">return 12481 + ((int(b1) - 241) * 65536) + (int(b2) * 256) + int(b3), nil</span>
         }
-        <span class="cov0" title="0">return 0, nil</span>
+        <span class="cov8" title="1">return int(b1), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file9" style="display: none">package serdes
+
+      <pre class="file" id="file9" style="display: none">package serdes
 
 import (
         "errors"
 
         "github.com/Peersyst/xrpl-go/binary-codec/definitions"
+        "github.com/Peersyst/xrpl-go/binary-codec/serdes/interfaces"
 )
 
 var ErrLengthPrefixTooLong = errors.New("length of value must not exceed 918744 bytes of data")
 
 type BinarySerializer struct {
-        sink []byte
+        sink         []byte
+        fieldIDCodec interfaces.FieldIDCodec
 }
 
-func NewSerializer() *BinarySerializer <span class="cov0" title="0">{
-        return &amp;BinarySerializer{}
+func NewBinarySerializer(fieldIDCodec interfaces.FieldIDCodec) *BinarySerializer <span class="cov8" title="1">{
+        return &amp;BinarySerializer{
+                fieldIDCodec: fieldIDCodec,
+        }
 }</span>
 
-func (s *BinarySerializer) put(v []byte) <span class="cov0" title="0">{
+func (s *BinarySerializer) put(v []byte) <span class="cov8" title="1">{
         s.sink = append(s.sink, v...)
 }</span>
 
-func (s *BinarySerializer) GetSink() []byte <span class="cov0" title="0">{
+func (s *BinarySerializer) GetSink() []byte <span class="cov8" title="1">{
         return s.sink
 }</span>
 
-func (s *BinarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, value []byte) error <span class="cov0" title="0">{
-        h, err := encodeFieldID(fi.FieldName)
+func (s *BinarySerializer) WriteFieldAndValue(fi definitions.FieldInstance, value []byte) error <span class="cov8" title="1">{
+        h, err := s.fieldIDCodec.Encode(fi.FieldName)
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return err
         }</span>
 
-        <span class="cov0" title="0">s.put(h)
+        <span class="cov8" title="1">s.put(h)
 
-        if fi.IsVLEncoded </span><span class="cov0" title="0">{
+        if fi.IsVLEncoded </span><span class="cov8" title="1">{
                 vl, err := encodeVariableLength(len(value))
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return err
                 }</span>
-                <span class="cov0" title="0">s.put(vl)</span>
+                <span class="cov8" title="1">s.put(vl)</span>
         }
 
-        <span class="cov0" title="0">s.put(value)
+        <span class="cov8" title="1">s.put(value)
 
-        if fi.Type == "STObject" </span><span class="cov0" title="0">{
+        if fi.Type == "STObject" </span><span class="cov8" title="1">{
                 s.put([]byte{0xE1})
         }</span>
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 func encodeVariableLength(length int) ([]byte, error) <span class="cov8" title="1">{
@@ -1618,65 +2166,78 @@ func encodeVariableLength(length int) ([]byte, error) <span class="cov8" title="
         <span class="cov8" title="1">return nil, ErrLengthPrefixTooLong</span>
 }
 </pre>
-		
-		<pre class="file" id="file10" style="display: none">package serdes
+
+      <pre class="file" id="file10" style="display: none">package serdes
 
 import (
         "encoding/hex"
+        "errors"
+        "fmt"
 
-        "github.com/Peersyst/xrpl-go/binary-codec/definitions"
+        "github.com/Peersyst/xrpl-go/binary-codec/serdes/interfaces"
 )
+
+var (
+        ErrInvalidFieldIDLength = errors.New("invalid field ID length")
+)
+
+type FieldIDCodec struct {
+        definitions interfaces.Definitions
+}
+
+func NewFieldIDCodec(definitions interfaces.Definitions) *FieldIDCodec <span class="cov8" title="1">{
+        return &amp;FieldIDCodec{definitions: definitions}
+}</span>
 
 // Returns the unique field ID for a given field name.
 // This field ID consists of the type code and field code, in 1 to 3 bytes
 // depending on whether those values are "common" (&lt;16) or "uncommon" (&gt;16).
-func encodeFieldID(fieldName string) ([]byte, error) <span class="cov0" title="0">{
-        fh, err := definitions.Get().GetFieldHeaderByFieldName(fieldName)
-        if err != nil </span><span class="cov0" title="0">{
+func (f *FieldIDCodec) Encode(fieldName string) ([]byte, error) <span class="cov8" title="1">{
+        fh, err := f.definitions.GetFieldHeaderByFieldName(fieldName)
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">var b []byte
-        if fh.TypeCode &lt; 16 &amp;&amp; fh.FieldCode &lt; 16 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">var b []byte
+        if fh.TypeCode &lt; 16 &amp;&amp; fh.FieldCode &lt; 16 </span><span class="cov8" title="1">{
                 return append(b, (byte(fh.TypeCode&lt;&lt;4))|byte(fh.FieldCode)), nil
         }</span>
-        <span class="cov0" title="0">if fh.TypeCode &gt;= 16 &amp;&amp; fh.FieldCode &lt; 16 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if fh.TypeCode &gt;= 16 &amp;&amp; fh.FieldCode &lt; 16 </span><span class="cov8" title="1">{
                 return append(b, (byte(fh.FieldCode)), byte(fh.TypeCode)), nil
         }</span>
-        <span class="cov0" title="0">if fh.TypeCode &lt; 16 &amp;&amp; fh.FieldCode &gt;= 16 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if fh.TypeCode &lt; 16 &amp;&amp; fh.FieldCode &gt;= 16 </span><span class="cov8" title="1">{
                 return append(b, byte(fh.TypeCode&lt;&lt;4), byte(fh.FieldCode)), nil
         }</span>
-        <span class="cov0" title="0">if fh.TypeCode &gt;= 16 &amp;&amp; fh.FieldCode &gt;= 16 </span><span class="cov0" title="0">{
-                return append(b, 0, byte(fh.TypeCode), byte(fh.FieldCode)), nil
-        }</span>
-        <span class="cov0" title="0">return nil, nil</span>
+        <span class="cov8" title="1">return append(b, 0, byte(fh.TypeCode), byte(fh.FieldCode)), nil</span>
 }
 
 // Returns the field name represented by the given field ID in hex string form.
 // nolint
-func decodeFieldID(h string) (string, error) <span class="cov0" title="0">{
+func (f *FieldIDCodec) Decode(h string) (string, error) <span class="cov8" title="1">{
         b, err := hex.DecodeString(h)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
+                fmt.Println(err)
                 return "", err
         }</span>
-        <span class="cov0" title="0">if len(b) == 1 </span><span class="cov0" title="0">{
-                return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[0]&gt;&gt;4), int32(b[0]&amp;byte(15))))
+        <span class="cov8" title="1">fmt.Println(len(b))
+        if len(b) == 1 </span><span class="cov8" title="1">{
+                return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(b[0]&gt;&gt;4), int32(b[0]&amp;byte(15))))
         }</span>
-        <span class="cov0" title="0">if len(b) == 2 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if len(b) == 2 </span><span class="cov8" title="1">{
                 firstByteHighBits := b[0] &gt;&gt; 4
                 firstByteLowBits := b[0] &amp; byte(15)
-                if firstByteHighBits == 0 </span><span class="cov0" title="0">{
-                        return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(firstByteLowBits)))
+                if firstByteHighBits == 0 </span><span class="cov8" title="1">{
+                        return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(b[1]), int32(firstByteLowBits)))
                 }</span>
-                <span class="cov0" title="0">return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(firstByteHighBits), int32(b[1])))</span>
+                <span class="cov8" title="1">return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(firstByteHighBits), int32(b[1])))</span>
         }
-        <span class="cov0" title="0">if len(b) == 3 </span><span class="cov0" title="0">{
-                return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(b[2])))
+        <span class="cov8" title="1">if len(b) == 3 </span><span class="cov8" title="1">{
+                return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(b[1]), int32(b[2])))
         }</span>
-        <span class="cov0" title="0">return "", nil</span>
+        <span class="cov8" title="1">return "", ErrInvalidFieldIDLength</span>
 }
 </pre>
-		
-		<pre class="file" id="file11" style="display: none">package types
+
+      <pre class="file" id="file11" style="display: none">package types
 
 import (
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
@@ -1721,8 +2282,8 @@ func (a *AccountID) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) 
         <span class="cov8" title="1">return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file12" style="display: none">package types
+
+      <pre class="file" id="file12" style="display: none">package types
 
 import (
         "bytes"
@@ -1874,7 +2435,7 @@ func deserializeValue(data []byte) (string, error) <span class="cov8" title="1">
         exponent := e1 + e2 - 97
         sigFigs := append([]byte{0, (b2 &amp; 0x3F)}, valueBytes[2:]...)
         sigFigsInt := binary.BigEndian.Uint64(sigFigs)
-        d, err := bigdecimal.NewBigDecimal(sign + strconv.Itoa(int(sigFigsInt)) + "e" + strconv.Itoa(exponent))
+        d, err := bigdecimal.NewBigDecimal(sign + strconv.FormatUint(sigFigsInt, 10) + "e" + strconv.Itoa(exponent))
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
@@ -2051,6 +2612,8 @@ func SerializeIssuedCurrencyValue(value string) ([]byte, error) <span class="cov
         if bigDecimal.Sign == 0 </span><span class="cov8" title="1">{
                 serial |= PosSignBitMask // if the sign is positive, set the sign (second) bit to 1
         }</span>
+        // TODO: Check if this is still needed
+        //nolint:gosec // G115: Potential hardcoded credentials (gosec)
         <span class="cov8" title="1">serial |= (uint64(exp+97) &lt;&lt; 54) // if the exponent is positive, set the exponent bits to the exponent + 97
         serial |= uint64(mantissa)       // last 54 bits are mantissa
 
@@ -2170,8 +2733,8 @@ func containsInvalidIOUCodeCharactersHex(currency []byte) bool <span class="cov8
         return len(m) != 1
 }</span>
 </pre>
-		
-		<pre class="file" id="file13" style="display: none">package types
+
+      <pre class="file" id="file13" style="display: none">package types
 
 import (
         "encoding/hex"
@@ -2216,8 +2779,8 @@ func (b *Blob) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <span
         <span class="cov8" title="1">return strings.ToUpper(hex.EncodeToString(val)), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file14" style="display: none">package errors
+
+      <pre class="file" id="file14" style="display: none">package errors
 
 // ErrNotValidJSON is an error that occurs when the json is not valid.
 type ErrNotValidJSON struct{}
@@ -2227,8 +2790,8 @@ func (e *ErrNotValidJSON) Error() string <span class="cov8" title="1">{
         return "not a valid json"
 }</span>
 </pre>
-		
-		<pre class="file" id="file15" style="display: none">package types
+
+      <pre class="file" id="file15" style="display: none">package types
 
 import (
         "encoding/hex"
@@ -2312,8 +2875,8 @@ func (h hash) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span cla
         <span class="cov8" title="1">return strings.ToUpper(hex.EncodeToString(b)), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file16" style="display: none">package types
+
+      <pre class="file" id="file16" style="display: none">package types
 
 // Hash128 struct represents a 128-bit hash.
 type Hash128 struct {
@@ -2327,8 +2890,8 @@ func NewHash128() *Hash128 <span class="cov8" title="1">{
         }
 }</span>
 </pre>
-		
-		<pre class="file" id="file17" style="display: none">package types
+
+      <pre class="file" id="file17" style="display: none">package types
 
 // Hash160 struct represents a 160-bit hash.
 type Hash160 struct {
@@ -2342,8 +2905,8 @@ func NewHash160() *Hash160 <span class="cov8" title="1">{
         }
 }</span>
 </pre>
-		
-		<pre class="file" id="file18" style="display: none">package types
+
+      <pre class="file" id="file18" style="display: none">package types
 
 // Hash256 struct represents a 256-bit hash.
 type Hash256 struct {
@@ -2357,8 +2920,8 @@ func NewHash256() *Hash256 <span class="cov8" title="1">{
         }
 }</span>
 </pre>
-		
-		<pre class="file" id="file19" style="display: none">package types
+
+      <pre class="file" id="file19" style="display: none">package types
 
 import (
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
@@ -2399,8 +2962,8 @@ func (i *Issue) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <spa
         <span class="cov8" title="1">return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file20" style="display: none">package types
+
+      <pre class="file" id="file20" style="display: none">package types
 
 import (
         "errors"
@@ -2630,10 +3193,12 @@ func parsePath(parser interfaces.BinaryParser) ([]any, error) <span class="cov8"
         <span class="cov8" title="1">return path, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file21" style="display: none">package types
+
+      <pre class="file" id="file21" style="display: none">package types
 
 import (
+        "github.com/Peersyst/xrpl-go/binary-codec/definitions"
+        "github.com/Peersyst/xrpl-go/binary-codec/serdes"
         "github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
@@ -2677,7 +3242,7 @@ func GetSerializedType(t string) SerializedType <span class="cov8" title="1">{
         case "Blob":<span class="cov8" title="1">
                 return &amp;Blob{}</span>
         case "STObject":<span class="cov8" title="1">
-                return &amp;STObject{}</span>
+                return NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))</span>
         case "STArray":<span class="cov8" title="1">
                 return &amp;STArray{}</span>
         case "PathSet":<span class="cov8" title="1">
@@ -2690,12 +3255,14 @@ func GetSerializedType(t string) SerializedType <span class="cov8" title="1">{
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file22" style="display: none">package types
+
+      <pre class="file" id="file22" style="display: none">package types
 
 import (
         "errors"
 
+        "github.com/Peersyst/xrpl-go/binary-codec/definitions"
+        "github.com/Peersyst/xrpl-go/binary-codec/serdes"
         "github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
@@ -2721,7 +3288,7 @@ func (t *STArray) FromJSON(json any) ([]byte, error) <span class="cov8" title="1
 
         <span class="cov8" title="1">var sink []byte
         for _, v := range json.([]any) </span><span class="cov8" title="1">{
-                st := &amp;STObject{}
+                st := NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get())))
                 b, err := st.FromJSON(v)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
@@ -2766,29 +3333,34 @@ func (t *STArray) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span
         <span class="cov8" title="1">return value, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file23" style="display: none">package types
+
+      <pre class="file" id="file23" style="display: none">package types
 
 import (
         "fmt"
         "sort"
 
         "github.com/Peersyst/xrpl-go/binary-codec/definitions"
-        "github.com/Peersyst/xrpl-go/binary-codec/serdes"
         "github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
 // STObject represents a map of serialized field instances, where each key is a field name
 // and the associated value is the field's value. This structure allows us to represent nested
 // and complex structures of the Ripple protocol.
-type STObject struct{}
+type STObject struct {
+        binarySerializer interfaces.BinarySerializer
+}
+
+// NewSTObject returns a new STObject with the given binary serializer.
+func NewSTObject(bs interfaces.BinarySerializer) *STObject <span class="cov8" title="1">{
+        return &amp;STObject{binarySerializer: bs}
+}</span>
 
 // FromJSON converts a JSON object into a serialized byte slice.
 // It works by converting the JSON object into a map of field instances (which include the field definition
 // and value), and then serializing each field instance.
 // This method returns an error if the JSON input is not a valid object.
 func (t *STObject) FromJSON(json any) ([]byte, error) <span class="cov8" title="1">{
-        s := serdes.NewSerializer()
         if _, ok := json.(map[string]any); !ok </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("not a valid json node")
         }</span>
@@ -2810,12 +3382,12 @@ func (t *STObject) FromJSON(json any) ([]byte, error) <span class="cov8" title="
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
-                <span class="cov8" title="1">err = s.WriteFieldAndValue(v, b)
+                <span class="cov8" title="1">err = t.binarySerializer.WriteFieldAndValue(v, b)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
         }
-        <span class="cov8" title="1">return s.GetSink(), nil</span>
+        <span class="cov8" title="1">return t.binarySerializer.GetSink(), nil</span>
 }
 
 // ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
@@ -2912,34 +3484,32 @@ func getSortedKeys(m map[definitions.FieldInstance]any) []definitions.FieldInsta
 func enumToStr(fieldType string, value any) (any, error) <span class="cov8" title="1">{
         switch fieldType </span>{
         case "TransactionType":<span class="cov8" title="1">
+                // TODO: Check if this is still needed
+                //nolint:gosec // G115: Potential hardcoded credentials (gosec)
                 return definitions.Get().GetTransactionTypeNameByTransactionTypeCode(int32(value.(int)))</span>
         case "TransactionResult":<span class="cov8" title="1">
+                // TODO: Check if this is still needed
+                //nolint:gosec // G115: Potential hardcoded credentials (gosec)
                 return definitions.Get().GetTransactionResultNameByTransactionResultTypeCode(int32(value.(int)))</span>
         case "LedgerEntryType":<span class="cov8" title="1">
+                // TODO: Check if this is still needed
+                //nolint:gosec // G115: Potential hardcoded credentials (gosec)
                 return definitions.Get().GetLedgerEntryTypeNameByLedgerEntryTypeCode(int32(value.(int)))</span>
         default:<span class="cov8" title="1">
                 return value, nil</span>
         }
 }
 </pre>
-		
-		<pre class="file" id="file24" style="display: none">package types
+
+      <pre class="file" id="file24" style="display: none">package types
 
 import (
         "bytes"
         "encoding/binary"
-        "errors"
 
         "github.com/Peersyst/xrpl-go/binary-codec/definitions"
         "github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
-
-const MinUint16 uint16 = 0
-const MaxUint16 uint16 = ^uint16(0)
-
-func IsUint16(value int) bool <span class="cov8" title="1">{
-        return value &gt;= int(MinUint16) &amp;&amp; value &lt;= int(MaxUint16)
-}</span>
 
 // UInt16 represents a 16-bit unsigned integer.
 type UInt16 struct{}
@@ -2961,12 +3531,8 @@ func (u *UInt16) FromJSON(value any) ([]byte, error) <span class="cov8" title="1
         }
 
         <span class="cov8" title="1">buf := new(bytes.Buffer)
-
-        if !IsUint16(value.(int)) </span><span class="cov8" title="1">{
-                return nil, errors.New("uint16: value out of range")
-        }</span>
-
-        <span class="cov8" title="1">err := binary.Write(buf, binary.BigEndian, uint16(value.(int)))
+        //nolint:gosec // G115: Potential hardcoded credentials (gosec)
+        err := binary.Write(buf, binary.BigEndian, uint16(value.(int)))
 
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -2985,8 +3551,8 @@ func (u *UInt16) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span 
         <span class="cov8" title="1">return int(binary.BigEndian.Uint16(b)), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file25" style="display: none">package types
+
+      <pre class="file" id="file25" style="display: none">package types
 
 import (
         "bytes"
@@ -3002,6 +3568,7 @@ type UInt32 struct{}
 // The input value is assumed to be an integer. If the serialization fails, an error is returned.
 func (u *UInt32) FromJSON(value any) ([]byte, error) <span class="cov8" title="1">{
         buf := new(bytes.Buffer)
+        //nolint:gosec // G115: Potential hardcoded credentials (gosec)
         err := binary.Write(buf, binary.BigEndian, uint32(value.(int)))
 
         if err != nil </span><span class="cov0" title="0">{
@@ -3021,8 +3588,8 @@ func (u *UInt32) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span 
         <span class="cov8" title="1">return int(binary.BigEndian.Uint32(b)), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file26" style="display: none">package types
+
+      <pre class="file" id="file26" style="display: none">package types
 
 import (
         "bytes"
@@ -3084,8 +3651,8 @@ func isNumeric(s string) bool <span class="cov8" title="1">{
         return match
 }</span>
 </pre>
-		
-		<pre class="file" id="file27" style="display: none">package types
+
+      <pre class="file" id="file27" style="display: none">package types
 
 import (
         "bytes"
@@ -3120,7 +3687,8 @@ func (u *UInt8) FromJSON(value any) ([]byte, error) <span class="cov8" title="1"
         }
 
         <span class="cov8" title="1">buf := new(bytes.Buffer)
-        err := binary.Write(buf, binary.BigEndian, uint8(intValue))
+        // TODO: Check if this is still needed
+        err := binary.Write(buf, binary.BigEndian, byte(intValue))
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
@@ -3138,8 +3706,8 @@ func (u *UInt8) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) <span c
         <span class="cov8" title="1">return int(b[0]), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file28" style="display: none">package types
+
+      <pre class="file" id="file28" style="display: none">package types
 
 import (
         "encoding/hex"
@@ -3217,8 +3785,8 @@ func (v *Vector256) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) 
         <span class="cov8" title="1">return value, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file29" style="display: none">package types
+
+      <pre class="file" id="file29" style="display: none">package types
 
 import (
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
@@ -3327,8 +3895,8 @@ func (x *XChainBridge) ToJSON(p interfaces.BinaryParser, opts ...int) (any, erro
         return json, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file30" style="display: none">package keypairs
+
+      <pre class="file" id="file30" style="display: none">package keypairs
 
 import (
         "encoding/hex"
@@ -3367,8 +3935,8 @@ func getCryptoImplementationFromKey(k string) CryptoImplementation <span class="
         <span class="cov0" title="0">return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file31" style="display: none">package keypairs
+
+      <pre class="file" id="file31" style="display: none">package keypairs
 
 import (
         "crypto/rand"
@@ -3445,8 +4013,8 @@ func (e *InvalidSignatureError) Error() string <span class="cov0" title="0">{
         return "derived keypair did not generate verifiable signature"
 }</span>
 </pre>
-		
-		<pre class="file" id="file32" style="display: none">package bigdecimal
+
+      <pre class="file" id="file32" style="display: none">package bigdecimal
 
 import (
         "errors"
@@ -3599,8 +4167,8 @@ func bigDecimalRegEx(value string) bool <span class="cov8" title="1">{
         return len(m) == 1
 }</span>
 </pre>
-		
-		<pre class="file" id="file33" style="display: none">package crypto
+
+      <pre class="file" id="file33" style="display: none">package crypto
 
 import (
         "encoding/hex"
@@ -3714,8 +4282,8 @@ func DERHexToSig(hexSignature string) ([]byte, []byte, error) <span class="cov8"
         <span class="cov8" title="1">return r.Bytes(), s.Bytes(), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file34" style="display: none">package crypto
+
+      <pre class="file" id="file34" style="display: none">package crypto
 
 import (
         "bytes"
@@ -3790,8 +4358,8 @@ func (e *ed25519ValidatorError) Error() string <span class="cov8" title="1">{
         return "validator keypairs can not use Ed25519"
 }</span>
 </pre>
-		
-		<pre class="file" id="file35" style="display: none">package crypto
+
+      <pre class="file" id="file35" style="display: none">package crypto
 
 import (
         "crypto/sha512"
@@ -3839,19 +4407,19 @@ func (c SECP256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *
 
                 if discrim != nil </span><span class="cov8" title="1">{
                         discrimBytes := make([]byte, 4)
-                        bytes[0] = byte(uint32(discrim.Uint64()))
-                        bytes[1] = byte(uint32(discrim.Uint64()) &gt;&gt; 8)
-                        bytes[2] = byte(uint32(discrim.Uint64()) &gt;&gt; 16)
-                        bytes[3] = byte(uint32(discrim.Uint64()) &gt;&gt; 24)
+                        bytes[0] = byte(discrim.Uint64())
+                        bytes[1] = byte(discrim.Uint64() &gt;&gt; 8)
+                        bytes[2] = byte(discrim.Uint64() &gt;&gt; 16)
+                        bytes[3] = byte(discrim.Uint64() &gt;&gt; 24)
 
                         hash.Write(discrimBytes)
                 }</span>
 
                 <span class="cov8" title="1">shiftBytes := make([]byte, 4)
-                bytes[0] = byte(uint32(i))
-                bytes[1] = byte(uint32(i) &gt;&gt; 8)
-                bytes[2] = byte(uint32(i) &gt;&gt; 16)
-                bytes[3] = byte(uint32(i) &gt;&gt; 24)
+                bytes[0] = byte(i)
+                bytes[1] = byte(i &gt;&gt; 8)
+                bytes[2] = byte(i &gt;&gt; 16)
+                bytes[3] = byte(i &gt;&gt; 24)
 
                 hash.Write(shiftBytes)
 
@@ -3955,8 +4523,8 @@ func (c SECP256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool <span c
         <span class="cov8" title="1">return parsedSig.Verify(hash, pubKey)</span>
 }
 </pre>
-		
-		<pre class="file" id="file36" style="display: none">package crypto
+
+      <pre class="file" id="file36" style="display: none">package crypto
 
 import "crypto/sha512"
 
@@ -3966,8 +4534,8 @@ func Sha512Half(msg []byte) []byte <span class="cov8" title="1">{
         return h[:32]
 }</span>
 </pre>
-		
-		<pre class="file" id="file37" style="display: none">package crypto
+
+      <pre class="file" id="file37" style="display: none">package crypto
 
 type Algorithm struct {
         prefix           uint8
@@ -3994,8 +4562,8 @@ func (c Algorithm) Validate(_ string, _ string, _ string) bool <span class="cov0
         return false
 }</span>
 </pre>
-		
-		<pre class="file" id="file38" style="display: none">package maputils
+
+      <pre class="file" id="file38" style="display: none">package maputils
 
 // GetKeys returns the keys of the given map.
 func GetKeys(m map[string]interface{}) []string <span class="cov8" title="1">{
@@ -4006,8 +4574,8 @@ func GetKeys(m map[string]interface{}) []string <span class="cov8" title="1">{
         <span class="cov8" title="1">return keys</span>
 }
 </pre>
-		
-		<pre class="file" id="file39" style="display: none">package random
+
+      <pre class="file" id="file39" style="display: none">package random
 
 import "io"
 
@@ -4024,13 +4592,19 @@ func (r *Randomizer) GenerateBytes(n int) ([]byte, error) <span class="cov8" tit
         <span class="cov8" title="1">return b, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file40" style="display: none">package typecheck
+
+      <pre class="file" id="file40" style="display: none">package typecheck
 
 import (
         "regexp"
         "strconv"
 )
+
+// IsUint8 checks if the given interface is a uint8.
+func IsUint8(num interface{}) bool <span class="cov0" title="0">{
+        _, ok := num.(uint8)
+        return ok
+}</span>
 
 // IsString checks if the given interface is a string.
 func IsString(str interface{}) bool <span class="cov8" title="1">{
@@ -4093,8 +4667,8 @@ func IsStringNumericUint(s string, base, bitSize int) bool <span class="cov8" ti
         return err == nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file41" style="display: none">package currency
+
+      <pre class="file" id="file41" style="display: none">package currency
 
 import (
         "errors"
@@ -4136,8 +4710,8 @@ func DropsToXrp(value string) (string, error) <span class="cov8" title="1">{
         return strconv.FormatFloat(xrpFloat, 'f', -1, 64), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file42" style="display: none">package currency
+
+      <pre class="file" id="file42" style="display: none">package currency
 
 import (
         "encoding/hex"
@@ -4205,8 +4779,8 @@ func padEnd(s string, length int, padChar string) string <span class="cov8" titl
         return s + padding</span>
 }
 </pre>
-		
-		<pre class="file" id="file43" style="display: none">package hash
+
+      <pre class="file" id="file43" style="display: none">package hash
 
 import (
         "encoding/binary"
@@ -4251,8 +4825,8 @@ func TxBlob(txBlob string) (string, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return strings.ToUpper(hex.EncodeToString(crypto.Sha512Half(payload))), nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file44" style="display: none">package ledger
+
+      <pre class="file" id="file44" style="display: none">package ledger
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -4265,16 +4839,16 @@ type AccountRoot struct {
         BurnedNFTokens    uint32                  `json:",omitempty"`
         Domain            string                  `json:",omitempty"`
         EmailHash         types.Hash128           `json:",omitempty"`
-        Flags             uint64
+        Flags             uint32
         LedgerEntryType   EntryType
         MessageKey        string        `json:",omitempty"`
         MintedNFTokens    uint32        `json:",omitempty"`
         NFTokenMinter     types.Address `json:",omitempty"`
-        OwnerCount        uint64
+        OwnerCount        uint32
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint64
+        PreviousTxnLgrSeq uint32
         RegularKey        types.Address `json:",omitempty"`
-        Sequence          uint64
+        Sequence          uint32
         TicketCount       uint32 `json:",omitempty"`
         TickSize          uint8  `json:",omitempty"`
         TransferRate      uint32 `json:",omitempty"`
@@ -4286,8 +4860,8 @@ func (*AccountRoot) EntryType() EntryType <span class="cov0" title="0">{
         return AccountRootEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file45" style="display: none">package ledger
+
+      <pre class="file" id="file45" style="display: none">package ledger
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -4295,7 +4869,7 @@ import (
 
 type Amendments struct {
         Amendments      []types.Hash256 `json:",omitempty"`
-        Flags           uint
+        Flags           uint32
         LedgerEntryType EntryType
         Majorities      []MajorityEntry `json:",omitempty"`
 }
@@ -4310,11 +4884,11 @@ type MajorityEntry struct {
 
 type Majority struct {
         Amendment types.Hash256
-        CloseTime uint
+        CloseTime uint32
 }
 </pre>
-		
-		<pre class="file" id="file46" style="display: none">package ledger
+
+      <pre class="file" id="file46" style="display: none">package ledger
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -4429,7 +5003,7 @@ type AuctionSlot struct {
         // A list of at most 4 additional accounts that are authorized to trade at the discounted fee for this AMM instance.
         AuthAccounts []AuthAccounts `json:",omitempty"`
         // The trading fee to be charged to the auction owner, in the same format as TradingFee. Normally, this is 1/10 of the normal fee for this AMM.
-        DiscountedFee uint32
+        DiscountedFee uint16
         // The amount the auction owner paid to win this slot, in LP Tokens.
         Price types.CurrencyAmount
         // The time when this slot expires, in seconds since the Ripple Epoch. https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-time.
@@ -4476,16 +5050,16 @@ type VoteSlots struct {
 // Represents one liquidity provider's vote to set the trading fee.
 type VoteEntry struct {
         Account    types.Address
-        TradingFee uint
-        VoteWeight uint
+        TradingFee uint16
+        VoteWeight uint32
 }
 
 func (*AMM) EntryType() EntryType <span class="cov8" title="1">{
         return AMMEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file47" style="display: none">package ledger
+
+      <pre class="file" id="file47" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -4550,8 +5124,8 @@ func (*Bridge) EntryType() EntryType <span class="cov8" title="1">{
         return BridgeEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file48" style="display: none">package ledger
+
+      <pre class="file" id="file48" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -4560,25 +5134,25 @@ type Check struct {
         Account           types.Address
         Destination       types.Address
         DestinationNode   string `json:",omitempty"`
-        DestinationTag    uint   `json:",omitempty"`
-        Expiration        uint   `json:",omitempty"`
-        Flags             uint
+        DestinationTag    uint32 `json:",omitempty"`
+        Expiration        uint32 `json:",omitempty"`
+        Flags             uint32
         InvoiceID         types.Hash256 `json:",omitempty"`
         LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
+        PreviousTxnLgrSeq uint32
         SendMax           string
-        Sequence          uint
-        SourceTag         uint `json:",omitempty"`
+        Sequence          uint32
+        SourceTag         uint32 `json:",omitempty"`
 }
 
 func (*Check) EntryType() EntryType <span class="cov0" title="0">{
         return CheckEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file49" style="display: none">package ledger
+
+      <pre class="file" id="file49" style="display: none">package ledger
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -4587,19 +5161,19 @@ import (
 type DepositPreauthObj struct {
         Account           types.Address
         Authorize         types.Address
-        Flags             uint
+        Flags             uint32
         LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
+        PreviousTxnLgrSeq uint32
 }
 
 func (*DepositPreauthObj) EntryType() EntryType <span class="cov0" title="0">{
         return DepositPreauthObjEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file50" style="display: none">package ledger
+
+      <pre class="file" id="file50" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -4650,15 +5224,15 @@ func (*DID) EntryType() EntryType <span class="cov8" title="1">{
         return DIDEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file51" style="display: none">package ledger
+
+      <pre class="file" id="file51" style="display: none">package ledger
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 type DirectoryNode struct {
-        Flags             uint
+        Flags             uint32
         Indexes           []types.Hash256
         IndexNext         string `json:",omitempty"`
         IndexPrevious     string `json:",omitempty"`
@@ -4675,8 +5249,8 @@ func (*DirectoryNode) EntryType() EntryType <span class="cov0" title="0">{
         return DirectoryNodeEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file52" style="display: none">package ledger
+
+      <pre class="file" id="file52" style="display: none">package ledger
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -4685,50 +5259,50 @@ import (
 type Escrow struct {
         Account           types.Address
         Amount            types.XRPCurrencyAmount
-        CancelAfter       uint   `json:",omitempty"`
+        CancelAfter       uint32 `json:",omitempty"`
         Condition         string `json:",omitempty"`
         Destination       types.Address
         DestinationNode   string `json:",omitempty"`
-        DestinationTag    uint   `json:",omitempty"`
-        FinishAfter       uint   `json:",omitempty"`
-        Flags             uint
+        DestinationTag    uint32 `json:",omitempty"`
+        FinishAfter       uint32 `json:",omitempty"`
+        Flags             uint32
         LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
-        SourceTag         uint `json:",omitempty"`
+        PreviousTxnLgrSeq uint32
+        SourceTag         uint32 `json:",omitempty"`
 }
 
 func (*Escrow) EntryType() EntryType <span class="cov0" title="0">{
         return EscrowEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file53" style="display: none">package ledger
+
+      <pre class="file" id="file53" style="display: none">package ledger
 
 type FeeSettings struct {
         BaseFee           string
-        Flags             uint
+        Flags             uint32
         LedgerEntryType   EntryType
-        ReferenceFeeUnits uint
-        ReserveBase       uint
-        ReserveIncrement  uint
+        ReferenceFeeUnits uint32
+        ReserveBase       uint32
+        ReserveIncrement  uint32
 }
 
 func (*FeeSettings) EntryType() EntryType <span class="cov0" title="0">{
         return FeeSettingsEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file54" style="display: none">package ledger
+
+      <pre class="file" id="file54" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
 type Hashes struct {
-        FirstLedgerSequence uint
-        Flags               uint
+        FirstLedgerSequence uint32
+        Flags               uint32
         Hashes              []types.Hash256
-        LastLedgerSequence  uint
+        LastLedgerSequence  uint32
         LedgerEntryType     EntryType
 }
 
@@ -4736,8 +5310,8 @@ func (*Hashes) EntryType() EntryType <span class="cov0" title="0">{
         return LedgerHashesEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file55" style="display: none">package ledger
+
+      <pre class="file" id="file55" style="display: none">package ledger
 
 import (
         "encoding/json"
@@ -4895,12 +5469,12 @@ func UnmarshalLedgerObject(data []byte) (Object, error) <span class="cov0" title
 
 }
 </pre>
-		
-		<pre class="file" id="file56" style="display: none">package ledger
+
+      <pre class="file" id="file56" style="display: none">package ledger
 
 type NegativeUNL struct {
         DisabledValidators  []DisabledValidatorEntry `json:",omitempty"`
-        Flags               uint
+        Flags               uint32
         LedgerEntryType     EntryType
         ValidatorToDisable  string `json:",omitempty"`
         ValidatorToReEnable string `json:",omitempty"`
@@ -4919,8 +5493,8 @@ type DisabledValidator struct {
         PublicKey           string
 }
 </pre>
-		
-		<pre class="file" id="file57" style="display: none">package ledger
+
+      <pre class="file" id="file57" style="display: none">package ledger
 
 import (
         "encoding/json"
@@ -4931,15 +5505,15 @@ import (
 type NFTokenOffer struct {
         Amount            types.CurrencyAmount
         Destination       types.Address `json:",omitempty"`
-        Expiration        uint          `json:",omitempty"`
-        Flags             uint
+        Expiration        uint32        `json:",omitempty"`
+        Flags             uint32
         LedgerEntryType   EntryType
         NFTokenID         types.Hash256
         NFTokenOfferNode  string `json:",omitempty"`
         Owner             types.Address
         OwnerNode         string `json:",omitempty"`
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
+        PreviousTxnLgrSeq uint32
 }
 
 func (*NFTokenOffer) EntryType() EntryType <span class="cov0" title="0">{
@@ -4951,15 +5525,15 @@ func (n *NFTokenOffer) UnmarshalJSON(data []byte) error <span class="cov8" title
         type nftHelper struct {
                 Amount            json.RawMessage
                 Destination       types.Address
-                Expiration        uint
-                Flags             uint
+                Expiration        uint32
+                Flags             uint32
                 LedgerEntryType   EntryType
                 NFTokenID         types.Hash256
                 NFTokenOfferNode  string
                 Owner             types.Address
                 OwnerNode         string
                 PreviousTxnID     types.Hash256
-                PreviousTxnLgrSeq uint
+                PreviousTxnLgrSeq uint32
         }
         var h nftHelper
         if err := json.Unmarshal(data, &amp;h); err != nil </span><span class="cov0" title="0">{
@@ -4985,8 +5559,8 @@ func (n *NFTokenOffer) UnmarshalJSON(data []byte) error <span class="cov8" title
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file58" style="display: none">package ledger
+
+      <pre class="file" id="file58" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -4995,7 +5569,7 @@ type NFTokenPage struct {
         NextPageMin       types.Hash256 `json:",omitempty"`
         PreviousPageMin   types.Hash256 `json:",omitempty"`
         PreviousTxnID     types.Hash256 `json:",omitempty"`
-        PreviousTxnLgrSeq uint          `json:",omitempty"`
+        PreviousTxnLgrSeq uint32        `json:",omitempty"`
         NFTokens          []types.NFToken
 }
 
@@ -5003,8 +5577,8 @@ func (*NFTokenPage) EntryType() EntryType <span class="cov0" title="0">{
         return NFTokenPageEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file59" style="display: none">package ledger
+
+      <pre class="file" id="file59" style="display: none">package ledger
 
 import (
         "encoding/json"
@@ -5012,7 +5586,7 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type OfferFlags uint
+type OfferFlags uint32
 
 const (
         PassiveOffer OfferFlags = 0x00010000
@@ -5023,13 +5597,13 @@ type Offer struct {
         Account           types.Address
         BookDirectory     types.Hash256
         BookNode          string
-        Expiration        uint `json:",omitempty"`
+        Expiration        uint32 `json:",omitempty"`
         Flags             OfferFlags
         LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
-        Sequence          uint
+        PreviousTxnLgrSeq uint32
+        Sequence          uint32
         TakerPays         types.CurrencyAmount
         TakerGets         types.CurrencyAmount
 }
@@ -5043,13 +5617,13 @@ func (o *Offer) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
                 Account           types.Address
                 BookDirectory     types.Hash256
                 BookNode          string
-                Expiration        uint
+                Expiration        uint32
                 Flags             OfferFlags
                 LedgerEntryType   EntryType
                 OwnerNode         string
                 PreviousTxnID     types.Hash256
-                PreviousTxnLgrSeq uint
-                Sequence          uint
+                PreviousTxnLgrSeq uint32
+                Sequence          uint32
                 TakerPays         json.RawMessage
                 TakerGets         json.RawMessage
         }
@@ -5082,8 +5656,8 @@ func (o *Offer) UnmarshalJSON(data []byte) error <span class="cov8" title="1">{
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file60" style="display: none">package ledger
+
+      <pre class="file" id="file60" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -5162,8 +5736,8 @@ func (*Oracle) EntryType() EntryType <span class="cov8" title="1">{
         return OracleEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file61" style="display: none">package ledger
+
+      <pre class="file" id="file61" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -5171,27 +5745,27 @@ type PayChannel struct {
         Account           types.Address
         Amount            types.XRPCurrencyAmount
         Balance           types.XRPCurrencyAmount
-        CancelAfter       uint `json:",omitempty"`
+        CancelAfter       uint32 `json:",omitempty"`
         Destination       types.Address
-        DestinationTag    uint   `json:",omitempty"`
+        DestinationTag    uint32 `json:",omitempty"`
         DestinationNode   string `json:",omitempty"`
-        Expiration        uint   `json:",omitempty"`
-        Flags             uint
+        Expiration        uint32 `json:",omitempty"`
+        Flags             uint32
         LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
+        PreviousTxnLgrSeq uint32
         PublicKey         string
-        SettleDelay       uint
-        SourceTag         uint `json:",omitempty"`
+        SettleDelay       uint32
+        SourceTag         uint32 `json:",omitempty"`
 }
 
 func (*PayChannel) EntryType() EntryType <span class="cov0" title="0">{
         return PayChannelEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file62" style="display: none">package ledger
+
+      <pre class="file" id="file62" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -5199,26 +5773,26 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
 type RippleState struct {
         Balance           types.IssuedCurrencyAmount
-        Flags             uint
+        Flags             uint32
         HighLimit         types.IssuedCurrencyAmount
         HighNode          string
-        HighQualityIn     uint `json:",omitempty"`
-        HighQualityOut    uint `json:",omitempty"`
+        HighQualityIn     uint32 `json:",omitempty"`
+        HighQualityOut    uint32 `json:",omitempty"`
         LedgerEntryType   EntryType
         LowLimit          types.IssuedCurrencyAmount
         LowNode           string
-        LowQualityIn      uint `json:",omitempty"`
-        LowQualityOut     uint `json:",omitempty"`
+        LowQualityIn      uint32 `json:",omitempty"`
+        LowQualityOut     uint32 `json:",omitempty"`
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
+        PreviousTxnLgrSeq uint32
 }
 
 func (*RippleState) EntryType() EntryType <span class="cov0" title="0">{
         return RippleStateEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file63" style="display: none">package ledger
+
+      <pre class="file" id="file63" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -5327,27 +5901,27 @@ func (*SignerList) EntryType() EntryType <span class="cov0" title="0">{
         return SignerListEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file64" style="display: none">package ledger
+
+      <pre class="file" id="file64" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
 type Ticket struct {
         Account           types.Address
-        Flags             uint
+        Flags             uint32
         LedgerEntryType   EntryType
         OwnerNode         string
         PreviousTxnID     types.Hash256
-        PreviousTxnLgrSeq uint
-        TicketSequence    uint
+        PreviousTxnLgrSeq uint32
+        TicketSequence    uint32
 }
 
 func (*Ticket) EntryType() EntryType <span class="cov0" title="0">{
         return TicketEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file65" style="display: none">package ledger
+
+      <pre class="file" id="file65" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -5444,7 +6018,7 @@ type XChainOwnedClaimID struct {
         // that was signed, including the amount, which chain (locking or issuing), optional destination, and reward account for that signature.
         XChainClaimAttestations []XChainClaimAttestation
         // The unique sequence number for a cross-chain transfer.
-        XChainClaimID uint64
+        XChainClaimID string
 }
 
 // EntryType returns the type of the ledger entry.
@@ -5452,8 +6026,8 @@ func (*XChainOwnedClaimID) EntryType() EntryType <span class="cov8" title="1">{
         return XChainOwnedClaimIDEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file66" style="display: none">package ledger
+
+      <pre class="file" id="file66" style="display: none">package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -5538,8 +6112,8 @@ func (x *XChainOwnedCreateAccountClaimID) EntryType() EntryType <span class="cov
         return XChainOwnedCreateAccountClaimIDEntry
 }</span>
 </pre>
-		
-		<pre class="file" id="file67" style="display: none">package account
+
+      <pre class="file" id="file67" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5600,8 +6174,8 @@ func (r *ChannelsRequest) UnmarshalJSON(data []byte) error <span class="cov8" ti
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file68" style="display: none">package account
+
+      <pre class="file" id="file68" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5646,8 +6220,8 @@ func (r *CurrenciesRequest) UnmarshalJSON(data []byte) error <span class="cov8" 
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file69" style="display: none">package account
+
+      <pre class="file" id="file69" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5702,8 +6276,8 @@ func (r *InfoRequest) UnmarshalJSON(data []byte) error <span class="cov8" title=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file70" style="display: none">package account
+
+      <pre class="file" id="file70" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5758,8 +6332,8 @@ func (r *LinesRequest) UnmarshalJSON(data []byte) error <span class="cov8" title
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file71" style="display: none">package account
+
+      <pre class="file" id="file71" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5807,8 +6381,8 @@ func (r *NFTsRequest) UnmarshalJSON(data []byte) error <span class="cov8" title=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file72" style="display: none">package account
+
+      <pre class="file" id="file72" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5881,8 +6455,8 @@ func (r *ObjectsRequest) UnmarshalJSON(data []byte) error <span class="cov8" tit
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file73" style="display: none">package account
+
+      <pre class="file" id="file73" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5933,8 +6507,8 @@ func (r *OffersRequest) UnmarshalJSON(data []byte) error <span class="cov8" titl
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file74" style="display: none">package account
+
+      <pre class="file" id="file74" style="display: none">package account
 
 import (
         "encoding/json"
@@ -5994,8 +6568,8 @@ func (r *TransactionsRequest) UnmarshalJSON(data []byte) error <span class="cov0
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file75" style="display: none">package account
+
+      <pre class="file" id="file75" style="display: none">package account
 
 import (
         "encoding/json"
@@ -6050,8 +6624,8 @@ func (r *OfferResult) UnmarshalJSON(data []byte) error <span class="cov8" title=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file76" style="display: none">package data
+
+      <pre class="file" id="file76" style="display: none">package data
 
 import (
         "encoding/json"
@@ -6081,8 +6655,8 @@ func (r *CanDeleteRequest) UnmarshalJSON(data []byte) error <span class="cov8" t
         return err</span>
 }
 </pre>
-		
-		<pre class="file" id="file77" style="display: none">package data
+
+      <pre class="file" id="file77" style="display: none">package data
 
 type CrawlShardsRequest struct {
         PublicKey bool `json:"public_key,omitempty"`
@@ -6093,8 +6667,8 @@ func (*CrawlShardsRequest) Method() string <span class="cov0" title="0">{
         return "crawl_shards"
 }</span>
 </pre>
-		
-		<pre class="file" id="file78" style="display: none">package data
+
+      <pre class="file" id="file78" style="display: none">package data
 
 import "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 
@@ -6111,8 +6685,8 @@ func (*DownloadShardRequest) Method() string <span class="cov0" title="0">{
         return "download_shard"
 }</span>
 </pre>
-		
-		<pre class="file" id="file79" style="display: none">package data
+
+      <pre class="file" id="file79" style="display: none">package data
 
 import "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 
@@ -6130,8 +6704,8 @@ func (*LedgerCleanerRequest) Method() string <span class="cov0" title="0">{
         return "ledger_cleaner"
 }</span>
 </pre>
-		
-		<pre class="file" id="file80" style="display: none">package data
+
+      <pre class="file" id="file80" style="display: none">package data
 
 import "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 
@@ -6144,8 +6718,8 @@ func (*LedgerRequest) Method() string <span class="cov0" title="0">{
         return "ledger_request"
 }</span>
 </pre>
-		
-		<pre class="file" id="file81" style="display: none">package data
+
+      <pre class="file" id="file81" style="display: none">package data
 
 import (
         "encoding/json"
@@ -6216,8 +6790,8 @@ func (r *LedgerRequestResponse) UnmarshalJSON(data []byte) error <span class="co
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file82" style="display: none">package data
+
+      <pre class="file" id="file82" style="display: none">package data
 
 type LogLevelRequest struct {
         Severity  string `json:"severity,omitempty"`
@@ -6228,8 +6802,8 @@ func (*LogLevelRequest) Method() string <span class="cov0" title="0">{
         return "log_level"
 }</span>
 </pre>
-		
-		<pre class="file" id="file83" style="display: none">package data
+
+      <pre class="file" id="file83" style="display: none">package data
 
 type LogrotateRequest struct {
 }
@@ -6238,8 +6812,8 @@ func (*LogrotateRequest) Method() string <span class="cov0" title="0">{
         return "logrotate"
 }</span>
 </pre>
-		
-		<pre class="file" id="file84" style="display: none">package data
+
+      <pre class="file" id="file84" style="display: none">package data
 
 type NodeToShardRequest struct {
         Action string `json:"action"`
@@ -6249,8 +6823,8 @@ func (*NodeToShardRequest) Method() string <span class="cov0" title="0">{
         return "node_to_shard"
 }</span>
 </pre>
-		
-		<pre class="file" id="file85" style="display: none">package key
+
+      <pre class="file" id="file85" style="display: none">package key
 
 type ValidationCreateRequest struct {
         Secret string `json:"secret,omitempty"`
@@ -6260,8 +6834,8 @@ func (*ValidationCreateRequest) Method() string <span class="cov0" title="0">{
         return "validation_create"
 }</span>
 </pre>
-		
-		<pre class="file" id="file86" style="display: none">package key
+
+      <pre class="file" id="file86" style="display: none">package key
 
 type WalletProposeRequest struct {
         KeyType    string `json:"key_type,omitempty"`
@@ -6274,8 +6848,8 @@ func (*WalletProposeRequest) Method() string <span class="cov0" title="0">{
         return "wallet_propose"
 }</span>
 </pre>
-		
-		<pre class="file" id="file87" style="display: none">package peer
+
+      <pre class="file" id="file87" style="display: none">package peer
 
 type ConnectRequest struct {
         IP   string `json:"ip"`
@@ -6286,8 +6860,8 @@ func (*ConnectRequest) Method() string <span class="cov0" title="0">{
         return "connect"
 }</span>
 </pre>
-		
-		<pre class="file" id="file88" style="display: none">package peer
+
+      <pre class="file" id="file88" style="display: none">package peer
 
 type ReservationAddRequest struct {
         PublicKey   string `json:"public_key"`
@@ -6298,8 +6872,8 @@ func (*ReservationAddRequest) Method() string <span class="cov0" title="0">{
         return "peer_reservations_add"
 }</span>
 </pre>
-		
-		<pre class="file" id="file89" style="display: none">package peer
+
+      <pre class="file" id="file89" style="display: none">package peer
 
 type ReservationDelRequest struct {
         PublicKey string `json:"public_key"`
@@ -6309,8 +6883,8 @@ func (*ReservationDelRequest) Method() string <span class="cov0" title="0">{
         return "peer_reservations_del"
 }</span>
 </pre>
-		
-		<pre class="file" id="file90" style="display: none">package peer
+
+      <pre class="file" id="file90" style="display: none">package peer
 
 type ReservationsListRequest struct {
 }
@@ -6319,8 +6893,8 @@ func (*ReservationsListRequest) Method() string <span class="cov0" title="0">{
         return "peer_reservations_list"
 }</span>
 </pre>
-		
-		<pre class="file" id="file91" style="display: none">package peer
+
+      <pre class="file" id="file91" style="display: none">package peer
 
 type PeersRequest struct {
 }
@@ -6329,8 +6903,8 @@ func (*PeersRequest) Method() string <span class="cov0" title="0">{
         return "peers"
 }</span>
 </pre>
-		
-		<pre class="file" id="file92" style="display: none">package server
+
+      <pre class="file" id="file92" style="display: none">package server
 
 type LedgerAcceptRequest struct {
 }
@@ -6339,8 +6913,8 @@ func (*LedgerAcceptRequest) Method() string <span class="cov0" title="0">{
         return "leder_accept"
 }</span>
 </pre>
-		
-		<pre class="file" id="file93" style="display: none">package server
+
+      <pre class="file" id="file93" style="display: none">package server
 
 type StopRequest struct {
 }
@@ -6349,8 +6923,8 @@ func (*StopRequest) Method() string <span class="cov0" title="0">{
         return "stop"
 }</span>
 </pre>
-		
-		<pre class="file" id="file94" style="display: none">package signing
+
+      <pre class="file" id="file94" style="display: none">package signing
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -6371,8 +6945,8 @@ func (*SignForRequest) Method() string <span class="cov0" title="0">{
         return "sign_for"
 }</span>
 </pre>
-		
-		<pre class="file" id="file95" style="display: none">package signing
+
+      <pre class="file" id="file95" style="display: none">package signing
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction"
 
@@ -6393,8 +6967,8 @@ func (*SignRequest) Method() string <span class="cov0" title="0">{
         return "sign"
 }</span>
 </pre>
-		
-		<pre class="file" id="file96" style="display: none">package status
+
+      <pre class="file" id="file96" style="display: none">package status
 
 type ConsensusInfoRequest struct {
 }
@@ -6403,8 +6977,8 @@ func (*ConsensusInfoRequest) Method() string <span class="cov0" title="0">{
         return "consensus_info"
 }</span>
 </pre>
-		
-		<pre class="file" id="file97" style="display: none">package status
+
+      <pre class="file" id="file97" style="display: none">package status
 
 type FeatureRequest struct {
         Feature string `json:"feature,omitempty"`
@@ -6415,8 +6989,8 @@ func (*FeatureRequest) Method() string <span class="cov0" title="0">{
         return "feature"
 }</span>
 </pre>
-		
-		<pre class="file" id="file98" style="display: none">package status
+
+      <pre class="file" id="file98" style="display: none">package status
 
 type FetchInfoRequest struct {
         Clear bool `json:"clear"`
@@ -6426,8 +7000,8 @@ func (*FetchInfoRequest) Method() string <span class="cov0" title="0">{
         return "fetch_info"
 }</span>
 </pre>
-		
-		<pre class="file" id="file99" style="display: none">package status
+
+      <pre class="file" id="file99" style="display: none">package status
 
 type GetCountsRequest struct {
         MinCount int `json:"min_count,omitempty"`
@@ -6437,8 +7011,8 @@ func (*GetCountsRequest) Method() string <span class="cov0" title="0">{
         return "get_counts"
 }</span>
 </pre>
-		
-		<pre class="file" id="file100" style="display: none">package status
+
+      <pre class="file" id="file100" style="display: none">package status
 
 type ValidatorInfoRequest struct {
 }
@@ -6447,8 +7021,8 @@ func (*ValidatorInfoRequest) Method() string <span class="cov0" title="0">{
         return "validator_info"
 }</span>
 </pre>
-		
-		<pre class="file" id="file101" style="display: none">package status
+
+      <pre class="file" id="file101" style="display: none">package status
 
 type ValidatorListSitesRequest struct {
 }
@@ -6457,8 +7031,8 @@ func (*ValidatorListSitesRequest) Method() string <span class="cov0" title="0">{
         return "validator_list_sites"
 }</span>
 </pre>
-		
-		<pre class="file" id="file102" style="display: none">package status
+
+      <pre class="file" id="file102" style="display: none">package status
 
 type ValidatorsRequest struct {
 }
@@ -6467,8 +7041,8 @@ func (*ValidatorsRequest) Method() string <span class="cov0" title="0">{
         return "validators"
 }</span>
 </pre>
-		
-		<pre class="file" id="file103" style="display: none">package channel
+
+      <pre class="file" id="file103" style="display: none">package channel
 
 import (
         "fmt"
@@ -6505,8 +7079,8 @@ func (c *AuthorizeRequest) Format(s fmt.State, v rune) <span class="cov0" title=
         fmt.Fprintf(s, "%"+string(v), h)
 }</span>
 </pre>
-		
-		<pre class="file" id="file104" style="display: none">package channel
+
+      <pre class="file" id="file104" style="display: none">package channel
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -6521,8 +7095,8 @@ func (*VerifyRequest) Method() string <span class="cov0" title="0">{
         return "channel_verify"
 }</span>
 </pre>
-		
-		<pre class="file" id="file105" style="display: none">package clio
+
+      <pre class="file" id="file105" style="display: none">package clio
 
 import (
         "encoding/json"
@@ -6584,8 +7158,8 @@ func (r *LedgerRequest) UnmarshalJSON(data []byte) error <span class="cov8" titl
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file106" style="display: none">package clio
+
+      <pre class="file" id="file106" style="display: none">package clio
 
 import (
         "encoding/json"
@@ -6623,8 +7197,8 @@ func (r *NFTInfoRequest) UnmarshalJSON(data []byte) error <span class="cov8" tit
         return err</span>
 }
 </pre>
-		
-		<pre class="file" id="file107" style="display: none">package clio
+
+      <pre class="file" id="file107" style="display: none">package clio
 
 type ServerInfoRequest struct {
 }
@@ -6633,8 +7207,8 @@ func (*ServerInfoRequest) Method() string <span class="cov0" title="0">{
         return "server_info"
 }</span>
 </pre>
-		
-		<pre class="file" id="file108" style="display: none">package common
+
+      <pre class="file" id="file108" style="display: none">package common
 
 import (
         "encoding/json"
@@ -6702,8 +7276,8 @@ func (l LedgerTitle) Ledger() string <span class="cov8" title="1">{
 
 type LedgerHash string
 </pre>
-		
-		<pre class="file" id="file109" style="display: none">package ledger
+
+      <pre class="file" id="file109" style="display: none">package ledger
 
 type ClosedRequest struct {
 }
@@ -6712,8 +7286,8 @@ func (*ClosedRequest) Method() string <span class="cov0" title="0">{
         return "ledger_closed"
 }</span>
 </pre>
-		
-		<pre class="file" id="file110" style="display: none">package ledger
+
+      <pre class="file" id="file110" style="display: none">package ledger
 
 type CurrentRequest struct {
 }
@@ -6722,8 +7296,8 @@ func (*CurrentRequest) Method() string <span class="cov0" title="0">{
         return "ledger_current"
 }</span>
 </pre>
-		
-		<pre class="file" id="file111" style="display: none">package ledger
+
+      <pre class="file" id="file111" style="display: none">package ledger
 
 import (
         "encoding/json"
@@ -6770,8 +7344,8 @@ func (r *DataRequest) UnmarshalJSON(data []byte) error <span class="cov8" title=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file112" style="display: none">package ledger
+
+      <pre class="file" id="file112" style="display: none">package ledger
 
 import (
         "encoding/json"
@@ -6918,8 +7492,8 @@ func (r *EntryRequest) UnmarshalJSON(data []byte) error <span class="cov8" title
         return err</span>
 }
 </pre>
-		
-		<pre class="file" id="file113" style="display: none">package ledger
+
+      <pre class="file" id="file113" style="display: none">package ledger
 
 import (
         "encoding/json"
@@ -6984,8 +7558,8 @@ func (r *Request) UnmarshalJSON(data []byte) error <span class="cov8" title="1">
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file114" style="display: none">package path
+
+      <pre class="file" id="file114" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7037,8 +7611,8 @@ func (r *BookOffersRequest) UnmarshalJSON(data []byte) error <span class="cov8" 
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file115" style="display: none">package path
+
+      <pre class="file" id="file115" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7100,8 +7674,8 @@ func (o *BookOffer) UnmarshalJSON(data []byte) error <span class="cov8" title="1
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file116" style="display: none">package path
+
+      <pre class="file" id="file116" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7147,8 +7721,8 @@ func (r *DepositAuthorizedRequest) UnmarshalJSON(data []byte) error <span class=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file117" style="display: none">package path
+
+      <pre class="file" id="file117" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7197,8 +7771,8 @@ func (r *NFTokenBuyOffersRequest) UnmarshalJSON(data []byte) error <span class="
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file118" style="display: none">package path
+
+      <pre class="file" id="file118" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7240,8 +7814,8 @@ func (o *NFTokenOffer) UnmarshalJSON(data []byte) error <span class="cov8" title
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file119" style="display: none">package path
+
+      <pre class="file" id="file119" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7290,8 +7864,8 @@ func (r *NFTokenSellOffersRequest) UnmarshalJSON(data []byte) error <span class=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file120" style="display: none">package path
+
+      <pre class="file" id="file120" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7358,8 +7932,8 @@ func (r *FindRequest) UnmarshalJSON(data []byte) error <span class="cov8" title=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file121" style="display: none">package path
+
+      <pre class="file" id="file121" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7446,8 +8020,8 @@ func (p *Alternative) UnmarshalJSON(data []byte) error <span class="cov8" title=
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file122" style="display: none">package path
+
+      <pre class="file" id="file122" style="display: none">package path
 
 import (
         "encoding/json"
@@ -7514,8 +8088,8 @@ func (r *RipplePathFindRequest) UnmarshalJSON(data []byte) error <span class="co
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file123" style="display: none">package server
+
+      <pre class="file" id="file123" style="display: none">package server
 
 type FeeRequest struct {
 }
@@ -7524,8 +8098,8 @@ func (*FeeRequest) Method() string <span class="cov0" title="0">{
         return "fee"
 }</span>
 </pre>
-		
-		<pre class="file" id="file124" style="display: none">package server
+
+      <pre class="file" id="file124" style="display: none">package server
 
 type ManifestRequest struct {
         PublicKey string `json:"public_key"`
@@ -7535,8 +8109,8 @@ func (*ManifestRequest) Method() string <span class="cov0" title="0">{
         return "manifest"
 }</span>
 </pre>
-		
-		<pre class="file" id="file125" style="display: none">package server
+
+      <pre class="file" id="file125" style="display: none">package server
 
 type InfoRequest struct {
 }
@@ -7550,8 +8124,8 @@ func (*InfoRequest) Validate() error <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file126" style="display: none">package server
+
+      <pre class="file" id="file126" style="display: none">package server
 
 type StateRequest struct {
 }
@@ -7560,8 +8134,8 @@ func (*StateRequest) Method() string <span class="cov0" title="0">{
         return "server_state"
 }</span>
 </pre>
-		
-		<pre class="file" id="file127" style="display: none">package subscribe
+
+      <pre class="file" id="file127" style="display: none">package subscribe
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -7587,8 +8161,8 @@ type OrderBook struct {
         Both      bool                       `json:"both,omitempty"`
 }
 </pre>
-		
-		<pre class="file" id="file128" style="display: none">package subscribe
+
+      <pre class="file" id="file128" style="display: none">package subscribe
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -7609,8 +8183,8 @@ type UnsubscribeOrderBook struct {
         Both      bool                       `json:"both,omitempty"`
 }
 </pre>
-		
-		<pre class="file" id="file129" style="display: none">package transaction
+
+      <pre class="file" id="file129" style="display: none">package transaction
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction"
 
@@ -7623,8 +8197,8 @@ func (*SubmitMultisignedRequest) Method() string <span class="cov0" title="0">{
         return "submit_multisigned"
 }</span>
 </pre>
-		
-		<pre class="file" id="file130" style="display: none">package transaction
+
+      <pre class="file" id="file130" style="display: none">package transaction
 
 import "errors"
 
@@ -7644,8 +8218,8 @@ func (req *SubmitRequest) Validate() error <span class="cov0" title="0">{
         <span class="cov0" title="0">return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file131" style="display: none">package transaction
+
+      <pre class="file" id="file131" style="display: none">package transaction
 
 import (
         "encoding/json"
@@ -7686,8 +8260,8 @@ func (t *EntryRequest) UnmarshalJSON(data []byte) error <span class="cov0" title
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file132" style="display: none">package transaction
+
+      <pre class="file" id="file132" style="display: none">package transaction
 
 import "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 
@@ -7702,8 +8276,8 @@ func (*TxRequest) Method() string <span class="cov0" title="0">{
         return "tx"
 }</span>
 </pre>
-		
-		<pre class="file" id="file133" style="display: none">package utility
+
+      <pre class="file" id="file133" style="display: none">package utility
 
 type PingRequest struct{}
 
@@ -7715,8 +8289,8 @@ func (*PingRequest) Validate() error <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file134" style="display: none">package utility
+
+      <pre class="file" id="file134" style="display: none">package utility
 
 type RandomRequest struct{}
 
@@ -7724,8 +8298,8 @@ func (*RandomRequest) Method() string <span class="cov0" title="0">{
         return "random"
 }</span>
 </pre>
-		
-		<pre class="file" id="file135" style="display: none">package rpc
+
+      <pre class="file" id="file135" style="display: none">package rpc
 
 import (
         "bytes"
@@ -7917,8 +8491,8 @@ func CheckForError(res *http.Response) (Response, error) <span class="cov8" titl
         <span class="cov8" title="1">return jr, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file136" style="display: none">package rpc
+
+      <pre class="file" id="file136" style="display: none">package rpc
 
 import (
         "errors"
@@ -7972,8 +8546,8 @@ func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) <span class
         <span class="cov8" title="1">return cfg, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file137" style="display: none">package rpc
+
+      <pre class="file" id="file137" style="display: none">package rpc
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/currency"
@@ -8093,8 +8667,8 @@ func (r *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, e
         <span class="cov0" title="0">return &amp;sir, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file138" style="display: none">package rpc
+
+      <pre class="file" id="file138" style="display: none">package rpc
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -8140,8 +8714,8 @@ type XRPLResponse interface {
         GetResult(v any) error
 }
 </pre>
-		
-		<pre class="file" id="file139" style="display: none">package xrpl
+
+      <pre class="file" id="file139" style="display: none">package xrpl
 
 import (
         "time"
@@ -8205,8 +8779,8 @@ func parseISO8601(iso8601 string) (time.Time, error) <span class="cov8" title="1
         return time.Parse(time.RFC3339, iso8601)
 }</span>
 </pre>
-		
-		<pre class="file" id="file140" style="display: none">package transaction
+
+      <pre class="file" id="file140" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -8215,7 +8789,7 @@ import (
 type AccountDelete struct {
         BaseTx
         Destination    types.Address
-        DestinationTag uint `json:",omitempty"`
+        DestinationTag uint32 `json:",omitempty"`
 }
 
 func (*AccountDelete) TxType() TxType <span class="cov0" title="0">{
@@ -8227,8 +8801,8 @@ func (s *AccountDelete) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file141" style="display: none">package transaction
+
+      <pre class="file" id="file141" style="display: none">package transaction
 
 import (
         "errors"
@@ -8242,57 +8816,57 @@ const (
         // Account Set Flags
         //
         // Require a destination tag to send transactions to this account.
-        asfRequireDest uint = 1
+        asfRequireDest uint32 = 1
         // Require authorization for users to hold balances issued by this address.
         // Can only be enabled if the address has no trust lines connected to it.
-        asfRequireAuth uint = 2
+        asfRequireAuth uint32 = 2
         // XRP should not be sent to this account.
-        asfDisallowXRP uint = 3
+        asfDisallowXRP uint32 = 3
         // Disallow use of the master key pair. Can only be enabled if the account
         // has configured another way to sign transactions, such as a Regular Key or a
         // Signer List.
-        asfDisableMaster uint = 4
+        asfDisableMaster uint32 = 4
         // Track the ID of this account's most recent transaction. Required for
         // AccountTxnID.
-        asfAccountTxnID uint = 5
+        asfAccountTxnID uint32 = 5
         // Permanently give up the ability to freeze individual trust lines or
         // disable Global Freeze. This flag can never be disabled after being enabled.
-        asfNoFreeze uint = 6
+        asfNoFreeze uint32 = 6
         // Freeze all assets issued by this account.
-        asfGlobalFreeze uint = 7
+        asfGlobalFreeze uint32 = 7
         // Enable rippling on this account's trust lines by default.
-        asfDefaultRipple uint = 8
+        asfDefaultRipple uint32 = 8
         // Enable Deposit Authorization on this account.
-        asfDepositAuth uint = 9
+        asfDepositAuth uint32 = 9
         // Allow another account to mint and burn tokens on behalf of this account.
-        asfAuthorizedNFTokenMinter uint = 10
+        asfAuthorizedNFTokenMinter uint32 = 10
         // asf 11 is reserved for Hooks amendment
         // Disallow other accounts from creating incoming NFTOffers
-        asfDisallowIncomingNFTokenOffer uint = 12
+        asfDisallowIncomingNFTokenOffer uint32 = 12
         // Disallow other accounts from creating incoming Checks
-        asfDisallowIncomingCheck uint = 13
+        asfDisallowIncomingCheck uint32 = 13
         // Disallow other accounts from creating incoming Payment Channels
-        asfDisallowIncomingPayChan uint = 14
+        asfDisallowIncomingPayChan uint32 = 14
         // Disallow other accounts from creating incoming TrustLines
-        asfDisallowIncomingTrustLine uint = 15
+        asfDisallowIncomingTrustLine uint32 = 15
         // Permanently gain the ability to claw back issued IOUs
-        asfAllowTrustLineClawback uint = 16
+        asfAllowTrustLineClawback uint32 = 16
 
         //
         // Transaction Flags
         //
         // The same as SetFlag: asfRequireDest.
-        tfRequireDestTag uint = 65536 // 0x00010000
+        tfRequireDestTag uint32 = 65536 // 0x00010000
         // The same as ClearFlag: asfRequireDestTag.
-        tfOptionalDestTag uint = 131072 // 0x00020000
+        tfOptionalDestTag uint32 = 131072 // 0x00020000
         // The same as SetFlag: asfRequireAuth.
-        tfRequireAuth uint = 262144 // 0x00040000
+        tfRequireAuth uint32 = 262144 // 0x00040000
         // The same as ClearFlag: asfRequireAuth.
-        tfOptionalAuth uint = 524288 // 0x00080000
+        tfOptionalAuth uint32 = 524288 // 0x00080000
         // The same as SetFlag: asfDisallowXRP.
-        tfDisallowXRP uint = 1048576 // 0x00100000
+        tfDisallowXRP uint32 = 1048576 // 0x00100000
         // The same as ClearFlag: asfDisallowXRP.
-        tfAllowXRP uint = 2097152 // 0x00200000
+        tfAllowXRP uint32 = 2097152 // 0x00200000
 
         // Tick size to use for offers involving a currency issued by this address.
         // The exchange rates of those offers is rounded to this many significant digits.
@@ -8306,7 +8880,7 @@ const (
 type AccountSet struct {
         BaseTx
         // ClearFlag: asfRequireDestTag, asfOptionalDestTag, asfRequireAuth, asfOptionalAuth, asfDisallowXRP, asfAllowXRP
-        ClearFlag uint `json:",omitempty"`
+        ClearFlag uint32 `json:",omitempty"`
         // The domain that owns this account, as a string of hex representing the.
         // ASCII for the domain in lowercase.
         Domain string `json:",omitempty"`
@@ -8318,17 +8892,17 @@ type AccountSet struct {
         // account's behalf using NFTokenMint's `Issuer` field.
         NFTokenMinter string `json:",omitempty"`
         // Integer flag to enable for this account.
-        SetFlag uint `json:",omitempty"`
+        SetFlag uint32 `json:",omitempty"`
         // The fee to charge when users transfer this account's issued currencies,
         // represented as billionths of a unit. Cannot be more than 2000000000 or less
         // than 1000000000, except for the special case 0 meaning no fee.
-        TransferRate uint `json:",omitempty"`
+        TransferRate uint32 `json:",omitempty"`
         // Tick size to use for offers involving a currency issued by this address.
         // The exchange rates of those offers is rounded to this many significant
         // digits. Valid values are 3 to 15 inclusive, or 0 to disable.
         TickSize      uint8         `json:",omitempty"`
         WalletLocator types.Hash256 `json:",omitempty"`
-        WalletSize    uint          `json:",omitempty"`
+        WalletSize    uint32        `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (AccountSet).
@@ -8631,8 +9205,8 @@ func (s *AccountSet) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file142" style="display: none">package transaction
+
+      <pre class="file" id="file142" style="display: none">package transaction
 
 import (
         "errors"
@@ -8779,8 +9353,8 @@ func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) <spa
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file143" style="display: none">package transaction
+
+      <pre class="file" id="file143" style="display: none">package transaction
 
 import (
         "fmt"
@@ -8874,8 +9448,8 @@ func (a *AMMCreate) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file144" style="display: none">package transaction
+
+      <pre class="file" id="file144" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
@@ -8952,8 +9526,8 @@ func (a *AMMDelete) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file145" style="display: none">package transaction
+
+      <pre class="file" id="file145" style="display: none">package transaction
 
 import (
         "errors"
@@ -9017,7 +9591,7 @@ type AMMDeposit struct {
 // You must specify exactly one of these flags, plus any global flags.
 const (
         // Perform a special double-asset deposit to an AMM with an empty pool.
-        tfTwoAssetIfEmpty uint = 8388608
+        tfTwoAssetIfEmpty uint32 = 8388608
 )
 
 // Perform a double-asset deposit and receive the specified amount of LP Tokens.
@@ -9126,8 +9700,8 @@ func (a *AMMDeposit) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file146" style="display: none">package transaction
+
+      <pre class="file" id="file146" style="display: none">package transaction
 
 import (
         "errors"
@@ -9210,8 +9784,8 @@ func (a *AMMVote) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file147" style="display: none">package transaction
+
+      <pre class="file" id="file147" style="display: none">package transaction
 
 import (
         "errors"
@@ -9270,9 +9844,9 @@ type AMMWithdraw struct {
 
 const (
         // Perform a double-asset withdrawal returning all your LP Tokens.
-        tfWithdrawAll uint = 131072
+        tfWithdrawAll uint32 = 131072
         // Perform a single-asset withdrawal returning all of your LP Tokens.
-        tfOneAssetWithdrawAll uint = 262144
+        tfOneAssetWithdrawAll uint32 = 262144
 )
 
 // Perform a double-asset withdrawal and receive the specified amount of LP Tokens.
@@ -9382,8 +9956,8 @@ func (a *AMMWithdraw) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file148" style="display: none">package transaction
+
+      <pre class="file" id="file148" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -9403,8 +9977,8 @@ func (s *CheckCancel) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file149" style="display: none">package transaction
+
+      <pre class="file" id="file149" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -9426,8 +10000,8 @@ func (c *CheckCash) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file150" style="display: none">package transaction
+
+      <pre class="file" id="file150" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -9437,8 +10011,8 @@ type CheckCreate struct {
         BaseTx
         Destination    types.Address
         SendMax        types.CurrencyAmount
-        DestinationTag uint          `json:",omitempty"`
-        Expiration     uint          `json:",omitempty"`
+        DestinationTag uint32        `json:",omitempty"`
+        Expiration     uint32        `json:",omitempty"`
         InvoiceID      types.Hash256 `json:",omitempty"`
 }
 
@@ -9451,8 +10025,8 @@ func (c *CheckCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file151" style="display: none">package transaction
+
+      <pre class="file" id="file151" style="display: none">package transaction
 
 import (
         "errors"
@@ -9519,8 +10093,8 @@ func (c *Clawback) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file152" style="display: none">package transaction
+
+      <pre class="file" id="file152" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -9541,8 +10115,8 @@ func (s *DepositPreauth) Flatten() FlatTransaction <span class="cov0" title="0">
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file153" style="display: none">package transaction
+
+      <pre class="file" id="file153" style="display: none">package transaction
 
 import (
         "errors"
@@ -9613,8 +10187,8 @@ func (e *EscrowCancel) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file154" style="display: none">package transaction
+
+      <pre class="file" id="file154" style="display: none">package transaction
 
 import (
         "errors"
@@ -9712,8 +10286,8 @@ func (e *EscrowCreate) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file155" style="display: none">package transaction
+
+      <pre class="file" id="file155" style="display: none">package transaction
 
 import (
         "errors"
@@ -9798,8 +10372,8 @@ func (e *EscrowFinish) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file156" style="display: none">package transaction
+
+      <pre class="file" id="file156" style="display: none">package transaction
 
 import "math/big"
 
@@ -9807,14 +10381,14 @@ import "math/big"
 // @param Flags - A number that represents flags enabled.
 // @param checkFlag - A specific flag to check if it's enabled within Flags.
 // @returns True if checkFlag is enabled within Flags.
-func IsFlagEnabled(flags uint, checkFlag uint) bool <span class="cov8" title="1">{
+func IsFlagEnabled(flags, checkFlag uint32) bool <span class="cov8" title="1">{
         flagsBigInt := new(big.Int).SetUint64(uint64(flags))
         checkFlagBigInt := new(big.Int).SetUint64(uint64(checkFlag))
         return new(big.Int).And(flagsBigInt, checkFlagBigInt).Cmp(checkFlagBigInt) == 0
 }</span>
 </pre>
-		
-		<pre class="file" id="file157" style="display: none">package transaction
+
+      <pre class="file" id="file157" style="display: none">package transaction
 
 var _ Tx = (*FlatTransaction)(nil)
 
@@ -9828,8 +10402,8 @@ func (f FlatTransaction) TxType() TxType <span class="cov0" title="0">{
         <span class="cov0" title="0">return TxType(txType)</span>
 }
 </pre>
-		
-		<pre class="file" id="file158" style="display: none">package transaction
+
+      <pre class="file" id="file158" style="display: none">package transaction
 
 type MemoWrapper struct {
         Memo Memo
@@ -9868,8 +10442,8 @@ func (m *Memo) Flatten() map[string]interface{} <span class="cov8" title="1">{
         <span class="cov8" title="1">return flattened</span>
 }
 </pre>
-		
-		<pre class="file" id="file159" style="display: none">package transaction
+
+      <pre class="file" id="file159" style="display: none">package transaction
 
 import (
         "errors"
@@ -9961,8 +10535,8 @@ func (n *NFTokenAcceptOffer) Validate() (bool, error) <span class="cov8" title="
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file160" style="display: none">package transaction
+
+      <pre class="file" id="file160" style="display: none">package transaction
 
 import (
         "errors"
@@ -10043,8 +10617,8 @@ func (n *NFTokenBurn) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file161" style="display: none">package transaction
+
+      <pre class="file" id="file161" style="display: none">package transaction
 
 import (
         "errors"
@@ -10106,8 +10680,8 @@ func (n *NFTokenCancelOffer) Validate() (bool, error) <span class="cov8" title="
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file162" style="display: none">package transaction
+
+      <pre class="file" id="file162" style="display: none">package transaction
 
 import (
         "errors"
@@ -10233,8 +10807,8 @@ func (n *NFTokenCreateOffer) Validate() (bool, error) <span class="cov8" title="
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file163" style="display: none">package transaction
+
+      <pre class="file" id="file163" style="display: none">package transaction
 
 import (
         "errors"
@@ -10393,8 +10967,8 @@ func (n *NFTokenMint) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file164" style="display: none">package transaction
+
+      <pre class="file" id="file164" style="display: none">package transaction
 
 import "errors"
 
@@ -10447,8 +11021,8 @@ func (o *OfferCancel) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file165" style="display: none">package transaction
+
+      <pre class="file" id="file165" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -10479,9 +11053,9 @@ import (
 type OfferCreate struct {
         BaseTx
         // (Optional) Time after which the Offer is no longer active, in seconds since the Ripple Epoch.
-        Expiration uint `json:",omitempty"`
+        Expiration uint32 `json:",omitempty"`
         // (Optional) An Offer to delete first, specified in the same way as OfferCancel.
-        OfferSequence uint `json:",omitempty"`
+        OfferSequence uint32 `json:",omitempty"`
         // The amount and type of currency being sold.
         TakerGets types.CurrencyAmount
         // The amount and type of currency being bought.
@@ -10494,13 +11068,13 @@ type OfferCreate struct {
 
 const (
         // tfPassive indicates that the offer is passive, meaning it does not consume offers that exactly match it, and instead waits to be consumed by an offer that exactly matches it.
-        tfPassive uint = 65536
+        tfPassive uint32 = 65536
         // Treat the Offer as an Immediate or Cancel order. The Offer never creates an Offer object in the ledger: it only trades as much as it can by consuming existing Offers at the time the transaction is processed. If no Offers match, it executes "successfully" without trading anything. In this case, the transaction still uses the result code tesSUCCESS.
-        tfImmediateOrCancel uint = 131072
+        tfImmediateOrCancel uint32 = 131072
         // Treat the offer as a Fill or Kill order. The Offer never creates an Offer object in the ledger, and is canceled if it cannot be fully filled at the time of execution. By default, this means that the owner must receive the full TakerPays amount; if the tfSell flag is enabled, the owner must be able to spend the entire TakerGets amount instead.
-        tfFillOrKill uint = 262144
+        tfFillOrKill uint32 = 262144
         // tfSell indicates that the offer is selling, not buying.
-        tfSell uint = 524288
+        tfSell uint32 = 524288
 )
 
 // tfPassive indicates that the offer is passive, meaning it does not consume offers that exactly match it, and instead waits to be consumed by an offer that exactly matches it.
@@ -10562,8 +11136,8 @@ func (o *OfferCreate) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file166" style="display: none">package transaction
+
+      <pre class="file" id="file166" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -10594,8 +11168,8 @@ func (p *PathStep) Flatten() map[string]interface{} <span class="cov8" title="1"
 
 }
 </pre>
-		
-		<pre class="file" id="file167" style="display: none">package transaction
+
+      <pre class="file" id="file167" style="display: none">package transaction
 
 import (
         "errors"
@@ -10608,15 +11182,15 @@ const (
         // Do not use the default path; only use paths included in the Paths field.
         // This is intended to force the transaction to take arbitrage opportunities.
         // Most clients do not need this.
-        tfRippleNotDirect uint = 65536
+        tfRippleNotDirect uint32 = 65536
         // If the specified Amount cannot be sent without spending more than SendMax,
         // reduce the received amount instead of failing outright. See Partial
         // Payments for more details.
-        tfPartialPayment uint = 131072
+        tfPartialPayment uint32 = 131072
         // Only take paths where all the conversions have an input:output ratio that
         // is equal or better than the ratio of Amount:SendMax. See Limit Quality for
         // details.
-        tfLimitQuality uint = 262144
+        tfLimitQuality uint32 = 262144
 )
 
 // A Payment transaction represents a transfer of value from one account to another.
@@ -10824,7 +11398,7 @@ func checkPartialPayment(tx *Payment) (bool, error) <span class="cov8" title="1"
                 return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
         }</span>
 
-        <span class="cov8" title="1">if !IsFlagEnabled(tx.Flags, uint(tfPartialPayment)) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !IsFlagEnabled(tx.Flags, tfPartialPayment) </span><span class="cov0" title="0">{
                 return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
         }</span>
 
@@ -10836,8 +11410,8 @@ func checkPartialPayment(tx *Payment) (bool, error) <span class="cov8" title="1"
 
 }
 </pre>
-		
-		<pre class="file" id="file168" style="display: none">package transaction
+
+      <pre class="file" id="file168" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -10847,7 +11421,7 @@ const (
         // Clear the channel's Expiration time. (Expiration is different from the
         // channel's immutable CancelAfter time.) Only the source address of the
         // payment channel can use this flag.
-        tfRenew uint = 65536 // 0x00010000
+        tfRenew uint32 = 65536 // 0x00010000
         // Request to close the channel. Only the channel source and destination
         // addresses can use this flag. This flag closes the channel immediately if it
         // has no more XRP allocated to it after processing the current claim, or if
@@ -10859,7 +11433,7 @@ const (
         // time.) If the destination address uses this flag when the channel still
         // holds XRP, any XRP that remains after processing the claim is returned to
         // the source address.
-        tfClose uint = 131072 // 0x00020000
+        tfClose uint32 = 131072 // 0x00020000
 )
 
 // Claim XRP from a payment channel, adjust the payment channel's expiration,
@@ -10928,8 +11502,8 @@ func (s *PaymentChannelClaim) SetCloseFlag() <span class="cov8" title="1">{
         s.Flags |= tfClose
 }</span>
 </pre>
-		
-		<pre class="file" id="file169" style="display: none">package transaction
+
+      <pre class="file" id="file169" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -10939,10 +11513,10 @@ type PaymentChannelCreate struct {
         BaseTx
         Amount         types.XRPCurrencyAmount
         Destination    types.Address
-        SettleDelay    uint
+        SettleDelay    uint32
         PublicKey      string
-        CancelAfter    uint `json:",omitempty"`
-        DestinationTag uint `json:",omitempty"`
+        CancelAfter    uint32 `json:",omitempty"`
+        DestinationTag uint32 `json:",omitempty"`
 }
 
 func (*PaymentChannelCreate) TxType() TxType <span class="cov0" title="0">{
@@ -10954,8 +11528,8 @@ func (s *PaymentChannelCreate) Flatten() FlatTransaction <span class="cov0" titl
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file170" style="display: none">package transaction
+
+      <pre class="file" id="file170" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -10965,7 +11539,7 @@ type PaymentChannelFund struct {
         BaseTx
         Channel    types.Hash256
         Amount     types.XRPCurrencyAmount
-        Expiration uint `json:",omitempty"`
+        Expiration uint32 `json:",omitempty"`
 }
 
 func (*PaymentChannelFund) TxType() TxType <span class="cov0" title="0">{
@@ -10977,8 +11551,8 @@ func (s *PaymentChannelFund) Flatten() FlatTransaction <span class="cov0" title=
         return nil
 }</span>
 </pre>
-		
-		<pre class="file" id="file171" style="display: none">package transaction
+
+      <pre class="file" id="file171" style="display: none">package transaction
 
 import (
         "errors"
@@ -11050,8 +11624,8 @@ func (s *SetRegularKey) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file172" style="display: none">package transaction
+
+      <pre class="file" id="file172" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -11093,8 +11667,8 @@ func (sd *SignerData) Flatten() FlatSignerData <span class="cov8" title="1">{
         <span class="cov8" title="1">return flattened</span>
 }
 </pre>
-		
-		<pre class="file" id="file173" style="display: none">package transaction
+
+      <pre class="file" id="file173" style="display: none">package transaction
 
 import (
         "fmt"
@@ -11225,8 +11799,8 @@ func (s *SignerListSet) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file174" style="display: none">package transaction
+
+      <pre class="file" id="file174" style="display: none">package transaction
 
 import (
         "fmt"
@@ -11296,8 +11870,8 @@ func (t *TicketCreate) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file175" style="display: none">package transaction
+
+      <pre class="file" id="file175" style="display: none">package transaction
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
@@ -11345,8 +11919,8 @@ type DeletedNode struct {
         FinalFields     ledger.FlatLedgerObject `json:"FinalFields,omitempty"`
 }
 </pre>
-		
-		<pre class="file" id="file176" style="display: none">package transaction
+
+      <pre class="file" id="file176" style="display: none">package transaction
 
 import (
         "errors"
@@ -11358,16 +11932,16 @@ import (
 const (
         // Authorize the other party to hold currency issued by this account. (No
         // effect unless using the asfRequireAuth AccountSet flag.) Cannot be unset.
-        tfSetAuth uint = 65536 // 0x00010000
+        tfSetAuth uint32 = 65536 // 0x00010000
         // Enable the No Ripple flag, which blocks rippling between two trust lines.
         // of the same currency if this flag is enabled on both.
-        tfSetNoRipple uint = 131072 // 0x00020000
+        tfSetNoRipple uint32 = 131072 // 0x00020000
         // Disable the No Ripple flag, allowing rippling on this trust line.
-        tfClearNoRipple uint = 262144 // 0x00040000
+        tfClearNoRipple uint32 = 262144 // 0x00040000
         // Freeze the trust line
-        tfSetFreeze uint = 1048576 // 0x00100000
+        tfSetFreeze uint32 = 1048576 // 0x00100000
         // Unfreeze the trust line
-        tfClearFreeze uint = 2097152 // 0x00200000
+        tfClearFreeze uint32 = 2097152 // 0x00200000
 )
 
 // Create or modify a trust line linking two accounts.
@@ -11478,8 +12052,8 @@ func (t *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file177" style="display: none">package transaction
+
+      <pre class="file" id="file177" style="display: none">package transaction
 
 import (
         "errors"
@@ -11529,7 +12103,7 @@ type BaseTx struct {
         // transaction from the same account. The special case 0 means the transaction
         // is using a Ticket instead.
         //
-        Sequence uint `json:",omitempty"`
+        Sequence uint32 `json:",omitempty"`
         //
         // Hash value identifying another transaction. If provided, this transaction
         // is only valid if the sending account's previously-sent transaction matches
@@ -11537,19 +12111,19 @@ type BaseTx struct {
         //
         AccountTxnID types.Hash256 `json:",omitempty"`
         // Set of bit-flags for this transaction.
-        Flags uint `json:",omitempty"`
+        Flags uint32 `json:",omitempty"`
         //
         // Highest ledger index this transaction can appear in. Specifying this field
         // places a strict upper limit on how long the transaction can wait to be
         // validated or rejected.
         //
-        LastLedgerSequence uint `json:",omitempty"`
+        LastLedgerSequence uint32 `json:",omitempty"`
         //
         // Additional arbitrary information used to identify this transaction.
         //
         Memos []MemoWrapper `json:",omitempty"`
         // The network id of the transaction.
-        NetworkID uint `json:",omitempty"`
+        NetworkID uint32 `json:",omitempty"`
         //
         // Array of objects that represent a multi-signature which authorizes this
         // transaction.
@@ -11561,7 +12135,7 @@ type BaseTx struct {
         // specify the initial payment's SourceTag as the refund payment's
         // DestinationTag.
         //
-        SourceTag uint `json:",omitempty"`
+        SourceTag uint32 `json:",omitempty"`
         //
         // Hex representation of the public key that corresponds to the private key
         // used to sign this transaction. If an empty string, indicates a
@@ -11572,7 +12146,7 @@ type BaseTx struct {
         // The sequence number of the ticket to use in place of a Sequence number. If
         // this is provided, Sequence must be 0. Cannot be used with AccountTxnID.
         //
-        TicketSequence uint `json:",omitempty"`
+        TicketSequence uint32 `json:",omitempty"`
         //
         // The signature that verifies this transaction as originating from the
         // account it says it is from.
@@ -11597,7 +12171,7 @@ func (tx *BaseTx) Flatten() FlatTransaction <span class="cov8" title="1">{
                 flattened["Fee"] = tx.Fee.String()
         }</span>
         <span class="cov8" title="1">if tx.Sequence != 0 </span><span class="cov8" title="1">{
-                flattened["Sequence"] = tx.Sequence
+                flattened["Sequence"] = int(tx.Sequence)
         }</span>
         <span class="cov8" title="1">if tx.AccountTxnID != "" </span><span class="cov8" title="1">{
                 flattened["AccountTxnID"] = tx.AccountTxnID.String()
@@ -11606,7 +12180,7 @@ func (tx *BaseTx) Flatten() FlatTransaction <span class="cov8" title="1">{
                 flattened["Flags"] = int(tx.Flags)
         }</span>
         <span class="cov8" title="1">if tx.LastLedgerSequence != 0 </span><span class="cov8" title="1">{
-                flattened["LastLedgerSequence"] = tx.LastLedgerSequence
+                flattened["LastLedgerSequence"] = int(tx.LastLedgerSequence)
         }</span>
         <span class="cov8" title="1">if len(tx.Memos) &gt; 0 </span><span class="cov8" title="1">{
                 flattenedMemos := make([]any, 0)
@@ -11632,13 +12206,13 @@ func (tx *BaseTx) Flatten() FlatTransaction <span class="cov8" title="1">{
                 <span class="cov8" title="1">flattened["Signers"] = flattenedSigners</span>
         }
         <span class="cov8" title="1">if tx.SourceTag != 0 </span><span class="cov8" title="1">{
-                flattened["SourceTag"] = tx.SourceTag
+                flattened["SourceTag"] = int(tx.SourceTag)
         }</span>
         <span class="cov8" title="1">if tx.SigningPubKey != "" </span><span class="cov8" title="1">{
                 flattened["SigningPubKey"] = tx.SigningPubKey
         }</span>
         <span class="cov8" title="1">if tx.TicketSequence != 0 </span><span class="cov8" title="1">{
-                flattened["TicketSequence"] = tx.TicketSequence
+                flattened["TicketSequence"] = int(tx.TicketSequence)
         }</span>
         <span class="cov8" title="1">if tx.TxnSignature != "" </span><span class="cov8" title="1">{
                 flattened["TxnSignature"] = tx.TxnSignature
@@ -11662,7 +12236,7 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, errors.New("invalid fee amount, not a uint")
         }</span>
 
-        <span class="cov8" title="1">err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
+        <span class="cov8" title="1">err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsInt)
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
@@ -11672,12 +12246,12 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsUint)
+        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsInt)
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsUint)
+        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsInt)
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
@@ -11687,7 +12261,7 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsUint)
+        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsInt)
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
@@ -11697,7 +12271,7 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsUint)
+        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsInt)
         if err != nil </span><span class="cov0" title="0">{
                 return false, err
         }</span>
@@ -11717,8 +12291,8 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file178" style="display: none">package transaction
+
+      <pre class="file" id="file178" style="display: none">package transaction
 
 type TxType string
 
@@ -11762,8 +12336,8 @@ func (t TxType) String() string <span class="cov8" title="1">{
         return string(t)
 }</span>
 </pre>
-		
-		<pre class="file" id="file179" style="display: none">package types
+
+      <pre class="file" id="file179" style="display: none">package types
 
 type Address string
 
@@ -11771,8 +12345,8 @@ func (a Address) String() string <span class="cov0" title="0">{
         return string(a)
 }</span>
 </pre>
-		
-		<pre class="file" id="file180" style="display: none">package types
+
+      <pre class="file" id="file180" style="display: none">package types
 
 import (
         "encoding/json"
@@ -11889,8 +12463,8 @@ func (a *XRPCurrencyAmount) UnmarshalText(data []byte) error <span class="cov0" 
         return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file181" style="display: none">package types
+
+      <pre class="file" id="file181" style="display: none">package types
 
 type Hash128 string
 
@@ -11898,8 +12472,8 @@ func (h *Hash128) String() string <span class="cov0" title="0">{
         return string(*h)
 }</span>
 </pre>
-		
-		<pre class="file" id="file182" style="display: none">package types
+
+      <pre class="file" id="file182" style="display: none">package types
 
 type Hash256 string
 
@@ -11907,8 +12481,8 @@ func (h *Hash256) String() string <span class="cov0" title="0">{
         return string(*h)
 }</span>
 </pre>
-		
-		<pre class="file" id="file183" style="display: none">package types
+
+      <pre class="file" id="file183" style="display: none">package types
 
 type NFTokenID Hash256
 
@@ -11917,8 +12491,8 @@ func (n *NFTokenID) String() string <span class="cov0" title="0">{
         return string(*n)
 }</span>
 </pre>
-		
-		<pre class="file" id="file184" style="display: none">package types
+
+      <pre class="file" id="file184" style="display: none">package types
 
 type NFTokenURI string
 
@@ -11927,8 +12501,8 @@ func (n *NFTokenURI) String() string <span class="cov0" title="0">{
         return string(*n)
 }</span>
 </pre>
-		
-		<pre class="file" id="file185" style="display: none">package transaction
+
+      <pre class="file" id="file185" style="display: none">package transaction
 
 import (
         "fmt"
@@ -11989,8 +12563,8 @@ func validateSigners(signers []Signer) error <span class="cov8" title="1">{
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file186" style="display: none">package transaction
+
+      <pre class="file" id="file186" style="display: none">package transaction
 
 import (
         "errors"
@@ -12214,8 +12788,8 @@ func IsAsset(asset ledger.Asset) (bool, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file187" style="display: none">package xrpl
+
+      <pre class="file" id="file187" style="display: none">package xrpl
 
 import (
         "encoding/hex"
@@ -12394,8 +12968,8 @@ func (w *Wallet) GetAddress() string <span class="cov0" title="0">{
 //         return "", errors.New("not implemented")
 // }
 </pre>
-		
-		<pre class="file" id="file188" style="display: none">package websocket
+
+      <pre class="file" id="file188" style="display: none">package websocket
 
 import (
         "bytes"
@@ -12782,8 +13356,8 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error <spa
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
-		
-		<pre class="file" id="file189" style="display: none">package websocket
+
+      <pre class="file" id="file189" style="display: none">package websocket
 
 type ClientConfig struct {
         // Connection config
@@ -12833,8 +13407,8 @@ func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig <span 
         return wc
 }</span>
 </pre>
-		
-		<pre class="file" id="file190" style="display: none">package websocket
+
+      <pre class="file" id="file190" style="display: none">package websocket
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/currency"
@@ -12944,8 +13518,8 @@ func (c *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, e
         <span class="cov8" title="1">return &amp;sir, err</span>
 }
 </pre>
-		
-		<pre class="file" id="file191" style="display: none">package websocket
+
+      <pre class="file" id="file191" style="display: none">package websocket
 
 import (
         "fmt"
@@ -13007,34 +13581,31 @@ func (r *ClientXrplResponse) CheckError() error <span class="cov8" title="1">{
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
-		
-		</div>
-	</body>
-	<script>
-	(function() {
-		var files = document.getElementById('files');
-		var visible;
-		files.addEventListener('change', onChange, false);
-		function select(part) {
-			if (visible)
-				visible.style.display = 'none';
-			visible = document.getElementById(part);
-			if (!visible)
-				return;
-			files.value = part;
-			visible.style.display = 'block';
-			location.hash = part;
-		}
-		function onChange() {
-			select(files.value);
-			window.scrollTo(0, 0);
-		}
-		if (location.hash != "") {
-			select(location.hash.substr(1));
-		}
-		if (!visible) {
-			select("file0");
-		}
-	})();
-	</script>
+    </div>
+  </body>
+  <script>
+    (function () {
+      var files = document.getElementById("files");
+      var visible;
+      files.addEventListener("change", onChange, false);
+      function select(part) {
+        if (visible) visible.style.display = "none";
+        visible = document.getElementById(part);
+        if (!visible) return;
+        files.value = part;
+        visible.style.display = "block";
+        location.hash = part;
+      }
+      function onChange() {
+        select(files.value);
+        window.scrollTo(0, 0);
+      }
+      if (location.hash != "") {
+        select(location.hash.substr(1));
+      }
+      if (!visible) {
+        select("file0");
+      }
+    })();
+  </script>
 </html>

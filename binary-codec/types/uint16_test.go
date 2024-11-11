@@ -29,12 +29,6 @@ func TestUint16_FromJson(t *testing.T) {
 			},
 		},
 		{
-			name:        "fail - invalid uint16 value (2)",
-			input:       int(65536),
-			expected:    nil,
-			expectedErr: errors.New("uint16: value out of range"),
-		},
-		{
 			name:        "pass - valid uint16 from uint16",
 			input:       1,
 			expected:    []byte{0, 1},

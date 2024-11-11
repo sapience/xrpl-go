@@ -71,6 +71,13 @@ func TestSecp256k1_sign(t *testing.T) {
 		wantErr           bool
 	}{
 		{
+			name:              "valid message",
+			message:           "test message",
+			privKey:           "00D78B9735C3F26501C7337B8A5727FD53A6EFDBC6AA55984F098488561F985E23",
+			expectedSignature: "30440220583A91C95E54E6A651C47BEC22744E0B101E2C4060E7B08F6341657DAD9BC3EE02207D1489C7395DB0188D3A56A977ECBA54B36FA9371B40319655B1B4429E33EF2D",
+			wantErr:           false,
+		},
+		{
 			name:              "Valid signature",
 			message:           "Hello World",
 			privKey:           "00B167A9F3B9E60A4F93695713682C102438620AA1785C3AE635F53E5B6261071A",

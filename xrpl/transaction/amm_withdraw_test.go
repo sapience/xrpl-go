@@ -18,7 +18,7 @@ func TestAMMWithdraw_Flags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*AMMWithdraw)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "SetLPTokentFlag",

@@ -95,7 +95,7 @@ type XChainOwnedClaimID struct {
 	// that was signed, including the amount, which chain (locking or issuing), optional destination, and reward account for that signature.
 	XChainClaimAttestations []XChainClaimAttestation
 	// The unique sequence number for a cross-chain transfer.
-	XChainClaimID uint64
+	XChainClaimID string
 }
 
 // EntryType returns the type of the ledger entry.

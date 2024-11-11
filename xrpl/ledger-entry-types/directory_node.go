@@ -5,7 +5,7 @@ import (
 )
 
 type DirectoryNode struct {
-	Flags             uint
+	Flags             uint32
 	Indexes           []types.Hash256
 	IndexNext         string `json:",omitempty"`
 	IndexPrevious     string `json:",omitempty"`

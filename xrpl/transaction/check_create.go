@@ -8,8 +8,8 @@ type CheckCreate struct {
 	BaseTx
 	Destination    types.Address
 	SendMax        types.CurrencyAmount
-	DestinationTag uint          `json:",omitempty"`
-	Expiration     uint          `json:",omitempty"`
+	DestinationTag uint32        `json:",omitempty"`
+	Expiration     uint32        `json:",omitempty"`
 	InvoiceID      types.Hash256 `json:",omitempty"`
 }
 

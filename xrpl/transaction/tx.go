@@ -48,7 +48,7 @@ type BaseTx struct {
 	// transaction from the same account. The special case 0 means the transaction
 	// is using a Ticket instead.
 	//
-	Sequence uint `json:",omitempty"`
+	Sequence uint32 `json:",omitempty"`
 	//
 	// Hash value identifying another transaction. If provided, this transaction
 	// is only valid if the sending account's previously-sent transaction matches
@@ -56,19 +56,19 @@ type BaseTx struct {
 	//
 	AccountTxnID types.Hash256 `json:",omitempty"`
 	// Set of bit-flags for this transaction.
-	Flags uint `json:",omitempty"`
+	Flags uint32 `json:",omitempty"`
 	//
 	// Highest ledger index this transaction can appear in. Specifying this field
 	// places a strict upper limit on how long the transaction can wait to be
 	// validated or rejected.
 	//
-	LastLedgerSequence uint `json:",omitempty"`
+	LastLedgerSequence uint32 `json:",omitempty"`
 	//
 	// Additional arbitrary information used to identify this transaction.
 	//
 	Memos []MemoWrapper `json:",omitempty"`
 	// The network id of the transaction.
-	NetworkID uint `json:",omitempty"`
+	NetworkID uint32 `json:",omitempty"`
 	//
 	// Array of objects that represent a multi-signature which authorizes this
 	// transaction.
@@ -80,7 +80,7 @@ type BaseTx struct {
 	// specify the initial payment's SourceTag as the refund payment's
 	// DestinationTag.
 	//
-	SourceTag uint `json:",omitempty"`
+	SourceTag uint32 `json:",omitempty"`
 	//
 	// Hex representation of the public key that corresponds to the private key
 	// used to sign this transaction. If an empty string, indicates a
@@ -91,7 +91,7 @@ type BaseTx struct {
 	// The sequence number of the ticket to use in place of a Sequence number. If
 	// this is provided, Sequence must be 0. Cannot be used with AccountTxnID.
 	//
-	TicketSequence uint `json:",omitempty"`
+	TicketSequence uint32 `json:",omitempty"`
 	//
 	// The signature that verifies this transaction as originating from the
 	// account it says it is from.
@@ -116,7 +116,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["Fee"] = tx.Fee.String()
 	}
 	if tx.Sequence != 0 {
-		flattened["Sequence"] = tx.Sequence
+		flattened["Sequence"] = int(tx.Sequence)
 	}
 	if tx.AccountTxnID != "" {
 		flattened["AccountTxnID"] = tx.AccountTxnID.String()
@@ -125,7 +125,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["Flags"] = int(tx.Flags)
 	}
 	if tx.LastLedgerSequence != 0 {
-		flattened["LastLedgerSequence"] = tx.LastLedgerSequence
+		flattened["LastLedgerSequence"] = int(tx.LastLedgerSequence)
 	}
 	if len(tx.Memos) > 0 {
 		flattenedMemos := make([]any, 0)
@@ -151,13 +151,13 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["Signers"] = flattenedSigners
 	}
 	if tx.SourceTag != 0 {
-		flattened["SourceTag"] = tx.SourceTag
+		flattened["SourceTag"] = int(tx.SourceTag)
 	}
 	if tx.SigningPubKey != "" {
 		flattened["SigningPubKey"] = tx.SigningPubKey
 	}
 	if tx.TicketSequence != 0 {
-		flattened["TicketSequence"] = tx.TicketSequence
+		flattened["TicketSequence"] = int(tx.TicketSequence)
 	}
 	if tx.TxnSignature != "" {
 		flattened["TxnSignature"] = tx.TxnSignature
@@ -181,7 +181,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, errors.New("invalid fee amount, not a uint")
 	}
 
-	err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsUint)
+	err := ValidateOptionalField(flattenTx, "Sequence", typecheck.IsInt)
 	if err != nil {
 		return false, err
 	}
@@ -191,12 +191,12 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsUint)
+	err = ValidateOptionalField(flattenTx, "LastLedgerSequence", typecheck.IsInt)
 	if err != nil {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsUint)
+	err = ValidateOptionalField(flattenTx, "SourceTag", typecheck.IsInt)
 	if err != nil {
 		return false, err
 	}
@@ -206,7 +206,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsUint)
+	err = ValidateOptionalField(flattenTx, "TicketSequence", typecheck.IsInt)
 	if err != nil {
 		return false, err
 	}
@@ -216,7 +216,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsUint)
+	err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsInt)
 	if err != nil {
 		return false, err
 	}

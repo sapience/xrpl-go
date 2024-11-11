@@ -36,7 +36,7 @@ type NFTokenCreateOffer struct {
 	// The amount must be non-zero, except where this is an offer to sell and the asset is XRP; then, it is legal to specify an amount of zero, which means that the current owner of the token is giving it away, gratis, either to anyone at all, or to the account identified by the Destination field.
 	Amount types.CurrencyAmount
 	// (Optional) Time after which the offer is no longer active, in seconds since the Ripple Epoch.
-	Expiration uint `json:",omitempty"`
+	Expiration uint32 `json:",omitempty"`
 	// (Optional) If present, indicates that this offer may only be accepted by the specified account. Attempts by other accounts to accept this offer MUST fail.
 	Destination types.Address `json:",omitempty"`
 }
@@ -47,7 +47,7 @@ type NFTokenCreateOffer struct {
 
 const (
 	// If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
-	tfSellNFToken uint = 1
+	tfSellNFToken uint32 = 1
 )
 
 // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.

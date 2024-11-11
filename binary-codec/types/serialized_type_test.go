@@ -3,6 +3,8 @@ package types
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/stretchr/testify/require"
 )
 
@@ -70,7 +72,7 @@ func TestGetSerializedType(t *testing.T) {
 		{
 			name:     "pass - stobject",
 			input:    "STObject",
-			expected: &STObject{},
+			expected: NewSTObject(serdes.NewBinarySerializer(serdes.NewFieldIDCodec(definitions.Get()))),
 		},
 		{
 			name:     "pass - starray",

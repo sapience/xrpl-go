@@ -2,15 +2,29 @@ package serdes
 
 import (
 	"encoding/hex"
+	"errors"
+	"fmt"
 
-	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes/interfaces"
 )
+
+var (
+	ErrInvalidFieldIDLength = errors.New("invalid field ID length")
+)
+
+type FieldIDCodec struct {
+	definitions interfaces.Definitions
+}
+
+func NewFieldIDCodec(definitions interfaces.Definitions) *FieldIDCodec {
+	return &FieldIDCodec{definitions: definitions}
+}
 
 // Returns the unique field ID for a given field name.
 // This field ID consists of the type code and field code, in 1 to 3 bytes
 // depending on whether those values are "common" (<16) or "uncommon" (>16).
-func encodeFieldID(fieldName string) ([]byte, error) {
-	fh, err := definitions.Get().GetFieldHeaderByFieldName(fieldName)
+func (f *FieldIDCodec) Encode(fieldName string) ([]byte, error) {
+	fh, err := f.definitions.GetFieldHeaderByFieldName(fieldName)
 	if err != nil {
 		return nil, err
 	}
@@ -24,32 +38,31 @@ func encodeFieldID(fieldName string) ([]byte, error) {
 	if fh.TypeCode < 16 && fh.FieldCode >= 16 {
 		return append(b, byte(fh.TypeCode<<4), byte(fh.FieldCode)), nil
 	}
-	if fh.TypeCode >= 16 && fh.FieldCode >= 16 {
-		return append(b, 0, byte(fh.TypeCode), byte(fh.FieldCode)), nil
-	}
-	return nil, nil
+	return append(b, 0, byte(fh.TypeCode), byte(fh.FieldCode)), nil
 }
 
 // Returns the field name represented by the given field ID in hex string form.
 // nolint
-func decodeFieldID(h string) (string, error) {
+func (f *FieldIDCodec) Decode(h string) (string, error) {
 	b, err := hex.DecodeString(h)
 	if err != nil {
+		fmt.Println(err)
 		return "", err
 	}
+	fmt.Println(len(b))
 	if len(b) == 1 {
-		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[0]>>4), int32(b[0]&byte(15))))
+		return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(b[0]>>4), int32(b[0]&byte(15))))
 	}
 	if len(b) == 2 {
 		firstByteHighBits := b[0] >> 4
 		firstByteLowBits := b[0] & byte(15)
 		if firstByteHighBits == 0 {
-			return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(firstByteLowBits)))
+			return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(b[1]), int32(firstByteLowBits)))
 		}
-		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(firstByteHighBits), int32(b[1])))
+		return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(firstByteHighBits), int32(b[1])))
 	}
 	if len(b) == 3 {
-		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(b[2])))
+		return f.definitions.GetFieldNameByFieldHeader(f.definitions.CreateFieldHeader(int32(b[1]), int32(b[2])))
 	}
-	return "", nil
+	return "", ErrInvalidFieldIDLength
 }

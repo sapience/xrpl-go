@@ -1,5 +1,7 @@
 package definitions
 
+import "github.com/ugorji/go/codec"
+
 type FieldInstance struct {
 	FieldName string
 	*FieldInfo
@@ -20,9 +22,22 @@ type FieldHeader struct {
 	FieldCode int32
 }
 
-func CreateFieldHeader(tc, fc int32) FieldHeader {
+func (d *Definitions) CreateFieldHeader(tc, fc int32) FieldHeader {
 	return FieldHeader{
 		TypeCode:  tc,
 		FieldCode: fc,
 	}
+}
+
+type fieldInstanceMap map[string]*FieldInstance
+
+// CodecEncodeSelf implements the codec.SelfEncoder interface.
+func (fi *fieldInstanceMap) CodecEncodeSelf(_ *codec.Encoder) {}
+
+// CodecDecodeSelf implements the codec.SelfDecoder interface.
+func (fi *fieldInstanceMap) CodecDecodeSelf(d *codec.Decoder) {
+	var x [][]interface{}
+	d.MustDecode(&x)
+	y := convertToFieldInstanceMap(x)
+	*fi = y
 }

@@ -62,7 +62,7 @@ type AMMDeposit struct {
 // You must specify exactly one of these flags, plus any global flags.
 const (
 	// Perform a special double-asset deposit to an AMM with an empty pool.
-	tfTwoAssetIfEmpty uint = 8388608
+	tfTwoAssetIfEmpty uint32 = 8388608
 )
 
 // Perform a double-asset deposit and receive the specified amount of LP Tokens.

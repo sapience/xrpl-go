@@ -4,6 +4,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"testing"
+
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 )
 
 // nolint
@@ -20,10 +22,11 @@ func BenchmarkEncode(b *testing.B) {
 		},
 	}
 
+	codec := NewFieldIDCodec(definitions.Get())
 	for _, test := range tt {
 		b.Run(fmt.Sprintf("input_name_%v", test.input), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				encodeFieldID(test.input)
+				codec.Encode(test.input)
 			}
 		})
 	}
@@ -43,11 +46,12 @@ func BenchmarkDecode(b *testing.B) {
 		},
 	}
 
+	codec := NewFieldIDCodec(definitions.Get())
 	for _, test := range tt {
 		b.Run(fmt.Sprintf("input_name_%v", test.input), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				hex := hex.EncodeToString(test.input)
-				decodeFieldID(hex)
+				codec.Decode(hex)
 			}
 		})
 	}

@@ -7,7 +7,7 @@ import (
 type AccountDelete struct {
 	BaseTx
 	Destination    types.Address
-	DestinationTag uint `json:",omitempty"`
+	DestinationTag uint32 `json:",omitempty"`
 }
 
 func (*AccountDelete) TxType() TxType {
