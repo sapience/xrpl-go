@@ -137,6 +137,7 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 		})
 	}
 }
+
 func TestNFTokenMint_Validate(t *testing.T) {
 	tests := []struct {
 		name      string

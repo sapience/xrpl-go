@@ -1,6 +1,9 @@
 package transaction
 
 import (
+	"errors"
+
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -79,4 +82,44 @@ func (n *NFTokenCreateOffer) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate checks the validity of the NFTokenCreateOffer fields.
+func (n *NFTokenCreateOffer) Validate() (bool, error) {
+	ok, err := n.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	// check owner and account are not equal
+	if n.Owner == n.Account {
+		return false, errors.New("owner must be different from the account")
+	}
+
+	// check account and destination are not equal
+	if n.Destination == n.Account {
+		return false, errors.New("destination must be different from the account")
+	}
+
+	// check owner is a valid xrpl address
+	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
+		return false, errors.New("invalid xrpl address for the Owner field")
+	}
+
+	// check destination is a valid xrpl address
+	if n.Destination != "" && !addresscodec.IsValidClassicAddress(n.Destination.String()) {
+		return false, errors.New("invalid xrpl address for the Destination field")
+	}
+
+	// validate Sell Offer Cases
+	if IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner != "" {
+		return false, errors.New("owner must not be present for a sell offer")
+	}
+
+	// validate Buy Offer Cases
+	if !IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner == "" {
+		return false, errors.New("owner must be present for a buy offer")
+	}
+
+	return true, nil
 }

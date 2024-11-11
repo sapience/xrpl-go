@@ -379,7 +379,7 @@
 				
 				<option value="file161">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_cancel_offer.go (0.0%)</option>
 				
-				<option value="file162">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go (0.0%)</option>
+				<option value="file162">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go (100.0%)</option>
 				
 				<option value="file163">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_mint.go (100.0%)</option>
 				
@@ -421,21 +421,23 @@
 				
 				<option value="file182">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash256.go (0.0%)</option>
 				
-				<option value="file183">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (0.0%)</option>
+				<option value="file183">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_id.go (0.0%)</option>
 				
-				<option value="file184">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
+				<option value="file184">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (0.0%)</option>
 				
-				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
+				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
-				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
+				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
 				
-				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
+				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
-				<option value="file188">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
+				<option value="file188">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
 				
-				<option value="file189">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				<option value="file189">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
 				
-				<option value="file190">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
+				<option value="file190">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				
+				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -9944,26 +9946,128 @@ func (s *NFTokenCancelOffer) Flatten() FlatTransaction <span class="cov0" title=
 		<pre class="file" id="file162" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Creates either a new Sell offer for an NFToken owned by the account executing the transaction, or a new Buy offer for an NFToken owned by another account.
+//
+// If successful, the transaction creates a NFTokenOffer object. Each offer counts as one object towards the owner reserve of the account that placed the offer.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "TransactionType": "NFTokenCreateOffer",
+//                "Account": "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+//                "NFTokenID": "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+//                "Amount": "1000000",
+//                "Flags": 1
+//        }
+//
+// ```
 type NFTokenCreateOffer struct {
         BaseTx
-        Owner       types.Address `json:",omitempty"`
-        NFTokenID   types.NFTokenID
-        Amount      types.CurrencyAmount
-        Expiration  uint          `json:",omitempty"`
+        // (Optional) Who owns the corresponding NFToken.
+        // If the offer is to buy a token, this field must be present and it must be different than the Account field (since an offer to buy a token one already holds is meaningless).
+        // If the offer is to sell a token, this field must not be present, as the owner is, implicitly, the same as the Account (since an offer to sell a token one doesn't already hold is meaningless).
+        Owner types.Address `json:",omitempty"`
+        // Identifies the NFToken object that the offer references.
+        NFTokenID types.NFTokenID
+        // Indicates the amount expected or offered for the corresponding NFToken.
+        // The amount must be non-zero, except where this is an offer to sell and the asset is XRP; then, it is legal to specify an amount of zero, which means that the current owner of the token is giving it away, gratis, either to anyone at all, or to the account identified by the Destination field.
+        Amount types.CurrencyAmount
+        // (Optional) Time after which the offer is no longer active, in seconds since the Ripple Epoch.
+        Expiration uint `json:",omitempty"`
+        // (Optional) If present, indicates that this offer may only be accepted by the specified account. Attempts by other accounts to accept this offer MUST fail.
         Destination types.Address `json:",omitempty"`
 }
 
-func (*NFTokenCreateOffer) TxType() TxType <span class="cov0" title="0">{
+// **********************************
+// NFTokenCreateOffer Flags
+// **********************************
+
+const (
+        // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
+        tfSellNFToken uint = 1
+)
+
+// If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
+func (n *NFTokenCreateOffer) SetSellNFTokenFlag() <span class="cov8" title="1">{
+        n.Flags |= tfSellNFToken
+}</span>
+
+// TxType returns the type of the transaction (NFTokenCreateOffer).
+func (*NFTokenCreateOffer) TxType() TxType <span class="cov8" title="1">{
         return NFTokenCreateOfferTx
 }</span>
 
-// TODO: Implement flatten
-func (s *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the NFTokenCreateOffer transaction fields.
+func (n *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := n.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "NFTokenCreateOffer"
+
+        if n.Owner != "" </span><span class="cov8" title="1">{
+                flattened["Owner"] = n.Owner
+        }</span>
+
+        <span class="cov8" title="1">flattened["NFTokenID"] = n.NFTokenID
+        flattened["Amount"] = n.Amount
+
+        if n.Expiration != 0 </span><span class="cov8" title="1">{
+                flattened["Expiration"] = n.Expiration
+        }</span>
+
+        <span class="cov8" title="1">if n.Destination != "" </span><span class="cov8" title="1">{
+                flattened["Destination"] = n.Destination
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks the validity of the NFTokenCreateOffer fields.
+func (n *NFTokenCreateOffer) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := n.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check owner and account are not equal
+        <span class="cov8" title="1">if n.Owner == n.Account </span><span class="cov8" title="1">{
+                return false, errors.New("owner must be different from the account")
+        }</span>
+
+        // check account and destination are not equal
+        <span class="cov8" title="1">if n.Destination == n.Account </span><span class="cov8" title="1">{
+                return false, errors.New("destination must be different from the account")
+        }</span>
+
+        // check owner is a valid xrpl address
+        <span class="cov8" title="1">if n.Owner != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Owner.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("invalid xrpl address for the Owner field")
+        }</span>
+
+        // check destination is a valid xrpl address
+        <span class="cov8" title="1">if n.Destination != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Destination.String()) </span><span class="cov8" title="1">{
+                return false, errors.New("invalid xrpl address for the Destination field")
+        }</span>
+
+        // validate Sell Offer Cases
+        <span class="cov8" title="1">if IsFlagEnabled(n.Flags, tfSellNFToken) &amp;&amp; n.Owner != "" </span><span class="cov8" title="1">{
+                return false, errors.New("owner must not be present for a sell offer")
+        }</span>
+
+        // validate Buy Offer Cases
+        <span class="cov8" title="1">if !IsFlagEnabled(n.Flags, tfSellNFToken) &amp;&amp; n.Owner == "" </span><span class="cov8" title="1">{
+                return false, errors.New("owner must be present for a buy offer")
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file163" style="display: none">package transaction
@@ -10024,7 +10128,7 @@ type NFTokenMint struct {
 }
 
 // **********************************
-// OfferCreate Flags
+// NFTokenMint Flags
 // **********************************
 
 const (
@@ -11642,6 +11746,16 @@ func (h *Hash256) String() string <span class="cov0" title="0">{
 		
 		<pre class="file" id="file183" style="display: none">package types
 
+type NFTokenID Hash256
+
+// String returns the string representation of a NFTokenID.
+func (n *NFTokenID) String() string <span class="cov0" title="0">{
+        return string(*n)
+}</span>
+</pre>
+		
+		<pre class="file" id="file184" style="display: none">package types
+
 type NFTokenURI string
 
 // String returns the string representation of a NFTokenURI.
@@ -11650,7 +11764,7 @@ func (n *NFTokenURI) String() string <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file184" style="display: none">package transaction
+		<pre class="file" id="file185" style="display: none">package transaction
 
 import (
         "fmt"
@@ -11712,7 +11826,7 @@ func validateSigners(signers []Signer) error <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file185" style="display: none">package transaction
+		<pre class="file" id="file186" style="display: none">package transaction
 
 import (
         "errors"
@@ -11932,7 +12046,7 @@ func IsAsset(asset ledger.Asset) (bool, error) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file186" style="display: none">package xrpl
+		<pre class="file" id="file187" style="display: none">package xrpl
 
 import (
         "encoding/hex"
@@ -12112,7 +12226,7 @@ func (w *Wallet) GetAddress() string <span class="cov0" title="0">{
 // }
 </pre>
 		
-		<pre class="file" id="file187" style="display: none">package websocket
+		<pre class="file" id="file188" style="display: none">package websocket
 
 import (
         "bytes"
@@ -12502,7 +12616,7 @@ func (c *WebsocketClient) setTransactionFlags(tx *transaction.FlatTransaction) e
 }
 </pre>
 		
-		<pre class="file" id="file188" style="display: none">package websocket
+		<pre class="file" id="file189" style="display: none">package websocket
 
 type WebsocketClientConfig struct {
         // Connection config
@@ -12553,7 +12667,7 @@ func (wc WebsocketClientConfig) WithFaucetProvider(fp FaucetProvider) WebsocketC
 }</span>
 </pre>
 		
-		<pre class="file" id="file189" style="display: none">package websocket
+		<pre class="file" id="file190" style="display: none">package websocket
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/currency"
@@ -12664,7 +12778,7 @@ func (c *WebsocketClient) GetServerInfo(req *server.ServerInfoRequest) (*server.
 }
 </pre>
 		
-		<pre class="file" id="file190" style="display: none">package websocket
+		<pre class="file" id="file191" style="display: none">package websocket
 
 import (
         "fmt"

@@ -96,3 +96,156 @@ func TestNFTokenCreateOffer_Flatten(t *testing.T) {
 		})
 	}
 }
+func TestNFTokenCreateOffer_Validate(t *testing.T) {
+	tests := []struct {
+		name      string
+		input     *NFTokenCreateOffer
+		setter    func(*NFTokenCreateOffer)
+		wantValid bool
+		wantErr   bool
+	}{
+		{
+			name: "pass - valid sell offer",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:    types.XRPCurrencyAmount(1000000),
+			},
+			setter: func(n *NFTokenCreateOffer) {
+				n.SetSellNFTokenFlag()
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "fail - invalid BaseTx, missing account",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:    types.XRPCurrencyAmount(1000000),
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "pass - valid buy offer",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				Owner:     "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:    types.XRPCurrencyAmount(1000000),
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "fail - owner and account are equal",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				Owner:     "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:    types.XRPCurrencyAmount(1000000),
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - destination and account are equal",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				NFTokenID:   "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:      types.XRPCurrencyAmount(1000000),
+				Destination: "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - invalid owner address",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				Owner:     "invalidAddress",
+				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:    types.XRPCurrencyAmount(1000000),
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - invalid destination address",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				NFTokenID:   "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:      types.XRPCurrencyAmount(1000000),
+				Destination: "invalidAddress",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - owner present for sell offer",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				Owner:     "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:    types.XRPCurrencyAmount(1000000),
+			},
+			setter: func(n *NFTokenCreateOffer) {
+				n.SetSellNFTokenFlag()
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "invalid - owner not present for buy offer",
+			input: &NFTokenCreateOffer{
+				BaseTx: BaseTx{
+					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+					TransactionType: NFTokenCreateOfferTx,
+				},
+				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+				Amount:    types.XRPCurrencyAmount(1000000),
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.setter != nil {
+				tt.setter(tt.input)
+			}
+			valid, err := tt.input.Validate()
+			if valid != tt.wantValid {
+				t.Errorf("expected valid to be %v, got %v", tt.wantValid, valid)
+			}
+			if (err != nil) != tt.wantErr {
+				t.Errorf("expected error presence to be %v, got %v, err: %s", tt.wantErr, err != nil, err)
+			}
+		})
+	}
+}
