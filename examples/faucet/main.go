@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
-	"github.com/Peersyst/xrpl-go/pkg/random"
 	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
@@ -20,7 +19,7 @@ func main() {
 		WithFaucetProvider(testnetFaucet)
 	testnetClient := websocket.NewClient(testnetClientCfg)
 
-	wallet, err := xrpl.NewWallet(crypto.ED25519(), random.NewRandomizer())
+	wallet, err := xrpl.NewWallet(crypto.ED25519())
 	if err != nil {
 		fmt.Println(err)
 		return
