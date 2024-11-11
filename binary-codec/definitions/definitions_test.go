@@ -6,15 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func convertIntToBytes(i int32) []byte {
-
-	return []byte{3}
-}
-
 func TestLoadDefinitions(t *testing.T) {
-
-	err := loadDefinitions()
-	require.NoError(t, err)
+	loadDefinitions()
 	require.Equal(t, int32(-1), definitions.Types["Done"])
 	require.Equal(t, int32(4), definitions.Types["Hash128"])
 	require.Equal(t, int32(-3), definitions.LedgerEntryTypes["Any"])
@@ -65,22 +58,7 @@ func BenchmarkLoadDefinitions(b *testing.B) {
 	}
 }
 
-func TestConvertIntToBytes(t *testing.T) {
-	tt := []struct {
-		description string
-		input       int32
-		expected    []byte
-	}{
-		{
-			description: "Convert int < 256 to bytes",
-			input:       3,
-			expected:    []byte{3},
-		},
-	}
-
-	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
-			require.Equal(t, tc.expected, convertIntToBytes(tc.input))
-		})
-	}
+func TestGet(t *testing.T) {
+	loadDefinitions()
+	require.Equal(t, definitions, Get())
 }

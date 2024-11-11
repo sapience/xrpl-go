@@ -8,7 +8,7 @@ func TestPaymentChannelClaimFlags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*PaymentChannelClaim)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "SetRenewFlag",

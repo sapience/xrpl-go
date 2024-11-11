@@ -29,9 +29,9 @@ import (
 type OfferCreate struct {
 	BaseTx
 	// (Optional) Time after which the Offer is no longer active, in seconds since the Ripple Epoch.
-	Expiration uint `json:",omitempty"`
+	Expiration uint32 `json:",omitempty"`
 	// (Optional) An Offer to delete first, specified in the same way as OfferCancel.
-	OfferSequence uint `json:",omitempty"`
+	OfferSequence uint32 `json:",omitempty"`
 	// The amount and type of currency being sold.
 	TakerGets types.CurrencyAmount
 	// The amount and type of currency being bought.
@@ -44,13 +44,13 @@ type OfferCreate struct {
 
 const (
 	// tfPassive indicates that the offer is passive, meaning it does not consume offers that exactly match it, and instead waits to be consumed by an offer that exactly matches it.
-	tfPassive uint = 65536
+	tfPassive uint32 = 65536
 	// Treat the Offer as an Immediate or Cancel order. The Offer never creates an Offer object in the ledger: it only trades as much as it can by consuming existing Offers at the time the transaction is processed. If no Offers match, it executes "successfully" without trading anything. In this case, the transaction still uses the result code tesSUCCESS.
-	tfImmediateOrCancel uint = 131072
+	tfImmediateOrCancel uint32 = 131072
 	// Treat the offer as a Fill or Kill order. The Offer never creates an Offer object in the ledger, and is canceled if it cannot be fully filled at the time of execution. By default, this means that the owner must receive the full TakerPays amount; if the tfSell flag is enabled, the owner must be able to spend the entire TakerGets amount instead.
-	tfFillOrKill uint = 262144
+	tfFillOrKill uint32 = 262144
 	// tfSell indicates that the offer is selling, not buying.
-	tfSell uint = 524288
+	tfSell uint32 = 524288
 )
 
 // tfPassive indicates that the offer is passive, meaning it does not consume offers that exactly match it, and instead waits to be consumed by an offer that exactly matches it.

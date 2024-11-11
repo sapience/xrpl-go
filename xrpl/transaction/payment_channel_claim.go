@@ -8,7 +8,7 @@ const (
 	// Clear the channel's Expiration time. (Expiration is different from the
 	// channel's immutable CancelAfter time.) Only the source address of the
 	// payment channel can use this flag.
-	tfRenew uint = 65536 // 0x00010000
+	tfRenew uint32 = 65536 // 0x00010000
 	// Request to close the channel. Only the channel source and destination
 	// addresses can use this flag. This flag closes the channel immediately if it
 	// has no more XRP allocated to it after processing the current claim, or if
@@ -20,7 +20,7 @@ const (
 	// time.) If the destination address uses this flag when the channel still
 	// holds XRP, any XRP that remains after processing the claim is returned to
 	// the source address.
-	tfClose uint = 131072 // 0x00020000
+	tfClose uint32 = 131072 // 0x00020000
 )
 
 // Claim XRP from a payment channel, adjust the payment channel's expiration,

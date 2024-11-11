@@ -91,7 +91,7 @@ func TestAMMDeposit_Flags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*AMMDeposit)
-		expected uint
+		expected uint32
 	}{
 		{
 			name: "SetLPTokentFlag",

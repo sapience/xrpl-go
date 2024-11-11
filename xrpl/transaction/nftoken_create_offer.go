@@ -9,7 +9,7 @@ type NFTokenCreateOffer struct {
 	Owner       types.Address `json:",omitempty"`
 	NFTokenID   types.NFTokenID
 	Amount      types.CurrencyAmount
-	Expiration  uint          `json:",omitempty"`
+	Expiration  uint32        `json:",omitempty"`
 	Destination types.Address `json:",omitempty"`
 }
 

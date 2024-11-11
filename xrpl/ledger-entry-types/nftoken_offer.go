@@ -9,15 +9,15 @@ import (
 type NFTokenOffer struct {
 	Amount            types.CurrencyAmount
 	Destination       types.Address `json:",omitempty"`
-	Expiration        uint          `json:",omitempty"`
-	Flags             uint
+	Expiration        uint32        `json:",omitempty"`
+	Flags             uint32
 	LedgerEntryType   EntryType
 	NFTokenID         types.Hash256
 	NFTokenOfferNode  string `json:",omitempty"`
 	Owner             types.Address
 	OwnerNode         string `json:",omitempty"`
 	PreviousTxnID     types.Hash256
-	PreviousTxnLgrSeq uint
+	PreviousTxnLgrSeq uint32
 }
 
 func (*NFTokenOffer) EntryType() EntryType {
@@ -29,15 +29,15 @@ func (n *NFTokenOffer) UnmarshalJSON(data []byte) error {
 	type nftHelper struct {
 		Amount            json.RawMessage
 		Destination       types.Address
-		Expiration        uint
-		Flags             uint
+		Expiration        uint32
+		Flags             uint32
 		LedgerEntryType   EntryType
 		NFTokenID         types.Hash256
 		NFTokenOfferNode  string
 		Owner             types.Address
 		OwnerNode         string
 		PreviousTxnID     types.Hash256
-		PreviousTxnLgrSeq uint
+		PreviousTxnLgrSeq uint32
 	}
 	var h nftHelper
 	if err := json.Unmarshal(data, &h); err != nil {

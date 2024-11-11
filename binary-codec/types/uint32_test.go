@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
@@ -57,6 +58,8 @@ func TestUint32_FromJson(t *testing.T) {
 }
 
 func TestUint32_ToJson(t *testing.T) {
+	defs := definitions.Get()
+
 	tt := []struct {
 		name        string
 		input       []byte
@@ -79,7 +82,7 @@ func TestUint32_ToJson(t *testing.T) {
 			name:  "pass - valid uint32",
 			input: []byte{0, 0, 0, 1},
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{0, 0, 0, 1})
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 1}, defs)
 			},
 			expected:    1,
 			expectedErr: nil,
@@ -88,7 +91,7 @@ func TestUint32_ToJson(t *testing.T) {
 			name:  "pass - valid uint32 (2)",
 			input: []byte{0, 0, 0, 100},
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{0, 0, 0, 100})
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 100}, defs)
 			},
 			expected:    100,
 			expectedErr: nil,
@@ -97,7 +100,7 @@ func TestUint32_ToJson(t *testing.T) {
 			name:  "pass - valid uint32 (3)",
 			input: []byte{0, 0, 0, 255},
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{0, 0, 0, 255})
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 255}, defs)
 			},
 			expected:    255,
 			expectedErr: nil,

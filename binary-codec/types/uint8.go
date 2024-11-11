@@ -33,7 +33,8 @@ func (u *UInt8) FromJSON(value any) ([]byte, error) {
 	}
 
 	buf := new(bytes.Buffer)
-	err := binary.Write(buf, binary.BigEndian, uint8(intValue))
+	// TODO: Check if this is still needed
+	err := binary.Write(buf, binary.BigEndian, byte(intValue))
 	if err != nil {
 		return nil, err
 	}

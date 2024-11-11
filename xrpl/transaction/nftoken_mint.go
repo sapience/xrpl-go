@@ -6,7 +6,7 @@ import (
 
 type NFTokenMint struct {
 	BaseTx
-	NFTokenTaxon uint
+	NFTokenTaxon uint32
 	Issuer       types.Address    `json:",omitempty"`
 	TransferFee  uint16           `json:",omitempty"`
 	URI          types.NFTokenURI `json:",omitempty"`

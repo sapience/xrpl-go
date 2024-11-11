@@ -1,40 +1,14 @@
-//go:build unit
-// +build unit
-
 package serdes
 
 import (
-	"encoding/hex"
+	"errors"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/stretchr/testify/require"
 )
 
-// Returns the field name represented by the given field ID in hex string form.
-func decodeFieldID(h string) (string, error) {
-	b, err := hex.DecodeString(h)
-	if err != nil {
-		return "", err
-	}
-	if len(b) == 1 {
-		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[0]>>4), int32(b[0]&byte(15))))
-	}
-	if len(b) == 2 {
-		firstByteHighBits := b[0] >> 4
-		firstByteLowBits := b[0] & byte(15)
-		if firstByteHighBits == 0 {
-			return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(firstByteLowBits)))
-		}
-		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(firstByteHighBits), int32(b[1])))
-	}
-	if len(b) == 3 {
-		return definitions.Get().GetFieldNameByFieldHeader(definitions.CreateFieldHeader(int32(b[1]), int32(b[2])))
-	}
-	return "", nil
-}
-
-func TestEncodeFieldID(t *testing.T) {
+func TestFieldIDCodec_Encode(t *testing.T) {
 	tt := []struct {
 		description string
 		input       string
@@ -105,7 +79,7 @@ func TestEncodeFieldID(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.description, func(t *testing.T) {
-			got, err := encodeFieldID(tc.input)
+			got, err := NewFieldIDCodec(definitions.Get()).Encode(tc.input)
 
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
@@ -118,75 +92,84 @@ func TestEncodeFieldID(t *testing.T) {
 	}
 }
 
-func TestDecodeFieldID(t *testing.T) {
+func TestFieldIDCodec_Decode(t *testing.T) {
 	tt := []struct {
-		description string
-		input       []byte
+		name        string
+		input       string
 		expected    string
 		expectedErr error
 	}{
 		{
-			description: "Decode Sequence fieldId (Type Code and Field Code < 16)",
-			input:       []byte{36},
+			name:        "pass -Decode Sequence fieldId (Type Code and Field Code < 16)",
+			input:       "24",
 			expected:    "Sequence",
 			expectedErr: nil,
 		},
 		{
-			description: "Decode DestinationTag fieldId (Type Code and Field Code < 16)",
-			input:       []byte{46},
+			name:        "pass - Decode DestinationTag fieldId (Type Code and Field Code < 16)",
+			input:       "2e",
 			expected:    "DestinationTag",
 			expectedErr: nil,
 		},
 		{
-			description: "Decode Paths fieldId (Type Code >= 16 and Field Code < 16)",
-			input:       []byte{1, 18},
+			name:        "pass - Decode Paths fieldId (Type Code >= 16 and Field Code < 16)",
+			input:       "0112",
 			expected:    "Paths",
 			expectedErr: nil,
 		},
 		{
-			description: "Decode CloseResolution fieldId (Type Code >= 16 and Field Code < 16)",
-			input:       []byte{1, 16},
+			name:        "pass - Decode CloseResolution fieldId (Type Code >= 16 and Field Code < 16)",
+			input:       "0110",
 			expected:    "CloseResolution",
 			expectedErr: nil,
 		},
 		{
-			description: "Decode SetFlag fieldId (Type Code < 16 and Field Code >= 16)",
-			input:       []byte{32, 33},
+			name:        "pass - Decode SetFlag fieldId (Type Code < 16 and Field Code >= 16)",
+			input:       "2021",
 			expected:    "SetFlag",
 			expectedErr: nil,
 		},
 		{
-			description: "Decode Nickname fieldId (Type Code < 16 and Field Code >= 16)",
-			input:       []byte{80, 18},
+			name:        "pass - Decode Nickname fieldId (Type Code < 16 and Field Code >= 16)",
+			input:       "5012",
 			expected:    "Nickname",
 			expectedErr: nil,
 		},
 		{
-			description: "Decode TickSize fieldId (Type Code and Field Code >= 16)",
-			input:       []byte{0, 16, 16},
+			name:        "pass - Decode TickSize fieldId (Type Code and Field Code >= 16)",
+			input:       "001010",
 			expected:    "TickSize",
 			expectedErr: nil,
 		},
 		{
-			description: "Decode UNLModifyDisabling fieldId (Type Code and Field Code >= 16)",
-			input:       []byte{0, 16, 17},
+			name:        "pass - Decode UNLModifyDisabling fieldId (Type Code and Field Code >= 16)",
+			input:       "001011",
 			expected:    "UNLModifyDisabling",
 			expectedErr: nil,
 		},
 		{
-			description: "Non existent field name",
-			input:       []byte{255},
+			name:        "fail - Non existent field name",
+			input:       "ff",
 			expected:    "",
 			expectedErr: &definitions.NotFoundErrorFieldHeader{Instance: "FieldHeader"},
+		},
+		{
+			name:        "fail - Invalid hex string",
+			input:       "zz",
+			expected:    "",
+			expectedErr: errors.New("encoding/hex: invalid byte: U+007A"),
+		},
+		{
+			name:        "fail - Invalid field ID length",
+			input:       "ffffffff",
+			expected:    "",
+			expectedErr: ErrInvalidFieldIDLength,
 		},
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
-			hex := hex.EncodeToString(tc.input)
-			// fmt.Println("hex string:", hex)
-			actual, err := decodeFieldID(hex)
-			// fmt.Println(actual)
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := NewFieldIDCodec(definitions.Get()).Decode(tc.input)
 
 			if tc.expectedErr != nil {
 				require.Error(t, err, tc.expectedErr.Error())
