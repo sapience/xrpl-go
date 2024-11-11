@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/account"
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/common"
-	"github.com/Peersyst/xrpl-go/xrpl/model/requests/utility"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/utility"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc/testutil"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"
@@ -21,11 +21,11 @@ func TestJsonRpcClientCreation(t *testing.T) {
 
 	t.Run("Set config with valid port + ip", func(t *testing.T) {
 
-		cfg, _ := NewJsonRpcConfig("url")
+		cfg, _ := NewClientConfig("url")
 
-		jsonRpcClient := NewJsonRpcClient(cfg)
+		jsonRpcClient := NewClient(cfg)
 
-		assert.Equal(t, &JsonRpcClient{Config: cfg}, jsonRpcClient)
+		assert.Equal(t, &Client{Config: cfg}, jsonRpcClient)
 	})
 }
 
@@ -54,7 +54,7 @@ func TestCheckForError(t *testing.T) {
 
 		bodyBytes, err := CheckForError(res)
 		assert.NotNil(t, bodyBytes)
-		expError := &JsonRpcClientError{ErrorString: "ledgerIndexMalformed"}
+		expError := &ClientError{ErrorString: "ledgerIndexMalformed"}
 		assert.Equal(t, expError, err)
 	})
 
@@ -70,7 +70,7 @@ func TestCheckForError(t *testing.T) {
 
 		bodyBytes, err := CheckForError(res)
 		assert.NotNil(t, bodyBytes)
-		expErrpr := &JsonRpcClientError{ErrorString: "Null Method"}
+		expErrpr := &ClientError{ErrorString: "Null Method"}
 		assert.Equal(t, expErrpr, err)
 	})
 
@@ -114,13 +114,13 @@ func TestCheckForError(t *testing.T) {
 func TestCreateRequest(t *testing.T) {
 	t.Run("Create request", func(t *testing.T) {
 
-		req := &account.AccountChannelsRequest{
+		req := &account.ChannelsRequest{
 			Account:            "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 			DestinationAccount: "rnZvsWuLem5Ha46AZs61jLWR9R5esinkG3",
 			LedgerIndex:        common.VALIDATED,
 		}
 
-		expetedBody := JsonRpcRequest{
+		expetedBody := Request{
 			Method: "account_channels",
 			Params: [1]interface{}{req},
 		}
@@ -138,7 +138,7 @@ func TestCreateRequest(t *testing.T) {
 
 		var req *utility.PingRequest // params sent in as zero value struct
 
-		expetedBody := JsonRpcRequest{
+		expetedBody := Request{
 			Method: "ping",
 		}
 		expectedRequestBytes, _ := jsoniter.Marshal(expetedBody)
@@ -156,7 +156,7 @@ func TestCreateRequest(t *testing.T) {
 
 		req := &utility.PingRequest{} // means params get set an empty object
 
-		expetedBody := JsonRpcRequest{
+		expetedBody := Request{
 			Method: "ping",
 		}
 		expectedRequestBytes, _ := jsoniter.Marshal(expetedBody)
@@ -175,21 +175,21 @@ func TestSendRequest(t *testing.T) {
 
 	t.Run("SendRequest - Check headers and URL", func(t *testing.T) {
 
-		req := &account.AccountChannelsRequest{
+		req := &account.ChannelsRequest{
 			Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		}
 		var capturedRequest *http.Request
 
-		mc := &testutil.JsonRpcMockClient{}
+		mc := &testutil.JSONRPCMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			capturedRequest = req
 			return testutil.MockResponse(`{}`, 200, mc)(req)
 		}
 
-		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
+		cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
 		assert.NoError(t, err)
 
-		jsonRpcClient := NewJsonRpcClient(cfg)
+		jsonRpcClient := NewClient(cfg)
 
 		_, err = jsonRpcClient.SendRequest(req)
 
@@ -202,7 +202,7 @@ func TestSendRequest(t *testing.T) {
 
 	t.Run("SendRequest - sucessful response", func(t *testing.T) {
 
-		req := &account.AccountChannelsRequest{
+		req := &account.ChannelsRequest{
 			Account:            "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 			DestinationAccount: "rnZvsWuLem5Ha46AZs61jLWR9R5esinkG3",
 			LedgerIndex:        common.VALIDATED,
@@ -235,18 +235,18 @@ func TestSendRequest(t *testing.T) {
 			}]
 		  }`
 
-		mc := &testutil.JsonRpcMockClient{}
+		mc := &testutil.JSONRPCMockClient{}
 		mc.DoFunc = testutil.MockResponse(response, 200, mc)
 
-		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
+		cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
 		assert.NoError(t, err)
 
-		jsonRpcClient := NewJsonRpcClient(cfg)
+		jsonRpcClient := NewClient(cfg)
 
 		xrplResponse, err := jsonRpcClient.SendRequest(req)
 
-		expectedXrplResponse := &JsonRpcResponse{
-			Result: AnyJson{
+		expectedXrplResponse := &Response{
+			Result: AnyJSON{
 				"account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				"channels": []any{
 					map[string]any{
@@ -266,16 +266,16 @@ func TestSendRequest(t *testing.T) {
 			},
 			Warning: "none",
 			Warnings: []XRPLResponseWarning{{
-				Id:      1,
+				ID:      1,
 				Message: "message",
 			},
 			},
 		}
 
-		var channelsResponse account.AccountChannelsResponse
+		var channelsResponse account.ChannelsResponse
 		_ = xrplResponse.GetResult(&channelsResponse)
 
-		expected := &account.AccountChannelsResponse{
+		expected := &account.ChannelsResponse{
 			Account:     "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 			LedgerIndex: 71766314,
 			LedgerHash:  "1EDBBA3C793863366DF5B31C2174B6B5E6DF6DB89A7212B86838489148E2A581",
@@ -292,7 +292,7 @@ func TestSendRequest(t *testing.T) {
 
 	t.Run("SendRequest - error response", func(t *testing.T) {
 
-		req := &account.AccountChannelsRequest{
+		req := &account.ChannelsRequest{
 			Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		}
 		response := `{
@@ -308,13 +308,13 @@ func TestSendRequest(t *testing.T) {
 			}
 		}`
 
-		mc := &testutil.JsonRpcMockClient{}
+		mc := &testutil.JSONRPCMockClient{}
 		mc.DoFunc = testutil.MockResponse(response, 200, mc)
 
-		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
+		cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
 		assert.NoError(t, err)
 
-		jsonRpcClient := NewJsonRpcClient(cfg)
+		jsonRpcClient := NewClient(cfg)
 
 		_, err = jsonRpcClient.SendRequest(req)
 
@@ -323,21 +323,21 @@ func TestSendRequest(t *testing.T) {
 
 	t.Run("SendRequest - 503 response", func(t *testing.T) {
 
-		req := &account.AccountChannelsRequest{
+		req := &account.ChannelsRequest{
 			Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		}
 		response := `Service Unavailable`
 
-		mc := &testutil.JsonRpcMockClient{}
+		mc := &testutil.JSONRPCMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			mc.RequestCount++
 			return testutil.MockResponse(response, 503, mc)(req)
 		}
 
-		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
+		cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
 		assert.NoError(t, err)
 
-		jsonRpcClient := NewJsonRpcClient(cfg)
+		jsonRpcClient := NewClient(cfg)
 
 		_, err = jsonRpcClient.SendRequest(req)
 
@@ -349,7 +349,7 @@ func TestSendRequest(t *testing.T) {
 
 	t.Run("SendRequest - 503 response sucessfully resolves", func(t *testing.T) {
 
-		req := &account.AccountChannelsRequest{
+		req := &account.ChannelsRequest{
 			Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		}
 		sucessResponse := `{
@@ -360,7 +360,7 @@ func TestSendRequest(t *testing.T) {
 				}
 			}`
 
-		mc := &testutil.JsonRpcMockClient{}
+		mc := &testutil.JSONRPCMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			if mc.RequestCount < 3 {
 				// Return 503 response for the first three requests
@@ -371,17 +371,17 @@ func TestSendRequest(t *testing.T) {
 			return testutil.MockResponse(sucessResponse, 200, mc)(req)
 		}
 
-		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
+		cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
 		assert.NoError(t, err)
 
-		jsonRpcClient := NewJsonRpcClient(cfg)
+		jsonRpcClient := NewClient(cfg)
 
 		xrplResponse, err := jsonRpcClient.SendRequest(req)
 
-		var channelsResponse account.AccountChannelsResponse
+		var channelsResponse account.ChannelsResponse
 		_ = xrplResponse.GetResult(&channelsResponse)
 
-		expected := &account.AccountChannelsResponse{
+		expected := &account.ChannelsResponse{
 			Account:     "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 			LedgerIndex: 71766343,
 			LedgerHash:  "27F530E5C93ED5C13994812787C1ED073C822BAEC7597964608F2C049C2ACD2D",
@@ -397,21 +397,21 @@ func TestSendRequest(t *testing.T) {
 	})
 
 	t.Run("SendRequest - timeout", func(t *testing.T) {
-		req := &account.AccountChannelsRequest{
+		req := &account.ChannelsRequest{
 			Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		}
 
-		mc := &testutil.JsonRpcMockClient{}
+		mc := &testutil.JSONRPCMockClient{}
 		mc.DoFunc = func(req *http.Request) (*http.Response, error) {
 			// hit the timeout by not responding
 			time.Sleep(time.Second * 5)
 			return nil, errors.New("timeout")
 		}
 
-		cfg, err := NewJsonRpcConfig("http://testnode/", WithHttpClient(mc))
+		cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
 		assert.NoError(t, err)
 
-		jsonRpcClient := NewJsonRpcClient(cfg)
+		jsonRpcClient := NewClient(cfg)
 
 		_, err = jsonRpcClient.SendRequest(req)
 

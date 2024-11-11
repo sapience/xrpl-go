@@ -283,13 +283,13 @@ func TestGetFieldInfoByFieldName(t *testing.T) {
 	tt := []struct {
 		description   string
 		input         string
-		expected      *fieldInfo
+		expected      *FieldInfo
 		expectedError error
 	}{
 		{
 			description: "correct FieldInfo",
 			input:       "TransferRate",
-			expected: &fieldInfo{
+			expected: &FieldInfo{
 				Nth:            11,
 				IsVLEncoded:    false,
 				IsSerialized:   true,
@@ -336,7 +336,7 @@ func TestGetFieldInstanceByFieldName(t *testing.T) {
 			input:       "TransferRate",
 			expected: &FieldInstance{
 				FieldName: "TransferRate",
-				fieldInfo: &fieldInfo{
+				FieldInfo: &FieldInfo{
 					Nth:            11,
 					IsVLEncoded:    false,
 					IsSerialized:   true,

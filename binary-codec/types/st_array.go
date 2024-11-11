@@ -3,7 +3,7 @@ package types
 import (
 	"errors"
 
-	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
 const (
@@ -16,12 +16,12 @@ type STArray struct{}
 
 var ErrNotSTObjectInSTArray = errors.New("not STObject in STArray. Array fields must be STObjects")
 
-// FromJson is a method that takes a JSON value (which should be a slice of JSON objects),
+// FromJSON is a method that takes a JSON value (which should be a slice of JSON objects),
 // and converts it to a byte slice, representing the serialized form of the STArray.
-// It loops through the JSON slice, and for each element, calls the FromJson method
+// It loops through the JSON slice, and for each element, calls the FromJSON method
 // of an STObject, appending the resulting byte slice to a "sink" slice.
 // The method returns an error if the JSON value is not a slice.
-func (t *STArray) FromJson(json any) ([]byte, error) {
+func (t *STArray) FromJSON(json any) ([]byte, error) {
 	if _, ok := json.([]any); !ok {
 		return nil, ErrNotSTObjectInSTArray
 	}
@@ -29,7 +29,7 @@ func (t *STArray) FromJson(json any) ([]byte, error) {
 	var sink []byte
 	for _, v := range json.([]any) {
 		st := &STObject{}
-		b, err := st.FromJson(v)
+		b, err := st.FromJSON(v)
 		if err != nil {
 			return nil, err
 		}
@@ -40,11 +40,11 @@ func (t *STArray) FromJson(json any) ([]byte, error) {
 	return sink, nil
 }
 
-// ToJson is a method that takes a BinaryParser and optional parameters, and converts
+// ToJSON is a method that takes a BinaryParser and optional parameters, and converts
 // the serialized byte data back to a JSON value.
 // The method loops until the BinaryParser has no more data, and for each loop,
-// it calls the ToJson method of an STObject, appending the resulting JSON value to a "value" slice.
-func (t *STArray) ToJson(p *serdes.BinaryParser, opts ...int) (any, error) {
+// it calls the ToJSON method of an STObject, appending the resulting JSON value to a "value" slice.
+func (t *STArray) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	var value []any
 	count := 0
 
@@ -62,7 +62,7 @@ func (t *STArray) ToJson(p *serdes.BinaryParser, opts ...int) (any, error) {
 		}
 		fn := fi.FieldName
 		st := GetSerializedType(fi.Type)
-		res, err := st.ToJson(p)
+		res, err := st.ToJSON(p)
 		if err != nil {
 			return nil, err
 		}

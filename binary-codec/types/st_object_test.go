@@ -2,39 +2,32 @@ package types
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
+	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateFieldInstanceMapFromJson(t *testing.T) {
-
+func TestStObject_FromJson(t *testing.T) {
 	tt := []struct {
-		description string
-		input       map[string]interface{}
-		output      map[definitions.FieldInstance]interface{}
+		name        string
+		input       any
+		output      []byte
 		expectedErr error
 	}{
 		{
-			description: "convert valid Json",
-			input: map[string]interface{}{
-				"Fee":           "10",
-				"Flags":         524288,
-				"OfferSequence": 1752791,
-				"TakerGets":     "150000000000",
-			},
-			output: map[definitions.FieldInstance]interface{}{
-				getFieldInstance(t, "Fee"):           "10",
-				getFieldInstance(t, "Flags"):         524288,
-				getFieldInstance(t, "OfferSequence"): 1752791,
-				getFieldInstance(t, "TakerGets"):     "150000000000",
-			},
-			expectedErr: nil,
+			name:        "fail - input is not a map",
+			input:       1,
+			output:      nil,
+			expectedErr: errors.New("not a valid json node"),
 		},
+		// {}
 		{
-			description: "not found error",
+			name: "fail - not found error",
 			input: map[string]interface{}{
 				"IncorrectField": 89,
 				"Flags":          525288,
@@ -43,12 +36,37 @@ func TestCreateFieldInstanceMapFromJson(t *testing.T) {
 			output:      nil,
 			expectedErr: errors.New("FieldName IncorrectField not found"),
 		},
+		{
+			name: "pass - convert valid Json",
+			input: map[string]interface{}{
+				"Fee":           "10",
+				"Flags":         524288,
+				"OfferSequence": 1752791,
+				"TakerGets":     "150000000000",
+			},
+			output:      []byte{0x22, 0x0, 0x8, 0x0, 0x0, 0x20, 0x19, 0x0, 0x1a, 0xbe, 0xd7, 0x65, 0x40, 0x0, 0x0, 0x22, 0xec, 0xb2, 0x5c, 0x0, 0x68, 0x40, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xa},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - convert valid STObject with variable length",
+			input: map[string]interface{}{
+				"TransactionType":   "Payment",
+				"TransactionResult": 0,
+				"Fee":               "10",
+				"Flags":             524288,
+				"OfferSequence":     1752791,
+				"TakerGets":         "150000000000",
+			},
+			output:      []byte{0x12, 0x0, 0x0, 0x22, 0x0, 0x8, 0x0, 0x0, 0x20, 0x19, 0x0, 0x1a, 0xbe, 0xd7, 0x65, 0x40, 0x0, 0x0, 0x22, 0xec, 0xb2, 0x5c, 0x0, 0x68, 0x40, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xa, 0x3, 0x10, 0x0},
+			expectedErr: nil,
+		},
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
+			stObject := &STObject{}
 
-			got, err := createFieldInstanceMapFromJson(tc.input)
+			got, err := stObject.FromJSON(tc.input)
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
 			} else {
@@ -60,48 +78,108 @@ func TestCreateFieldInstanceMapFromJson(t *testing.T) {
 
 }
 
-func getFieldInstance(t *testing.T, fieldName string) definitions.FieldInstance {
-	t.Helper()
-	fi, err := definitions.Get().GetFieldInstanceByFieldName(fieldName)
-	if err != nil {
-		t.Fatalf("FieldInstance with FieldName %v", fieldName)
+func TestStObject_ToJson(t *testing.T) {
+	testcases := []struct {
+		name        string
+		malleate    func(t *testing.T) interfaces.BinaryParser
+		output      any
+		expectedErr error
+	}{
+		{
+			"fail - binary parser read field error",
+			func(t *testing.T) interfaces.BinaryParser {
+				parser := testutil.NewMockBinaryParser(gomock.NewController(t))
+				parser.EXPECT().HasMore().Return(true)
+				parser.EXPECT().ReadField().Return(nil, errors.New("read field error"))
+				return parser
+			},
+			nil,
+			errors.New("read field error"),
+		},
+		{
+			"pass - convert valid STObject",
+			func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0x22, 0x0, 0x8, 0x0, 0x0, 0x20, 0x19, 0x0, 0x1a, 0xbe, 0xd7, 0x65, 0x40, 0x0, 0x0, 0x22, 0xec, 0xb2, 0x5c, 0x0, 0x68, 0x40, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xa})
+			},
+			map[string]interface{}{
+				"Fee":           "10",
+				"Flags":         524288,
+				"OfferSequence": 1752791,
+				"TakerGets":     "150000000000",
+			},
+			nil,
+		},
+		{
+			"pass - convert valid STObject with variable length",
+			func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{0x12, 0x0, 0x0, 0x22, 0x0, 0x8, 0x0, 0x0, 0x20, 0x19, 0x0, 0x1a, 0xbe, 0xd7, 0x65, 0x40, 0x0, 0x0, 0x22, 0xec, 0xb2, 0x5c, 0x0, 0x68, 0x40, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xa, 0x3, 0x10, 0x0})
+			},
+			map[string]interface{}{
+				"TransactionType":   "Payment",
+				"TransactionResult": "tesSUCCESS",
+				"Fee":               "10",
+				"Flags":             524288,
+				"OfferSequence":     1752791,
+				"TakerGets":         "150000000000",
+			},
+			nil,
+		},
 	}
-	return *fi
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			stObject := &STObject{}
+			got, err := stObject.ToJSON(tc.malleate(t))
+			if tc.expectedErr != nil {
+				require.EqualError(t, err, tc.expectedErr.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.output, got)
+			}
+		})
+	}
 }
 
 func TestGetSortedKeys(t *testing.T) {
 	tt := []struct {
+		name   string
 		input  map[definitions.FieldInstance]interface{}
 		output []definitions.FieldInstance
 	}{
 		{
+			name: "pass - get sorted keys",
 			input: map[definitions.FieldInstance]interface{}{
-				getFieldInstance(t, "IndexNext"):       5100000,
-				getFieldInstance(t, "SourceTag"):       1232,
-				getFieldInstance(t, "LedgerEntryType"): 1,
+				testutil.GetFieldInstance(t, "TransactionType"):   1,
+				testutil.GetFieldInstance(t, "TransactionResult"): 0,
+				testutil.GetFieldInstance(t, "IndexNext"):         5100000,
+				testutil.GetFieldInstance(t, "SourceTag"):         1232,
+				testutil.GetFieldInstance(t, "LedgerEntryType"):   1,
 			},
 			output: []definitions.FieldInstance{
-				getFieldInstance(t, "LedgerEntryType"),
-				getFieldInstance(t, "SourceTag"),
-				getFieldInstance(t, "IndexNext"),
+				testutil.GetFieldInstance(t, "LedgerEntryType"),
+				testutil.GetFieldInstance(t, "TransactionType"),
+				testutil.GetFieldInstance(t, "SourceTag"),
+				testutil.GetFieldInstance(t, "IndexNext"),
+				testutil.GetFieldInstance(t, "TransactionResult"),
 			},
 		},
 		{
+			name: "pass - get sorted keys",
 			input: map[definitions.FieldInstance]interface{}{
-				getFieldInstance(t, "Account"):      "rMBzp8CgpE441cp5PVyA9rpVV7oT8hP3ys",
-				getFieldInstance(t, "TransferRate"): 4234,
-				getFieldInstance(t, "Expiration"):   23,
+				testutil.GetFieldInstance(t, "Account"):      "rMBzp8CgpE441cp5PVyA9rpVV7oT8hP3ys",
+				testutil.GetFieldInstance(t, "TransferRate"): 4234,
+				testutil.GetFieldInstance(t, "Expiration"):   23,
 			},
 			output: []definitions.FieldInstance{
-				getFieldInstance(t, "Expiration"),
-				getFieldInstance(t, "TransferRate"),
-				getFieldInstance(t, "Account"),
+				testutil.GetFieldInstance(t, "Expiration"),
+				testutil.GetFieldInstance(t, "TransferRate"),
+				testutil.GetFieldInstance(t, "Account"),
 			},
 		},
 	}
 
-	for i, tc := range tt {
-		t.Run(fmt.Sprintf("Test %v", i), func(t *testing.T) {
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
 			require.Equal(t, tc.output, getSortedKeys(tc.input))
 		})
 	}

@@ -2,12 +2,12 @@ package keypairs
 
 import (
 	"crypto/rand"
-	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/random"
 )
 
-var r randomizer
+var r random.Randomizer
 
 const (
 	VERIFICATIONMESSAGE = "This test message should verify."
@@ -17,16 +17,10 @@ func init() {
 	r.Reader = rand.Reader
 }
 
-type CryptoImplementation interface {
-	deriveKeypair(decodedSeed []byte, validator bool) (string, string, error)
-	sign(msg, privKey string) (string, error)
-	validate(msg, pubkey, sig string) bool
-}
-
-func GenerateSeed(entropy string, alg addresscodec.CryptoAlgorithm) (string, error) {
+func GenerateSeed(entropy string, alg CryptoImplementation) (string, error) {
 	var pe []byte
 	if entropy == "" {
-		b, err := r.generateBytes(addresscodec.FamilySeedLength)
+		b, err := r.GenerateBytes(addresscodec.FamilySeedLength)
 		pe = b
 		if err != nil {
 			return "", err
@@ -43,17 +37,13 @@ func DeriveKeypair(seed string, validator bool) (private, public string, err err
 	if err != nil {
 		return
 	}
-	ci := getCryptoImplementation(alg)
-	if ci == nil {
-		return "", "", &CryptoImplementationError{}
-	}
-	private, public, err = ci.deriveKeypair(ds, validator)
+	private, public, err = alg.DeriveKeypair(ds, validator)
 	if err != nil {
 		return
 	}
-	signature, err := ci.sign(VERIFICATIONMESSAGE, private)
+	signature, err := alg.Sign(VERIFICATIONMESSAGE, private)
 
-	if !ci.validate(VERIFICATIONMESSAGE, public, signature) {
+	if !alg.Validate(VERIFICATIONMESSAGE, public, signature) {
 		return "", "", &InvalidSignatureError{}
 	}
 	return
@@ -68,7 +58,7 @@ func Sign(msg, privKey string) (string, error) {
 	if alg == nil {
 		return "", &CryptoImplementationError{}
 	}
-	return alg.sign(msg, privKey)
+	return alg.Sign(msg, privKey)
 }
 
 func Validate(msg, pubKey, sig string) (bool, error) {
@@ -76,31 +66,7 @@ func Validate(msg, pubKey, sig string) (bool, error) {
 	if alg == nil {
 		return false, &CryptoImplementationError{}
 	}
-	return alg.validate(msg, pubKey, sig), nil
-}
-
-func getCryptoImplementation(alg addresscodec.CryptoAlgorithm) CryptoImplementation {
-	switch alg {
-	case addresscodec.ED25519:
-		return &ed25519Alg{}
-	default:
-		return nil
-	}
-}
-
-func getCryptoImplementationFromKey(k string) CryptoImplementation {
-	switch deformatKey(k)[0] {
-	case addresscodec.ED25519:
-		return &ed25519Alg{}
-	default:
-		return nil
-	}
-}
-
-type CryptoImplementationError struct{}
-
-func (e *CryptoImplementationError) Error() string {
-	return fmt.Sprintln("not a valid crypto implementation")
+	return alg.Validate(msg, pubKey, sig), nil
 }
 
 type InvalidSignatureError struct{}

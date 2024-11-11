@@ -5,8 +5,8 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
+	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
@@ -24,7 +24,7 @@ func main() {
 		return
 	}
 
-	_ = websocket.NewWebsocketClient(
+	_ = websocket.NewClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),

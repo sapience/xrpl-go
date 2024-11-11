@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/Peersyst/xrpl-go/xrpl"
+	"github.com/Peersyst/xrpl-go/xrpl/currency"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions"
-	"github.com/Peersyst/xrpl-go/xrpl/model/transactions/types"
-	"github.com/Peersyst/xrpl-go/xrpl/utils"
+	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 
-	client := websocket.NewWebsocketClient(
+	client := websocket.NewClient(
 		websocket.NewWebsocketClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
@@ -48,7 +48,7 @@ func main() {
 
 	fmt.Println("Balance: ", balance)
 
-	amount, err := utils.XrpToDrops("1")
+	amount, err := currency.XrpToDrops("1")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -101,7 +101,7 @@ func main() {
 	}
 
 	fmt.Println("Transaction signed")
-	fmt.Println("Transaction submitted\n")
+	fmt.Println("Transaction submitted")
 
 	response, err := client.SubmitTransactionBlob(txBlob, true)
 	if err != nil {

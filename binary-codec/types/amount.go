@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 	bigdecimal "github.com/Peersyst/xrpl-go/pkg/big-decimal"
 )
 
@@ -74,8 +74,8 @@ func (e *InvalidCodeError) Error() string {
 // Amount is a struct that represents an XRPL Amount.
 type Amount struct{}
 
-// FromJson serializes an issued currency amount to its bytes representation from JSON.
-func (a *Amount) FromJson(value any) ([]byte, error) {
+// FromJSON serializes an issued currency amount to its bytes representation from JSON.
+func (a *Amount) FromJSON(value any) ([]byte, error) {
 
 	switch value := value.(type) {
 	case string:
@@ -87,8 +87,8 @@ func (a *Amount) FromJson(value any) ([]byte, error) {
 	}
 }
 
-// ToJson deserializes a binary-encoded Amount object from a BinaryParser into a JSON representation.
-func (a *Amount) ToJson(p *serdes.BinaryParser, opts ...int) (any, error) {
+// ToJSON deserializes a binary-encoded Amount object from a BinaryParser into a JSON representation.
+func (a *Amount) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	b, err := p.Peek()
 	if err != nil {
 		return nil, err
@@ -103,15 +103,14 @@ func (a *Amount) ToJson(p *serdes.BinaryParser, opts ...int) (any, error) {
 			return nil, err
 		}
 		xrpVal := binary.BigEndian.Uint64(xrp)
-		xrpVal = xrpVal & 0x3FFFFFFFFFFFFFFF
+		xrpVal &= 0x3FFFFFFFFFFFFFFF
 		return sign + strconv.FormatUint(xrpVal, 10), nil
-	} else {
-		token, err := p.ReadBytes(48)
-		if err != nil {
-			return nil, err
-		}
-		return deserializeToken(token)
 	}
+	token, err := p.ReadBytes(48)
+	if err != nil {
+		return nil, err
+	}
+	return deserializeToken(token)
 }
 
 func deserializeToken(data []byte) (map[string]any, error) {
@@ -126,10 +125,7 @@ func deserializeToken(data []byte) (map[string]any, error) {
 			return nil, err
 		}
 	}
-	issuer, err := deserializeIssuer(data[28:])
-	if err != nil {
-		return nil, err
-	}
+	issuer := deserializeIssuer(data[28:])
 	curr, err := deserializeCurrencyCode(data[8:28])
 	if err != nil {
 		return nil, err
@@ -146,15 +142,15 @@ func deserializeValue(data []byte) (string, error) {
 	if !isPositive(data[0]) {
 		sign = "-"
 	}
-	value_bytes := data[:8]
-	b1 := value_bytes[0]
-	b2 := value_bytes[1]
+	valueBytes := data[:8]
+	b1 := valueBytes[0]
+	b2 := valueBytes[1]
 	e1 := int((b1 & 0x3F) << 2)
 	e2 := int(b2 >> 6)
 	exponent := e1 + e2 - 97
-	sig_figs := append([]byte{0, (b2 & 0x3F)}, value_bytes[2:]...)
-	sig_figs_int := binary.BigEndian.Uint64(sig_figs)
-	d, err := bigdecimal.NewBigDecimal(sign + strconv.Itoa(int(sig_figs_int)) + "e" + strconv.Itoa(exponent))
+	sigFigs := append([]byte{0, (b2 & 0x3F)}, valueBytes[2:]...)
+	sigFigsInt := binary.BigEndian.Uint64(sigFigs)
+	d, err := bigdecimal.NewBigDecimal(sign + strconv.Itoa(int(sigFigsInt)) + "e" + strconv.Itoa(exponent))
 	if err != nil {
 		return "", err
 	}
@@ -184,8 +180,8 @@ func deserializeCurrencyCode(data []byte) (string, error) {
 	return iso, nil
 }
 
-func deserializeIssuer(data []byte) (string, error) {
-	return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil
+func deserializeIssuer(data []byte) string {
+	return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
 }
 
 // verifyXrpValue validates the format of an XRP amount value.
@@ -393,7 +389,7 @@ func serializeIssuedCurrencyCodeChars(currency string) ([]byte, error) {
 
 	currencyBytes := make([]byte, 20)
 	copy(currencyBytes[12:], []byte(currency))
-	return currencyBytes[:], nil
+	return currencyBytes, nil
 }
 
 // SerializeIssuedCurrencyAmount serializes the currency field of an issued currency amount to its bytes representation

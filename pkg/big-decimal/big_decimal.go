@@ -93,15 +93,14 @@ func NewBigDecimal(value string) (bd *BigDecimal, err error) {
 	return
 }
 
-func getScaleAndUnscaledValNoE(p, s string) (sc int, uv string) {
-
+func getScaleAndUnscaledValNoE(p, _ string) (sc int, uv string) {
 	// check if the value contains a decimal character and split the string into prefix and suffix accordingly
 	decP, decS, decFound := strings.Cut(p, ".")
 	if decFound {
 		return valHasDecimal(0, decP, decS)
-	} else {
-		return valNoDecimalNoE(0, p, decP)
 	}
+
+	return valNoDecimalNoE(0, p, decP)
 }
 
 func getScaleAndUnscaledValWithE(p, s string) (sc int, uv string) {
@@ -113,9 +112,8 @@ func getScaleAndUnscaledValWithE(p, s string) (sc int, uv string) {
 	}
 	if decFound {
 		return valHasDecimal(sc, decP, decS)
-	} else {
-		return valNoDecimalHasE(sc, p, decP)
 	}
+	return valNoDecimalHasE(sc, p, decP)
 }
 
 func valHasDecimal(scale int, decP, decS string) (sc int, uv string) {
@@ -127,13 +125,13 @@ func valHasDecimal(scale int, decP, decS string) (sc int, uv string) {
 	return
 }
 
-func valNoDecimalNoE(scale int, prefix, decP string) (sc int, uv string) {
+func valNoDecimalNoE(_ int, prefix, decP string) (sc int, uv string) {
 	uv = strings.Trim(decP, "0")
 	sc = len(prefix) - len(strings.TrimRight(decP, "0"))
 	return
 }
 
-func valNoDecimalHasE(scale int, prefix, decP string) (sc int, uv string) {
+func valNoDecimalHasE(scale int, prefix, _ string) (sc int, uv string) {
 	uv = strings.Trim(prefix, "0")
 	sc = scale + len(strings.TrimLeft(prefix, "0")) - len(uv)
 	return

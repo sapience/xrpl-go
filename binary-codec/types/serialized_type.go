@@ -1,6 +1,8 @@
 package types
 
-import "github.com/Peersyst/xrpl-go/binary-codec/serdes"
+import (
+	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
+)
 
 // SerializedType is an interface representing any type that can be serialized
 // and deserialized to and from JSON.
@@ -8,8 +10,8 @@ import "github.com/Peersyst/xrpl-go/binary-codec/serdes"
 // The ToJson method takes a BinaryParser and optional parameters, and converts
 // the serialized byte data back to a JSON value.
 type SerializedType interface {
-	FromJson(json any) ([]byte, error)
-	ToJson(parser *serdes.BinaryParser, opts ...int) (any, error)
+	FromJSON(json any) ([]byte, error)
+	ToJSON(parser interfaces.BinaryParser, opts ...int) (any, error)
 }
 
 // GetSerializedType is a function that returns the correct SerializedType instance
@@ -47,6 +49,10 @@ func GetSerializedType(t string) SerializedType {
 		return &STArray{}
 	case "PathSet":
 		return &PathSet{}
+	case "XChainBridge":
+		return &XChainBridge{}
+	case "Issue":
+		return &Issue{}
 	}
 	return nil
 }

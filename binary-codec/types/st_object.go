@@ -6,6 +6,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/serdes"
+	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 )
 
 // STObject represents a map of serialized field instances, where each key is a field name
@@ -13,11 +14,11 @@ import (
 // and complex structures of the Ripple protocol.
 type STObject struct{}
 
-// FromJson converts a JSON object into a serialized byte slice.
+// FromJSON converts a JSON object into a serialized byte slice.
 // It works by converting the JSON object into a map of field instances (which include the field definition
 // and value), and then serializing each field instance.
 // This method returns an error if the JSON input is not a valid object.
-func (t *STObject) FromJson(json any) ([]byte, error) {
+func (t *STObject) FromJSON(json any) ([]byte, error) {
 	s := serdes.NewSerializer()
 	if _, ok := json.(map[string]any); !ok {
 		return nil, fmt.Errorf("not a valid json node")
@@ -36,7 +37,7 @@ func (t *STObject) FromJson(json any) ([]byte, error) {
 		}
 
 		st := GetSerializedType(v.Type)
-		b, err := st.FromJson(fimap[v])
+		b, err := st.FromJSON(fimap[v])
 		if err != nil {
 			return nil, err
 		}
@@ -48,10 +49,10 @@ func (t *STObject) FromJson(json any) ([]byte, error) {
 	return s.GetSink(), nil
 }
 
-// ToJson takes a BinaryParser and optional parameters, and converts the serialized byte data
+// ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data
 // back to a JSON value. It will continue parsing until it encounters an end marker for an object
 // or an array, or until the parser has no more data.
-func (t *STObject) ToJson(p *serdes.BinaryParser, opts ...int) (any, error) {
+func (t *STObject) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	m := make(map[string]any)
 
 	for p.HasMore() {
@@ -73,13 +74,13 @@ func (t *STObject) ToJson(p *serdes.BinaryParser, opts ...int) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			res, err = st.ToJson(p, vlen)
+			res, err = st.ToJSON(p, vlen)
 			if err != nil {
 				return nil, err
 			}
 
 		} else {
-			res, err = st.ToJson(p)
+			res, err = st.ToJSON(p)
 			if err != nil {
 				return nil, err
 			}
