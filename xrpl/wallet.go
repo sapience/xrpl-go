@@ -9,6 +9,7 @@ import (
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/keypairs"
+	"github.com/Peersyst/xrpl-go/pkg/random"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	"github.com/Peersyst/xrpl-go/xrpl/interfaces"
 	"github.com/tyler-smith/go-bip32"
@@ -28,7 +29,7 @@ type Wallet struct {
 // Creates a new random Wallet. In order to make this a valid account on ledger, you must
 // Send XRP to it.
 func NewWallet(alg interfaces.CryptoImplementation) (Wallet, error) {
-	seed, err := keypairs.GenerateSeed("", alg)
+	seed, err := keypairs.GenerateSeed("", alg, random.NewRandomizer())
 	if err != nil {
 		return Wallet{}, err
 	}

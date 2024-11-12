@@ -32,6 +32,7 @@ var (
 
 	// Invalid classic address
 	ErrInvalidClassicAddress = errors.New("invalid classic address")
+	ErrInvalidSeed = errors.New("invalid seed; could not determine encoding algorithm")
 )
 
 type EncodeLengthError struct {
@@ -142,7 +143,7 @@ func DecodeSeed(seed string) ([]byte, interfaces.CryptoImplementation, error) {
 	decoded, err := Base58CheckDecode(seed)
 
 	if err != nil {
-		return nil, crypto.Algorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
+		return nil, crypto.Algorithm{}, ErrInvalidSeed
 	}
 
 	if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) {

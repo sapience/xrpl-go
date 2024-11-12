@@ -117,9 +117,15 @@
 				
 				<option value="file30">github.com/Peersyst/xrpl-go/binary-codec/types/uint8.go (94.4%)</option>
 				
+<<<<<<< HEAD
 				<option value="file31">github.com/Peersyst/xrpl-go/binary-codec/types/vector256.go (85.7%)</option>
 				
 				<option value="file32">github.com/Peersyst/xrpl-go/binary-codec/types/xchain_bridge.go (100.0%)</option>
+=======
+				<option value="file31">github.com/Peersyst/xrpl-go/keypairs/crypto.go (100.0%)</option>
+				
+				<option value="file32">github.com/Peersyst/xrpl-go/keypairs/keypairs.go (89.7%)</option>
+>>>>>>> main
 				
 				<option value="file33">github.com/Peersyst/xrpl-go/keypairs/crypto.go (44.4%)</option>
 				
@@ -135,7 +141,11 @@
 				
 				<option value="file39">github.com/Peersyst/xrpl-go/pkg/crypto/secp256k1.go (90.3%)</option>
 				
+<<<<<<< HEAD
 				<option value="file40">github.com/Peersyst/xrpl-go/pkg/crypto/sha512.go (100.0%)</option>
+=======
+				<option value="file40">github.com/Peersyst/xrpl-go/pkg/random/main.go (83.3%)</option>
+>>>>>>> main
 				
 				<option value="file41">github.com/Peersyst/xrpl-go/pkg/crypto/types.go (0.0%)</option>
 				
@@ -458,6 +468,232 @@
 		<pre class="file" id="file0" style="display: none">package addresscodec
 
 import (
+<<<<<<< HEAD
+=======
+        "bytes"
+        "crypto/sha256"
+        "encoding/hex"
+        "errors"
+        "fmt"
+
+        "github.com/Peersyst/xrpl-go/pkg/crypto"
+        //nolint
+        "golang.org/x/crypto/ripemd160"
+)
+
+const (
+        // Lengths in bytes
+        AccountAddressLength   = 20
+        AccountPublicKeyLength = 33
+        FamilySeedLength       = 16
+        NodePublicKeyLength    = 33
+
+        // Account/classic address prefix - value is 0
+        AccountAddressPrefix = 0x00
+        // Account public key prefix - value is 35
+        AccountPublicKeyPrefix = 0x23
+        // Family seed prefix - value is 33
+        FamilySeedPrefix = 0x21
+        // Node/validation public key prefix - value is 28
+        NodePublicKeyPrefix = 0x1C
+)
+
+var (
+        // Errors
+        ErrInvalidSeed = errors.New("invalid seed; could not determine encoding algorithm")
+)
+
+type EncodeLengthError struct {
+        Instance string
+        Input    int
+        Expected int
+}
+
+func (e *EncodeLengthError) Error() string <span class="cov8" title="1">{
+        return fmt.Sprintf("`%v` length should be %v not %v", e.Instance, e.Expected, e.Input)
+}</span>
+
+type InvalidClassicAddressError struct {
+        Input string
+}
+
+func (e *InvalidClassicAddressError) Error() string <span class="cov8" title="1">{
+        return fmt.Sprintf("`%v` is an invalid classic address", e.Input)
+}</span>
+
+// Returns the base58 encoding of byte slice, with the given type prefix, whilst ensuring that the byte slice is the expected length.
+func Encode(b []byte, typePrefix []byte, expectedLength int) string <span class="cov8" title="1">{
+
+        if len(b) != expectedLength </span><span class="cov0" title="0">{
+                return ""
+        }</span>
+
+        <span class="cov8" title="1">return Base58CheckEncode(b, typePrefix...)</span>
+}
+
+// Returns the byte slice decoding of the base58-encoded string and prefix.
+func Decode(b58string string, typePrefix []byte) ([]byte, error) <span class="cov8" title="1">{
+
+        prefixLength := len(typePrefix)
+
+        if !bytes.Equal(DecodeBase58(b58string)[:prefixLength], typePrefix) </span><span class="cov8" title="1">{
+                return nil, errors.New("b58string prefix and typeprefix not equal")
+        }</span>
+
+        <span class="cov8" title="1">result, err := Base58CheckDecode(b58string)
+        result = result[prefixLength:]
+
+        return result, err</span>
+}
+
+// Returns the classic address from public key hex string.
+func EncodeClassicAddressFromPublicKeyHex(pubkeyhex string) (string, error) <span class="cov8" title="1">{
+
+        pubkey, err := hex.DecodeString(pubkeyhex)
+
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        <span class="cov8" title="1">if len(pubkey) == AccountPublicKeyLength-1 </span><span class="cov8" title="1">{
+                pubkey = append([]byte{crypto.ED25519().Prefix()}, pubkey...)
+        }</span> else<span class="cov8" title="1"> if len(pubkey) != AccountPublicKeyLength </span><span class="cov8" title="1">{
+                return "", &amp;EncodeLengthError{Instance: "PublicKey", Expected: AccountPublicKeyLength, Input: len(pubkey)}
+        }</span>
+
+        <span class="cov8" title="1">accountID := Sha256RipeMD160(pubkey)
+
+        if len(accountID) != AccountAddressLength </span><span class="cov0" title="0">{
+                return "", &amp;EncodeLengthError{Instance: "AccountID", Expected: AccountAddressLength, Input: len(accountID)}
+        }</span>
+
+        <span class="cov8" title="1">address := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
+
+        if !IsValidClassicAddress(address) </span><span class="cov0" title="0">{
+                return "", &amp;InvalidClassicAddressError{Input: address}
+        }</span>
+
+        <span class="cov8" title="1">return address, nil</span>
+}
+
+// Returns the decoded 'accountID' byte slice of the classic address.
+func DecodeClassicAddressToAccountID(cAddress string) (typePrefix, accountID []byte, err error) <span class="cov8" title="1">{
+
+        if len(DecodeBase58(cAddress)) != 25 </span><span class="cov8" title="1">{
+                return nil, nil, &amp;InvalidClassicAddressError{Input: cAddress}
+        }</span>
+
+        <span class="cov8" title="1">return DecodeBase58(cAddress)[:1], DecodeBase58(cAddress)[1:21], nil</span>
+
+}
+
+func IsValidClassicAddress(cAddress string) bool <span class="cov8" title="1">{
+        _, _, c := DecodeClassicAddressToAccountID(cAddress)
+
+        return c == nil
+}</span>
+
+// Returns a base58 encoding of a seed.
+func EncodeSeed(entropy []byte, encodingType CryptoImplementation) (string, error) <span class="cov8" title="1">{
+
+        if len(entropy) != FamilySeedLength </span><span class="cov8" title="1">{
+                return "", &amp;EncodeLengthError{Instance: "Entropy", Input: len(entropy), Expected: FamilySeedLength}
+        }</span>
+
+        <span class="cov8" title="1">if encodingType == crypto.ED25519() </span><span class="cov8" title="1">{
+                prefix := []byte{0x01, 0xe1, 0x4b}
+                return Encode(entropy, prefix, FamilySeedLength), nil
+        }</span> else<span class="cov8" title="1"> if secp256k1 := crypto.SECP256K1(); encodingType == secp256k1 </span><span class="cov8" title="1">{
+                prefix := []byte{secp256k1.FamilySeedPrefix()}
+                return Encode(entropy, prefix, FamilySeedLength), nil
+        }</span>
+        <span class="cov8" title="1">return "", errors.New("encoding type must be `ed25519` or `secp256k1`")</span>
+
+}
+
+// Returns decoded seed and its algorithm.
+func DecodeSeed(seed string) ([]byte, CryptoImplementation, error) <span class="cov8" title="1">{
+
+        // decoded := DecodeBase58(seed)
+        decoded, err := Base58CheckDecode(seed)
+
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, crypto.Algorithm{}, ErrInvalidSeed
+        }</span>
+
+        <span class="cov8" title="1">if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) </span><span class="cov8" title="1">{
+                return decoded[3:], crypto.ED25519(), nil
+        }</span>
+
+        <span class="cov8" title="1">return decoded[1:], crypto.SECP256K1(), nil</span>
+
+}
+
+// Returns byte slice of a double hashed given byte slice.
+// The given byte slice is SHA256 hashed, then the result is RIPEMD160 hashed.
+func Sha256RipeMD160(b []byte) []byte <span class="cov8" title="1">{
+        sha256 := sha256.New()
+        sha256.Write(b)
+
+        // TODO: Check if this is still needed
+        //nolint:gosec // G406: Use of deprecated weak cryptographic primitive (gosec)
+        ripemd160 := ripemd160.New()
+        ripemd160.Write(sha256.Sum(nil))
+
+        return ripemd160.Sum(nil)
+}</span>
+
+// Returns the node public key encoding of the byte slice as a base58 string.
+func EncodeNodePublicKey(b []byte) (string, error) <span class="cov8" title="1">{
+
+        if len(b) != NodePublicKeyLength </span><span class="cov8" title="1">{
+                return "", &amp;EncodeLengthError{Instance: "NodePublicKey", Expected: NodePublicKeyLength, Input: len(b)}
+        }</span>
+
+        <span class="cov8" title="1">npk := Base58CheckEncode(b, NodePublicKeyPrefix)
+
+        return npk, nil</span>
+}
+
+// Returns the decoded node public key encoding as a byte slice from a base58 string.
+func DecodeNodePublicKey(key string) ([]byte, error) <span class="cov8" title="1">{
+
+        decodedNodeKey, err := Decode(key, []byte{NodePublicKeyPrefix})
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return decodedNodeKey, nil</span>
+}
+
+// Returns the account public key encoding of the byte slice as a base58 string.
+func EncodeAccountPublicKey(b []byte) (string, error) <span class="cov8" title="1">{
+
+        if len(b) != AccountPublicKeyLength </span><span class="cov8" title="1">{
+                return "", &amp;EncodeLengthError{Instance: "AccountPublicKey", Expected: AccountPublicKeyLength, Input: len(b)}
+        }</span>
+
+        <span class="cov8" title="1">apk := Base58CheckEncode(b, AccountPublicKeyPrefix)
+
+        return apk, nil</span>
+}
+
+// Returns the decoded account public key encoding as a byte slice from a base58 string.
+func DecodeAccountPublicKey(key string) ([]byte, error) <span class="cov8" title="1">{
+
+        decodedAccountKey, err := Decode(key, []byte{AccountPublicKeyPrefix})
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return decodedAccountKey, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package addresscodec
+
+import (
+>>>>>>> main
         "math/big"
 )
 
@@ -3722,67 +3958,60 @@ func (x *XChainBridge) ToJSON(p interfaces.BinaryParser, opts ...int) (any, erro
 
 import (
         "encoding/hex"
-        "fmt"
+        "errors"
 
+        "github.com/Peersyst/xrpl-go/keypairs/interfaces"
         "github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
-// -------------------------------------------------------------------------------------------------
-// ERRORS
-// -------------------------------------------------------------------------------------------------
-
-type CryptoImplementationError struct{}
-
-func (e *CryptoImplementationError) Error() string <span class="cov0" title="0">{
-        return fmt.Sprintln("not a valid crypto implementation")
-}</span>
-
-// -------------------------------------------------------------------------------------------------
-// FUNCTIONS
-// -------------------------------------------------------------------------------------------------
+// Errors
+var (
+        ErrInvalidCryptoImplementation = errors.New("not a valid crypto implementation")
+)
 
 // GetCryptoImplementationFromKey returns the CryptoImplementation based on the key
-func getCryptoImplementationFromKey(k string) CryptoImplementation <span class="cov8" title="1">{
+func getCryptoImplementationFromKey(k string) interfaces.CryptoImplementation <span class="cov8" title="1">{
         prefix, err := hex.DecodeString(k[:2])
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil
         }</span>
 
         <span class="cov8" title="1">if ed25519 := crypto.ED25519(); prefix[0] == ed25519.Prefix() </span><span class="cov8" title="1">{
                 return ed25519
         }</span>
-        <span class="cov0" title="0">if secp256k1 := crypto.SECP256K1(); prefix[0] == secp256k1.Prefix() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if secp256k1 := crypto.SECP256K1(); prefix[0] == secp256k1.Prefix() </span><span class="cov8" title="1">{
                 return secp256k1
         }</span>
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
 		<pre class="file" id="file34" style="display: none">package keypairs
 
 import (
-        "crypto/rand"
+        "errors"
 
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-        "github.com/Peersyst/xrpl-go/pkg/random"
+        "github.com/Peersyst/xrpl-go/keypairs/interfaces"
 )
 
-var r random.Randomizer
+var (
+        // Errors
+
+        // Derived keypair did not generate verifiable signature
+        ErrInvalidSignature = errors.New("derived keypair did not generate verifiable signature")
+)
 
 const (
-        VERIFICATIONMESSAGE = "This test message should verify."
+        verificationMessage = "This test message should verify."
 )
 
-func init() <span class="cov8" title="1">{
-        r.Reader = rand.Reader
-}</span>
-
-func GenerateSeed(entropy string, alg CryptoImplementation) (string, error) <span class="cov8" title="1">{
+func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfaces.Randomizer) (string, error) <span class="cov8" title="1">{
         var pe []byte
+        var err error
         if entropy == "" </span><span class="cov8" title="1">{
-                b, err := r.GenerateBytes(addresscodec.FamilySeedLength)
-                pe = b
-                if err != nil </span><span class="cov0" title="0">{
+                pe, err = r.GenerateBytes(addresscodec.FamilySeedLength)
+                if err != nil </span><span class="cov8" title="1">{
                         return "", err
                 }</span>
         } else<span class="cov8" title="1"> {
@@ -3794,19 +4023,21 @@ func GenerateSeed(entropy string, alg CryptoImplementation) (string, error) <spa
 // Derives a keypair from a given seed. Returns a tuple of private key and public key
 func DeriveKeypair(seed string, validator bool) (private, public string, err error) <span class="cov8" title="1">{
         ds, alg, err := addresscodec.DecodeSeed(seed)
-        if err != nil </span><span class="cov0" title="0">{
-                return
+        if err != nil </span><span class="cov8" title="1">{
+                return "", "", err
         }</span>
         <span class="cov8" title="1">private, public, err = alg.DeriveKeypair(ds, validator)
         if err != nil </span><span class="cov0" title="0">{
-                return
+                return "", "", err
         }</span>
-        <span class="cov8" title="1">signature, err := alg.Sign(VERIFICATIONMESSAGE, private)
-
-        if !alg.Validate(VERIFICATIONMESSAGE, public, signature) </span><span class="cov0" title="0">{
-                return "", "", &amp;InvalidSignatureError{}
+        <span class="cov8" title="1">signature, err := alg.Sign(verificationMessage, private)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", "", err
         }</span>
-        <span class="cov8" title="1">return</span>
+        <span class="cov8" title="1">if !alg.Validate(verificationMessage, public, signature) </span><span class="cov0" title="0">{
+                return "", "", ErrInvalidSignature
+        }</span>
+        <span class="cov8" title="1">return private, public, nil</span>
 }
 
 func DeriveClassicAddress(pubkey string) (string, error) <span class="cov8" title="1">{
@@ -3815,25 +4046,19 @@ func DeriveClassicAddress(pubkey string) (string, error) <span class="cov8" titl
 
 func Sign(msg, privKey string) (string, error) <span class="cov8" title="1">{
         alg := getCryptoImplementationFromKey(privKey)
-        if alg == nil </span><span class="cov0" title="0">{
-                return "", &amp;CryptoImplementationError{}
+        if alg == nil </span><span class="cov8" title="1">{
+                return "", ErrInvalidCryptoImplementation
         }</span>
         <span class="cov8" title="1">return alg.Sign(msg, privKey)</span>
 }
 
 func Validate(msg, pubKey, sig string) (bool, error) <span class="cov8" title="1">{
         alg := getCryptoImplementationFromKey(pubKey)
-        if alg == nil </span><span class="cov0" title="0">{
-                return false, &amp;CryptoImplementationError{}
+        if alg == nil </span><span class="cov8" title="1">{
+                return false, ErrInvalidCryptoImplementation
         }</span>
         <span class="cov8" title="1">return alg.Validate(msg, pubKey, sig), nil</span>
 }
-
-type InvalidSignatureError struct{}
-
-func (e *InvalidSignatureError) Error() string <span class="cov0" title="0">{
-        return "derived keypair did not generate verifiable signature"
-}</span>
 </pre>
 		
 		<pre class="file" id="file35" style="display: none">package main
@@ -4423,15 +4648,24 @@ func GetKeys(m map[string]interface{}) []string <span class="cov8" title="1">{
 		
 		<pre class="file" id="file43" style="display: none">package random
 
-import "io"
+import (
+        "crypto/rand"
+        "io"
+)
 
 type Randomizer struct {
         io.Reader
 }
 
+func NewRandomizer() *Randomizer <span class="cov8" title="1">{
+        return &amp;Randomizer{
+                Reader: rand.Reader,
+        }
+}</span>
+
 func (r *Randomizer) GenerateBytes(n int) ([]byte, error) <span class="cov8" title="1">{
         b := make([]byte, n)
-        _, err := r.Read(b) //nolint
+        _, err := r.Read(b)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
@@ -12217,6 +12451,7 @@ import (
         "github.com/Peersyst/xrpl-go/address-codec/interfaces"
         binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
         "github.com/Peersyst/xrpl-go/keypairs"
+        "github.com/Peersyst/xrpl-go/pkg/random"
         "github.com/Peersyst/xrpl-go/xrpl/hash"
         "github.com/tyler-smith/go-bip32"
         "github.com/tyler-smith/go-bip39"
@@ -12238,8 +12473,13 @@ type CryptoImplementation interface {
 
 // Creates a new random Wallet. In order to make this a valid account on ledger, you must
 // Send XRP to it.
+<<<<<<< HEAD
 func NewWallet(alg CryptoImplementation) (Wallet, error) <span class="cov0" title="0">{
         seed, err := keypairs.GenerateSeed("", alg)
+=======
+func NewWallet(alg addresscodec.CryptoImplementation) (Wallet, error) <span class="cov0" title="0">{
+        seed, err := keypairs.GenerateSeed("", alg, random.NewRandomizer())
+>>>>>>> main
         if err != nil </span><span class="cov0" title="0">{
                 return Wallet{}, err
         }</span>
