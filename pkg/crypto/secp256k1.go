@@ -4,6 +4,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/big"
 	"strings"
 
@@ -160,4 +161,43 @@ func (c SECP256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 		return false
 	}
 	return parsedSig.Verify(hash, pubKey)
+}
+
+func (c SECP256K1CryptoAlgorithm) DerivePublicKeyFromPublicGenerator(pubKey []byte) ([]byte, error) {
+    // Get the curve
+    curve := btcec.S256()
+    
+    // Parse the input public key as a point
+    rootPubKey, err := btcec.ParsePubKey(pubKey)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Derive scalar using existing function
+    scalar := c.deriveScalar(pubKey, big.NewInt(0))
+    
+    // Multiply base point with scalar
+    x, y := curve.ScalarBaseMult(scalar.Bytes())
+	xField, yField := secp256k1.FieldVal{}, secp256k1.FieldVal{}
+	fmt.Println("x", len(x.Bytes()), x.Bytes())
+	fmt.Println("y", len(y.Bytes()), y.Bytes())
+	xField.SetByteSlice(x.Bytes())
+	yField.SetByteSlice(y.Bytes())
+	scalarPoint := secp256k1.NewPublicKey(&xField, &yField)
+    
+    // Add the points
+    resultX, resultY := curve.Add(
+        rootPubKey.X(), rootPubKey.Y(),
+        scalarPoint.X(), scalarPoint.Y(),
+    )
+
+	resultXField, resultYField := secp256k1.FieldVal{}, secp256k1.FieldVal{}
+	resultXField.SetByteSlice(resultX.Bytes())
+	resultYField.SetByteSlice(resultY.Bytes())
+    
+    // Create the final public key
+    finalPubKey := secp256k1.NewPublicKey(&resultXField, &resultYField)
+    
+    // Return compressed format
+    return finalPubKey.SerializeCompressed(), nil
 }

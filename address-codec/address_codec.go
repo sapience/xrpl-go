@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Peersyst/xrpl-go/keypairs/interfaces"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
+
 	//nolint
 	"golang.org/x/crypto/ripemd160"
 )
@@ -125,7 +127,7 @@ func IsValidClassicAddress(cAddress string) bool {
 }
 
 // Returns a base58 encoding of a seed.
-func EncodeSeed(entropy []byte, encodingType CryptoImplementation) (string, error) {
+func EncodeSeed(entropy []byte, encodingType interfaces.CryptoImplementation) (string, error) {
 
 	if len(entropy) != FamilySeedLength {
 		return "", &EncodeLengthError{Instance: "Entropy", Input: len(entropy), Expected: FamilySeedLength}
@@ -143,13 +145,13 @@ func EncodeSeed(entropy []byte, encodingType CryptoImplementation) (string, erro
 }
 
 // Returns decoded seed and its algorithm.
-func DecodeSeed(seed string) ([]byte, CryptoImplementation, error) {
+func DecodeSeed(seed string) ([]byte, interfaces.CryptoImplementation, error) {
 
 	// decoded := DecodeBase58(seed)
 	decoded, err := Base58CheckDecode(seed)
 
 	if err != nil {
-		return nil, crypto.Algorithm{}, ErrInvalidSeed
+		return nil, nil, ErrInvalidSeed
 	}
 
 	if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) {

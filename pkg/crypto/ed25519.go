@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/ed25519"
 	"encoding/hex"
+	"errors"
 	"strings"
 )
 
@@ -71,4 +72,8 @@ type ed25519ValidatorError struct{}
 
 func (e *ed25519ValidatorError) Error() string {
 	return "validator keypairs can not use Ed25519"
+}
+
+func (c ED25519CryptoAlgorithm) DerivePublicKeyFromPublicGenerator(pubKey []byte) ([]byte, error) {
+	return nil, errors.New("not implemented")
 }

@@ -5,6 +5,7 @@ import (
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/keypairs/interfaces"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
 var (
@@ -60,8 +61,26 @@ func DeriveKeypair(seed string, validator bool) (private, public string, err err
 
 // DeriveClassicAddress derives a classic address from a given public key.
 // The public key has to be encoded using the addresscodec package. Otherwise, it returns an error.
-func DeriveClassicAddress(pubkey string) (string, error) {
-	return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubkey)
+func DeriveClassicAddress(pubKey string) (string, error) {
+	return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubKey)
+}
+
+// Only for SECP256K1 curve.
+// 
+func DeriveNodeAddress(pubKey string) (string, error) {
+	decoded, err := addresscodec.DecodeNodePublicKey(pubKey)
+	if err != nil {
+		return "", err
+	}
+
+	accountPubKey, err := crypto.SECP256K1().DerivePublicKeyFromPublicGenerator(decoded)
+	if err != nil {
+		return "", err
+	}
+
+	_ = addresscodec.Sha256RipeMD160(accountPubKey)
+
+	return "", nil
 }
 
 // Sign signs a message with a given private key.
