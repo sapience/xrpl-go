@@ -20,7 +20,7 @@ func TestNFTokenAcceptOffer_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "BaseTx only NFTokenAcceptOffer",
+			name: "pass - BaseTx only NFTokenAcceptOffer",
 			tx: &NFTokenAcceptOffer{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
@@ -33,7 +33,7 @@ func TestNFTokenAcceptOffer_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "NFTokenAcceptOffer with Sell Offer",
+			name: "pass - NFTokenAcceptOffer with Sell Offer",
 			tx: &NFTokenAcceptOffer{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
@@ -48,7 +48,7 @@ func TestNFTokenAcceptOffer_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "NFTokenAcceptOffer with Buy Offer",
+			name: "pass - NFTokenAcceptOffer with Buy Offer",
 			tx: &NFTokenAcceptOffer{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
@@ -63,7 +63,7 @@ func TestNFTokenAcceptOffer_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "NFTokenAcceptOffer with Broker Fee",
+			name: "pass - NFTokenAcceptOffer with Broker Fee",
 			tx: &NFTokenAcceptOffer{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
@@ -78,7 +78,7 @@ func TestNFTokenAcceptOffer_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "NFTokenAcceptOffer with all fields",
+			name: "pass - NFTokenAcceptOffer with all fields",
 			tx: &NFTokenAcceptOffer{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",

@@ -20,7 +20,7 @@ func TestNFTokenCancelOffer_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Empty NFTokenOffers",
+			name: "pass - Empty NFTokenOffers",
 			tx: &NFTokenCancelOffer{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -34,7 +34,7 @@ func TestNFTokenCancelOffer_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "With NFTokenOffers",
+			name: "pass - With NFTokenOffers",
 			tx: &NFTokenCancelOffer{
 				BaseTx: BaseTx{
 					Account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",

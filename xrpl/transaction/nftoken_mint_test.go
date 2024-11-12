@@ -84,7 +84,7 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Flatten with all fields",
+			name: "pass - Flatten with all fields",
 			nft: &NFTokenMint{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -106,7 +106,7 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Flatten with minimal fields",
+			name: "pass - Flatten with minimal fields",
 			nft: &NFTokenMint{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

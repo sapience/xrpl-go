@@ -19,7 +19,7 @@ func TestNFTokenBurn_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Without Owner",
+			name: "pass - Without Owner",
 			nftBurn: &NFTokenBurn{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
@@ -34,7 +34,7 @@ func TestNFTokenBurn_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "With Owner",
+			name: "pass - With Owner",
 			nftBurn: &NFTokenBurn{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
@@ -51,7 +51,7 @@ func TestNFTokenBurn_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Without NFTokenID",
+			name: "pass - Without NFTokenID",
 			nftBurn: &NFTokenBurn{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",

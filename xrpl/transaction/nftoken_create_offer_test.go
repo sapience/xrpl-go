@@ -46,7 +46,7 @@ func TestNFTokenCreateOffer_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "all fields set",
+			name: "pass - all fields set",
 			input: &NFTokenCreateOffer{
 				BaseTx: BaseTx{
 					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
@@ -69,7 +69,7 @@ func TestNFTokenCreateOffer_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "optional fields omitted",
+			name: "pass - optional fields omitted",
 			input: &NFTokenCreateOffer{
 				BaseTx: BaseTx{
 					Account:         "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
