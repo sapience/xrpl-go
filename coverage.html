@@ -423,9 +423,9 @@
 				
 				<option value="file183">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash256.go (0.0%)</option>
 				
-				<option value="file184">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_id.go (0.0%)</option>
+				<option value="file184">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_id.go (100.0%)</option>
 				
-				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (0.0%)</option>
+				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (100.0%)</option>
 				
 				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
@@ -3569,12 +3569,16 @@ import (
         "github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
-// Errors
 var (
+        // Errors
+
+        // ErrInvalidCryptoImplementation is returned when the key does not match any crypto implementation.
         ErrInvalidCryptoImplementation = errors.New("not a valid crypto implementation")
 )
 
-// GetCryptoImplementationFromKey returns the CryptoImplementation based on the key
+// GetCryptoImplementationFromKey returns the CryptoImplementation based on the key.
+// It returns nil if the key does not match any crypto implementation.
+// Currently, only ED25519 and SECP256K1 are supported.
 func getCryptoImplementationFromKey(k string) interfaces.CryptoImplementation <span class="cov8" title="1">{
         prefix, err := hex.DecodeString(k[:2])
         if err != nil </span><span class="cov8" title="1">{
@@ -3603,14 +3607,19 @@ import (
 var (
         // Errors
 
-        // Derived keypair did not generate verifiable signature
+        // Derived keypair did not generate verifiable signature.
         ErrInvalidSignature = errors.New("derived keypair did not generate verifiable signature")
 )
 
 const (
+        // verificationMessage is the message that is used to verify the signature of the derived keypair.
+        // Only used for testing purposes.
         verificationMessage = "This test message should verify."
 )
 
+// GenerateSeed generates a seed from a given entropy, a crypto algorithm implementation and a randomizer.
+// If the entropy is empty, it generates a random seed. Otherwise, it uses the entropy to generate the seed.
+// The seed is encoded using the addresscodec package.
 func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfaces.Randomizer) (string, error) <span class="cov8" title="1">{
         var pe []byte
         var err error
@@ -3625,7 +3634,8 @@ func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfa
         <span class="cov8" title="1">return addresscodec.EncodeSeed(pe, alg)</span>
 }
 
-// Derives a keypair from a given seed. Returns a tuple of private key and public key
+// Derives a keypair from a given seed. Returns a tuple of private key and public key.
+// The seed has to be encoded using the addresscodec package. Otherwise, it returns an error.
 func DeriveKeypair(seed string, validator bool) (private, public string, err error) <span class="cov8" title="1">{
         ds, alg, err := addresscodec.DecodeSeed(seed)
         if err != nil </span><span class="cov8" title="1">{
@@ -3645,10 +3655,16 @@ func DeriveKeypair(seed string, validator bool) (private, public string, err err
         <span class="cov8" title="1">return private, public, nil</span>
 }
 
+// DeriveClassicAddress derives a classic address from a given public key.
+// The public key has to be encoded using the addresscodec package. Otherwise, it returns an error.
 func DeriveClassicAddress(pubkey string) (string, error) <span class="cov8" title="1">{
         return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubkey)
 }</span>
 
+// Sign signs a message with a given private key.
+// The private key needs to satisfy a crypto algorithm implementation. Otherwise, it returns an error.
+// Currently, only ED25519 and SECP256K1 are supported.
+// If the message is empty, it returns an error.
 func Sign(msg, privKey string) (string, error) <span class="cov8" title="1">{
         alg := getCryptoImplementationFromKey(privKey)
         if alg == nil </span><span class="cov8" title="1">{
@@ -3657,6 +3673,10 @@ func Sign(msg, privKey string) (string, error) <span class="cov8" title="1">{
         <span class="cov8" title="1">return alg.Sign(msg, privKey)</span>
 }
 
+// Validate validates a signature of a message with a given public key.
+// The public key needs to satisfy a crypto algorithm implementation. Otherwise, it returns an error.
+// Currently, only ED25519 and SECP256K1 are supported.
+// If the message is empty, it returns an error.
 func Validate(msg, pubKey, sig string) (bool, error) <span class="cov8" title="1">{
         alg := getCryptoImplementationFromKey(pubKey)
         if alg == nil </span><span class="cov8" title="1">{
@@ -4234,17 +4254,21 @@ import (
         "io"
 )
 
+// Randomizer implements the io.Reader interface. A Randomizer can be used to generate random bytes.
 type Randomizer struct {
         io.Reader
 }
 
-func NewRandomizer() *Randomizer <span class="cov8" title="1">{
-        return &amp;Randomizer{
+// NewRandomizer returns a new Randomizer instance. It uses the crypto/rand package to generate random bytes.
+func NewRandomizer() Randomizer <span class="cov8" title="1">{
+        return Randomizer{
                 Reader: rand.Reader,
         }
 }</span>
 
-func (r *Randomizer) GenerateBytes(n int) ([]byte, error) <span class="cov8" title="1">{
+// GenerateBytes generates a n bytes slice of random bytes. It can return an error if the random bytes cannot be read.
+// For further information, see the io.Reader interface.
+func (r Randomizer) GenerateBytes(n int) ([]byte, error) <span class="cov8" title="1">{
         b := make([]byte, n)
         _, err := r.Read(b)
         if err != nil </span><span class="cov0" title="0">{
@@ -10112,6 +10136,13 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+        // ErrMissingOffer is returned when at least one of NFTokenSellOffer or NFTokenBuyOffer is not set.
+        ErrMissingOffer = errors.New("at least one of NFTokenSellOffer or NFTokenBuyOffer must be set")
+        // ErrMissingBothOffers is returned when NFTokenBrokerFee is set but neither NFTokenSellOffer nor NFTokenBuyOffer are set (brokered mode).
+        ErrMissingBothOffers = errors.New("when NFTokenBrokerFee is set (brokered mode), both NFTokenSellOffer and NFTokenBuyOffer must be set")
+)
+
 // The NFTokenAcceptOffer transaction is used to accept offers to buy or sell an NFToken. It can either:
 //
 // - Allow one offer to be accepted. This is called direct mode.
@@ -10183,14 +10214,14 @@ func (n *NFTokenAcceptOffer) Validate() (bool, error) <span class="cov8" title="
                 return false, err
         }</span>
 
-        // check either NFTokenSellOffer or NFTokenBuyOffer is set
-        <span class="cov8" title="1">if n.NFTokenSellOffer == "" &amp;&amp; n.NFTokenBuyOffer == "" </span><span class="cov8" title="1">{
-                return false, errors.New("either NFTokenSellOffer or NFTokenBuyOffer must be set")
-        }</span>
-
         // if NFTokenBrokerFee is set, then both NFTokenSellOffer and NFTokenBuyOffer must be set
         <span class="cov8" title="1">if n.NFTokenBrokerFee != nil &amp;&amp; (n.NFTokenSellOffer == "" || n.NFTokenBuyOffer == "") </span><span class="cov8" title="1">{
-                return false, errors.New("both NFTokenSellOffer and NFTokenBuyOffer must be set when NFTokenBrokerFee is set (brokered mode)")
+                return false, ErrMissingBothOffers
+        }</span>
+
+        // check either NFTokenSellOffer or NFTokenBuyOffer is set
+        <span class="cov8" title="1">if n.NFTokenSellOffer == "" &amp;&amp; n.NFTokenBuyOffer == "" </span><span class="cov8" title="1">{
+                return false, ErrMissingOffer
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -10205,6 +10236,11 @@ import (
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        // ErrInvalidNFTokenID is returned when the NFTokenID is not an hexadecimal.
+        ErrInvalidNFTokenID = errors.New("invalid NFTokenID, must be an hexadecimal string")
 )
 
 // The NFTokenBurn transaction is used to remove a NFToken object from the NFTokenPage in which it is being held, effectively removing the token from the ledger (burning it).
@@ -10267,12 +10303,12 @@ func (n *NFTokenBurn) Validate() (bool, error) <span class="cov8" title="1">{
 
         // check owner is a valid xrpl address
         <span class="cov8" title="1">if n.Owner != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Owner.String()) </span><span class="cov8" title="1">{
-                return false, errors.New("invalid xrpl address for the Owner field")
+                return false, ErrInvalidOwner
         }</span>
 
         // check NFTokenID is a valid hexadecimal string
         <span class="cov8" title="1">if !typecheck.IsHex(n.NFTokenID.String()) </span><span class="cov8" title="1">{
-                return false, errors.New("invalid NFTokenID, must be an hexadecimal string")
+                return false, ErrInvalidNFTokenID
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -10285,6 +10321,11 @@ import (
         "errors"
 
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        // ErrEmptyNFTokenOffers is returned when the NFTokenOffers array contains no entries.
+        ErrEmptyNFTokenOffers = errors.New("the NFTokenOffers array must have at least one entry")
 )
 
 // The NFTokenCancelOffer transaction can be used to cancel existing token offers created using NFTokenCreateOffer.
@@ -10335,7 +10376,7 @@ func (n *NFTokenCancelOffer) Validate() (bool, error) <span class="cov8" title="
         }</span>
 
         <span class="cov8" title="1">if len(n.NFTokenOffers) == 0 </span><span class="cov8" title="1">{
-                return false, errors.New("the NFTokenOffers array must have at least 1 entry")
+                return false, ErrEmptyNFTokenOffers
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -10349,6 +10390,28 @@ import (
 
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+// **********************************
+// NFTokenCreateOffer Flags
+// **********************************
+
+const (
+        // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
+        tfSellNFToken uint32 = 1
+)
+
+// **********************************
+// Errors
+// **********************************
+
+var (
+        // ErrOwnerAccountConflict is returned when the owner is the same as the account.
+        ErrOwnerAccountConflict = errors.New("owner must be different from the account")
+        // ErrOwnerPresentForSellOffer is returned when the owner is present for a sell offer.
+        ErrOwnerPresentForSellOffer = errors.New("owner must not be present for a sell offer")
+        // ErrOwnerNotPresentForBuyOffer is returned when the owner is not present for a buy offer.
+        ErrOwnerNotPresentForBuyOffer = errors.New("owner must be present for a buy offer")
 )
 
 // Creates either a new Sell offer for an NFToken owned by the account executing the transaction, or a new Buy offer for an NFToken owned by another account.
@@ -10384,15 +10447,6 @@ type NFTokenCreateOffer struct {
         // (Optional) If present, indicates that this offer may only be accepted by the specified account. Attempts by other accounts to accept this offer MUST fail.
         Destination types.Address `json:",omitempty"`
 }
-
-// **********************************
-// NFTokenCreateOffer Flags
-// **********************************
-
-const (
-        // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
-        tfSellNFToken uint32 = 1
-)
 
 // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
 func (n *NFTokenCreateOffer) SetSellNFTokenFlag() <span class="cov8" title="1">{
@@ -10437,32 +10491,32 @@ func (n *NFTokenCreateOffer) Validate() (bool, error) <span class="cov8" title="
 
         // check owner and account are not equal
         <span class="cov8" title="1">if n.Owner == n.Account </span><span class="cov8" title="1">{
-                return false, errors.New("owner must be different from the account")
+                return false, ErrOwnerAccountConflict
         }</span>
 
         // check account and destination are not equal
         <span class="cov8" title="1">if n.Destination == n.Account </span><span class="cov8" title="1">{
-                return false, errors.New("destination must be different from the account")
+                return false, ErrDestinationAccountConflict
         }</span>
 
         // check owner is a valid xrpl address
         <span class="cov8" title="1">if n.Owner != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Owner.String()) </span><span class="cov8" title="1">{
-                return false, errors.New("invalid xrpl address for the Owner field")
+                return false, ErrInvalidOwner
         }</span>
 
         // check destination is a valid xrpl address
         <span class="cov8" title="1">if n.Destination != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Destination.String()) </span><span class="cov8" title="1">{
-                return false, errors.New("invalid xrpl address for the Destination field")
+                return false, ErrInvalidDestination
         }</span>
 
         // validate Sell Offer Cases
         <span class="cov8" title="1">if IsFlagEnabled(n.Flags, tfSellNFToken) &amp;&amp; n.Owner != "" </span><span class="cov8" title="1">{
-                return false, errors.New("owner must not be present for a sell offer")
+                return false, ErrOwnerPresentForSellOffer
         }</span>
 
         // validate Buy Offer Cases
         <span class="cov8" title="1">if !IsFlagEnabled(n.Flags, tfSellNFToken) &amp;&amp; n.Owner == "" </span><span class="cov8" title="1">{
-                return false, errors.New("owner must be present for a buy offer")
+                return false, ErrOwnerNotPresentForBuyOffer
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -10477,6 +10531,19 @@ import (
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        // ErrInvalidIssuerAddress is returned when the issuer address is an invalid xrpl address.
+        ErrInvalidIssuerAddress = errors.New("invalid xrpl address for the Issuer field")
+        // ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
+        ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
+        // ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
+        ErrInvalidURI = errors.New("invalid URI, must be a valid hexadecimal string")
+        // ErrIssuerAccountConflict is returned when the issuer is the same as the account.
+        ErrIssuerAccountConflict = errors.New("issuer cannot be the same as the account")
+        // ErrTransferFeeRequiresTransferableFlag is returned when the transferFee is set without the tfTransferable flag.
+        ErrTransferFeeRequiresTransferableFlag = errors.New("transferFee can only be set if the tfTransferable flag is enabled")
 )
 
 // The NFTokenMint transaction creates a non-fungible token and adds it to the relevant NFTokenPage object of the NFTokenMinter as an NFToken object.
@@ -10602,27 +10669,27 @@ func (n *NFTokenMint) Validate() (bool, error) <span class="cov8" title="1">{
 
         // check transfer fee is between 0 and 50000
         <span class="cov8" title="1">if n.TransferFee &gt; MaxTransferFee </span><span class="cov8" title="1">{
-                return false, errors.New("transferFee must be between 0 and 50000")
+                return false, ErrInvalidTransferFee
         }</span>
 
         // check issuer is not the same as the account
         <span class="cov8" title="1">if n.Issuer == n.Account </span><span class="cov8" title="1">{
-                return false, errors.New("issuer must be different from the account")
+                return false, ErrIssuerAccountConflict
         }</span>
 
         // check issuer is a valid xrpl address
         <span class="cov8" title="1">if n.Issuer != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Issuer.String()) </span><span class="cov8" title="1">{
-                return false, errors.New("invalid xrpl address for the Issuer field")
+                return false, ErrInvalidIssuerAddress
         }</span>
 
         // check URI is a valid hexadecimal string
         <span class="cov8" title="1">if n.URI != "" &amp;&amp; !typecheck.IsHex(n.URI.String()) </span><span class="cov8" title="1">{
-                return false, errors.New("invalid URI, must be an hexadecimal string")
+                return false, ErrInvalidURI
         }</span>
 
         // check transfer fee can only be set if the tfTransferable flag is enabled
         <span class="cov8" title="1">if n.TransferFee &gt; 0 &amp;&amp; !IsFlagEnabled(n.Flags, tfTransferable) </span><span class="cov8" title="1">{
-                return false, errors.New("transferFee can only be set if the tfTransferable flag is enabled")
+                return false, ErrTransferFeeRequiresTransferableFlag
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -11718,7 +11785,6 @@ func (t *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
 
 import (
         "errors"
-        "fmt"
 
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -11886,11 +11952,11 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
         flattenTx := tx.Flatten()
 
         if !addresscodec.IsValidClassicAddress(tx.Account.String()) </span><span class="cov8" title="1">{
-                return false, fmt.Errorf("invalid xrpl address for the Account field")
+                return false, ErrInvalidAccount
         }</span>
 
         <span class="cov8" title="1">if tx.TransactionType == "" </span><span class="cov8" title="1">{
-                return false, fmt.Errorf("transaction type is required")
+                return false, ErrInvalidTransactionType
         }</span>
 
         <span class="cov8" title="1">if !typecheck.IsStringNumericUint(tx.Fee.String(), 10, 64) </span><span class="cov0" title="0">{
@@ -12148,7 +12214,7 @@ func (h *Hash256) String() string <span class="cov0" title="0">{
 type NFTokenID Hash256
 
 // String returns the string representation of a NFTokenID.
-func (n *NFTokenID) String() string <span class="cov0" title="0">{
+func (n *NFTokenID) String() string <span class="cov8" title="1">{
         return string(*n)
 }</span>
 </pre>
@@ -12158,7 +12224,7 @@ func (n *NFTokenID) String() string <span class="cov0" title="0">{
 type NFTokenURI string
 
 // String returns the string representation of a NFTokenURI.
-func (n *NFTokenURI) String() string <span class="cov0" title="0">{
+func (n *NFTokenURI) String() string <span class="cov8" title="1">{
         return string(*n)
 }</span>
 </pre>
