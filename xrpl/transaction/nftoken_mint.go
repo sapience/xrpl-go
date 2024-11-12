@@ -9,14 +9,14 @@ import (
 )
 
 var (
-	// ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
-	ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
-	// ErrIssuerAccountConflict is returned when the issuer is the same as the account.
-	ErrIssuerAccountConflict = errors.New("issuer cannot be the same as the account")
 	// ErrInvalidIssuerAddress is returned when the issuer address is an invalid xrpl address.
 	ErrInvalidIssuerAddress = errors.New("invalid xrpl address for the Issuer field")
+	// ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
+	ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
 	// ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
 	ErrInvalidURI = errors.New("invalid URI, must be a valid hexadecimal string")
+	// ErrIssuerAccountConflict is returned when the issuer is the same as the account.
+	ErrIssuerAccountConflict = errors.New("issuer cannot be the same as the account")
 	// ErrTransferFeeRequiresTransferableFlag is returned when the transferFee is set without the tfTransferable flag.
 	ErrTransferFeeRequiresTransferableFlag = errors.New("transferFee can only be set if the tfTransferable flag is enabled")
 )
