@@ -29,6 +29,11 @@ const (
 	NodePublicKeyPrefix = 0x1C
 )
 
+var (
+	// Errors
+	ErrInvalidSeed = errors.New("invalid seed; could not determine encoding algorithm")
+)
+
 type EncodeLengthError struct {
 	Instance string
 	Input    int
@@ -144,7 +149,7 @@ func DecodeSeed(seed string) ([]byte, CryptoImplementation, error) {
 	decoded, err := Base58CheckDecode(seed)
 
 	if err != nil {
-		return nil, crypto.Algorithm{}, errors.New("invalid seed; could not determine encoding algorithm")
+		return nil, crypto.Algorithm{}, ErrInvalidSeed
 	}
 
 	if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) {
