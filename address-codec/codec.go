@@ -32,7 +32,7 @@ var (
 
 	// Invalid classic address
 	ErrInvalidClassicAddress = errors.New("invalid classic address")
-	ErrInvalidSeed = errors.New("invalid seed; could not determine encoding algorithm")
+	ErrInvalidSeed           = errors.New("invalid seed; could not determine encoding algorithm")
 )
 
 type EncodeLengthError struct {
