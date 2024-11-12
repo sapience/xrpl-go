@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"errors"
-	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -170,11 +169,11 @@ func (tx *BaseTx) Validate() (bool, error) {
 	flattenTx := tx.Flatten()
 
 	if !addresscodec.IsValidClassicAddress(tx.Account.String()) {
-		return false, fmt.Errorf("invalid xrpl address for the Account field")
+		return false, ErrInvalidAccount
 	}
 
 	if tx.TransactionType == "" {
-		return false, fmt.Errorf("transaction type is required")
+		return false, ErrInvalidTransactionType
 	}
 
 	if !typecheck.IsStringNumericUint(tx.Fee.String(), 10, 64) {

@@ -375,6 +375,7 @@
 				
 				<option value="file159">github.com/Peersyst/xrpl-go/xrpl/transaction/flags.go (100.0%)</option>
 				
+<<<<<<< HEAD
 				<option value="file160">github.com/Peersyst/xrpl-go/xrpl/transaction/flat_tx.go (0.0%)</option>
 				
 				<option value="file161">github.com/Peersyst/xrpl-go/xrpl/transaction/memo.go (92.3%)</option>
@@ -384,6 +385,17 @@
 				<option value="file163">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_burn.go (0.0%)</option>
 				
 				<option value="file164">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_cancel_offer.go (0.0%)</option>
+=======
+				<option value="file160">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_accept_offer.go (100.0%)</option>
+				
+				<option value="file161">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_burn.go (100.0%)</option>
+				
+				<option value="file162">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_cancel_offer.go (100.0%)</option>
+				
+				<option value="file163">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go (100.0%)</option>
+				
+				<option value="file164">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_mint.go (100.0%)</option>
+>>>>>>> main
 				
 				<option value="file165">github.com/Peersyst/xrpl-go/xrpl/transaction/nftoken_create_offer.go (0.0%)</option>
 				
@@ -423,9 +435,15 @@
 				
 				<option value="file183">github.com/Peersyst/xrpl-go/xrpl/transaction/types/currency_amount.go (2.5%)</option>
 				
+<<<<<<< HEAD
 				<option value="file184">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash128.go (0.0%)</option>
 				
 				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash256.go (0.0%)</option>
+=======
+				<option value="file184">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_id.go (100.0%)</option>
+				
+				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (100.0%)</option>
+>>>>>>> main
 				
 				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
 				
@@ -10282,116 +10300,569 @@ func (m *Memo) Flatten() map[string]interface{} <span class="cov8" title="1">{
 		<pre class="file" id="file162" style="display: none">package transaction
 
 import (
+        "errors"
+
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+        // ErrMissingOffer is returned when at least one of NFTokenSellOffer or NFTokenBuyOffer is not set.
+        ErrMissingOffer = errors.New("at least one of NFTokenSellOffer or NFTokenBuyOffer must be set")
+        // ErrMissingBothOffers is returned when NFTokenBrokerFee is set but neither NFTokenSellOffer nor NFTokenBuyOffer are set (brokered mode).
+        ErrMissingBothOffers = errors.New("when NFTokenBrokerFee is set (brokered mode), both NFTokenSellOffer and NFTokenBuyOffer must be set")
+)
+
+// The NFTokenAcceptOffer transaction is used to accept offers to buy or sell an NFToken. It can either:
+//
+// - Allow one offer to be accepted. This is called direct mode.
+//
+// - Allow two distinct offers, one offering to buy a given NFToken and the other offering to sell the same NFToken, to be accepted in an atomic fashion. This is called brokered mode.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "Account": "r9spUPhPBfB6kQeF6vPhwmtFwRhBh2JUCG",
+//                "Fee": "12",
+//                "LastLedgerSequence": 75447550,
+//                "Memos": [
+//                  {
+//                        "Memo": {
+//                          "MemoData": "61356534373538372D633134322D346663382D616466362D393666383562356435386437"
+//                        }
+//                  }
+//                ],
+//                "NFTokenSellOffer": "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77",
+//                "Sequence": 68549302,
+//                "TransactionType": "NFTokenAcceptOffer"
+//          }
+//
+// / ```
 type NFTokenAcceptOffer struct {
         BaseTx
-        NFTokenSellOffer types.Hash256        `json:",omitempty"`
-        NFTokenBuyOffer  types.Hash256        `json:",omitempty"`
+        // (Optional) Identifies the NFTokenOffer that offers to sell the NFToken.
+        NFTokenSellOffer types.Hash256 `json:",omitempty"`
+        // (Optional) Identifies the NFTokenOffer that offers to buy the NFToken.
+        NFTokenBuyOffer types.Hash256 `json:",omitempty"`
+        // (Optional) This field is only valid in brokered mode, and specifies the amount that the broker keeps as part of their fee for bringing the two offers together; the remaining amount is sent to the seller of the NFToken being bought.
+        // If specified, the fee must be such that, before applying the transfer fee, the amount that the seller would receive is at least as much as the amount indicated in the sell offer.
         NFTokenBrokerFee types.CurrencyAmount `json:",omitempty"`
 }
 
-func (*NFTokenAcceptOffer) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (NFTokenAcceptOffer).
+func (*NFTokenAcceptOffer) TxType() TxType <span class="cov8" title="1">{
         return NFTokenAcceptOfferTx
 }</span>
 
-// TODO: Implement flatten
-func (n *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the NFTokenAcceptOffer transaction fields.
+func (n *NFTokenAcceptOffer) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := n.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "NFTokenAcceptOffer"
+
+        if n.NFTokenSellOffer != "" </span><span class="cov8" title="1">{
+                flattened["NFTokenSellOffer"] = n.NFTokenSellOffer
+        }</span>
+
+        <span class="cov8" title="1">if n.NFTokenBuyOffer != "" </span><span class="cov8" title="1">{
+                flattened["NFTokenBuyOffer"] = n.NFTokenBuyOffer
+        }</span>
+
+        <span class="cov8" title="1">if n.NFTokenBrokerFee != nil </span><span class="cov8" title="1">{
+                flattened["NFTokenBrokerFee"] = n.NFTokenBrokerFee
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks the validity of the NFTokenAcceptOffer fields.
+func (n *NFTokenAcceptOffer) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := n.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // if NFTokenBrokerFee is set, then both NFTokenSellOffer and NFTokenBuyOffer must be set
+        <span class="cov8" title="1">if n.NFTokenBrokerFee != nil &amp;&amp; (n.NFTokenSellOffer == "" || n.NFTokenBuyOffer == "") </span><span class="cov8" title="1">{
+                return false, ErrMissingBothOffers
+        }</span>
+
+        // check either NFTokenSellOffer or NFTokenBuyOffer is set
+        <span class="cov8" title="1">if n.NFTokenSellOffer == "" &amp;&amp; n.NFTokenBuyOffer == "" </span><span class="cov8" title="1">{
+                return false, ErrMissingOffer
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file163" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+        // ErrInvalidNFTokenID is returned when the NFTokenID is not an hexadecimal.
+        ErrInvalidNFTokenID = errors.New("invalid NFTokenID, must be an hexadecimal string")
+)
+
+// The NFTokenBurn transaction is used to remove a NFToken object from the NFTokenPage in which it is being held, effectively removing the token from the ledger (burning it).
+//
+// The sender of this transaction must be the owner of the NFToken to burn; or, if the NFToken has the lsfBurnable flag enabled, can be the issuer or the issuer's authorized NFTokenMinter account instead.
+//
+// If this operation succeeds, the corresponding NFToken is removed.
+// If this operation empties the NFTokenPage holding the NFToken or results in consolidation, thus removing a NFTokenPage, the owner’s reserve requirement is reduced by one.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "TransactionType": "NFTokenBurn",
+//                "Account": "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
+//                "Owner": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+//                "Fee": "10",
+//                "NFTokenID": "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65"
+//          }
+//
+// ```
 type NFTokenBurn struct {
         BaseTx
+        // The NFToken to be removed by this transaction.
         NFTokenID types.NFTokenID
-        Owner     types.Address `json:",omitempty"`
+        // (Optional) The owner of the NFToken to burn. Only used if that owner is different than the account sending this transaction.
+        // The issuer or authorized minter can use this field to burn NFTs that have the lsfBurnable flag enabled.
+        Owner types.Address `json:",omitempty"`
 }
 
-func (*NFTokenBurn) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (NFTokenBurn).
+func (*NFTokenBurn) TxType() TxType <span class="cov8" title="1">{
         return NFTokenBurnTx
 }</span>
 
-// TODO: Implement flatten
-func (s *NFTokenBurn) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the NFTokenBurn transaction fields.
+func (n *NFTokenBurn) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := n.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "NFTokenBurn"
+
+        if n.Owner != "" </span><span class="cov8" title="1">{
+                flattened["Owner"] = n.Owner
+        }</span>
+
+        <span class="cov8" title="1">if n.NFTokenID != "" </span><span class="cov8" title="1">{
+                flattened["NFTokenID"] = n.NFTokenID
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks the validity of the NFTokenBurn fields.
+func (n *NFTokenBurn) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := n.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check owner is a valid xrpl address
+        <span class="cov8" title="1">if n.Owner != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Owner.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidOwner
+        }</span>
+
+        // check NFTokenID is a valid hexadecimal string
+        <span class="cov8" title="1">if !typecheck.IsHex(n.NFTokenID.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidNFTokenID
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file164" style="display: none">package transaction
 
 import (
+        "errors"
+
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+        // ErrEmptyNFTokenOffers is returned when the NFTokenOffers array contains no entries.
+        ErrEmptyNFTokenOffers = errors.New("the NFTokenOffers array must have at least one entry")
+)
+
+// The NFTokenCancelOffer transaction can be used to cancel existing token offers created using NFTokenCreateOffer.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "TransactionType": "NFTokenCancelOffer",
+//                "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+//                "NFTokenOffers": [
+//                        "9C92E061381C1EF37A8CDE0E8FC35188BFC30B1883825042A64309AC09F4C36D"
+//                ]
+//        }
+//
+// ```
 type NFTokenCancelOffer struct {
         BaseTx
-        NFTokenOffers []types.Hash256
+        // An array of IDs of the NFTokenOffer objects to cancel (not the IDs of NFToken objects, but the IDs of the NFTokenOffer objects).
+        // Each entry must be a different object ID of an NFTokenOffer object; the transaction is invalid if the array contains duplicate entries.
+        NFTokenOffers []types.NFTokenID
 }
 
-func (*NFTokenCancelOffer) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (NFTokenCancelOffer).
+func (*NFTokenCancelOffer) TxType() TxType <span class="cov8" title="1">{
         return NFTokenCancelOfferTx
 }</span>
 
-// TODO: Implement flatten
-func (s *NFTokenCancelOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the NFTokenCancelOffer transaction fields.
+func (n *NFTokenCancelOffer) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := n.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "NFTokenCancelOffer"
+
+        if len(n.NFTokenOffers) &gt; 0 </span><span class="cov8" title="1">{
+                flattened["NFTokenOffers"] = n.NFTokenOffers
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks the validity of the NFTokenCancelOffer fields.
+func (n *NFTokenCancelOffer) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := n.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if len(n.NFTokenOffers) == 0 </span><span class="cov8" title="1">{
+                return false, ErrEmptyNFTokenOffers
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file165" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// **********************************
+// NFTokenCreateOffer Flags
+// **********************************
+
+const (
+        // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
+        tfSellNFToken uint32 = 1
+)
+
+// **********************************
+// Errors
+// **********************************
+
+var (
+        // ErrOwnerAccountConflict is returned when the owner is the same as the account.
+        ErrOwnerAccountConflict = errors.New("owner must be different from the account")
+        // ErrOwnerPresentForSellOffer is returned when the owner is present for a sell offer.
+        ErrOwnerPresentForSellOffer = errors.New("owner must not be present for a sell offer")
+        // ErrOwnerNotPresentForBuyOffer is returned when the owner is not present for a buy offer.
+        ErrOwnerNotPresentForBuyOffer = errors.New("owner must be present for a buy offer")
+)
+
+// Creates either a new Sell offer for an NFToken owned by the account executing the transaction, or a new Buy offer for an NFToken owned by another account.
+//
+// If successful, the transaction creates a NFTokenOffer object. Each offer counts as one object towards the owner reserve of the account that placed the offer.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "TransactionType": "NFTokenCreateOffer",
+//                "Account": "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
+//                "NFTokenID": "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
+//                "Amount": "1000000",
+//                "Flags": 1
+//        }
+//
+// ```
 type NFTokenCreateOffer struct {
         BaseTx
-        Owner       types.Address `json:",omitempty"`
-        NFTokenID   types.NFTokenID
-        Amount      types.CurrencyAmount
-        Expiration  uint32        `json:",omitempty"`
+        // (Optional) Who owns the corresponding NFToken.
+        // If the offer is to buy a token, this field must be present and it must be different than the Account field (since an offer to buy a token one already holds is meaningless).
+        // If the offer is to sell a token, this field must not be present, as the owner is, implicitly, the same as the Account (since an offer to sell a token one doesn't already hold is meaningless).
+        Owner types.Address `json:",omitempty"`
+        // Identifies the NFToken object that the offer references.
+        NFTokenID types.NFTokenID
+        // Indicates the amount expected or offered for the corresponding NFToken.
+        // The amount must be non-zero, except where this is an offer to sell and the asset is XRP; then, it is legal to specify an amount of zero, which means that the current owner of the token is giving it away, gratis, either to anyone at all, or to the account identified by the Destination field.
+        Amount types.CurrencyAmount
+        // (Optional) Time after which the offer is no longer active, in seconds since the Ripple Epoch.
+        Expiration uint32 `json:",omitempty"`
+        // (Optional) If present, indicates that this offer may only be accepted by the specified account. Attempts by other accounts to accept this offer MUST fail.
         Destination types.Address `json:",omitempty"`
 }
 
-func (*NFTokenCreateOffer) TxType() TxType <span class="cov0" title="0">{
+// If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
+func (n *NFTokenCreateOffer) SetSellNFTokenFlag() <span class="cov8" title="1">{
+        n.Flags |= tfSellNFToken
+}</span>
+
+// TxType returns the type of the transaction (NFTokenCreateOffer).
+func (*NFTokenCreateOffer) TxType() TxType <span class="cov8" title="1">{
         return NFTokenCreateOfferTx
 }</span>
 
-// TODO: Implement flatten
-func (n *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the NFTokenCreateOffer transaction fields.
+func (n *NFTokenCreateOffer) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := n.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "NFTokenCreateOffer"
+
+        if n.Owner != "" </span><span class="cov8" title="1">{
+                flattened["Owner"] = n.Owner
+        }</span>
+
+        <span class="cov8" title="1">flattened["NFTokenID"] = n.NFTokenID
+        flattened["Amount"] = n.Amount
+
+        if n.Expiration != 0 </span><span class="cov8" title="1">{
+                flattened["Expiration"] = n.Expiration
+        }</span>
+
+        <span class="cov8" title="1">if n.Destination != "" </span><span class="cov8" title="1">{
+                flattened["Destination"] = n.Destination
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate checks the validity of the NFTokenCreateOffer fields.
+func (n *NFTokenCreateOffer) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := n.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check owner and account are not equal
+        <span class="cov8" title="1">if n.Owner == n.Account </span><span class="cov8" title="1">{
+                return false, ErrOwnerAccountConflict
+        }</span>
+
+        // check account and destination are not equal
+        <span class="cov8" title="1">if n.Destination == n.Account </span><span class="cov8" title="1">{
+                return false, ErrDestinationAccountConflict
+        }</span>
+
+        // check owner is a valid xrpl address
+        <span class="cov8" title="1">if n.Owner != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Owner.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidOwner
+        }</span>
+
+        // check destination is a valid xrpl address
+        <span class="cov8" title="1">if n.Destination != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestination
+        }</span>
+
+        // validate Sell Offer Cases
+        <span class="cov8" title="1">if IsFlagEnabled(n.Flags, tfSellNFToken) &amp;&amp; n.Owner != "" </span><span class="cov8" title="1">{
+                return false, ErrOwnerPresentForSellOffer
+        }</span>
+
+        // validate Buy Offer Cases
+        <span class="cov8" title="1">if !IsFlagEnabled(n.Flags, tfSellNFToken) &amp;&amp; n.Owner == "" </span><span class="cov8" title="1">{
+                return false, ErrOwnerNotPresentForBuyOffer
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file166" style="display: none">package transaction
 
 import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+        // ErrInvalidIssuerAddress is returned when the issuer address is an invalid xrpl address.
+        ErrInvalidIssuerAddress = errors.New("invalid xrpl address for the Issuer field")
+        // ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
+        ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
+        // ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
+        ErrInvalidURI = errors.New("invalid URI, must be a valid hexadecimal string")
+        // ErrIssuerAccountConflict is returned when the issuer is the same as the account.
+        ErrIssuerAccountConflict = errors.New("issuer cannot be the same as the account")
+        // ErrTransferFeeRequiresTransferableFlag is returned when the transferFee is set without the tfTransferable flag.
+        ErrTransferFeeRequiresTransferableFlag = errors.New("transferFee can only be set if the tfTransferable flag is enabled")
+)
+
+// The NFTokenMint transaction creates a non-fungible token and adds it to the relevant NFTokenPage object of the NFTokenMinter as an NFToken object.
+// This transaction is the only opportunity the NFTokenMinter has to specify any token fields that are defined as immutable (for example, the TokenFlags).
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "TransactionType": "NFTokenMint",
+//                "Account": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+//                "TransferFee": 314,
+//                "NFTokenTaxon": 0,
+//                "Flags": 8,
+//                "Fee": "10",
+//                "URI": "697066733A2F2F62616679626569676479727A74357366703775646D37687537367568377932366E6634646675796C71616266336F636C67747179353566627A6469",
+//                "Memos": [
+//                          {
+//                                  "Memo": {
+//                                          "MemoType":
+//                                                "687474703A2F2F6578616D706C652E636F6D2F6D656D6F2F67656E65726963",
+//                                          "MemoData": "72656E74"
+//                                  }
+//                          }
+//                  ]
+//          }
+//
+// ```
 type NFTokenMint struct {
         BaseTx
+        // An arbitrary taxon, or shared identifier, for a series or collection of related NFTs. To mint a series of NFTs, give them all the same taxon.
         NFTokenTaxon uint32
-        Issuer       types.Address    `json:",omitempty"`
-        TransferFee  uint16           `json:",omitempty"`
-        URI          types.NFTokenURI `json:",omitempty"`
+        // (Optional) The issuer of the token, if the sender of the account is issuing it on behalf of another account.
+        // This field must be omitted if the account sending the transaction is the issuer of the NFToken.
+        // If provided, the issuer's AccountRoot object must have the NFTokenMinter field set to the sender of this transaction (this transaction's Account field).
+        Issuer types.Address `json:",omitempty"`
+        // (Optional) The value specifies the fee charged by the issuer for secondary sales of the NFToken, if such sales are allowed.
+        // Valid values for this field are between 0 and 50000 inclusive, allowing transfer rates of between 0.00% and 50.00% in increments of 0.001.
+        // If this field is provided, the transaction MUST have the tfTransferable flag enabled.
+        TransferFee uint16 `json:",omitempty"`
+        // (Optional) Up to 256 bytes of arbitrary data. In JSON, this should be encoded as a string of hexadecimal.
+        // You can use the xrpl.convertStringToHex utility to convert a URI to its hexadecimal equivalent.
+        // This is intended to be a URI that points to the data or metadata associated with the NFT.
+        // The contents could decode to an HTTP or HTTPS URL, an IPFS URI, a magnet link, immediate data encoded as an RFC 2379 "data" URL, or even an issuer-specific encoding.
+        // The URI is NOT checked for validity.
+        URI types.NFTokenURI `json:",omitempty"`
 }
 
-func (*NFTokenMint) TxType() TxType <span class="cov0" title="0">{
+// **********************************
+// NFTokenMint Flags
+// **********************************
+
+const (
+        // Allow the issuer (or an entity authorized by the issuer) to destroy the minted NFToken. (The NFToken's owner can always do so.)
+        tfBurnable uint32 = 1
+        // The minted NFToken can only be bought or sold for XRP. This can be desirable if the token has a transfer fee and the issuer does not want to receive fees in non-XRP currencies.
+        tfOnlyXRP uint32 = 2
+        // DEPRECATED Automatically create trust lines from the issuer to hold transfer fees received from transferring the minted NFToken. The fixRemoveNFTokenAutoTrustLine amendment makes it invalid to set this flag.
+        tfTrustLine uint32 = 4
+        // The minted NFToken can be transferred to others. If this flag is not enabled, the token can still be transferred from or to the issuer, but a transfer to the issuer must be made based on a buy offer from the issuer and not a sell offer from the NFT holder.
+        tfTransferable uint32 = 8
+)
+
+// Allow the issuer (or an entity authorized by the issuer) to destroy the minted NFToken. (The NFToken's owner can always do so.)
+func (n *NFTokenMint) SetBurnableFlag() <span class="cov8" title="1">{
+        n.Flags |= tfBurnable
+}</span>
+
+// The minted NFToken can only be bought or sold for XRP. This can be desirable if the token has a transfer fee and the issuer does not want to receive fees in non-XRP currencies.
+func (n *NFTokenMint) SetOnlyXRPFlag() <span class="cov8" title="1">{
+        n.Flags |= tfOnlyXRP
+}</span>
+
+// DEPRECATED Automatically create trust lines from the issuer to hold transfer fees received from transferring the minted NFToken. The fixRemoveNFTokenAutoTrustLine amendment makes it invalid to set this flag.
+func (n *NFTokenMint) SetTrustlineFlag() <span class="cov8" title="1">{
+        n.Flags |= tfTrustLine
+}</span>
+
+// The minted NFToken can be transferred to others. If this flag is not enabled, the token can still be transferred from or to the issuer, but a transfer to the issuer must be made based on a buy offer from the issuer and not a sell offer from the NFT holder.
+func (n *NFTokenMint) SetTransferableFlag() <span class="cov8" title="1">{
+        n.Flags |= tfTransferable
+}</span>
+
+// TxType returns the type of the transaction (NFTokenMint).
+func (*NFTokenMint) TxType() TxType <span class="cov8" title="1">{
         return NFTokenMintTx
 }</span>
 
-// TODO: Implement flatten
-func (s *NFTokenMint) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the NFTokenMint transaction fields.
+func (n *NFTokenMint) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := n.BaseTx.Flatten()
+
+        flattened["TransactionType"] = "NFTokenMint"
+        flattened["NFTokenTaxon"] = n.NFTokenTaxon
+
+        if n.Issuer != "" </span><span class="cov8" title="1">{
+                flattened["Issuer"] = n.Issuer
+        }</span>
+
+        <span class="cov8" title="1">if n.TransferFee != 0 </span><span class="cov8" title="1">{
+                flattened["TransferFee"] = n.TransferFee
+        }</span>
+
+        <span class="cov8" title="1">if n.URI != "" </span><span class="cov8" title="1">{
+                flattened["URI"] = n.URI
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+const (
+        // Allowing a transfer fee of up to 50%.
+        MaxTransferFee = 50000
+)
+
+// Validate checks the validity of the NFTokenMint fields.
+func (n *NFTokenMint) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := n.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check transfer fee is between 0 and 50000
+        <span class="cov8" title="1">if n.TransferFee &gt; MaxTransferFee </span><span class="cov8" title="1">{
+                return false, ErrInvalidTransferFee
+        }</span>
+
+        // check issuer is not the same as the account
+        <span class="cov8" title="1">if n.Issuer == n.Account </span><span class="cov8" title="1">{
+                return false, ErrIssuerAccountConflict
+        }</span>
+
+        // check issuer is a valid xrpl address
+        <span class="cov8" title="1">if n.Issuer != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Issuer.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidIssuerAddress
+        }</span>
+
+        // check URI is a valid hexadecimal string
+        <span class="cov8" title="1">if n.URI != "" &amp;&amp; !typecheck.IsHex(n.URI.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidURI
+        }</span>
+
+        // check transfer fee can only be set if the tfTransferable flag is enabled
+        <span class="cov8" title="1">if n.TransferFee &gt; 0 &amp;&amp; !IsFlagEnabled(n.Flags, tfTransferable) </span><span class="cov8" title="1">{
+                return false, ErrTransferFeeRequiresTransferableFlag
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file167" style="display: none">package transaction
@@ -11483,7 +11954,6 @@ func (t *TrustSet) Validate() (bool, error) <span class="cov8" title="1">{
 
 import (
         "errors"
-        "fmt"
 
         addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
@@ -11651,11 +12121,11 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
         flattenTx := tx.Flatten()
 
         if !addresscodec.IsValidClassicAddress(tx.Account.String()) </span><span class="cov8" title="1">{
-                return false, fmt.Errorf("invalid xrpl address for the Account field")
+                return false, ErrInvalidAccount
         }</span>
 
         <span class="cov8" title="1">if tx.TransactionType == "" </span><span class="cov8" title="1">{
-                return false, fmt.Errorf("transaction type is required")
+                return false, ErrInvalidTransactionType
         }</span>
 
         <span class="cov8" title="1">if !typecheck.IsStringNumericUint(tx.Fee.String(), 10, 64) </span><span class="cov0" title="0">{
@@ -11908,6 +12378,29 @@ func (h *Hash256) String() string <span class="cov0" title="0">{
 }</span>
 </pre>
 		
+<<<<<<< HEAD
+=======
+		<pre class="file" id="file184" style="display: none">package types
+
+type NFTokenID Hash256
+
+// String returns the string representation of a NFTokenID.
+func (n *NFTokenID) String() string <span class="cov8" title="1">{
+        return string(*n)
+}</span>
+</pre>
+		
+		<pre class="file" id="file185" style="display: none">package types
+
+type NFTokenURI string
+
+// String returns the string representation of a NFTokenURI.
+func (n *NFTokenURI) String() string <span class="cov8" title="1">{
+        return string(*n)
+}</span>
+</pre>
+		
+>>>>>>> main
 		<pre class="file" id="file186" style="display: none">package transaction
 
 import (
