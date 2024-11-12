@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/Peersyst/xrpl-go/address-codec/base58check.go (94.7%)</option>
 				
-				<option value="file2">github.com/Peersyst/xrpl-go/address-codec/codec.go (92.2%)</option>
+				<option value="file2">github.com/Peersyst/xrpl-go/address-codec/codec.go (95.5%)</option>
 				
 				<option value="file3">github.com/Peersyst/xrpl-go/address-codec/sha256.go (100.0%)</option>
 				
@@ -87,7 +87,7 @@
 				
 				<option value="file15">github.com/Peersyst/xrpl-go/binary-codec/types/account_id.go (100.0%)</option>
 				
-				<option value="file16">github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (83.4%)</option>
+				<option value="file16">github.com/Peersyst/xrpl-go/binary-codec/types/amount.go (83.1%)</option>
 				
 				<option value="file17">github.com/Peersyst/xrpl-go/binary-codec/types/blob.go (100.0%)</option>
 				
@@ -101,7 +101,7 @@
 				
 				<option value="file22">github.com/Peersyst/xrpl-go/binary-codec/types/issue.go (100.0%)</option>
 				
-				<option value="file23">github.com/Peersyst/xrpl-go/binary-codec/types/pathset.go (93.8%)</option>
+				<option value="file23">github.com/Peersyst/xrpl-go/binary-codec/types/pathset.go (92.9%)</option>
 				
 				<option value="file24">github.com/Peersyst/xrpl-go/binary-codec/types/serialized_type.go (88.9%)</option>
 				
@@ -119,7 +119,7 @@
 				
 				<option value="file31">github.com/Peersyst/xrpl-go/binary-codec/types/vector256.go (85.7%)</option>
 				
-				<option value="file32">github.com/Peersyst/xrpl-go/binary-codec/types/xchain_bridge.go (100.0%)</option>
+				<option value="file32">github.com/Peersyst/xrpl-go/binary-codec/types/xchain_bridge.go (90.5%)</option>
 				
 				<option value="file33">github.com/Peersyst/xrpl-go/keypairs/crypto.go (100.0%)</option>
 				
@@ -696,13 +696,13 @@ func (e *EncodeLengthError) Error() string <span class="cov8" title="1">{
 }</span>
 
 // Returns the base58 encoding of byte slice, with the given type prefix, whilst ensuring that the byte slice is the expected length.
-func Encode(b []byte, typePrefix []byte, expectedLength int) string <span class="cov8" title="1">{
+func Encode(b []byte, typePrefix []byte, expectedLength int) (string, error )<span class="cov8" title="1">{
 
-        if len(b) != expectedLength </span><span class="cov0" title="0">{
-                return ""
+        if len(b) != expectedLength </span><span class="cov8" title="1">{
+                return "", &amp;EncodeLengthError{Instance: "Encode", Expected: expectedLength, Input: len(b)}
         }</span>
 
-        <span class="cov8" title="1">return Base58CheckEncode(b, typePrefix...)</span>
+        <span class="cov8" title="1">return Base58CheckEncode(b, typePrefix...), nil</span>
 }
 
 // Returns the byte slice decoding of the base58-encoded string and prefix.
@@ -725,7 +725,7 @@ func EncodeClassicAddressFromPublicKeyHex(pubkeyhex string) (string, error) <spa
 
         pubkey, err := hex.DecodeString(pubkeyhex)
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return "", err
         }</span>
 
@@ -741,9 +741,12 @@ func EncodeClassicAddressFromPublicKeyHex(pubkeyhex string) (string, error) <spa
                 return "", &amp;EncodeLengthError{Instance: "AccountID", Expected: AccountAddressLength, Input: len(accountID)}
         }</span>
 
-        <span class="cov8" title="1">address := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
+        <span class="cov8" title="1">address, err := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
 
-        if !IsValidClassicAddress(address) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !IsValidClassicAddress(address) </span><span class="cov0" title="0">{
                 return "", ErrInvalidClassicAddress
         }</span>
 
@@ -777,10 +780,10 @@ func EncodeSeed(entropy []byte, encodingType interfaces.CryptoImplementation) (s
 
         <span class="cov8" title="1">if encodingType == crypto.ED25519() </span><span class="cov8" title="1">{
                 prefix := []byte{0x01, 0xe1, 0x4b}
-                return Encode(entropy, prefix, FamilySeedLength), nil
+                return Encode(entropy, prefix, FamilySeedLength)
         }</span> else<span class="cov8" title="1"> if secp256k1 := crypto.SECP256K1(); encodingType == secp256k1 </span><span class="cov8" title="1">{
                 prefix := []byte{secp256k1.FamilySeedPrefix()}
-                return Encode(entropy, prefix, FamilySeedLength), nil
+                return Encode(entropy, prefix, FamilySeedLength)
         }</span>
         <span class="cov8" title="1">return "", errors.New("encoding type must be `ed25519` or `secp256k1`")</span>
 
@@ -852,7 +855,7 @@ func DecodeAccountPublicKey(key string) ([]byte, error) <span class="cov8" title
 
 // IsValidAddress returns true if the address is valid. Otherwise, it returns false.
 // Address can only be a classic address or an x-address.
-func IsValidAddress(address string) bool <span class="cov0" title="0">{
+func IsValidAddress(address string) bool <span class="cov8" title="1">{
         return IsValidClassicAddress(address) || IsValidXAddress(address)
 }</span>
 
@@ -2137,7 +2140,7 @@ func (a *AccountID) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) 
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil</span>
+        <span class="cov8" title="1">return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)</span>
 }
 </pre>
 		
@@ -2268,8 +2271,11 @@ func deserializeToken(data []byte) (map[string]any, error) <span class="cov8" ti
                         return nil, err
                 }</span>
         }
-        <span class="cov8" title="1">issuer := deserializeIssuer(data[28:])
-        curr, err := deserializeCurrencyCode(data[8:28])
+        <span class="cov8" title="1">issuer, err := deserializeIssuer(data[28:])
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">curr, err := deserializeCurrencyCode(data[8:28])
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
@@ -2323,7 +2329,7 @@ func deserializeCurrencyCode(data []byte) (string, error) <span class="cov8" tit
         <span class="cov8" title="1">return iso, nil</span>
 }
 
-func deserializeIssuer(data []byte) string <span class="cov8" title="1">{
+func deserializeIssuer(data []byte) (string, error) <span class="cov8" title="1">{
         return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
 }</span>
 
@@ -2806,7 +2812,7 @@ func (i *Issue) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) <spa
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil</span>
+        <span class="cov8" title="1">return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)</span>
 }
 </pre>
 		
@@ -2998,9 +3004,12 @@ func parsePathStep(parser interfaces.BinaryParser) (map[string]any, error) <span
                                 }</span>
                                 <span class="cov8" title="1">step[op.key] = value</span>
                         } else<span class="cov8" title="1"> {
-                                value := addresscodec.Encode(bytes, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
-                                step[op.key] = value
-                        }</span>
+                                value, err := addresscodec.Encode(bytes, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        return nil, err
+                                }</span>
+                                <span class="cov8" title="1">step[op.key] = value</span>
+                        }
                 }
         }
 
@@ -3705,12 +3714,24 @@ func (x *XChainBridge) ToJSON(p interfaces.BinaryParser, opts ...int) (any, erro
 
         <span class="cov8" title="1">json := make(map[string]string)
 
-        json["LockingChainDoor"] = addresscodec.Encode(bytes[:20], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
-        json["LockingChainIssue"] = addresscodec.Encode(bytes[20:40], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
-        json["IssuingChainDoor"] = addresscodec.Encode(bytes[40:60], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
-        json["IssuingChainIssue"] = addresscodec.Encode(bytes[60:80], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+        json["LockingChainDoor"], err = addresscodec.Encode(bytes[:20], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">json["LockingChainIssue"], err = addresscodec.Encode(bytes[20:40], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">json["IssuingChainDoor"], err = addresscodec.Encode(bytes[40:60], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">json["IssuingChainIssue"], err = addresscodec.Encode(bytes[60:80], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
 
-        return json, nil</span>
+        <span class="cov8" title="1">return json, nil</span>
 }
 </pre>
 		
