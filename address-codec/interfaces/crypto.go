@@ -1,4 +1,4 @@
-package addresscodec
+package interfaces
 
 type CryptoImplementation interface {
 	DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error)

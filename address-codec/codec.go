@@ -2,16 +2,12 @@ package addresscodec
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
 
-	"github.com/Peersyst/xrpl-go/keypairs/interfaces"
+	"github.com/Peersyst/xrpl-go/address-codec/interfaces"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
-
-	//nolint
-	"golang.org/x/crypto/ripemd160"
 )
 
 const (
@@ -33,7 +29,10 @@ const (
 
 var (
 	// Errors
-	ErrInvalidSeed = errors.New("invalid seed; could not determine encoding algorithm")
+
+	// Invalid classic address
+	ErrInvalidClassicAddress = errors.New("invalid classic address")
+	ErrInvalidSeed           = errors.New("invalid seed; could not determine encoding algorithm")
 )
 
 type EncodeLengthError struct {
@@ -44,14 +43,6 @@ type EncodeLengthError struct {
 
 func (e *EncodeLengthError) Error() string {
 	return fmt.Sprintf("`%v` length should be %v not %v", e.Instance, e.Expected, e.Input)
-}
-
-type InvalidClassicAddressError struct {
-	Input string
-}
-
-func (e *InvalidClassicAddressError) Error() string {
-	return fmt.Sprintf("`%v` is an invalid classic address", e.Input)
 }
 
 // Returns the base58 encoding of byte slice, with the given type prefix, whilst ensuring that the byte slice is the expected length.
@@ -103,7 +94,7 @@ func EncodeClassicAddressFromPublicKeyHex(pubkeyhex string) (string, error) {
 	address := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
 
 	if !IsValidClassicAddress(address) {
-		return "", &InvalidClassicAddressError{Input: address}
+		return "", ErrInvalidClassicAddress
 	}
 
 	return address, nil
@@ -111,19 +102,20 @@ func EncodeClassicAddressFromPublicKeyHex(pubkeyhex string) (string, error) {
 
 // Returns the decoded 'accountID' byte slice of the classic address.
 func DecodeClassicAddressToAccountID(cAddress string) (typePrefix, accountID []byte, err error) {
-
 	if len(DecodeBase58(cAddress)) != 25 {
-		return nil, nil, &InvalidClassicAddressError{Input: cAddress}
+		return nil, nil, ErrInvalidClassicAddress
 	}
 
 	return DecodeBase58(cAddress)[:1], DecodeBase58(cAddress)[1:21], nil
-
 }
 
-func IsValidClassicAddress(cAddress string) bool {
-	_, _, c := DecodeClassicAddressToAccountID(cAddress)
+// EncodeAccountIDToClassicAddress returns the classic address encoding of the accountId.
+func EncodeAccountIDToClassicAddress(accountID []byte) (string, error) {
+	if len(accountID) != AccountAddressLength {
+		return "", ErrInvalidAccountID
+	}
 
-	return c == nil
+	return Base58CheckEncode(accountID, AccountAddressPrefix), nil
 }
 
 // Returns a base58 encoding of a seed.
@@ -160,20 +152,6 @@ func DecodeSeed(seed string) ([]byte, interfaces.CryptoImplementation, error) {
 
 	return decoded[1:], crypto.SECP256K1(), nil
 
-}
-
-// Returns byte slice of a double hashed given byte slice.
-// The given byte slice is SHA256 hashed, then the result is RIPEMD160 hashed.
-func Sha256RipeMD160(b []byte) []byte {
-	sha256 := sha256.New()
-	sha256.Write(b)
-
-	// TODO: Check if this is still needed
-	//nolint:gosec // G406: Use of deprecated weak cryptographic primitive (gosec)
-	ripemd160 := ripemd160.New()
-	ripemd160.Write(sha256.Sum(nil))
-
-	return ripemd160.Sum(nil)
 }
 
 // Returns the node public key encoding of the byte slice as a base58 string.
@@ -220,4 +198,16 @@ func DecodeAccountPublicKey(key string) ([]byte, error) {
 	}
 
 	return decodedAccountKey, nil
+}
+
+// IsValidAddress returns true if the address is valid. Otherwise, it returns false.
+// Address can only be a classic address or an x-address.
+func IsValidAddress(address string) bool {
+	return IsValidClassicAddress(address) || IsValidXAddress(address)
+}
+
+// IsValidClassicAddress returns true if the classic address is valid. Otherwise, it returns false.
+func IsValidClassicAddress(cAddress string) bool {
+	_, _, err := DecodeClassicAddressToAccountID(cAddress)
+	return err == nil
 }
