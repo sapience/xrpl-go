@@ -186,7 +186,10 @@ func parsePathStep(parser interfaces.BinaryParser) (map[string]any, error) {
 				}
 				step[op.key] = value
 			} else {
-				value := addresscodec.Encode(bytes, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+				value, err := addresscodec.Encode(bytes, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+				if err != nil {
+					return nil, err
+				}
 				step[op.key] = value
 			}
 		}

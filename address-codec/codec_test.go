@@ -10,8 +10,8 @@ import (
 )
 
 func TestEncode(t *testing.T) {
-	tt := []struct {
-		description    string
+	testcases := []struct {
+		name           string
 		input          []byte
 		inputPrefix    []byte
 		inputLength    int
@@ -19,7 +19,15 @@ func TestEncode(t *testing.T) {
 		expectedErr    error
 	}{
 		{
-			description:    "Successful encode - 1",
+			name:           "fail - invalid length",
+			input:          []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			inputPrefix:    []byte{AccountAddressPrefix},
+			inputLength:    17,
+			expectedOutput: "",
+			expectedErr:    &EncodeLengthError{Instance: "Encode", Expected: 17, Input: 16},
+		},
+		{
+			name:           "pass - successful encode - 1",
 			input:          []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 			inputPrefix:    []byte{AccountAddressPrefix},
 			inputLength:    16,
@@ -28,25 +36,28 @@ func TestEncode(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
-
-			require.Equal(t, tc.expectedOutput, Encode(tc.input, tc.inputPrefix, tc.inputLength))
-
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := Encode(tc.input, tc.inputPrefix, tc.inputLength)
+			if tc.expectedErr != nil {
+				require.EqualError(t, err, tc.expectedErr.Error())
+			} else {
+				require.Equal(t, tc.expectedOutput, got)
+			}
 		})
 	}
 }
 
 func TestDecode(t *testing.T) {
-	tt := []struct {
-		description    string
+	testcases := []struct {
+		name           string
 		input          string
 		inputPrefix    []byte
 		expectedOutput []byte
 		expectedErr    error
 	}{
 		{
-			description:    "successful decode - 1",
+			name:           "pass - successful decode - 1",
 			input:          "rrrrrrrrrrrrrrrrrp9U13b",
 			inputPrefix:    []byte{AccountAddressPrefix},
 			expectedOutput: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -54,8 +65,8 @@ func TestDecode(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
 
 			res, _ := Decode(tc.input, tc.inputPrefix)
 			require.Equal(t, tc.expectedOutput, res)
@@ -65,37 +76,43 @@ func TestDecode(t *testing.T) {
 
 func TestEncodeClassicAddressFromPublicKeyHex(t *testing.T) {
 	tt := []struct {
-		description    string
+		name           string
 		input          string
 		expectedOutput string
 		expectedErr    error
 	}{
 		{
-			description:    "Successfully generate address from a 32-byte ED25519 public key hex string WITH prefix",
+			name:           "pass - successfully generate address from a 32-byte ED25519 public key hex string WITH prefix",
 			input:          "ED9434799226374926EDA3B54B1B461B4ABF7237962EAE18528FEA67595397FA32",
 			expectedOutput: "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
 			expectedErr:    nil,
 		},
 		{
-			description:    "Successfully generate address from a 32-byte ED25519 public key hex string WITHOUT prefix",
+			name:           "pass - successfully generate address from a 32-byte ED25519 public key hex string WITHOUT prefix",
 			input:          "9434799226374926EDA3B54B1B461B4ABF7237962EAE18528FEA67595397FA32",
 			expectedOutput: "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
 			expectedErr:    nil,
 		},
 		{
-			description:    "Derive correct address from public key",
+			name:           "pass - derive correct address from public key",
 			input:          "ED731C39781B964904E1FEEFFC9F99442196BCB5F499105A79533E2D678CA7D3D2",
 			expectedOutput: "rhTCnDC7v1Jp7NAupzisv6ynWHD161Q9nV",
 			expectedErr:    nil,
 		},
 		{
-			description:    "Invalid Public Key - too short",
+			name:           "fail - invalid hex string",
+			input:          "yurtyurtyurtyurt",
+			expectedOutput: "",
+			expectedErr:    errors.New("encoding/hex: invalid byte: U+0079 'y'"),
+		},
+		{
+			name:           "fail - invalid public key - too short",
 			input:          "ED9434799226374926EDA3B54B1B461B",
 			expectedOutput: "",
 			expectedErr:    &EncodeLengthError{Instance: "PublicKey", Input: 16, Expected: 33},
 		},
 		{
-			description:    "Invalid Public Key - too long",
+			name:           "fail - invalid public key - too long",
 			input:          "ED9434799226374926EDA3B54B1B461B4ABF7237962EAE18528FEA67595397FA32ED9434799226374926EDA3B54B1B461B4ABF7237962EAE18528FEA67595397FA32",
 			expectedOutput: "",
 			expectedErr:    &EncodeLengthError{Instance: "PublicKey", Input: 66, Expected: 33},
@@ -103,7 +120,7 @@ func TestEncodeClassicAddressFromPublicKeyHex(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 
 			got, err := EncodeClassicAddressFromPublicKeyHex(tc.input)
 
@@ -512,6 +529,38 @@ func TestDecodeAccountPublicKey(t *testing.T) {
 				require.NoError(t, err)
 				require.Equal(t, tc.output, res)
 			}
+		})
+	}
+}
+
+func TestIsValidAddress(t *testing.T) {
+
+	testcases := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{
+			name:     "fail - invalid classic address",
+			input:    "yurt",
+			expected: false,
+		},
+		{
+			name:     "pass - valid classic address",
+			input:    "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
+			expected: true,
+		},
+
+		{
+			name:     "pass - valid x address",
+			input:    "X7AcgcsBL6XDcUb289X4mJ8djcdyKaB5hJDWMArnXr61cqZ",
+			expected: true,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.expected, IsValidAddress(tc.input))
 		})
 	}
 }

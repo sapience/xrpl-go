@@ -125,7 +125,10 @@ func deserializeToken(data []byte) (map[string]any, error) {
 			return nil, err
 		}
 	}
-	issuer := deserializeIssuer(data[28:])
+	issuer, err := deserializeIssuer(data[28:])
+	if err != nil {
+		return nil, err
+	}
 	curr, err := deserializeCurrencyCode(data[8:28])
 	if err != nil {
 		return nil, err
@@ -180,7 +183,7 @@ func deserializeCurrencyCode(data []byte) (string, error) {
 	return iso, nil
 }
 
-func deserializeIssuer(data []byte) string {
+func deserializeIssuer(data []byte) (string, error) {
 	return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
 }
 
