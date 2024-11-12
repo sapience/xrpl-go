@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	errInvalidOwnerAddress = errors.New("invalid xrpl address for the Owner field")
-	errInvalidNFTokenID    = errors.New("invalid NFTokenID, must be an hexadecimal string")
+	// errInvalidNFTokenID is returned when the NFTokenID is not an hexadecimal.
+	errInvalidNFTokenID = errors.New("invalid NFTokenID, must be an hexadecimal string")
 )
 
 // The NFTokenBurn transaction is used to remove a NFToken object from the NFTokenPage in which it is being held, effectively removing the token from the ledger (burning it).

@@ -7,6 +7,28 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// **********************************
+// NFTokenCreateOffer Flags
+// **********************************
+
+const (
+	// If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
+	tfSellNFToken uint32 = 1
+)
+
+// **********************************
+// Errors
+// **********************************
+
+var (
+	// ErrOwnerAccountConflict is returned when the owner is the same as the account.
+	errOwnerAccountConflict = errors.New("owner must be different from the account")
+	// ErrOwnerPresentForSellOffer is returned when the owner is present for a sell offer.
+	errOwnerPresentForSellOffer = errors.New("owner must not be present for a sell offer")
+	// errOwnerNotPresentForBuyOffer is returned when the owner is not present for a buy offer.
+	errOwnerNotPresentForBuyOffer = errors.New("owner must be present for a buy offer")
+)
+
 // Creates either a new Sell offer for an NFToken owned by the account executing the transaction, or a new Buy offer for an NFToken owned by another account.
 //
 // If successful, the transaction creates a NFTokenOffer object. Each offer counts as one object towards the owner reserve of the account that placed the offer.
@@ -40,15 +62,6 @@ type NFTokenCreateOffer struct {
 	// (Optional) If present, indicates that this offer may only be accepted by the specified account. Attempts by other accounts to accept this offer MUST fail.
 	Destination types.Address `json:",omitempty"`
 }
-
-// **********************************
-// NFTokenCreateOffer Flags
-// **********************************
-
-const (
-	// If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
-	tfSellNFToken uint32 = 1
-)
 
 // If enabled, indicates that the offer is a sell offer. Otherwise, it is a buy offer.
 func (n *NFTokenCreateOffer) SetSellNFTokenFlag() {
@@ -93,32 +106,32 @@ func (n *NFTokenCreateOffer) Validate() (bool, error) {
 
 	// check owner and account are not equal
 	if n.Owner == n.Account {
-		return false, errors.New("owner must be different from the account")
+		return false, errOwnerAccountConflict
 	}
 
 	// check account and destination are not equal
 	if n.Destination == n.Account {
-		return false, errors.New("destination must be different from the account")
+		return false, errDestinationAccountConflict
 	}
 
 	// check owner is a valid xrpl address
 	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
-		return false, errors.New("invalid xrpl address for the Owner field")
+		return false, errInvalidOwnerAddress
 	}
 
 	// check destination is a valid xrpl address
 	if n.Destination != "" && !addresscodec.IsValidClassicAddress(n.Destination.String()) {
-		return false, errors.New("invalid xrpl address for the Destination field")
+		return false, errInvalidDestinationAddress
 	}
 
 	// validate Sell Offer Cases
 	if IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner != "" {
-		return false, errors.New("owner must not be present for a sell offer")
+		return false, errOwnerPresentForSellOffer
 	}
 
 	// validate Buy Offer Cases
 	if !IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner == "" {
-		return false, errors.New("owner must be present for a buy offer")
+		return false, errOwnerNotPresentForBuyOffer
 	}
 
 	return true, nil

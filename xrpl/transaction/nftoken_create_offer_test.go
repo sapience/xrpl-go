@@ -98,11 +98,12 @@ func TestNFTokenCreateOffer_Flatten(t *testing.T) {
 }
 func TestNFTokenCreateOffer_Validate(t *testing.T) {
 	tests := []struct {
-		name      string
-		input     *NFTokenCreateOffer
-		setter    func(*NFTokenCreateOffer)
-		wantValid bool
-		wantErr   bool
+		name       string
+		input      *NFTokenCreateOffer
+		setter     func(*NFTokenCreateOffer)
+		wantValid  bool
+		wantErr    bool
+		errMessage error
 	}{
 		{
 			name: "pass - valid sell offer",
@@ -129,8 +130,9 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
 				Amount:    types.XRPCurrencyAmount(1000000),
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidAccountAddress,
 		},
 		{
 			name: "pass - valid buy offer",
@@ -157,8 +159,9 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
 				Amount:    types.XRPCurrencyAmount(1000000),
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errOwnerAccountConflict,
 		},
 		{
 			name: "fail - destination and account are equal",
@@ -171,8 +174,9 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 				Amount:      types.XRPCurrencyAmount(1000000),
 				Destination: "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errDestinationAccountConflict,
 		},
 		{
 			name: "fail - invalid owner address",
@@ -185,8 +189,9 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
 				Amount:    types.XRPCurrencyAmount(1000000),
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidOwnerAddress,
 		},
 		{
 			name: "fail - invalid destination address",
@@ -199,8 +204,9 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 				Amount:      types.XRPCurrencyAmount(1000000),
 				Destination: "invalidAddress",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidDestinationAddress,
 		},
 		{
 			name: "fail - owner present for sell offer",
@@ -216,8 +222,9 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			setter: func(n *NFTokenCreateOffer) {
 				n.SetSellNFTokenFlag()
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errOwnerPresentForSellOffer,
 		},
 		{
 			name: "invalid - owner not present for buy offer",
@@ -229,8 +236,9 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 				NFTokenID: "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
 				Amount:    types.XRPCurrencyAmount(1000000),
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errOwnerNotPresentForBuyOffer,
 		},
 	}
 
@@ -242,6 +250,10 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			valid, err := tt.input.Validate()
 			if valid != tt.wantValid {
 				t.Errorf("expected valid to be %v, got %v", tt.wantValid, valid)
+			}
+			if (err != nil) && err != tt.errMessage {
+				t.Errorf("Validate() got error message = %v, want error message %v", err, tt.errMessage)
+				return
 			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("expected error presence to be %v, got %v, err: %s", tt.wantErr, err != nil, err)
