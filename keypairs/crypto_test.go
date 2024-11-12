@@ -12,7 +12,7 @@ func TestGetCryptoImplementationFromKey(t *testing.T) {
 	testcases := []struct {
 		name     string
 		input    string
-		expected interfaces.CryptoImplementation
+		expected interfaces.KeypairCryptoImplementation
 	}{
 		{
 			name:     "fail - invalid key",

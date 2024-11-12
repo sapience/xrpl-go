@@ -18,7 +18,7 @@ var (
 // GetCryptoImplementationFromKey returns the CryptoImplementation based on the key.
 // It returns nil if the key does not match any crypto implementation.
 // Currently, only ED25519 and SECP256K1 are supported.
-func getCryptoImplementationFromKey(k string) interfaces.CryptoImplementation {
+func getCryptoImplementationFromKey(k string) interfaces.KeypairCryptoImplementation {
 	prefix, err := hex.DecodeString(k[:2])
 	if err != nil {
 		return nil

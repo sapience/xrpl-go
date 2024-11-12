@@ -19,7 +19,7 @@ func TestGenerateEncodeSeed(t *testing.T) {
 		name        string
 		entropy     string
 		malleate    func() interfaces.Randomizer
-		algorithm   interfaces.CryptoImplementation
+		algorithm   interfaces.KeypairCryptoImplementation
 		expected    string
 		expectedErr error
 	}{
@@ -252,6 +252,34 @@ func TestValidate(t *testing.T) {
 			actual, err := Validate(tc.inputMsg, tc.inputPubKey, tc.inputSig)
 			if tc.expectedErr != nil {
 				require.Zero(t, actual)
+				require.Error(t, err, tc.expectedErr.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expected, actual)
+			}
+		})
+	}
+}
+
+func TestDeriveNodeAddress(t *testing.T) {
+	testcases := []struct {
+		name        string
+		inputPubKey string
+		expected    string
+		expectedErr error
+	}{
+		{
+			name:        "pass - derive correct node address from public key",
+			inputPubKey: "n9KHn8NfbBsZV5q8bLfS72XyGqwFt5mgoPbcTV4c6qKiuPTAtXYk",
+			expected:    "rU7bM9ENDkybaxNrefAVjdLTyNLuue1KaJ",
+			expectedErr: nil,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := DeriveNodeAddress(tc.inputPubKey, crypto.SECP256K1())
+			if tc.expectedErr != nil {
 				require.Error(t, err, tc.expectedErr.Error())
 			} else {
 				require.NoError(t, err)

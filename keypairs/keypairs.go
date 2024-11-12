@@ -2,10 +2,10 @@ package keypairs
 
 import (
 	"errors"
+	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/keypairs/interfaces"
-	"github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
 var (
@@ -24,7 +24,7 @@ const (
 // GenerateSeed generates a seed from a given entropy, a crypto algorithm implementation and a randomizer.
 // If the entropy is empty, it generates a random seed. Otherwise, it uses the entropy to generate the seed.
 // The seed is encoded using the addresscodec package.
-func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfaces.Randomizer) (string, error) {
+func GenerateSeed(entropy string, alg interfaces.KeypairCryptoImplementation, r interfaces.Randomizer) (string, error) {
 	var pe []byte
 	var err error
 	if entropy == "" {
@@ -66,21 +66,21 @@ func DeriveClassicAddress(pubKey string) (string, error) {
 }
 
 // Only for SECP256K1 curve.
-// 
-func DeriveNodeAddress(pubKey string) (string, error) {
+func DeriveNodeAddress(pubKey string, alg interfaces.NodeDerivationCryptoImplementation) (string, error) {
 	decoded, err := addresscodec.DecodeNodePublicKey(pubKey)
 	if err != nil {
 		return "", err
 	}
-
-	accountPubKey, err := crypto.SECP256K1().DerivePublicKeyFromPublicGenerator(decoded)
+	fmt.Println("decoded", decoded)
+	accountPubKey, err := alg.DerivePublicKeyFromPublicGenerator(decoded)
 	if err != nil {
 		return "", err
 	}
 
-	_ = addresscodec.Sha256RipeMD160(accountPubKey)
+	fmt.Println("accountPubKey", accountPubKey)
+	accountID := addresscodec.Sha256RipeMD160(accountPubKey)
 
-	return "", nil
+	return addresscodec.EncodeAccountIDToClassicAddress(accountID)
 }
 
 // Sign signs a message with a given private key.
