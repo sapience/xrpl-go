@@ -110,10 +110,11 @@ func TestNFTokenAcceptOffer_Flatten(t *testing.T) {
 
 func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 	tests := []struct {
-		name      string
-		tx        *NFTokenAcceptOffer
-		wantValid bool
-		wantErr   bool
+		name       string
+		tx         *NFTokenAcceptOffer
+		wantValid  bool
+		wantErr    bool
+		errMessage error
 	}{
 		{
 			name: "pass - Valid with Sell Offer",
@@ -161,8 +162,9 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 					TransactionType: NFTokenAcceptOfferTx,
 				},
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errMissingOffer,
 		},
 		{
 			name: "fail - Invalid with Broker Fee but missing Offers",
@@ -173,8 +175,9 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 				},
 				NFTokenBrokerFee: types.XRPCurrencyAmount(1000),
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errMissingBothOffers,
 		},
 		{
 			name: "fail - Invalid with Broker Fee but missing Buy Offer",
@@ -186,8 +189,9 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 				NFTokenSellOffer: "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77",
 				NFTokenBrokerFee: types.XRPCurrencyAmount(1000),
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errMissingBothOffers,
 		},
 		{
 			name: "fail - Invalid with Broker Fee but missing Sell Offer",
@@ -199,8 +203,9 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 				NFTokenBuyOffer:  "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77",
 				NFTokenBrokerFee: types.XRPCurrencyAmount(1000),
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errMissingBothOffers,
 		},
 		{
 			name: "fail - Invalid BaseTx, missing Account",
@@ -210,8 +215,9 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 				},
 				NFTokenSellOffer: "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidAccountAddress,
 		},
 	}
 
@@ -220,6 +226,10 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 			valid, err := tt.tx.Validate()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (err != nil) && err != tt.errMessage {
+				t.Errorf("Validate() got error message = %v, want error message %v", err, tt.errMessage)
 				return
 			}
 			if valid != tt.wantValid {

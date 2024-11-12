@@ -6,6 +6,13 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	// errMissingOffer is returned when neither NFTokenSellOffer nor NFTokenBuyOffer is set.
+	errMissingOffer = errors.New("either NFTokenSellOffer or NFTokenBuyOffer must be set")
+	// errMissingBothOffers is returned when NFTokenBrokerFee is set but both NFTokenSellOffer and NFTokenBuyOffer are not set (brokered mode).
+	errMissingBothOffers = errors.New("both NFTokenSellOffer and NFTokenBuyOffer must be set when NFTokenBrokerFee is set (brokered mode)")
+)
+
 // The NFTokenAcceptOffer transaction is used to accept offers to buy or sell an NFToken. It can either:
 //
 // - Allow one offer to be accepted. This is called direct mode.
@@ -77,14 +84,14 @@ func (n *NFTokenAcceptOffer) Validate() (bool, error) {
 		return false, err
 	}
 
-	// check either NFTokenSellOffer or NFTokenBuyOffer is set
-	if n.NFTokenSellOffer == "" && n.NFTokenBuyOffer == "" {
-		return false, errors.New("either NFTokenSellOffer or NFTokenBuyOffer must be set")
-	}
-
 	// if NFTokenBrokerFee is set, then both NFTokenSellOffer and NFTokenBuyOffer must be set
 	if n.NFTokenBrokerFee != nil && (n.NFTokenSellOffer == "" || n.NFTokenBuyOffer == "") {
-		return false, errors.New("both NFTokenSellOffer and NFTokenBuyOffer must be set when NFTokenBrokerFee is set (brokered mode)")
+		return false, errMissingBothOffers
+	}
+
+	// check either NFTokenSellOffer or NFTokenBuyOffer is set
+	if n.NFTokenSellOffer == "" && n.NFTokenBuyOffer == "" {
+		return false, errMissingOffer
 	}
 
 	return true, nil

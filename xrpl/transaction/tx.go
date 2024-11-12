@@ -9,6 +9,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	// errInvalidAccountAddress is returned when the account address is an invalid xrpl address.
+	errInvalidAccountAddress = errors.New("invalid xrpl address for the Account field")
+)
+
 // TODO: Refactor to use a single interface for all transaction types
 type Tx interface {
 	TxType() TxType
@@ -170,7 +175,7 @@ func (tx *BaseTx) Validate() (bool, error) {
 	flattenTx := tx.Flatten()
 
 	if !addresscodec.IsValidClassicAddress(tx.Account.String()) {
-		return false, fmt.Errorf("invalid xrpl address for the Account field")
+		return false, errInvalidAccountAddress
 	}
 
 	if tx.TransactionType == "" {
