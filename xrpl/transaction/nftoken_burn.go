@@ -8,6 +8,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	errInvalidOwnerAddress = errors.New("invalid xrpl address for the Owner field")
+	errInvalidNFTokenID    = errors.New("invalid NFTokenID, must be an hexadecimal string")
+)
+
 // The NFTokenBurn transaction is used to remove a NFToken object from the NFTokenPage in which it is being held, effectively removing the token from the ledger (burning it).
 //
 // The sender of this transaction must be the owner of the NFToken to burn; or, if the NFToken has the lsfBurnable flag enabled, can be the issuer or the issuer's authorized NFTokenMinter account instead.
@@ -68,12 +73,12 @@ func (n *NFTokenBurn) Validate() (bool, error) {
 
 	// check owner is a valid xrpl address
 	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
-		return false, errors.New("invalid xrpl address for the Owner field")
+		return false, errInvalidOwnerAddress
 	}
 
 	// check NFTokenID is a valid hexadecimal string
 	if !typecheck.IsHex(n.NFTokenID.String()) {
-		return false, errors.New("invalid NFTokenID, must be an hexadecimal string")
+		return false, errInvalidNFTokenID
 	}
 
 	return true, nil

@@ -77,10 +77,11 @@ func TestNFTokenBurn_Flatten(t *testing.T) {
 
 func TestNFTokenBurn_Validate(t *testing.T) {
 	tests := []struct {
-		name      string
-		nftBurn   *NFTokenBurn
-		wantValid bool
-		wantErr   bool
+		name       string
+		nftBurn    *NFTokenBurn
+		wantValid  bool
+		wantErr    bool
+		errMessage error
 	}{
 		{
 			name: "pass - Valid NFTokenBurn without Owner",
@@ -102,8 +103,9 @@ func TestNFTokenBurn_Validate(t *testing.T) {
 				},
 				NFTokenID: "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidAccountAddress,
 		},
 		{
 			name: "pass - Valid NFTokenBurn with Owner",
@@ -128,8 +130,9 @@ func TestNFTokenBurn_Validate(t *testing.T) {
 				NFTokenID: "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65",
 				Owner:     "invalidOwnerAddress",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidOwnerAddress,
 		},
 		{
 			name: "fail - Invalid NFTokenBurn with invalid NFTokenID",
@@ -140,8 +143,9 @@ func TestNFTokenBurn_Validate(t *testing.T) {
 				},
 				NFTokenID: "invalidNFTokenID",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidNFTokenID,
 		},
 	}
 
@@ -150,6 +154,10 @@ func TestNFTokenBurn_Validate(t *testing.T) {
 			valid, err := tt.nftBurn.Validate()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (err != nil) && err != tt.errMessage {
+				t.Errorf("Validate() got error message = %v, want error message %v", err, tt.errMessage)
 				return
 			}
 			if valid != tt.wantValid {
