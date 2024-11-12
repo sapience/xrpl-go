@@ -10,14 +10,19 @@ import (
 var (
 	// Errors
 
-	// Derived keypair did not generate verifiable signature
+	// Derived keypair did not generate verifiable signature.
 	ErrInvalidSignature = errors.New("derived keypair did not generate verifiable signature")
 )
 
 const (
+	// verificationMessage is the message that is used to verify the signature of the derived keypair.
+	// Only used for testing purposes.
 	verificationMessage = "This test message should verify."
 )
 
+// GenerateSeed generates a seed from a given entropy, a crypto algorithm implementation and a randomizer.
+// If the entropy is empty, it generates a random seed. Otherwise, it uses the entropy to generate the seed.
+// The seed is encoded using the addresscodec package.
 func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfaces.Randomizer) (string, error) {
 	var pe []byte
 	var err error
@@ -32,7 +37,8 @@ func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfa
 	return addresscodec.EncodeSeed(pe, alg)
 }
 
-// Derives a keypair from a given seed. Returns a tuple of private key and public key
+// Derives a keypair from a given seed. Returns a tuple of private key and public key.
+// The seed has to be encoded using the addresscodec package. Otherwise, it returns an error.
 func DeriveKeypair(seed string, validator bool) (private, public string, err error) {
 	ds, alg, err := addresscodec.DecodeSeed(seed)
 	if err != nil {
@@ -52,10 +58,16 @@ func DeriveKeypair(seed string, validator bool) (private, public string, err err
 	return private, public, nil
 }
 
+// DeriveClassicAddress derives a classic address from a given public key.
+// The public key has to be encoded using the addresscodec package. Otherwise, it returns an error.
 func DeriveClassicAddress(pubkey string) (string, error) {
 	return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubkey)
 }
 
+// Sign signs a message with a given private key.
+// The private key needs to satisfy a crypto algorithm implementation. Otherwise, it returns an error.
+// Currently, only ED25519 and SECP256K1 are supported.
+// If the message is empty, it returns an error.
 func Sign(msg, privKey string) (string, error) {
 	alg := getCryptoImplementationFromKey(privKey)
 	if alg == nil {
@@ -64,6 +76,10 @@ func Sign(msg, privKey string) (string, error) {
 	return alg.Sign(msg, privKey)
 }
 
+// Validate validates a signature of a message with a given public key.
+// The public key needs to satisfy a crypto algorithm implementation. Otherwise, it returns an error.
+// Currently, only ED25519 and SECP256K1 are supported.
+// If the message is empty, it returns an error.
 func Validate(msg, pubKey, sig string) (bool, error) {
 	alg := getCryptoImplementationFromKey(pubKey)
 	if alg == nil {
