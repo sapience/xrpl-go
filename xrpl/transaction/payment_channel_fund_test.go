@@ -39,7 +39,7 @@ func TestPaymentChannelFund_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "With Expiration",
+			name: "pass - With Expiration",
 			tx: &PaymentChannelFund{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
