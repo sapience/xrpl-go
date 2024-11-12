@@ -140,11 +140,12 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 
 func TestNFTokenMint_Validate(t *testing.T) {
 	tests := []struct {
-		name      string
-		nft       *NFTokenMint
-		setter    func(*NFTokenMint)
-		wantValid bool
-		wantErr   bool
+		name       string
+		nft        *NFTokenMint
+		setter     func(*NFTokenMint)
+		wantValid  bool
+		wantErr    bool
+		errMessage error
 	}{
 		{
 			name: "pass - minimal fields",
@@ -168,8 +169,9 @@ func TestNFTokenMint_Validate(t *testing.T) {
 				},
 				NFTokenTaxon: 12345,
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: errInvalidAccountAddress,
 		},
 		{
 			name: "fail - transfer fee exceeds max",
@@ -182,8 +184,9 @@ func TestNFTokenMint_Validate(t *testing.T) {
 				NFTokenTaxon: 12345,
 				TransferFee:  60000,
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrInvalidTransferFee,
 		},
 		{
 			name: "fail - issuer same as account",
@@ -196,8 +199,9 @@ func TestNFTokenMint_Validate(t *testing.T) {
 				NFTokenTaxon: 12345,
 				Issuer:       "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrIssuerAccountConflict,
 		},
 		{
 			name: "fail - issuer invalid address",
@@ -210,8 +214,9 @@ func TestNFTokenMint_Validate(t *testing.T) {
 				NFTokenTaxon: 12345,
 				Issuer:       "invalidAddress",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrInvalidIssuerAddress,
 		},
 		{
 			name: "fail - URI not hexadecimal",
@@ -224,8 +229,9 @@ func TestNFTokenMint_Validate(t *testing.T) {
 				NFTokenTaxon: 12345,
 				URI:          "invalidURI",
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrInvalidURI,
 		},
 		{
 			name: "fail - transfer fee set without transferable flag",
@@ -238,8 +244,9 @@ func TestNFTokenMint_Validate(t *testing.T) {
 				NFTokenTaxon: 12345,
 				TransferFee:  314,
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrTransferFeeRequiresTransferableFlag,
 		},
 		{
 			name: "pass - transfer fee set with transferable flag",
@@ -268,6 +275,10 @@ func TestNFTokenMint_Validate(t *testing.T) {
 			valid, err := tt.nft.Validate()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (err != nil) && err != tt.errMessage {
+				t.Errorf("Validate() got error message = %v, want error message %v", err, tt.errMessage)
 				return
 			}
 			if valid != tt.wantValid {

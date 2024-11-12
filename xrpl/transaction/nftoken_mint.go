@@ -8,6 +8,19 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	// ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
+	ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
+	// ErrIssuerAccountConflict is returned when the issuer is the same as the account.
+	ErrIssuerAccountConflict = errors.New("issuer cannot be the same as the account")
+	// ErrInvalidIssuerAddress is returned when the issuer address is an invalid xrpl address.
+	ErrInvalidIssuerAddress = errors.New("invalid xrpl address for the Issuer field")
+	// ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
+	ErrInvalidURI = errors.New("invalid URI, must be a valid hexadecimal string")
+	// ErrTransferFeeRequiresTransferableFlag is returned when the transferFee is set without the tfTransferable flag.
+	ErrTransferFeeRequiresTransferableFlag = errors.New("transferFee can only be set if the tfTransferable flag is enabled")
+)
+
 // The NFTokenMint transaction creates a non-fungible token and adds it to the relevant NFTokenPage object of the NFTokenMinter as an NFToken object.
 // This transaction is the only opportunity the NFTokenMinter has to specify any token fields that are defined as immutable (for example, the TokenFlags).
 //
@@ -131,27 +144,27 @@ func (n *NFTokenMint) Validate() (bool, error) {
 
 	// check transfer fee is between 0 and 50000
 	if n.TransferFee > MaxTransferFee {
-		return false, errors.New("transferFee must be between 0 and 50000")
+		return false, ErrInvalidTransferFee
 	}
 
 	// check issuer is not the same as the account
 	if n.Issuer == n.Account {
-		return false, errors.New("issuer must be different from the account")
+		return false, ErrIssuerAccountConflict
 	}
 
 	// check issuer is a valid xrpl address
 	if n.Issuer != "" && !addresscodec.IsValidClassicAddress(n.Issuer.String()) {
-		return false, errors.New("invalid xrpl address for the Issuer field")
+		return false, ErrInvalidIssuerAddress
 	}
 
 	// check URI is a valid hexadecimal string
 	if n.URI != "" && !typecheck.IsHex(n.URI.String()) {
-		return false, errors.New("invalid URI, must be an hexadecimal string")
+		return false, ErrInvalidURI
 	}
 
 	// check transfer fee can only be set if the tfTransferable flag is enabled
 	if n.TransferFee > 0 && !IsFlagEnabled(n.Flags, tfTransferable) {
-		return false, errors.New("transferFee can only be set if the tfTransferable flag is enabled")
+		return false, ErrTransferFeeRequiresTransferableFlag
 	}
 
 	return true, nil
