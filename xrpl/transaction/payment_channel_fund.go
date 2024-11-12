@@ -1,7 +1,15 @@
 package transaction
 
 import (
+	"errors"
+	"time"
+
+	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+	ErrInvalidExpiration = errors.New("expiration time must be either later than the current time plus the SettleDelay of the channel, or the existing Expiration of the channel")
 )
 
 // Add additional XRP to an open payment channel, and optionally update the expiration time of the channel. Only the source address of the channel can use this transaction.
@@ -10,13 +18,14 @@ import (
 //
 // ```json
 //
-// {
-// "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-// "TransactionType": "PaymentChannelFund",
-// "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
-// "Amount": "200000",
-// "Expiration": 543171558
-// }
+//	{
+//		"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//		"TransactionType": "PaymentChannelFund",
+//		"Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+//		"Amount": "200000",
+//		"Expiration": 543171558
+//	}
+//
 // ```
 type PaymentChannelFund struct {
 	BaseTx
@@ -27,7 +36,7 @@ type PaymentChannelFund struct {
 	// (Optional) New Expiration time to set for the channel, in seconds since the Ripple Epoch.
 	// This must be later than either the current time plus the SettleDelay of the channel, or the existing Expiration of the channel.
 	// After the Expiration time, any transaction that would access the channel closes the channel without taking its normal action.
-	//Any unspent XRP is returned to the source address when the channel closes. (Expiration is separate from the channel's immutable CancelAfter time.) For more information, see the PayChannel ledger object type.
+	// Any unspent XRP is returned to the source address when the channel closes. (Expiration is separate from the channel's immutable CancelAfter time.) For more information, see the PayChannel ledger object type.
 	Expiration uint32 `json:",omitempty"`
 }
 
@@ -37,15 +46,31 @@ func (*PaymentChannelFund) TxType() TxType {
 }
 
 // Flatten returns a map of the PaymentChannelFund transaction fields.
-func (s *PaymentChannelFund) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (p *PaymentChannelFund) Flatten() FlatTransaction {
+	flattened := p.BaseTx.Flatten()
 
-	flattened["Channel"] = s.Channel.String()
-	flattened["Amount"] = s.Amount.String()
+	flattened["Channel"] = p.Channel.String()
+	flattened["Amount"] = p.Amount.String()
 
-	if s.Expiration != 0 {
-		flattened["Expiration"] = s.Expiration
+	if p.Expiration != 0 {
+		flattened["Expiration"] = p.Expiration
 	}
 
 	return flattened
+}
+
+// Validate validates the PaymentChannelFund fields.
+func (p *PaymentChannelFund) Validate() (bool, error) {
+	ok, err := p.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	// check the expiration time is in the future. /!\ Incomplete as the channel SettleDelay is not taken into account but it's already a good check.
+	currentRippleTime := xrpl.UnixTimeToRippleTime(time.Now().Unix())
+	if (p.Expiration != 0) && (p.Expiration < uint32(currentRippleTime)) {
+		return false, ErrInvalidExpiration
+	}
+
+	return true, nil
 }
