@@ -3,7 +3,6 @@ package addresscodec
 import (
 	"bytes"
 	"errors"
-	"fmt"
 )
 
 var (
@@ -61,13 +60,8 @@ func EncodeXAddress(accountID []byte, tag uint32, tagFlag, testnetFlag bool) (st
 		0,
 	)
 
-	fmt.Println("xAddressBytes pre checksum", xAddressBytes)
-
 	cksum := checksum(xAddressBytes)
-	fmt.Println("cksum", cksum)
 	xAddressBytes = append(xAddressBytes, cksum[:]...)
-
-	fmt.Println("xAddressBytes post checksum", xAddressBytes)
 
 	return EncodeBase58(xAddressBytes), nil
 }
