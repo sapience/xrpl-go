@@ -9,19 +9,19 @@ import (
 
 func TestRandomizer_GenerateBytes(t *testing.T) {
 	testcases := []struct {
-		name string
-		input int
-		expected []byte
+		name        string
+		input       int
+		expected    []byte
 		expectedErr error
 	}{
 		{
-			name: "pass - 0 bytes",
-			input: 0,
+			name:     "pass - 0 bytes",
+			input:    0,
 			expected: []byte{},
 		},
 		{
-			name: "pass - 10 bytes",
-			input: 10,
+			name:     "pass - 10 bytes",
+			input:    10,
 			expected: make([]byte, 10),
 		},
 	}

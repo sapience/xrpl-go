@@ -392,7 +392,7 @@ func TestSerializeIssuedCurrencyAmount(t *testing.T) {
 			inputCurrency: "USD",
 			inputIssuer:   "invalid issuer",
 			expected:      nil,
-			expectedErr:   &addresscodec.InvalidClassicAddressError{Input: "invalid issuer"},
+			expectedErr:   addresscodec.ErrInvalidClassicAddress,
 		},
 		{
 			name:          "pass - valid serialized issued currency amount",

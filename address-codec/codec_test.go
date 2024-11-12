@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/address-codec/interfaces"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/stretchr/testify/require"
 )
@@ -121,7 +122,7 @@ func TestEncodeSeed(t *testing.T) {
 	tt := []struct {
 		description       string
 		input             []byte
-		inputEncodingType CryptoImplementation
+		inputEncodingType interfaces.CryptoImplementation
 		expectedOutput    string
 		expectedErr       error
 	}{
@@ -194,7 +195,7 @@ func TestDecodeSeed(t *testing.T) {
 		description       string
 		input             string
 		expectedOutput    []byte
-		expectedAlgorithm CryptoImplementation
+		expectedAlgorithm interfaces.CryptoImplementation
 		expectedErr       error
 	}{
 		{
@@ -278,14 +279,14 @@ func TestDecodeAddressToAccountID(t *testing.T) {
 			input:             "yurt",
 			expectedPrefix:    nil,
 			expectedAccountID: nil,
-			expectedErr:       &InvalidClassicAddressError{Input: "yurt"},
+			expectedErr:       ErrInvalidClassicAddress,
 		},
 		{
 			description:       "Unsuccessful decode - 2",
 			input:             "davidschwartz",
 			expectedPrefix:    nil,
 			expectedAccountID: nil,
-			expectedErr:       &InvalidClassicAddressError{Input: "davidschwartz"},
+			expectedErr:       ErrInvalidClassicAddress,
 		},
 	}
 
@@ -302,6 +303,45 @@ func TestDecodeAddressToAccountID(t *testing.T) {
 				require.NoError(t, err)
 				require.Equal(t, tc.expectedPrefix, typePrefix)
 				require.Equal(t, tc.expectedAccountID, accountID)
+			}
+		})
+	}
+}
+
+func TestEncodeAccountIDToClassicAddress(t *testing.T) {
+	testcases := []struct {
+		name        string
+		input       []byte
+		expected    string
+		expectedErr error
+	}{
+		{
+			name:        "fail - invalid accountId length",
+			input:       []byte{1, 2, 3},
+			expectedErr: ErrInvalidAccountID,
+		},
+		{
+			name: "pass - valid accountId",
+			input: []byte{
+				94, 123, 17, 37, 35, 246,
+				141, 47, 94, 135, 157, 180,
+				234, 197, 28, 102, 152, 166,
+				147, 4,
+			},
+			expected:    "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+			expectedErr: nil,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := EncodeAccountIDToClassicAddress(tc.input)
+
+			if tc.expectedErr != nil {
+				require.EqualError(t, err, tc.expectedErr.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expected, actual)
 			}
 		})
 	}
