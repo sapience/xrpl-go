@@ -25,9 +25,6 @@ const (
 	FamilySeedPrefix = 0x21
 	// Node/validation public key prefix - value is 28
 	NodePublicKeyPrefix = 0x1C
-
-	// X-address length - value is 35
-	XAddressLength = 35
 )
 
 var (

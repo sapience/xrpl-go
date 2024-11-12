@@ -8,6 +8,8 @@ import (
 var (
 	MainnetXAddressPrefix = []byte{0x05, 0x44}
 	TestnetXAddressPrefix = []byte{0x04, 0x93}
+	// X-address length - value is 35
+	XAddressLength = 35
 
 	// Errors
 

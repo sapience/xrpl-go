@@ -309,15 +309,15 @@ func TestDecodeAddressToAccountID(t *testing.T) {
 }
 
 func TestEncodeAccountIDToClassicAddress(t *testing.T) {
-	testcases := []struct{
-		name string
-		input []byte
-		expected string
+	testcases := []struct {
+		name        string
+		input       []byte
+		expected    string
 		expectedErr error
 	}{
 		{
-			name: "fail - invalid accountId length",
-			input: []byte{1, 2, 3},
+			name:        "fail - invalid accountId length",
+			input:       []byte{1, 2, 3},
 			expectedErr: ErrInvalidAccountID,
 		},
 		{
@@ -328,7 +328,7 @@ func TestEncodeAccountIDToClassicAddress(t *testing.T) {
 				234, 197, 28, 102, 152, 166,
 				147, 4,
 			},
-			expected: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+			expected:    "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 			expectedErr: nil,
 		},
 	}
