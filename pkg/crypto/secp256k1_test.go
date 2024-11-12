@@ -3,6 +3,8 @@ package crypto
 import (
 	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestSecp256k1_deriveKeypair(t *testing.T) {
@@ -213,6 +215,34 @@ func TestSecp256k1_validate(t *testing.T) {
 
 			if isValid != tc.wantValid {
 				t.Errorf("validate() = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestSecp256k1_derivePublicKeyFromPublicGenerator(t *testing.T) {
+	testcases := []struct {
+		name        string
+		inputPubKey []byte
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name:        "pass - derive correct public key from public generator",
+			inputPubKey: []byte{2, 96, 177, 143, 143, 27, 242, 159, 10, 244, 101, 28, 252, 88, 117, 180, 216, 33, 99, 169, 245, 4, 160, 213, 193, 34, 255, 255, 181, 74, 233, 165, 154},
+			expected:    []byte{3, 142, 217, 120, 94, 231, 252, 104, 116, 69, 224, 217, 64, 101, 167, 79, 246, 206, 198, 80, 106, 3, 199, 56, 0, 117, 216, 26, 43, 158, 126, 134, 129},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := SECP256K1().DerivePublicKeyFromPublicGenerator(tc.inputPubKey)
+			if tc.expectedErr != nil {
+				require.Error(t, err, tc.expectedErr.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expected, actual)
 			}
 		})
 	}
