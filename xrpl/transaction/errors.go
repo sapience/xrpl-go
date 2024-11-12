@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	// ErrDestinationAccountConflict is returned when the Destination matches the Account.
-	ErrDestinationAccountConflict = errors.New("Destination cannot be the same as the Account")
+	ErrDestinationAccountConflict = errors.New("destination cannot be the same as the Account")
 	// ErrInvalidAccount is returned when the Account field does not meet XRPL address standards.
 	ErrInvalidAccount = errors.New("invalid xrpl address for Account")
 	// ErrInvalidDestination is returned when the Destination field does not meet XRPL address standards.
