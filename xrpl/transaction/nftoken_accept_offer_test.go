@@ -164,7 +164,7 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errMissingOffer,
+			errMessage: ErrMissingOffer,
 		},
 		{
 			name: "fail - Invalid with Broker Fee but missing Offers",
@@ -177,7 +177,7 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errMissingBothOffers,
+			errMessage: ErrMissingBothOffers,
 		},
 		{
 			name: "fail - Invalid with Broker Fee but missing Buy Offer",
@@ -191,7 +191,7 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errMissingBothOffers,
+			errMessage: ErrMissingBothOffers,
 		},
 		{
 			name: "fail - Invalid with Broker Fee but missing Sell Offer",
@@ -205,7 +205,7 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errMissingBothOffers,
+			errMessage: ErrMissingBothOffers,
 		},
 		{
 			name: "fail - Invalid BaseTx, missing Account",
@@ -217,7 +217,7 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidAccountAddress,
+			errMessage: ErrInvalidAccount,
 		},
 	}
 

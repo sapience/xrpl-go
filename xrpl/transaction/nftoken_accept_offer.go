@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	// errMissingOffer is returned when neither NFTokenSellOffer nor NFTokenBuyOffer is set.
-	errMissingOffer = errors.New("either NFTokenSellOffer or NFTokenBuyOffer must be set")
-	// errMissingBothOffers is returned when NFTokenBrokerFee is set but both NFTokenSellOffer and NFTokenBuyOffer are not set (brokered mode).
-	errMissingBothOffers = errors.New("both NFTokenSellOffer and NFTokenBuyOffer must be set when NFTokenBrokerFee is set (brokered mode)")
+	// ErrMissingOffer is returned when at least one of NFTokenSellOffer or NFTokenBuyOffer is not set.
+	ErrMissingOffer = errors.New("at least one of NFTokenSellOffer or NFTokenBuyOffer must be set")
+	// ErrMissingBothOffers is returned when NFTokenBrokerFee is set but neither NFTokenSellOffer nor NFTokenBuyOffer are set (brokered mode).
+	ErrMissingBothOffers = errors.New("when NFTokenBrokerFee is set (brokered mode), both NFTokenSellOffer and NFTokenBuyOffer must be set")
 )
 
 // The NFTokenAcceptOffer transaction is used to accept offers to buy or sell an NFToken. It can either:
@@ -86,12 +86,12 @@ func (n *NFTokenAcceptOffer) Validate() (bool, error) {
 
 	// if NFTokenBrokerFee is set, then both NFTokenSellOffer and NFTokenBuyOffer must be set
 	if n.NFTokenBrokerFee != nil && (n.NFTokenSellOffer == "" || n.NFTokenBuyOffer == "") {
-		return false, errMissingBothOffers
+		return false, ErrMissingBothOffers
 	}
 
 	// check either NFTokenSellOffer or NFTokenBuyOffer is set
 	if n.NFTokenSellOffer == "" && n.NFTokenBuyOffer == "" {
-		return false, errMissingOffer
+		return false, ErrMissingOffer
 	}
 
 	return true, nil

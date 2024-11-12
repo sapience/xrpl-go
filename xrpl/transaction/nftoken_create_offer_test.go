@@ -132,7 +132,7 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidAccountAddress,
+			errMessage: ErrInvalidAccount,
 		},
 		{
 			name: "pass - valid buy offer",
@@ -161,7 +161,7 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errOwnerAccountConflict,
+			errMessage: ErrOwnerAccountConflict,
 		},
 		{
 			name: "fail - destination and account are equal",
@@ -176,7 +176,7 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errDestinationAccountConflict,
+			errMessage: ErrDestinationAccountConflict,
 		},
 		{
 			name: "fail - invalid owner address",
@@ -191,7 +191,7 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidOwnerAddress,
+			errMessage: ErrInvalidOwner,
 		},
 		{
 			name: "fail - invalid destination address",
@@ -206,7 +206,7 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidDestinationAddress,
+			errMessage: ErrInvalidDestination,
 		},
 		{
 			name: "fail - owner present for sell offer",
@@ -224,7 +224,7 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errOwnerPresentForSellOffer,
+			errMessage: ErrOwnerPresentForSellOffer,
 		},
 		{
 			name: "invalid - owner not present for buy offer",
@@ -238,7 +238,7 @@ func TestNFTokenCreateOffer_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errOwnerNotPresentForBuyOffer,
+			errMessage: ErrOwnerNotPresentForBuyOffer,
 		},
 	}
 

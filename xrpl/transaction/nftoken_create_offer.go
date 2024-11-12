@@ -22,11 +22,11 @@ const (
 
 var (
 	// ErrOwnerAccountConflict is returned when the owner is the same as the account.
-	errOwnerAccountConflict = errors.New("owner must be different from the account")
+	ErrOwnerAccountConflict = errors.New("owner must be different from the account")
 	// ErrOwnerPresentForSellOffer is returned when the owner is present for a sell offer.
-	errOwnerPresentForSellOffer = errors.New("owner must not be present for a sell offer")
-	// errOwnerNotPresentForBuyOffer is returned when the owner is not present for a buy offer.
-	errOwnerNotPresentForBuyOffer = errors.New("owner must be present for a buy offer")
+	ErrOwnerPresentForSellOffer = errors.New("owner must not be present for a sell offer")
+	// ErrOwnerNotPresentForBuyOffer is returned when the owner is not present for a buy offer.
+	ErrOwnerNotPresentForBuyOffer = errors.New("owner must be present for a buy offer")
 )
 
 // Creates either a new Sell offer for an NFToken owned by the account executing the transaction, or a new Buy offer for an NFToken owned by another account.
@@ -106,32 +106,32 @@ func (n *NFTokenCreateOffer) Validate() (bool, error) {
 
 	// check owner and account are not equal
 	if n.Owner == n.Account {
-		return false, errOwnerAccountConflict
+		return false, ErrOwnerAccountConflict
 	}
 
 	// check account and destination are not equal
 	if n.Destination == n.Account {
-		return false, errDestinationAccountConflict
+		return false, ErrDestinationAccountConflict
 	}
 
 	// check owner is a valid xrpl address
 	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
-		return false, errInvalidOwnerAddress
+		return false, ErrInvalidOwner
 	}
 
 	// check destination is a valid xrpl address
 	if n.Destination != "" && !addresscodec.IsValidClassicAddress(n.Destination.String()) {
-		return false, errInvalidDestinationAddress
+		return false, ErrInvalidDestination
 	}
 
 	// validate Sell Offer Cases
 	if IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner != "" {
-		return false, errOwnerPresentForSellOffer
+		return false, ErrOwnerPresentForSellOffer
 	}
 
 	// validate Buy Offer Cases
 	if !IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner == "" {
-		return false, errOwnerNotPresentForBuyOffer
+		return false, ErrOwnerNotPresentForBuyOffer
 	}
 
 	return true, nil

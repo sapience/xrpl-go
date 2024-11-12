@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// errInvalidNFTokenID is returned when the NFTokenID is not an hexadecimal.
-	errInvalidNFTokenID = errors.New("invalid NFTokenID, must be an hexadecimal string")
+	// ErrInvalidNFTokenID is returned when the NFTokenID is not an hexadecimal.
+	ErrInvalidNFTokenID = errors.New("invalid NFTokenID, must be an hexadecimal string")
 )
 
 // The NFTokenBurn transaction is used to remove a NFToken object from the NFTokenPage in which it is being held, effectively removing the token from the ledger (burning it).
@@ -73,12 +73,12 @@ func (n *NFTokenBurn) Validate() (bool, error) {
 
 	// check owner is a valid xrpl address
 	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
-		return false, errInvalidOwnerAddress
+		return false, ErrInvalidOwner
 	}
 
 	// check NFTokenID is a valid hexadecimal string
 	if !typecheck.IsHex(n.NFTokenID.String()) {
-		return false, errInvalidNFTokenID
+		return false, ErrInvalidNFTokenID
 	}
 
 	return true, nil

@@ -105,7 +105,7 @@ func TestNFTokenBurn_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidAccountAddress,
+			errMessage: ErrInvalidAccount,
 		},
 		{
 			name: "pass - Valid NFTokenBurn with Owner",
@@ -132,7 +132,7 @@ func TestNFTokenBurn_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidOwnerAddress,
+			errMessage: ErrInvalidOwner,
 		},
 		{
 			name: "fail - Invalid NFTokenBurn with invalid NFTokenID",
@@ -145,7 +145,7 @@ func TestNFTokenBurn_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidNFTokenID,
+			errMessage: ErrInvalidNFTokenID,
 		},
 	}
 

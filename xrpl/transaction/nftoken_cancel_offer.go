@@ -6,6 +6,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	// ErrEmptyNFTokenOffers is returned when the NFTokenOffers array contains no entries.
+	ErrEmptyNFTokenOffers = errors.New("the NFTokenOffers array must have at least one entry")
+)
+
 // The NFTokenCancelOffer transaction can be used to cancel existing token offers created using NFTokenCreateOffer.
 //
 // Example:
@@ -54,7 +59,7 @@ func (n *NFTokenCancelOffer) Validate() (bool, error) {
 	}
 
 	if len(n.NFTokenOffers) == 0 {
-		return false, errors.New("the NFTokenOffers array must have at least 1 entry")
+		return false, ErrEmptyNFTokenOffers
 	}
 
 	return true, nil

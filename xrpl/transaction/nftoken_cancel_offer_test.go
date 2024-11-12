@@ -65,10 +65,11 @@ func TestNFTokenCancelOffer_Flatten(t *testing.T) {
 
 func TestNFTokenCancelOffer_Validate(t *testing.T) {
 	tests := []struct {
-		name      string
-		tx        *NFTokenCancelOffer
-		wantValid bool
-		wantErr   bool
+		name       string
+		tx         *NFTokenCancelOffer
+		wantValid  bool
+		wantErr    bool
+		errMessage error
 	}{
 		{
 			name: "pass - Valid NFTokenCancelOffer",
@@ -93,8 +94,9 @@ func TestNFTokenCancelOffer_Validate(t *testing.T) {
 				},
 				NFTokenOffers: []types.NFTokenID{},
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrEmptyNFTokenOffers,
 		},
 		{
 			name: "fail - Invalid NFTokenCancelOffer BaseTx - Missing TransactionType",
@@ -106,8 +108,9 @@ func TestNFTokenCancelOffer_Validate(t *testing.T) {
 					"9C92E061381C1EF37A8CDE0E8FC35188BFC30B1883825042A64309AC09F4C36D",
 				},
 			},
-			wantValid: false,
-			wantErr:   true,
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrInvalidTransactionType,
 		},
 	}
 
@@ -116,6 +119,10 @@ func TestNFTokenCancelOffer_Validate(t *testing.T) {
 			valid, err := tt.tx.Validate()
 			if valid != tt.wantValid {
 				t.Errorf("Validate() valid = %v, want %v", valid, tt.wantValid)
+			}
+			if (err != nil) && err != tt.errMessage {
+				t.Errorf("Validate() got error message = %v, want error message %v", err, tt.errMessage)
+				return
 			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

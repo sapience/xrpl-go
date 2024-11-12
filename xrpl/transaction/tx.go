@@ -2,16 +2,10 @@ package transaction
 
 import (
 	"errors"
-	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-)
-
-var (
-	// errInvalidAccountAddress is returned when the account address is an invalid xrpl address.
-	errInvalidAccountAddress = errors.New("invalid xrpl address for the Account field")
 )
 
 // TODO: Refactor to use a single interface for all transaction types
@@ -175,11 +169,11 @@ func (tx *BaseTx) Validate() (bool, error) {
 	flattenTx := tx.Flatten()
 
 	if !addresscodec.IsValidClassicAddress(tx.Account.String()) {
-		return false, errInvalidAccountAddress
+		return false, ErrInvalidAccount
 	}
 
 	if tx.TransactionType == "" {
-		return false, fmt.Errorf("transaction type is required")
+		return false, ErrInvalidTransactionType
 	}
 
 	if !typecheck.IsStringNumericUint(tx.Fee.String(), 10, 64) {

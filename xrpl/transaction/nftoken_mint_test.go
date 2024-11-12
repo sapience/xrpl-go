@@ -171,7 +171,7 @@ func TestNFTokenMint_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: errInvalidAccountAddress,
+			errMessage: ErrInvalidAccount,
 		},
 		{
 			name: "fail - transfer fee exceeds max",
