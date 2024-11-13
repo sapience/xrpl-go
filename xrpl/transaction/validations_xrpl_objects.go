@@ -26,6 +26,36 @@ const (
 	StandardCurrencyCodeLen = 3
 )
 
+// *************************
+// Errors
+// *************************
+
+var (
+	// ErrEmptyPath is returned when the path is empty.
+	ErrEmptyPath = errors.New("path(s) should have at least one path")
+	// ErrInvalidTokenCurrency is returned when the token currency is XRP.
+	ErrInvalidTokenCurrency = errors.New("invalid or missing token currency, it also cannot have a similar standard code as XRP")
+	// ErrInvalidTokenFields is returned when the issued currency object does not have the required fields (currency, issuer and value).
+	ErrInvalidTokenFields = errors.New("issued currency object should have 3 fields: currency, issuer, value")
+	// ErrInvalidPathStepCombination is returned when the path step is invalid. The fields combination is invalid.
+	ErrInvalidPathStepCombination = errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
+	// ErrInvalidTokenValue is returned when the value field is not a valid positive number.
+	ErrInvalidTokenValue = errors.New("value field should be a valid positive number")
+	// ErrInvalidTokenType is returned when an issued currency is of type XRP.
+	ErrInvalidTokenType = errors.New("an issued currency cannot be of type XRP")
+	// ErrMissingTokenCurrency is returned when the currency field is missing for an issued currency.
+	ErrMissingTokenCurrency = errors.New("currency field is missing for the issued currency")
+)
+
+// ErrMissingAmount is a function that returns an error when a field of type CurrencyAmount is missing.
+func ErrMissingAmount(fieldName string) error {
+	return fmt.Errorf("missing field %s", fieldName)
+}
+
+// *************************
+// Validations
+// *************************
+
 // IsMemo checks if the given object is a valid Memo object.
 func IsMemo(memo Memo) (bool, error) {
 	// Get the size of the Memo object.
@@ -81,7 +111,7 @@ func IsSigner(signerData SignerData) (bool, error) {
 // It is a string for an XRP amount or a map for an IssuedCurrency amount.
 func IsAmount(field types.CurrencyAmount, fieldName string, isFieldRequired bool) (bool, error) {
 	if isFieldRequired && field == nil {
-		return false, fmt.Errorf("missing field %s", fieldName)
+		return false, ErrMissingAmount(fieldName)
 	}
 
 	if !isFieldRequired && field == nil {
@@ -103,7 +133,7 @@ func IsAmount(field types.CurrencyAmount, fieldName string, isFieldRequired bool
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
 func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	if input.Kind() == types.XRP {
-		return false, errors.New("an issued currency cannot be of type XRP")
+		return false, ErrInvalidTokenType
 	}
 
 	// Get the size of the IssuedCurrency object.
@@ -111,28 +141,24 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 
 	numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
 	if numOfKeys != IssuedCurrencySize {
-		return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
+		return false, ErrInvalidTokenFields
 	}
 
 	if strings.TrimSpace(issuedAmount.Currency) == "" {
-		return false, errors.New("currency field is required for an issued currency")
+		return false, ErrMissingTokenCurrency
 	}
 	if strings.ToUpper(issuedAmount.Currency) == currency.NativeCurrencySymbol {
-		return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
+		return false, ErrInvalidTokenCurrency
 	}
 
 	if !addresscodec.IsValidClassicAddress(issuedAmount.Issuer.String()) {
-		return false, errors.New("issuer field is not a valid XRPL classic address")
-	}
-
-	if strings.TrimSpace(issuedAmount.Value) == "" {
-		return false, errors.New("value field is required for an issued currency")
+		return false, ErrInvalidIssuer
 	}
 
 	// Check if the value is a valid positive number
 	value, err := strconv.ParseFloat(issuedAmount.Value, 64)
 	if err != nil || value < 0 {
-		return false, errors.New("value field should be a valid positive number")
+		return false, ErrInvalidTokenValue
 	}
 
 	return true, nil
@@ -168,7 +194,7 @@ func IsPath(path []PathStep) (bool, error) {
 		case hasIssuer && hasCurrency && pathStep.Currency != currency.NativeCurrencySymbol:
 			return true, nil
 		default:
-			return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
+			return false, ErrInvalidPathStepCombination
 		}
 
 	}
@@ -178,12 +204,12 @@ func IsPath(path []PathStep) (bool, error) {
 // IsPaths checks if the given slice of slices of maps is a valid Paths.
 func IsPaths(pathsteps [][]PathStep) (bool, error) {
 	if len(pathsteps) == 0 {
-		return false, errors.New("paths should have at least one path")
+		return false, ErrEmptyPath
 	}
 
 	for _, path := range pathsteps {
 		if len(path) == 0 {
-			return false, errors.New("path should have at least one path step")
+			return false, ErrEmptyPath
 		}
 
 		if ok, err := IsPath(path); !ok {
