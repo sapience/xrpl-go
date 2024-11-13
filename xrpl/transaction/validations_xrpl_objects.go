@@ -28,9 +28,9 @@ const (
 // Errors
 var (
 	// ErrEmptyPath is returned when the path is empty.
-	ErrEmptyPath = errors.New("paths should have at least one path")
+	ErrEmptyPath = errors.New("path(s) should have at least one path")
 	// ErrInvalidTokenCurrency is returned when the token currency is XRP.
-	ErrInvalidTokenCurrency = errors.New("invalid token currency, it cannot have a similar standard code as XRP")
+	ErrInvalidTokenCurrency = errors.New("invalid or missing token currency, it also cannot have a similar standard code as XRP")
 	// ErrInvalidTokenFields is returned when the issued currency object does not have the required fields (currency, issuer and value).
 	ErrInvalidTokenFields = errors.New("issued currency object should have 3 fields: currency, issuer, value")
 	// ErrInvalidPathStepCombination is returned when the path step is invalid. The fields combination is invalid.
