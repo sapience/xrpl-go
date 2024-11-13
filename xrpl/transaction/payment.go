@@ -109,15 +109,15 @@ func (p *Payment) Flatten() FlatTransaction {
 
 	if len(p.Paths) > 0 {
 		flattenedPaths := make([][]interface{}, len(p.Paths))
-		for _, path := range p.Paths {
+		for i, path := range p.Paths {
 			flattenedPath := make([]interface{}, len(path))
-			for _, step := range path {
+			for j, step := range path {
 				flattenedStep := step.Flatten()
 				if flattenedStep != nil {
-					flattenedPath = append(flattenedPath, flattenedStep)
+					flattenedPath[j] = flattenedStep
 				}
 			}
-			flattenedPaths = append(flattenedPaths, flattenedPath)
+			flattenedPaths[i] = flattenedPath
 		}
 		flattened["Paths"] = flattenedPaths
 	}
