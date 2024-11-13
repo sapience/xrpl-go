@@ -143,3 +143,111 @@ func TestPaymentChannelClaim_Flatten(t *testing.T) {
 		})
 	}
 }
+
+func TestPaymentChannelClaim_Validate(t *testing.T) {
+	tests := []struct {
+		name        string
+		claim       PaymentChannelClaim
+		wantValid   bool
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name: "pass - all fields valid",
+			claim: PaymentChannelClaim{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: PaymentChannelClaimTx,
+				},
+				Balance:   types.XRPCurrencyAmount(1000),
+				Channel:   "ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC1",
+				Signature: "ABCDEF",
+				PublicKey: "ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC1",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "fail - missing Account in BaseTx",
+			claim: PaymentChannelClaim{
+				BaseTx: BaseTx{
+					TransactionType: PaymentChannelClaimTx,
+				},
+				Balance:   types.XRPCurrencyAmount(1000),
+				Channel:   "ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC1",
+				Signature: "ABCDEF",
+				PublicKey: "ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC1",
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidAccount,
+		},
+		{
+			name: "fail - empty Channel",
+			claim: PaymentChannelClaim{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: PaymentChannelClaimTx,
+				},
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidChannel,
+		},
+		{
+			name: "fail - invalid Signature",
+			claim: PaymentChannelClaim{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: PaymentChannelClaimTx,
+				},
+				Channel:   "ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC1",
+				Signature: "INVALID_SIGNATURE",
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidSignature,
+		},
+		{
+			name: "pass - no Signature",
+			claim: PaymentChannelClaim{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: PaymentChannelClaimTx,
+				},
+				Channel: "ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC1",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "fail - invalid PublicKey",
+			claim: PaymentChannelClaim{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: PaymentChannelClaimTx,
+				},
+				Channel:   "ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC123ABC1",
+				PublicKey: "INVALID",
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidPublicKey,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.claim.Validate()
+			if valid != tt.wantValid {
+				t.Errorf("Validate() valid = %v, want %v", valid, tt.wantValid)
+			}
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if err != nil && err != tt.expectedErr {
+				t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
+			}
+		})
+	}
+}

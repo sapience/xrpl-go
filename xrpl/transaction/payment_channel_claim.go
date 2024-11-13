@@ -1,8 +1,15 @@
 package transaction
 
 import (
+	"errors"
+
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
+
+// *********************
+// Flags
+// *********************
 
 const (
 	// Clear the channel's Expiration time. (Expiration is different from the
@@ -21,6 +28,19 @@ const (
 	// holds XRP, any XRP that remains after processing the claim is returned to
 	// the source address.
 	tfClose uint32 = 131072 // 0x00020000
+)
+
+// *********************
+// Errors
+// *********************
+
+var (
+	// ErrInvalidChannel is returned when the Channel is not a valid 64-character hexadecimal string.
+	ErrInvalidChannel = errors.New("invalid Channel, must be a valid 64-character hexadecimal string")
+	// ErrInvalidSignature is returned when the Signature is not a valid hexadecimal string.
+	ErrInvalidSignature = errors.New("invalid Signature, must be a valid hexadecimal string")
+	// ErrInvalidPublicKey is returned when the PublicKey is not a valid hexadecimal string.
+	ErrInvalidPublicKey = errors.New("invalid PublicKey, must be a valid hexadecimal string")
 )
 
 // Claim XRP from a payment channel, adjust the payment channel's expiration, or both. This transaction can be used differently depending on the transaction sender's role in the specified channel:
@@ -126,4 +146,26 @@ func (s *PaymentChannelClaim) SetRenewFlag() {
 // the source address.
 func (s *PaymentChannelClaim) SetCloseFlag() {
 	s.Flags |= tfClose
+}
+
+// Validate validates the PaymentChannelFund fields.
+func (p *PaymentChannelClaim) Validate() (bool, error) {
+	ok, err := p.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	if p.Channel == "" {
+		return false, ErrInvalidChannel
+	}
+
+	if p.Signature != "" && !typecheck.IsHex(p.Signature) {
+		return false, ErrInvalidSignature
+	}
+
+	if p.PublicKey != "" && !typecheck.IsHex(p.PublicKey) {
+		return false, ErrInvalidPublicKey
+	}
+
+	return true, nil
 }
