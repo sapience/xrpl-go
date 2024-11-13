@@ -393,11 +393,11 @@
 				
 				<option value="file168">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (79.7%)</option>
 				
-				<option value="file169">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go (12.5%)</option>
+				<option value="file169">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go (100.0%)</option>
 				
-				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_create.go (0.0%)</option>
+				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_create.go (100.0%)</option>
 				
-				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_fund.go (0.0%)</option>
+				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_fund.go (100.0%)</option>
 				
 				<option value="file172">github.com/Peersyst/xrpl-go/xrpl/transaction/set_regular_key.go (100.0%)</option>
 				
@@ -11142,8 +11142,15 @@ func checkPartialPayment(tx *Payment) (bool, error) <span class="cov8" title="1"
 		<pre class="file" id="file169" style="display: none">package transaction
 
 import (
+        "errors"
+
+        "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
+
+// *********************
+// Flags
+// *********************
 
 const (
         // Clear the channel's Expiration time. (Expiration is different from the
@@ -11164,44 +11171,94 @@ const (
         tfClose uint32 = 131072 // 0x00020000
 )
 
-// Claim XRP from a payment channel, adjust the payment channel's expiration,
-// or both.
+// *********************
+// Errors
+// *********************
+
+var (
+        // ErrInvalidChannel is returned when the Channel is not a valid 64-character hexadecimal string.
+        ErrInvalidChannel = errors.New("invalid Channel, must be a valid 64-character hexadecimal string")
+        // ErrInvalidSignature is returned when the Signature is not a valid hexadecimal string.
+        ErrInvalidSignature = errors.New("invalid Signature, must be a valid hexadecimal string")
+)
+
+// Claim XRP from a payment channel, adjust the payment channel's expiration, or both. This transaction can be used differently depending on the transaction sender's role in the specified channel:
+//
+// The source address of a channel can:
+//
+// - Send XRP from the channel to the destination with or without a signed Claim.
+// - Set the channel to expire as soon as the channel's SettleDelay has passed.
+// - Clear a pending Expiration time.
+// - Close a channel immediately, with or without processing a claim first. The source address cannot close the channel immediately if the channel has XRP remaining.
+//
+// The destination address of a channel can:
+//
+// - Receive XRP from the channel using a signed Claim.
+// - Close the channel immediately after processing a Claim, refunding any unclaimed XRP to the channel's source.
+//
+// Any address sending this transaction can:
+//
+// - Cause a channel to be closed if its Expiration or CancelAfter time is older than the previous ledger's close time. Any validly-formed PaymentChannelClaim transaction has this effect regardless of the contents of the transaction.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+//                "Balance": "1000000",
+//                "Amount": "1000000",
+//                "Signature": "30440220718D264EF05CAED7C781FF6DE298DCAC68D002562C9BF3A07C1E721B420C0DAB02203A5A4779EF4D2CCC7BC3EF886676D803A9981B928D3B8ACA483B80ECA3CD7B9B",
+//                "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A"
+//          }
+//
+// ```
 type PaymentChannelClaim struct {
         BaseTx
-        Channel   types.Hash256
-        Balance   types.XRPCurrencyAmount `json:",omitempty"`
-        Amount    types.XRPCurrencyAmount `json:",omitempty"`
-        Signature string                  `json:",omitempty"`
-        PublicKey string                  `json:",omitempty"`
+        // The unique ID of the channel, as a 64-character hexadecimal string.
+        Channel types.Hash256
+        // (Optional) Total amount of XRP, in drops, delivered by this channel after processing this claim. Required to deliver XRP.
+        // Must be more than the total amount delivered by the channel so far, but not greater than the Amount of the signed claim. Must be provided except when closing the channel.
+        Balance types.XRPCurrencyAmount `json:",omitempty"`
+        // (Optional) The amount of XRP, in drops, authorized by the Signature. This must match the amount in the signed message.
+        // This is the cumulative amount of XRP that can be dispensed by the channel, including XRP previously redeemed.
+        Amount types.XRPCurrencyAmount `json:",omitempty"`
+        // (Optional) The signature of this claim, as hexadecimal. The signed message contains the channel ID and the amount of the claim.
+        // Required unless the sender of the transaction is the source address of the channel.
+        Signature string `json:",omitempty"`
+        // (Optional) The public key used for the signature, as hexadecimal. This must match the PublicKey stored in the ledger for the channel.
+        // Required unless the sender of the transaction is the source address of the channel and the Signature field is omitted.
+        // (The transaction includes the public key so that rippled can check the validity of the signature before trying to apply the transaction to the ledger.)
+        PublicKey string `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (PaymentChannelClaim).
-func (*PaymentChannelClaim) TxType() TxType <span class="cov0" title="0">{
+func (*PaymentChannelClaim) TxType() TxType <span class="cov8" title="1">{
         return PaymentChannelClaimTx
 }</span>
 
 // Flatten returns a flattened map of the PaymentChannelClaim transaction.
-func (s *PaymentChannelClaim) Flatten() FlatTransaction <span class="cov0" title="0">{
+func (s *PaymentChannelClaim) Flatten() FlatTransaction <span class="cov8" title="1">{
         flattened := s.BaseTx.Flatten()
 
         flattened["TransactionType"] = "PaymentChannelClaim"
 
-        if s.Channel != "" </span><span class="cov0" title="0">{
+        if s.Channel != "" </span><span class="cov8" title="1">{
                 flattened["Channel"] = s.Channel.String()
         }</span>
-        <span class="cov0" title="0">if s.Balance != 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if s.Balance != 0 </span><span class="cov8" title="1">{
                 flattened["Balance"] = s.Balance.Flatten()
         }</span>
-        <span class="cov0" title="0">if s.Amount != 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if s.Amount != 0 </span><span class="cov8" title="1">{
                 flattened["Amount"] = s.Amount.Flatten()
         }</span>
-        <span class="cov0" title="0">if s.Signature != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if s.Signature != "" </span><span class="cov8" title="1">{
                 flattened["Signature"] = s.Signature
         }</span>
-        <span class="cov0" title="0">if s.PublicKey != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if s.PublicKey != "" </span><span class="cov8" title="1">{
                 flattened["PublicKey"] = s.PublicKey
         }</span>
-        <span class="cov0" title="0">return flattened</span>
+        <span class="cov8" title="1">return flattened</span>
 }
 
 // SetRenewFlag sets the Renew flag.
@@ -11229,55 +11286,199 @@ func (s *PaymentChannelClaim) SetRenewFlag() <span class="cov8" title="1">{
 func (s *PaymentChannelClaim) SetCloseFlag() <span class="cov8" title="1">{
         s.Flags |= tfClose
 }</span>
+
+// Validate validates the PaymentChannelFund fields.
+func (p *PaymentChannelClaim) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := p.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if p.Channel == "" </span><span class="cov8" title="1">{
+                return false, ErrInvalidChannel
+        }</span>
+
+        <span class="cov8" title="1">if p.Signature != "" &amp;&amp; !typecheck.IsHex(p.Signature) </span><span class="cov8" title="1">{
+                return false, ErrInvalidSignature
+        }</span>
+
+        <span class="cov8" title="1">if p.PublicKey != "" &amp;&amp; !typecheck.IsHex(p.PublicKey) </span><span class="cov8" title="1">{
+                return false, ErrInvalidPublicKey
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file170" style="display: none">package transaction
 
 import (
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Create a payment channel and fund it with XRP. The address sending this transaction becomes the "source address" of the payment channel.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "TransactionType": "PaymentChannelCreate",
+//            "Amount": "10000",
+//            "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+//            "SettleDelay": 86400,
+//            "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+//            "CancelAfter": 533171558,
+//            "DestinationTag": 23480,
+//            "SourceTag": 11747
+//        }
+//
+// / ```
 type PaymentChannelCreate struct {
         BaseTx
-        Amount         types.XRPCurrencyAmount
-        Destination    types.Address
-        SettleDelay    uint32
-        PublicKey      string
-        CancelAfter    uint32 `json:",omitempty"`
+        // Amount of XRP, in drops, to deduct from the sender's balance and set aside in this channel.
+        // While the channel is open, the XRP can only go to the Destination address. When the channel closes, any unclaimed XRP is returned to the source address's balance.
+        Amount types.XRPCurrencyAmount
+        // Address to receive XRP claims against this channel. This is also known as the "destination address" for the channel. Cannot be the same as the sender (Account).
+        Destination types.Address
+        // Amount of time the source address must wait before closing the channel if it has unclaimed XRP.
+        SettleDelay uint32
+        // The 33-byte public key of the key pair the source will use to sign claims against this channel, in hexadecimal.
+        // This can be any secp256k1 or Ed25519 public key. For more information on key pairs, see Key Derivation
+        PublicKey string
+        // (Optional) The time, in seconds since the Ripple Epoch, when this channel expires.
+        // Any transaction that would modify the channel after this time closes the channel without otherwise affecting it.
+        // This value is immutable; the channel can be closed earlier than this time but cannot remain open after this time.
+        CancelAfter uint32 `json:",omitempty"`
+        // (Optional) Arbitrary tag to further specify the destination for this payment channel, such as a hosted recipient at the destination address.
         DestinationTag uint32 `json:",omitempty"`
 }
 
-func (*PaymentChannelCreate) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (PaymentChannelCreate).
+func (*PaymentChannelCreate) TxType() TxType <span class="cov8" title="1">{
         return PaymentChannelCreateTx
 }</span>
 
-// TODO: Implement flatten
-func (s *PaymentChannelCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the PaymentChannelCreate transaction fields.
+func (p *PaymentChannelCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := p.BaseTx.Flatten()
+
+        flattened["Amount"] = p.Amount.String()
+        flattened["Destination"] = p.Destination.String()
+        flattened["SettleDelay"] = p.SettleDelay
+        flattened["PublicKey"] = p.PublicKey
+
+        if p.CancelAfter != 0 </span><span class="cov8" title="1">{
+                flattened["CancelAfter"] = p.CancelAfter
+        }</span>
+
+        <span class="cov8" title="1">if p.DestinationTag != 0 </span><span class="cov8" title="1">{
+                flattened["DestinationTag"] = p.DestinationTag
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate validates the PaymentChannelCreate fields.
+func (p *PaymentChannelCreate) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := p.BaseTx.Validate()
+        if (err != nil) || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check valid xrpl address for Destination
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(p.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestination
+        }</span>
+
+        // check PublicKey is valid hexademical string
+        <span class="cov8" title="1">if !typecheck.IsHex(p.PublicKey) </span><span class="cov8" title="1">{
+                return false, ErrInvalidPublicKey
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file171" style="display: none">package transaction
 
 import (
+        "errors"
+        "time"
+
+        "github.com/Peersyst/xrpl-go/xrpl"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+        ErrInvalidExpiration = errors.New("expiration time must be either later than the current time plus the SettleDelay of the channel, or the existing Expiration of the channel")
+)
+
+// Add additional XRP to an open payment channel, and optionally update the expiration time of the channel. Only the source address of the channel can use this transaction.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//                "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//                "TransactionType": "PaymentChannelFund",
+//                "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+//                "Amount": "200000",
+//                "Expiration": 543171558
+//        }
+//
+// ```
 type PaymentChannelFund struct {
         BaseTx
-        Channel    types.Hash256
-        Amount     types.XRPCurrencyAmount
+        // The unique ID of the channel to fund, as a 64-character hexadecimal string.
+        Channel types.Hash256
+        // Amount of XRP, in drops to add to the channel. Must be a positive amount of XRP.
+        Amount types.XRPCurrencyAmount
+        // (Optional) New Expiration time to set for the channel, in seconds since the Ripple Epoch.
+        // This must be later than either the current time plus the SettleDelay of the channel, or the existing Expiration of the channel.
+        // After the Expiration time, any transaction that would access the channel closes the channel without taking its normal action.
+        // Any unspent XRP is returned to the source address when the channel closes. (Expiration is separate from the channel's immutable CancelAfter time.) For more information, see the PayChannel ledger object type.
         Expiration uint32 `json:",omitempty"`
 }
 
-func (*PaymentChannelFund) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (PaymentChannelFund).
+func (*PaymentChannelFund) TxType() TxType <span class="cov8" title="1">{
         return PaymentChannelFundTx
 }</span>
 
-// TODO: Implement flatten
-func (s *PaymentChannelFund) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the PaymentChannelFund transaction fields.
+func (p *PaymentChannelFund) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := p.BaseTx.Flatten()
+
+        flattened["Channel"] = p.Channel.String()
+        flattened["Amount"] = p.Amount.String()
+
+        if p.Expiration != 0 </span><span class="cov8" title="1">{
+                flattened["Expiration"] = p.Expiration
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate validates the PaymentChannelFund fields.
+func (p *PaymentChannelFund) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := p.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check the expiration time is in the future. /!\ Incomplete as the channel SettleDelay is not taken into account but it's already a good check.
+        <span class="cov8" title="1">currentRippleTime := xrpl.UnixTimeToRippleTime(time.Now().Unix())
+        if (p.Expiration != 0) &amp;&amp; (p.Expiration &lt; uint32(currentRippleTime)) </span><span class="cov8" title="1">{
+                return false, ErrInvalidExpiration
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file172" style="display: none">package transaction
