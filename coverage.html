@@ -11180,8 +11180,6 @@ var (
         ErrInvalidChannel = errors.New("invalid Channel, must be a valid 64-character hexadecimal string")
         // ErrInvalidSignature is returned when the Signature is not a valid hexadecimal string.
         ErrInvalidSignature = errors.New("invalid Signature, must be a valid hexadecimal string")
-        // ErrInvalidPublicKey is returned when the PublicKey is not a valid hexadecimal string.
-        ErrInvalidPublicKey = errors.New("invalid PublicKey, must be a valid hexadecimal string")
 )
 
 // Claim XRP from a payment channel, adjust the payment channel's expiration, or both. This transaction can be used differently depending on the transaction sender's role in the specified channel:
@@ -11315,6 +11313,8 @@ func (p *PaymentChannelClaim) Validate() (bool, error) <span class="cov8" title=
 		<pre class="file" id="file170" style="display: none">package transaction
 
 import (
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -11380,6 +11380,26 @@ func (p *PaymentChannelCreate) Flatten() FlatTransaction <span class="cov8" titl
         }</span>
 
         <span class="cov8" title="1">return flattened</span>
+}
+
+// Validate validates the PaymentChannelCreate fields.
+func (p *PaymentChannelCreate) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := p.BaseTx.Validate()
+        if (err != nil) || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        // check valid xrpl address for Destination
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(p.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestination
+        }</span>
+
+        // check PublicKey is valid hexademical string
+        <span class="cov8" title="1">if !typecheck.IsHex(p.PublicKey) </span><span class="cov8" title="1">{
+                return false, ErrInvalidPublicKey
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
 }
 </pre>
 		

@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -66,4 +68,24 @@ func (p *PaymentChannelCreate) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate validates the PaymentChannelCreate fields.
+func (p *PaymentChannelCreate) Validate() (bool, error) {
+	ok, err := p.BaseTx.Validate()
+	if (err != nil) || !ok {
+		return false, err
+	}
+
+	// check valid xrpl address for Destination
+	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
+		return false, ErrInvalidDestination
+	}
+
+	// check PublicKey is valid hexademical string
+	if !typecheck.IsHex(p.PublicKey) {
+		return false, ErrInvalidPublicKey
+	}
+
+	return true, nil
 }

@@ -76,3 +76,111 @@ func TestPaymentChannelCreate_Flatten(t *testing.T) {
 		})
 	}
 }
+
+func TestPaymentChannelCreate_Validate(t *testing.T) {
+	tests := []struct {
+		name        string
+		tx          *PaymentChannelCreate
+		wantValid   bool
+		wantErr     bool
+		expectedErr error
+	}{
+		{
+			name: "pass - All fields valid",
+			tx: &PaymentChannelCreate{
+				BaseTx: BaseTx{
+					Account:         "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
+					TransactionType: PaymentChannelCreateTx,
+				},
+				Amount:         types.XRPCurrencyAmount(10000),
+				Destination:    types.Address("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
+				SettleDelay:    86400,
+				PublicKey:      "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+				CancelAfter:    533171558,
+				DestinationTag: 23480,
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "fail - Invalid BaseTx, missing TransactionType",
+			tx: &PaymentChannelCreate{
+				BaseTx: BaseTx{
+					Account: "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
+				},
+				Amount:         types.XRPCurrencyAmount(10000),
+				Destination:    types.Address("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
+				SettleDelay:    86400,
+				PublicKey:      "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+				CancelAfter:    533171558,
+				DestinationTag: 23480,
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidTransactionType,
+		},
+		{
+			name: "fail - Invalid destination address",
+			tx: &PaymentChannelCreate{
+				BaseTx: BaseTx{
+					Account:         "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
+					TransactionType: PaymentChannelCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "invalidAddress",
+				SettleDelay: 86400,
+				PublicKey:   "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidDestination,
+		},
+		{
+			name: "fail - Empty destination address",
+			tx: &PaymentChannelCreate{
+				BaseTx: BaseTx{
+					Account:         "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
+					TransactionType: PaymentChannelCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "",
+				SettleDelay: 86400,
+				PublicKey:   "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidDestination,
+		},
+		{
+			name: "fail - Invalid public key",
+			tx: &PaymentChannelCreate{
+				BaseTx: BaseTx{
+					Account:         "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
+					TransactionType: PaymentChannelCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: types.Address("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
+				SettleDelay: 86400,
+				PublicKey:   "invalidPublicKey",
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidPublicKey,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := tt.tx.Validate()
+			if valid != tt.wantValid {
+				t.Errorf("Validate() valid = %v, want %v", valid, tt.wantValid)
+			}
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if err != nil && err != tt.expectedErr {
+				t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
+			}
+		})
+	}
+}

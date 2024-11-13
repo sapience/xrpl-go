@@ -39,8 +39,6 @@ var (
 	ErrInvalidChannel = errors.New("invalid Channel, must be a valid 64-character hexadecimal string")
 	// ErrInvalidSignature is returned when the Signature is not a valid hexadecimal string.
 	ErrInvalidSignature = errors.New("invalid Signature, must be a valid hexadecimal string")
-	// ErrInvalidPublicKey is returned when the PublicKey is not a valid hexadecimal string.
-	ErrInvalidPublicKey = errors.New("invalid PublicKey, must be a valid hexadecimal string")
 )
 
 // Claim XRP from a payment channel, adjust the payment channel's expiration, or both. This transaction can be used differently depending on the transaction sender's role in the specified channel:
