@@ -1,6 +1,9 @@
 package transaction
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	// ErrDestinationAccountConflict is returned when the Destination matches the Account.
@@ -9,8 +12,15 @@ var (
 	ErrInvalidAccount = errors.New("invalid xrpl address for Account")
 	// ErrInvalidDestination is returned when the Destination field does not meet XRPL address standards.
 	ErrInvalidDestination = errors.New("invalid xrpl address for Destination")
+	// ErrInvalidIssuer is returned when the issuer address is an invalid xrpl address.
+	ErrInvalidIssuer = errors.New("invalid xrpl address for Issuer")
 	// ErrInvalidOwner is returned when the Owner field does not meet XRPL address standards.
 	ErrInvalidOwner = errors.New("invalid xrpl address for Owner")
 	// ErrInvalidTransactionType is returned when the TransactionType field is invalid or missing.
 	ErrInvalidTransactionType = errors.New("invalid or missing TransactionType")
 )
+
+// ErrMissingAmount is a function that returns an error when a field of type CurrencyAmount is missing.
+func ErrMissingAmount(fieldName string) error {
+	return fmt.Errorf("missing field %s", fieldName)
+}

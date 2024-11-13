@@ -3,6 +3,7 @@ package transaction
 import (
 	"errors"
 
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -20,6 +21,11 @@ const (
 	// is equal or better than the ratio of Amount:SendMax. See Limit Quality for
 	// details.
 	tfLimitQuality uint32 = 262144
+)
+
+// Errors
+var (
+	ErrPartialPaymentFlagRequired = errors.New("tfPartialPayment flag required with DeliverMin")
 )
 
 // A Payment transaction represents a transfer of value from one account to another.
@@ -160,20 +166,14 @@ func (p *Payment) Validate() (bool, error) {
 		return false, err
 	}
 
-	// Check if the field Amount is set
-	if p.Amount == nil {
-		return false, errors.New("missing field Amount")
-	}
-
 	// Check if the field Amount is valid
 	if ok, err := IsAmount(p.Amount, "Amount", true); !ok {
 		return false, err
 	}
 
 	// Check if the field Destination is set and valid
-	err = ValidateRequiredField(flattenTx, "Destination", typecheck.IsString)
-	if err != nil {
-		return false, err
+	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
+		return false, ErrInvalidDestination
 	}
 
 	// Check if the field DestinationTag is valid
@@ -224,15 +224,11 @@ func checkPartialPayment(tx *Payment) (bool, error) {
 	}
 
 	if tx.Flags == 0 {
-		return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
+		return false, ErrPartialPaymentFlagRequired
 	}
 
 	if !IsFlagEnabled(tx.Flags, tfPartialPayment) {
-		return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
-	}
-
-	if ok, err := IsAmount(tx.DeliverMin, "DeliverMin", true); !ok {
-		return false, err
+		return false, ErrPartialPaymentFlagRequired
 	}
 
 	return true, nil

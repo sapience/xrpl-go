@@ -9,8 +9,6 @@ import (
 )
 
 var (
-	// ErrInvalidIssuerAddress is returned when the issuer address is an invalid xrpl address.
-	ErrInvalidIssuerAddress = errors.New("invalid xrpl address for the Issuer field")
 	// ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
 	ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
 	// ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
@@ -154,7 +152,7 @@ func (n *NFTokenMint) Validate() (bool, error) {
 
 	// check issuer is a valid xrpl address
 	if n.Issuer != "" && !addresscodec.IsValidClassicAddress(n.Issuer.String()) {
-		return false, ErrInvalidIssuerAddress
+		return false, ErrInvalidIssuer
 	}
 
 	// check URI is a valid hexadecimal string
