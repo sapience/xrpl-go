@@ -2,7 +2,6 @@ package keypairs
 
 import (
 	"errors"
-	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/keypairs/interfaces"
@@ -71,13 +70,11 @@ func DeriveNodeAddress(pubKey string, alg interfaces.NodeDerivationCryptoImpleme
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("decoded", decoded)
 	accountPubKey, err := alg.DerivePublicKeyFromPublicGenerator(decoded)
 	if err != nil {
 		return "", err
 	}
 
-	fmt.Println("accountPubKey", accountPubKey)
 	accountID := addresscodec.Sha256RipeMD160(accountPubKey)
 
 	return addresscodec.EncodeAccountIDToClassicAddress(accountID)

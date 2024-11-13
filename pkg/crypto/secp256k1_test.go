@@ -228,6 +228,12 @@ func TestSecp256k1_derivePublicKeyFromPublicGenerator(t *testing.T) {
 		expectedErr error
 	}{
 		{
+			name:        "fail - derive public key from public generator - invalid input public key",
+			inputPubKey: []byte{1, 2, 3},
+			expected:    nil,
+			expectedErr: errors.New("invalid public key"),
+		},
+		{
 			name:        "pass - derive correct public key from public generator",
 			inputPubKey: []byte{2, 96, 177, 143, 143, 27, 242, 159, 10, 244, 101, 28, 252, 88, 117, 180, 216, 33, 99, 169, 245, 4, 160, 213, 193, 34, 255, 255, 181, 74, 233, 165, 154},
 			expected:    []byte{3, 142, 217, 120, 94, 231, 252, 104, 116, 69, 224, 217, 64, 101, 167, 79, 246, 206, 198, 80, 106, 3, 199, 56, 0, 117, 216, 26, 43, 158, 126, 134, 129},

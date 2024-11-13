@@ -269,6 +269,11 @@ func TestDeriveNodeAddress(t *testing.T) {
 		expectedErr error
 	}{
 		{
+			name:        "fail - derive node address - node prefix not found",
+			inputPubKey: "x9KHn8NfbBsZV5q8bLfS72XyGqwFt5mgoPbcTV4c6qKiuPTAtXYk",
+			expectedErr: &addresscodec.EncodeLengthError{Instance: "NodePublicKey", Expected: addresscodec.NodePublicKeyLength, Input: 3},
+		},
+		{
 			name:        "pass - derive correct node address from public key",
 			inputPubKey: "n9KHn8NfbBsZV5q8bLfS72XyGqwFt5mgoPbcTV4c6qKiuPTAtXYk",
 			expected:    "rU7bM9ENDkybaxNrefAVjdLTyNLuue1KaJ",
