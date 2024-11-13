@@ -46,13 +46,13 @@ func (e *EncodeLengthError) Error() string {
 }
 
 // Returns the base58 encoding of byte slice, with the given type prefix, whilst ensuring that the byte slice is the expected length.
-func Encode(b []byte, typePrefix []byte, expectedLength int) string {
+func Encode(b []byte, typePrefix []byte, expectedLength int) (string, error) {
 
 	if len(b) != expectedLength {
-		return ""
+		return "", &EncodeLengthError{Instance: "Encode", Expected: expectedLength, Input: len(b)}
 	}
 
-	return Base58CheckEncode(b, typePrefix...)
+	return Base58CheckEncode(b, typePrefix...), nil
 }
 
 // Returns the byte slice decoding of the base58-encoded string and prefix.
@@ -77,21 +77,16 @@ func EncodeClassicAddressFromPublicKeyHex(pubkeyhex string) (string, error) {
 
 	if err != nil {
 		return "", err
-	}
-
-	if len(pubkey) == AccountPublicKeyLength-1 {
-		pubkey = append([]byte{crypto.ED25519().Prefix()}, pubkey...)
 	} else if len(pubkey) != AccountPublicKeyLength {
 		return "", &EncodeLengthError{Instance: "PublicKey", Expected: AccountPublicKeyLength, Input: len(pubkey)}
 	}
 
 	accountID := Sha256RipeMD160(pubkey)
 
-	if len(accountID) != AccountAddressLength {
-		return "", &EncodeLengthError{Instance: "AccountID", Expected: AccountAddressLength, Input: len(accountID)}
+	address, err := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
+	if err != nil {
+		return "", err
 	}
-
-	address := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
 
 	if !IsValidClassicAddress(address) {
 		return "", ErrInvalidClassicAddress
@@ -127,10 +122,10 @@ func EncodeSeed(entropy []byte, encodingType interfaces.CryptoImplementation) (s
 
 	if encodingType == crypto.ED25519() {
 		prefix := []byte{0x01, 0xe1, 0x4b}
-		return Encode(entropy, prefix, FamilySeedLength), nil
+		return Encode(entropy, prefix, FamilySeedLength)
 	} else if secp256k1 := crypto.SECP256K1(); encodingType == secp256k1 {
 		prefix := []byte{secp256k1.FamilySeedPrefix()}
-		return Encode(entropy, prefix, FamilySeedLength), nil
+		return Encode(entropy, prefix, FamilySeedLength)
 	}
 	return "", errors.New("encoding type must be `ed25519` or `secp256k1`")
 
