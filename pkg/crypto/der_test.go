@@ -72,7 +72,6 @@ func TestDERHexToSig(t *testing.T) {
 			expectedS:    "6fd9b361cde83a0c3d5654232f1d7cfb1a614e9a8f9b1a861564029065516e64",
 			expectError:  nil,
 		},
-	
 	}
 
 	for _, tc := range testCases {
@@ -152,39 +151,39 @@ func TestDERHexFromSig(t *testing.T) {
 
 func TestParseInt(t *testing.T) {
 	testcases := []struct {
-		name        string
-		data        []byte
-		expectedInt *big.Int
+		name              string
+		data              []byte
+		expectedInt       *big.Int
 		expectedRemaining []byte
-		expectError error
+		expectError       error
 	}{
 		{
-			name:        "fail - not enough data",
-			data:        []byte{},
-			expectedInt: nil,
+			name:              "fail - not enough data",
+			data:              []byte{},
+			expectedInt:       nil,
 			expectedRemaining: nil,
-			expectError: ErrInvalidDERNotEnoughData,
+			expectError:       ErrInvalidDERNotEnoughData,
 		},
 		{
-			name:        "fail - invalid tag",
-			data:        []byte{0x01, 0x02, 0x03},
-			expectedInt: nil,
+			name:              "fail - invalid tag",
+			data:              []byte{0x01, 0x02, 0x03},
+			expectedInt:       nil,
 			expectedRemaining: nil,
-			expectError: ErrInvalidDERIntegerTag,
+			expectError:       ErrInvalidDERIntegerTag,
 		},
 		{
-			name:        "fail - invalid length",
-			data:        []byte{0x02, 0x02, 0x01},
-			expectedInt: nil,
+			name:              "fail - invalid length",
+			data:              []byte{0x02, 0x02, 0x01},
+			expectedInt:       nil,
 			expectedRemaining: nil,
-			expectError: ErrInvalidDERNotEnoughData,
+			expectError:       ErrInvalidDERNotEnoughData,
 		},
 		{
-			name:        "pass - valid data",
-			data:        []byte{0x02, 0x01, 0x01},
-			expectedInt: big.NewInt(1),
+			name:              "pass - valid data",
+			data:              []byte{0x02, 0x01, 0x01},
+			expectedInt:       big.NewInt(1),
 			expectedRemaining: []byte{},
-			expectError: nil,
+			expectError:       nil,
 		},
 	}
 

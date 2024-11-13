@@ -119,7 +119,6 @@ func DERHexToSig(hexSignature string) ([]byte, []byte, error) {
 		return nil, nil, ErrInvalidDERSignature
 	}
 
-
 	if len(leftover) > 0 {
 		return nil, nil, ErrLeftoverBytes
 	}

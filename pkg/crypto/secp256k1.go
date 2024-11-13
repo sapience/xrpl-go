@@ -14,13 +14,29 @@ import (
 
 const (
 	// SECP256K1 prefix - value is 0
-	secp256K1Prefix = 0x00
+	secp256K1Prefix byte = 0x00
 	// SECP256K1 family seed prefix - value is 33
-	secp256K1FamilySeedPrefix = 0x21
+	secp256K1FamilySeedPrefix byte = 0x21
 )
 
-type SECP256K1CryptoAlgorithm Algorithm
+var (
+	_ Algorithm = SECP256K1CryptoAlgorithm{}
 
+	// ErrValidatorKeypairDerivation is returned when a validator keypair is attempted to be derived
+	ErrValidatorKeypairDerivation = errors.New("validator keypair derivation not supported")
+	// ErrInvalidPrivateKey is returned when a private key is invalid
+	ErrInvalidPrivateKey = errors.New("invalid private key")
+	// ErrInvalidMessage is returned when a message is required but not provided
+	ErrInvalidMessage = errors.New("message is required")
+)
+
+// SECP256K1CryptoAlgorithm is the implementation of the SECP256K1 algorithm.
+type SECP256K1CryptoAlgorithm struct {
+	prefix           byte
+	familySeedPrefix byte
+}
+
+// SECP256K1 returns a new SECP256K1CryptoAlgorithm instance.
 func SECP256K1() SECP256K1CryptoAlgorithm {
 	return SECP256K1CryptoAlgorithm{
 		prefix:           secp256K1Prefix,
@@ -28,14 +44,17 @@ func SECP256K1() SECP256K1CryptoAlgorithm {
 	}
 }
 
+// Prefix returns the prefix for the SECP256K1 algorithm.
 func (c SECP256K1CryptoAlgorithm) Prefix() byte {
 	return c.prefix
 }
 
+// FamilySeedPrefix returns the family seed prefix for the SECP256K1 algorithm.
 func (c SECP256K1CryptoAlgorithm) FamilySeedPrefix() byte {
 	return c.familySeedPrefix
 }
 
+// deriveScalar derives a scalar from a seed.
 func (c SECP256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *big.Int {
 
 	order := btcec.S256().N
@@ -73,6 +92,7 @@ func (c SECP256K1CryptoAlgorithm) deriveScalar(bytes []byte, discrim *big.Int) *
 	panic("impossible unicorn ;)")
 }
 
+// DeriveKeypair derives a keypair from a seed.
 func (c SECP256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (string, string, error) {
 	curve := btcec.S256()
 	order := curve.N
@@ -80,7 +100,7 @@ func (c SECP256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (st
 	privateGen := c.deriveScalar(seed, nil)
 
 	if validator {
-		return "", "", errors.New("validator keypair derivation not supported")
+		return "", "", ErrValidatorKeypairDerivation
 	}
 
 	rootPrivateKey, _ := btcec.PrivKeyFromBytes(privateGen.Bytes())
@@ -99,12 +119,13 @@ func (c SECP256K1CryptoAlgorithm) DeriveKeypair(seed []byte, validator bool) (st
 	return "00" + private, strings.ToUpper(hex.EncodeToString(pubKeyBytes)), nil
 }
 
+// Sign signs a message with a private key.
 func (c SECP256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	if len(privKey) != 64 && len(privKey) != 66 {
-		return "", errors.New("invalid private key")
+		return "", ErrInvalidPrivateKey
 	}
 	if len(msg) == 0 {
-		return "", errors.New("message is required")
+		return "", ErrInvalidMessage
 	}
 
 	if len(privKey) == 66 {
@@ -112,7 +133,7 @@ func (c SECP256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	}
 	key, err := hex.DecodeString(privKey)
 	if err != nil {
-		return "", err
+		return "", ErrInvalidPrivateKey
 	}
 
 	secpPrivKey := secp256k1.PrivKeyFromBytes(key)
@@ -125,6 +146,7 @@ func (c SECP256K1CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	return strings.ToUpper(parsedSig), nil
 }
 
+// Validate validates a signature for a message with a public key.
 func (c SECP256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 	// Decode the signature from DERHex to a hex string
 	r, s, err := DERHexToSig(sig)
@@ -162,6 +184,7 @@ func (c SECP256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 	return parsedSig.Verify(hash, pubKey)
 }
 
+// DerivePublicKeyFromPublicGenerator derives a public key from a public generator.
 func (c SECP256K1CryptoAlgorithm) DerivePublicKeyFromPublicGenerator(pubKey []byte) ([]byte, error) {
 	// Get the curve
 	curve := btcec.S256()
