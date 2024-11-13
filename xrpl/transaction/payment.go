@@ -24,6 +24,7 @@ const (
 
 // Errors
 var (
+	// ErrPartialPaymentFlagRequired is returned when the tfPartialPayment flag is required but not set.
 	ErrPartialPaymentFlagRequired = errors.New("tfPartialPayment flag required with DeliverMin")
 )
 
@@ -107,9 +108,9 @@ func (p *Payment) Flatten() FlatTransaction {
 	}
 
 	if len(p.Paths) > 0 {
-		flattenedPaths := make([][]interface{}, 0)
+		flattenedPaths := make([][]interface{}, len(p.Paths))
 		for _, path := range p.Paths {
-			flattenedPath := make([]interface{}, 0)
+			flattenedPath := make([]interface{}, len(path))
 			for _, step := range path {
 				flattenedStep := step.Flatten()
 				if flattenedStep != nil {
