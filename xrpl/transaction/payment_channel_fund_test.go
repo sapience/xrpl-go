@@ -95,7 +95,7 @@ func TestPaymentChannelFund_Validate(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "fail - Valid Transaction",
+			name: "fail - Invalid BaseTx, missing Account",
 			tx: &PaymentChannelFund{
 				BaseTx: BaseTx{
 					TransactionType: PaymentChannelFundTx,
