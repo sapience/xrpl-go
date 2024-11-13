@@ -68,6 +68,7 @@ func TestPaymentChannelFund_Flatten(t *testing.T) {
 		})
 	}
 }
+
 func TestPaymentChannelFund_Validate(t *testing.T) {
 	tests := []struct {
 		name             string
