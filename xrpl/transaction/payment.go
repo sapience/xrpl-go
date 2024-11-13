@@ -3,7 +3,7 @@ package transaction
 import (
 	"errors"
 
-	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -20,6 +20,12 @@ const (
 	// is equal or better than the ratio of Amount:SendMax. See Limit Quality for
 	// details.
 	tfLimitQuality uint32 = 262144
+)
+
+// Errors
+var (
+	// ErrPartialPaymentFlagRequired is returned when the tfPartialPayment flag is required but not set.
+	ErrPartialPaymentFlagRequired = errors.New("tfPartialPayment flag required with DeliverMin")
 )
 
 // A Payment transaction represents a transfer of value from one account to another.
@@ -94,7 +100,7 @@ func (p *Payment) Flatten() FlatTransaction {
 	}
 
 	if p.DestinationTag != 0 {
-		flattened["DestinationTag"] = int(p.DestinationTag)
+		flattened["DestinationTag"] = p.DestinationTag
 	}
 
 	if p.InvoiceID != "" {
@@ -102,16 +108,16 @@ func (p *Payment) Flatten() FlatTransaction {
 	}
 
 	if len(p.Paths) > 0 {
-		flattenedPaths := make([][]interface{}, 0)
-		for _, path := range p.Paths {
-			flattenedPath := make([]interface{}, 0)
-			for _, step := range path {
+		flattenedPaths := make([][]interface{}, len(p.Paths))
+		for i, path := range p.Paths {
+			flattenedPath := make([]interface{}, len(path))
+			for j, step := range path {
 				flattenedStep := step.Flatten()
 				if flattenedStep != nil {
-					flattenedPath = append(flattenedPath, flattenedStep)
+					flattenedPath[j] = flattenedStep
 				}
 			}
-			flattenedPaths = append(flattenedPaths, flattenedPath)
+			flattenedPaths[i] = flattenedPath
 		}
 		flattened["Paths"] = flattenedPaths
 	}
@@ -152,17 +158,10 @@ func (p *Payment) SetLimitQualityFlag() {
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
 func (p *Payment) Validate() (bool, error) {
-	flattenTx := p.Flatten()
-
 	// Validate the base transaction
 	_, err := p.BaseTx.Validate()
 	if err != nil {
 		return false, err
-	}
-
-	// Check if the field Amount is set
-	if p.Amount == nil {
-		return false, errors.New("missing field Amount")
 	}
 
 	// Check if the field Amount is valid
@@ -170,22 +169,9 @@ func (p *Payment) Validate() (bool, error) {
 		return false, err
 	}
 
-	// Check if the field Destination is set and valid
-	err = ValidateRequiredField(flattenTx, "Destination", typecheck.IsString)
-	if err != nil {
-		return false, err
-	}
-
-	// Check if the field DestinationTag is valid
-	err = ValidateOptionalField(flattenTx, "DestinationTag", typecheck.IsUint32)
-	if err != nil {
-		return false, err
-	}
-
-	// Check if the field InvoiceId is valid
-	err = ValidateOptionalField(flattenTx, "InvoiceId", typecheck.IsString)
-	if err != nil {
-		return false, err
+	// Check if Destination is a valid xrpl address
+	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
+		return false, ErrInvalidDestination
 	}
 
 	// Check if the field Paths is valid
@@ -224,15 +210,11 @@ func checkPartialPayment(tx *Payment) (bool, error) {
 	}
 
 	if tx.Flags == 0 {
-		return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
+		return false, ErrPartialPaymentFlagRequired
 	}
 
 	if !IsFlagEnabled(tx.Flags, tfPartialPayment) {
-		return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
-	}
-
-	if ok, err := IsAmount(tx.DeliverMin, "DeliverMin", true); !ok {
-		return false, err
+		return false, ErrPartialPaymentFlagRequired
 	}
 
 	return true, nil

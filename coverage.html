@@ -391,7 +391,7 @@
 				
 				<option value="file167">github.com/Peersyst/xrpl-go/xrpl/transaction/path_step.go (100.0%)</option>
 				
-				<option value="file168">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (79.7%)</option>
+				<option value="file168">github.com/Peersyst/xrpl-go/xrpl/transaction/payment.go (100.0%)</option>
 				
 				<option value="file169">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go (100.0%)</option>
 				
@@ -427,7 +427,7 @@
 				
 				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (100.0%)</option>
 				
-				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (81.0%)</option>
+				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (61.9%)</option>
 				
 				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
 				
@@ -10534,8 +10534,6 @@ import (
 )
 
 var (
-        // ErrInvalidIssuerAddress is returned when the issuer address is an invalid xrpl address.
-        ErrInvalidIssuerAddress = errors.New("invalid xrpl address for the Issuer field")
         // ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
         ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
         // ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
@@ -10679,7 +10677,7 @@ func (n *NFTokenMint) Validate() (bool, error) <span class="cov8" title="1">{
 
         // check issuer is a valid xrpl address
         <span class="cov8" title="1">if n.Issuer != "" &amp;&amp; !addresscodec.IsValidClassicAddress(n.Issuer.String()) </span><span class="cov8" title="1">{
-                return false, ErrInvalidIssuerAddress
+                return false, ErrInvalidIssuer
         }</span>
 
         // check URI is a valid hexadecimal string
@@ -10902,7 +10900,7 @@ func (p *PathStep) Flatten() map[string]interface{} <span class="cov8" title="1"
 import (
         "errors"
 
-        "github.com/Peersyst/xrpl-go/pkg/typecheck"
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -10919,6 +10917,12 @@ const (
         // is equal or better than the ratio of Amount:SendMax. See Limit Quality for
         // details.
         tfLimitQuality uint32 = 262144
+)
+
+// Errors
+var (
+        // ErrPartialPaymentFlagRequired is returned when the tfPartialPayment flag is required but not set.
+        ErrPartialPaymentFlagRequired = errors.New("tfPartialPayment flag required with DeliverMin")
 )
 
 // A Payment transaction represents a transfer of value from one account to another.
@@ -10964,7 +10968,7 @@ type Payment struct {
 }
 
 // TxType returns the type of the transaction (Payment).
-func (Payment) TxType() TxType <span class="cov0" title="0">{
+func (Payment) TxType() TxType <span class="cov8" title="1">{
         return PaymentTx
 }</span>
 
@@ -10980,7 +10984,7 @@ func (p *Payment) Flatten() FlatTransaction <span class="cov8" title="1">{
                 flattened["Amount"] = p.Amount.Flatten()
         }</span>
 
-        <span class="cov8" title="1">if p.DeliverMax != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if p.DeliverMax != nil </span><span class="cov8" title="1">{
                 flattened["DeliverMax"] = p.DeliverMax.Flatten()
         }</span>
 
@@ -10992,30 +10996,30 @@ func (p *Payment) Flatten() FlatTransaction <span class="cov8" title="1">{
                 flattened["Destination"] = p.Destination.String()
         }</span>
 
-        <span class="cov8" title="1">if p.DestinationTag != 0 </span><span class="cov0" title="0">{
-                flattened["DestinationTag"] = int(p.DestinationTag)
+        <span class="cov8" title="1">if p.DestinationTag != 0 </span><span class="cov8" title="1">{
+                flattened["DestinationTag"] = p.DestinationTag
         }</span>
 
-        <span class="cov8" title="1">if p.InvoiceID != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if p.InvoiceID != "" </span><span class="cov8" title="1">{
                 flattened["InvoiceID"] = p.InvoiceID.String()
         }</span>
 
         <span class="cov8" title="1">if len(p.Paths) &gt; 0 </span><span class="cov8" title="1">{
-                flattenedPaths := make([][]interface{}, 0)
-                for _, path := range p.Paths </span><span class="cov8" title="1">{
-                        flattenedPath := make([]interface{}, 0)
-                        for _, step := range path </span><span class="cov8" title="1">{
+                flattenedPaths := make([][]interface{}, len(p.Paths))
+                for i, path := range p.Paths </span><span class="cov8" title="1">{
+                        flattenedPath := make([]interface{}, len(path))
+                        for j, step := range path </span><span class="cov8" title="1">{
                                 flattenedStep := step.Flatten()
                                 if flattenedStep != nil </span><span class="cov8" title="1">{
-                                        flattenedPath = append(flattenedPath, flattenedStep)
+                                        flattenedPath[j] = flattenedStep
                                 }</span>
                         }
-                        <span class="cov8" title="1">flattenedPaths = append(flattenedPaths, flattenedPath)</span>
+                        <span class="cov8" title="1">flattenedPaths[i] = flattenedPath</span>
                 }
                 <span class="cov8" title="1">flattened["Paths"] = flattenedPaths</span>
         }
 
-        <span class="cov8" title="1">if p.SendMax != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if p.SendMax != nil </span><span class="cov8" title="1">{
                 flattened["SendMax"] = p.SendMax.Flatten()
         }</span>
 
@@ -11051,40 +11055,20 @@ func (p *Payment) SetLimitQualityFlag() <span class="cov8" title="1">{
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
 func (p *Payment) Validate() (bool, error) <span class="cov8" title="1">{
-        flattenTx := p.Flatten()
-
         // Validate the base transaction
         _, err := p.BaseTx.Validate()
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        // Check if the field Amount is set
-        <span class="cov8" title="1">if p.Amount == nil </span><span class="cov8" title="1">{
-                return false, errors.New("missing field Amount")
-        }</span>
-
-        // Check if the field Amount is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(p.Amount, "Amount", true); !ok </span><span class="cov0" title="0">{
-                return false, err
-        }</span>
-
-        // Check if the field Destination is set and valid
-        <span class="cov8" title="1">err = ValidateRequiredField(flattenTx, "Destination", typecheck.IsString)
         if err != nil </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        // Check if the field DestinationTag is valid
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "DestinationTag", typecheck.IsUint32)
-        if err != nil </span><span class="cov0" title="0">{
+        // Check if the field Amount is valid
+        <span class="cov8" title="1">if ok, err := IsAmount(p.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
-        // Check if the field InvoiceId is valid
-        <span class="cov8" title="1">err = ValidateOptionalField(flattenTx, "InvoiceId", typecheck.IsString)
-        if err != nil </span><span class="cov0" title="0">{
-                return false, err
+        // Check if Destination is a valid xrpl address
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(p.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestination
         }</span>
 
         // Check if the field Paths is valid
@@ -11095,17 +11079,17 @@ func (p *Payment) Validate() (bool, error) <span class="cov8" title="1">{
         }
 
         // Check if the field SendMax is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(p.SendMax, "SendMax", false); !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ok, err := IsAmount(p.SendMax, "SendMax", false); !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
         // Check if the field DeliverMax is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(p.DeliverMax, "DeliverMax", false); !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ok, err := IsAmount(p.DeliverMax, "DeliverMax", false); !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
         // Check if the field DeliverMin is valid
-        <span class="cov8" title="1">if ok, err := IsAmount(p.DeliverMin, "DeliverMin", false); !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ok, err := IsAmount(p.DeliverMin, "DeliverMin", false); !ok </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 
@@ -11123,15 +11107,11 @@ func checkPartialPayment(tx *Payment) (bool, error) <span class="cov8" title="1"
         }</span>
 
         <span class="cov8" title="1">if tx.Flags == 0 </span><span class="cov8" title="1">{
-                return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
+                return false, ErrPartialPaymentFlagRequired
         }</span>
 
-        <span class="cov8" title="1">if !IsFlagEnabled(tx.Flags, tfPartialPayment) </span><span class="cov0" title="0">{
-                return false, errors.New("payment transaction: tfPartialPayment flag required with DeliverMin")
-        }</span>
-
-        <span class="cov8" title="1">if ok, err := IsAmount(tx.DeliverMin, "DeliverMin", true); !ok </span><span class="cov0" title="0">{
-                return false, err
+        <span class="cov8" title="1">if !IsFlagEnabled(tx.Flags, tfPartialPayment) </span><span class="cov8" title="1">{
+                return false, ErrPartialPaymentFlagRequired
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -11147,10 +11127,6 @@ import (
         "github.com/Peersyst/xrpl-go/pkg/typecheck"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
-
-// *********************
-// Flags
-// *********************
 
 const (
         // Clear the channel's Expiration time. (Expiration is different from the
@@ -11170,10 +11146,6 @@ const (
         // the source address.
         tfClose uint32 = 131072 // 0x00020000
 )
-
-// *********************
-// Errors
-// *********************
 
 var (
         // ErrInvalidChannel is returned when the Channel is not a valid 64-character hexadecimal string.
@@ -11238,25 +11210,25 @@ func (*PaymentChannelClaim) TxType() TxType <span class="cov8" title="1">{
 }</span>
 
 // Flatten returns a flattened map of the PaymentChannelClaim transaction.
-func (s *PaymentChannelClaim) Flatten() FlatTransaction <span class="cov8" title="1">{
-        flattened := s.BaseTx.Flatten()
+func (p *PaymentChannelClaim) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := p.BaseTx.Flatten()
 
         flattened["TransactionType"] = "PaymentChannelClaim"
 
-        if s.Channel != "" </span><span class="cov8" title="1">{
-                flattened["Channel"] = s.Channel.String()
+        if p.Channel != "" </span><span class="cov8" title="1">{
+                flattened["Channel"] = p.Channel.String()
         }</span>
-        <span class="cov8" title="1">if s.Balance != 0 </span><span class="cov8" title="1">{
-                flattened["Balance"] = s.Balance.Flatten()
+        <span class="cov8" title="1">if p.Balance != 0 </span><span class="cov8" title="1">{
+                flattened["Balance"] = p.Balance.Flatten()
         }</span>
-        <span class="cov8" title="1">if s.Amount != 0 </span><span class="cov8" title="1">{
-                flattened["Amount"] = s.Amount.Flatten()
+        <span class="cov8" title="1">if p.Amount != 0 </span><span class="cov8" title="1">{
+                flattened["Amount"] = p.Amount.Flatten()
         }</span>
-        <span class="cov8" title="1">if s.Signature != "" </span><span class="cov8" title="1">{
-                flattened["Signature"] = s.Signature
+        <span class="cov8" title="1">if p.Signature != "" </span><span class="cov8" title="1">{
+                flattened["Signature"] = p.Signature
         }</span>
-        <span class="cov8" title="1">if s.PublicKey != "" </span><span class="cov8" title="1">{
-                flattened["PublicKey"] = s.PublicKey
+        <span class="cov8" title="1">if p.PublicKey != "" </span><span class="cov8" title="1">{
+                flattened["PublicKey"] = p.PublicKey
         }</span>
         <span class="cov8" title="1">return flattened</span>
 }
@@ -11266,8 +11238,8 @@ func (s *PaymentChannelClaim) Flatten() FlatTransaction <span class="cov8" title
 // Renew: Clear the channel's Expiration time. (Expiration is different from the
 // channel's immutable CancelAfter time.) Only the source address of the
 // payment channel can use this flag.
-func (s *PaymentChannelClaim) SetRenewFlag() <span class="cov8" title="1">{
-        s.Flags |= tfRenew
+func (p *PaymentChannelClaim) SetRenewFlag() <span class="cov8" title="1">{
+        p.Flags |= tfRenew
 }</span>
 
 // SetCloseFlag sets the Close flag.
@@ -11283,8 +11255,8 @@ func (s *PaymentChannelClaim) SetRenewFlag() <span class="cov8" title="1">{
 // time.) If the destination address uses this flag when the channel still
 // holds XRP, any XRP that remains after processing the claim is returned to
 // the source address.
-func (s *PaymentChannelClaim) SetCloseFlag() <span class="cov8" title="1">{
-        s.Flags |= tfClose
+func (p *PaymentChannelClaim) SetCloseFlag() <span class="cov8" title="1">{
+        p.Flags |= tfClose
 }</span>
 
 // Validate validates the PaymentChannelFund fields.
@@ -11303,7 +11275,7 @@ func (p *PaymentChannelClaim) Validate() (bool, error) <span class="cov8" title=
         }</span>
 
         <span class="cov8" title="1">if p.PublicKey != "" &amp;&amp; !typecheck.IsHex(p.PublicKey) </span><span class="cov8" title="1">{
-                return false, ErrInvalidPublicKey
+                return false, ErrInvalidHexPublicKey
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -11396,7 +11368,7 @@ func (p *PaymentChannelCreate) Validate() (bool, error) <span class="cov8" title
 
         // check PublicKey is valid hexademical string
         <span class="cov8" title="1">if !typecheck.IsHex(p.PublicKey) </span><span class="cov8" title="1">{
-                return false, ErrInvalidPublicKey
+                return false, ErrInvalidHexPublicKey
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -12436,19 +12408,19 @@ import (
         "fmt"
 )
 
-func ValidateRequiredField(tx FlatTransaction, field string, checkValidity func(interface{}) bool) error <span class="cov8" title="1">{
+func ValidateRequiredField(tx FlatTransaction, field string, checkValidity func(interface{}) bool) error <span class="cov0" title="0">{
         // Check if the field is present in the transaction map.
-        if _, ok := tx[field]; !ok </span><span class="cov8" title="1">{
+        if _, ok := tx[field]; !ok </span><span class="cov0" title="0">{
                 return fmt.Errorf("%s is missing", field)
         }</span>
 
         // Check if the field is valid.
-        <span class="cov8" title="1">if !checkValidity(tx[field]) </span><span class="cov0" title="0">{
+        <span class="cov0" title="0">if !checkValidity(tx[field]) </span><span class="cov0" title="0">{
                 transactionType, _ := tx["TransactionType"].(string)
                 return fmt.Errorf("%s: invalid field %s", transactionType, field)
         }</span>
 
-        <span class="cov8" title="1">return nil</span>
+        <span class="cov0" title="0">return nil</span>
 }
 
 // ValidateOptionalField validates an optional field in the transaction map.
@@ -12520,6 +12492,36 @@ const (
         StandardCurrencyCodeLen = 3
 )
 
+// *************************
+// Errors
+// *************************
+
+var (
+        // ErrEmptyPath is returned when the path is empty.
+        ErrEmptyPath = errors.New("path(s) should have at least one path")
+        // ErrInvalidTokenCurrency is returned when the token currency is XRP.
+        ErrInvalidTokenCurrency = errors.New("invalid or missing token currency, it also cannot have a similar standard code as XRP")
+        // ErrInvalidTokenFields is returned when the issued currency object does not have the required fields (currency, issuer and value).
+        ErrInvalidTokenFields = errors.New("issued currency object should have 3 fields: currency, issuer, value")
+        // ErrInvalidPathStepCombination is returned when the path step is invalid. The fields combination is invalid.
+        ErrInvalidPathStepCombination = errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")
+        // ErrInvalidTokenValue is returned when the value field is not a valid positive number.
+        ErrInvalidTokenValue = errors.New("value field should be a valid positive number")
+        // ErrInvalidTokenType is returned when an issued currency is of type XRP.
+        ErrInvalidTokenType = errors.New("an issued currency cannot be of type XRP")
+        // ErrMissingTokenCurrency is returned when the currency field is missing for an issued currency.
+        ErrMissingTokenCurrency = errors.New("currency field is missing for the issued currency")
+)
+
+// ErrMissingAmount is a function that returns an error when a field of type CurrencyAmount is missing.
+func ErrMissingAmount(fieldName string) error <span class="cov8" title="1">{
+        return fmt.Errorf("missing field %s", fieldName)
+}</span>
+
+// *************************
+// Validations
+// *************************
+
 // IsMemo checks if the given object is a valid Memo object.
 func IsMemo(memo Memo) (bool, error) <span class="cov8" title="1">{
         // Get the size of the Memo object.
@@ -12575,7 +12577,7 @@ func IsSigner(signerData SignerData) (bool, error) <span class="cov8" title="1">
 // It is a string for an XRP amount or a map for an IssuedCurrency amount.
 func IsAmount(field types.CurrencyAmount, fieldName string, isFieldRequired bool) (bool, error) <span class="cov8" title="1">{
         if isFieldRequired &amp;&amp; field == nil </span><span class="cov8" title="1">{
-                return false, fmt.Errorf("missing field %s", fieldName)
+                return false, ErrMissingAmount(fieldName)
         }</span>
 
         <span class="cov8" title="1">if !isFieldRequired &amp;&amp; field == nil </span><span class="cov8" title="1">{
@@ -12597,7 +12599,7 @@ func IsAmount(field types.CurrencyAmount, fieldName string, isFieldRequired bool
 // IsIssuedCurrency checks if the given object is a valid IssuedCurrency object.
 func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) <span class="cov8" title="1">{
         if input.Kind() == types.XRP </span><span class="cov8" title="1">{
-                return false, errors.New("an issued currency cannot be of type XRP")
+                return false, ErrInvalidTokenType
         }</span>
 
         // Get the size of the IssuedCurrency object.
@@ -12605,28 +12607,24 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) <span class="cov
 
         numOfKeys := len(maputils.GetKeys(issuedAmount.Flatten().(map[string]interface{})))
         if numOfKeys != IssuedCurrencySize </span><span class="cov8" title="1">{
-                return false, errors.New("issued currency object should have 3 fields: currency, issuer, value")
+                return false, ErrInvalidTokenFields
         }</span>
 
         <span class="cov8" title="1">if strings.TrimSpace(issuedAmount.Currency) == "" </span><span class="cov8" title="1">{
-                return false, errors.New("currency field is required for an issued currency")
+                return false, ErrMissingTokenCurrency
         }</span>
         <span class="cov8" title="1">if strings.ToUpper(issuedAmount.Currency) == currency.NativeCurrencySymbol </span><span class="cov8" title="1">{
-                return false, errors.New("cannot have an issued currency with a similar standard code as XRP")
+                return false, ErrInvalidTokenCurrency
         }</span>
 
         <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(issuedAmount.Issuer.String()) </span><span class="cov8" title="1">{
-                return false, errors.New("issuer field is not a valid XRPL classic address")
-        }</span>
-
-        <span class="cov8" title="1">if strings.TrimSpace(issuedAmount.Value) == "" </span><span class="cov8" title="1">{
-                return false, errors.New("value field is required for an issued currency")
+                return false, ErrInvalidIssuer
         }</span>
 
         // Check if the value is a valid positive number
         <span class="cov8" title="1">value, err := strconv.ParseFloat(issuedAmount.Value, 64)
         if err != nil || value &lt; 0 </span><span class="cov8" title="1">{
-                return false, errors.New("value field should be a valid positive number")
+                return false, ErrInvalidTokenValue
         }</span>
 
         <span class="cov8" title="1">return true, nil</span>
@@ -12662,7 +12660,7 @@ func IsPath(path []PathStep) (bool, error) <span class="cov8" title="1">{
                 case hasIssuer &amp;&amp; hasCurrency &amp;&amp; pathStep.Currency != currency.NativeCurrencySymbol:<span class="cov8" title="1">
                         return true, nil</span>
                 default:<span class="cov8" title="1">
-                        return false, errors.New("invalid path step, check the valid fields combination at https://xrpl.org/docs/concepts/tokens/fungible-tokens/paths#path-specifications")</span>
+                        return false, ErrInvalidPathStepCombination</span>
                 }
 
         }
@@ -12672,12 +12670,12 @@ func IsPath(path []PathStep) (bool, error) <span class="cov8" title="1">{
 // IsPaths checks if the given slice of slices of maps is a valid Paths.
 func IsPaths(pathsteps [][]PathStep) (bool, error) <span class="cov8" title="1">{
         if len(pathsteps) == 0 </span><span class="cov8" title="1">{
-                return false, errors.New("paths should have at least one path")
+                return false, ErrEmptyPath
         }</span>
 
         <span class="cov8" title="1">for _, path := range pathsteps </span><span class="cov8" title="1">{
                 if len(path) == 0 </span><span class="cov8" title="1">{
-                        return false, errors.New("path should have at least one path step")
+                        return false, ErrEmptyPath
                 }</span>
 
                 <span class="cov8" title="1">if ok, err := IsPath(path); !ok </span><span class="cov8" title="1">{
