@@ -19,7 +19,7 @@ func TestGenerateEncodeSeed(t *testing.T) {
 		name        string
 		entropy     string
 		malleate    func() interfaces.Randomizer
-		algorithm   interfaces.KeypairCryptoImplementation
+		algorithm   interfaces.KeypairCryptoAlg
 		expected    string
 		expectedErr error
 	}{
