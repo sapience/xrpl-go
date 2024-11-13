@@ -395,7 +395,7 @@
 				
 				<option value="file169">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_claim.go (12.5%)</option>
 				
-				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_create.go (0.0%)</option>
+				<option value="file170">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_create.go (100.0%)</option>
 				
 				<option value="file171">github.com/Peersyst/xrpl-go/xrpl/transaction/payment_channel_fund.go (100.0%)</option>
 				
@@ -11237,24 +11237,69 @@ import (
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Create a payment channel and fund it with XRP. The address sending this transaction becomes the "source address" of the payment channel.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "TransactionType": "PaymentChannelCreate",
+//            "Amount": "10000",
+//            "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+//            "SettleDelay": 86400,
+//            "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+//            "CancelAfter": 533171558,
+//            "DestinationTag": 23480,
+//            "SourceTag": 11747
+//        }
+//
+// / ```
 type PaymentChannelCreate struct {
         BaseTx
-        Amount         types.XRPCurrencyAmount
-        Destination    types.Address
-        SettleDelay    uint32
-        PublicKey      string
-        CancelAfter    uint32 `json:",omitempty"`
+        // Amount of XRP, in drops, to deduct from the sender's balance and set aside in this channel.
+        // While the channel is open, the XRP can only go to the Destination address. When the channel closes, any unclaimed XRP is returned to the source address's balance.
+        Amount types.XRPCurrencyAmount
+        // Address to receive XRP claims against this channel. This is also known as the "destination address" for the channel. Cannot be the same as the sender (Account).
+        Destination types.Address
+        // Amount of time the source address must wait before closing the channel if it has unclaimed XRP.
+        SettleDelay uint32
+        // The 33-byte public key of the key pair the source will use to sign claims against this channel, in hexadecimal.
+        // This can be any secp256k1 or Ed25519 public key. For more information on key pairs, see Key Derivation
+        PublicKey string
+        // (Optional) The time, in seconds since the Ripple Epoch, when this channel expires.
+        // Any transaction that would modify the channel after this time closes the channel without otherwise affecting it.
+        // This value is immutable; the channel can be closed earlier than this time but cannot remain open after this time.
+        CancelAfter uint32 `json:",omitempty"`
+        // (Optional) Arbitrary tag to further specify the destination for this payment channel, such as a hosted recipient at the destination address.
         DestinationTag uint32 `json:",omitempty"`
 }
 
-func (*PaymentChannelCreate) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (PaymentChannelCreate).
+func (*PaymentChannelCreate) TxType() TxType <span class="cov8" title="1">{
         return PaymentChannelCreateTx
 }</span>
 
-// TODO: Implement flatten
-func (s *PaymentChannelCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns a map of the PaymentChannelCreate transaction fields.
+func (p *PaymentChannelCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := p.BaseTx.Flatten()
+
+        flattened["Amount"] = p.Amount.String()
+        flattened["Destination"] = p.Destination.String()
+        flattened["SettleDelay"] = p.SettleDelay
+        flattened["PublicKey"] = p.PublicKey
+
+        if p.CancelAfter != 0 </span><span class="cov8" title="1">{
+                flattened["CancelAfter"] = p.CancelAfter
+        }</span>
+
+        <span class="cov8" title="1">if p.DestinationTag != 0 </span><span class="cov8" title="1">{
+                flattened["DestinationTag"] = p.DestinationTag
+        }</span>
+
+        <span class="cov8" title="1">return flattened</span>
+}
 </pre>
 		
 		<pre class="file" id="file171" style="display: none">package transaction
