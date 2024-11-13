@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -100,7 +99,7 @@ func (p *Payment) Flatten() FlatTransaction {
 	}
 
 	if p.DestinationTag != 0 {
-		flattened["DestinationTag"] = int(p.DestinationTag)
+		flattened["DestinationTag"] = p.DestinationTag
 	}
 
 	if p.InvoiceID != "" {
@@ -158,8 +157,6 @@ func (p *Payment) SetLimitQualityFlag() {
 
 // ValidatePayment validates the Payment struct and make sure all the fields are correct.
 func (p *Payment) Validate() (bool, error) {
-	flattenTx := p.Flatten()
-
 	// Validate the base transaction
 	_, err := p.BaseTx.Validate()
 	if err != nil {
@@ -171,21 +168,9 @@ func (p *Payment) Validate() (bool, error) {
 		return false, err
 	}
 
-	// Check if the field Destination is set and valid
+	// Check if Destination is a valid xrpl address
 	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
 		return false, ErrInvalidDestination
-	}
-
-	// Check if the field DestinationTag is valid
-	err = ValidateOptionalField(flattenTx, "DestinationTag", typecheck.IsUint32)
-	if err != nil {
-		return false, err
-	}
-
-	// Check if the field InvoiceId is valid
-	err = ValidateOptionalField(flattenTx, "InvoiceId", typecheck.IsString)
-	if err != nil {
-		return false, err
 	}
 
 	// Check if the field Paths is valid
