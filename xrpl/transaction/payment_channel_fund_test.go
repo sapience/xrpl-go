@@ -135,16 +135,12 @@ func TestPaymentChannelFund_Validate(t *testing.T) {
 				tt.expirationSetter(tt.tx)
 			}
 
-			if valid != tt.wantValid {
-				t.Errorf("Validate() valid = %v, want %v", valid, tt.wantValid)
-			}
+			assert.Equal(t, tt.wantValid, valid)
 			if (err != nil) && err != tt.expectedErr {
 				t.Errorf("Validate() got error message = %v, want error message %v", err, tt.expectedErr)
 				return
 			}
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			assert.Equal(t, tt.wantErr, err != nil)
 		})
 	}
 }

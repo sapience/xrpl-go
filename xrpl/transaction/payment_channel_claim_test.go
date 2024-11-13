@@ -47,9 +47,7 @@ func TestPaymentChannelClaimFlags(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &PaymentChannelClaim{}
 			tt.setter(p)
-			if p.Flags != tt.expected {
-				t.Errorf("Expected Flags to be %d, got %d", tt.expected, p.Flags)
-			}
+			assert.Equal(t, tt.expected, p.Flags)
 		})
 	}
 }
@@ -137,9 +135,7 @@ func TestPaymentChannelClaim_Flatten(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := testutil.CompareFlattenAndExpected(tt.claim.Flatten(), []byte(tt.expected))
-			if err != nil {
-				t.Error(err)
-			}
+			assert.NoError(t, err)
 		})
 	}
 }
@@ -232,19 +228,15 @@ func TestPaymentChannelClaim_Validate(t *testing.T) {
 			},
 			wantValid:   false,
 			wantErr:     true,
-			expectedErr: ErrInvalidPublicKey,
+			expectedErr: ErrInvalidHexPublicKey,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.claim.Validate()
-			if valid != tt.wantValid {
-				t.Errorf("Validate() valid = %v, want %v", valid, tt.wantValid)
-			}
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			assert.Equal(t, tt.wantValid, valid)
+			assert.Equal(t, tt.wantErr, err != nil)
 			if err != nil && err != tt.expectedErr {
 				t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
 			}

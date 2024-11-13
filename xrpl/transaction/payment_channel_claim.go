@@ -7,10 +7,6 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-// *********************
-// Flags
-// *********************
-
 const (
 	// Clear the channel's Expiration time. (Expiration is different from the
 	// channel's immutable CancelAfter time.) Only the source address of the
@@ -29,10 +25,6 @@ const (
 	// the source address.
 	tfClose uint32 = 131072 // 0x00020000
 )
-
-// *********************
-// Errors
-// *********************
 
 var (
 	// ErrInvalidChannel is returned when the Channel is not a valid 64-character hexadecimal string.
@@ -162,7 +154,7 @@ func (p *PaymentChannelClaim) Validate() (bool, error) {
 	}
 
 	if p.PublicKey != "" && !typecheck.IsHex(p.PublicKey) {
-		return false, ErrInvalidPublicKey
+		return false, ErrInvalidHexPublicKey
 	}
 
 	return true, nil

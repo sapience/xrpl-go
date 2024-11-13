@@ -84,7 +84,7 @@ func (p *PaymentChannelCreate) Validate() (bool, error) {
 
 	// check PublicKey is valid hexademical string
 	if !typecheck.IsHex(p.PublicKey) {
-		return false, ErrInvalidPublicKey
+		return false, ErrInvalidHexPublicKey
 	}
 
 	return true, nil

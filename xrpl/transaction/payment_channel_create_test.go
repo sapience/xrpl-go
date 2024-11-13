@@ -165,19 +165,15 @@ func TestPaymentChannelCreate_Validate(t *testing.T) {
 			},
 			wantValid:   false,
 			wantErr:     true,
-			expectedErr: ErrInvalidPublicKey,
+			expectedErr: ErrInvalidHexPublicKey,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.tx.Validate()
-			if valid != tt.wantValid {
-				t.Errorf("Validate() valid = %v, want %v", valid, tt.wantValid)
-			}
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			assert.Equal(t, tt.wantValid, valid)	
+			assert.Equal(t, tt.wantErr, err != nil)
 			if err != nil && err != tt.expectedErr {
 				t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
 			}
