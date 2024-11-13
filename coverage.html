@@ -123,7 +123,7 @@
 				
 				<option value="file33">github.com/Peersyst/xrpl-go/keypairs/crypto.go (100.0%)</option>
 				
-				<option value="file34">github.com/Peersyst/xrpl-go/keypairs/keypairs.go (89.7%)</option>
+				<option value="file34">github.com/Peersyst/xrpl-go/keypairs/keypairs.go (89.2%)</option>
 				
 				<option value="file35">github.com/Peersyst/xrpl-go/pkg/big-decimal/big_decimal.go (96.6%)</option>
 				
@@ -131,7 +131,7 @@
 				
 				<option value="file37">github.com/Peersyst/xrpl-go/pkg/crypto/ed25519.go (78.6%)</option>
 				
-				<option value="file38">github.com/Peersyst/xrpl-go/pkg/crypto/secp256k1.go (90.3%)</option>
+				<option value="file38">github.com/Peersyst/xrpl-go/pkg/crypto/secp256k1.go (92.0%)</option>
 				
 				<option value="file39">github.com/Peersyst/xrpl-go/pkg/crypto/sha512.go (100.0%)</option>
 				
@@ -793,7 +793,7 @@ func DecodeSeed(seed string) ([]byte, interfaces.CryptoImplementation, error) <s
         decoded, err := Base58CheckDecode(seed)
 
         if err != nil </span><span class="cov8" title="1">{
-                return nil, crypto.Algorithm{}, ErrInvalidSeed
+                return nil, nil, ErrInvalidSeed
         }</span>
 
         <span class="cov8" title="1">if bytes.Equal(decoded[:3], []byte{0x01, 0xe1, 0x4b}) </span><span class="cov8" title="1">{
@@ -3734,7 +3734,7 @@ var (
 // GetCryptoImplementationFromKey returns the CryptoImplementation based on the key.
 // It returns nil if the key does not match any crypto implementation.
 // Currently, only ED25519 and SECP256K1 are supported.
-func getCryptoImplementationFromKey(k string) interfaces.CryptoImplementation <span class="cov8" title="1">{
+func getCryptoImplementationFromKey(k string) interfaces.KeypairCryptoImplementation <span class="cov8" title="1">{
         prefix, err := hex.DecodeString(k[:2])
         if err != nil </span><span class="cov8" title="1">{
                 return nil
@@ -3775,7 +3775,7 @@ const (
 // GenerateSeed generates a seed from a given entropy, a crypto algorithm implementation and a randomizer.
 // If the entropy is empty, it generates a random seed. Otherwise, it uses the entropy to generate the seed.
 // The seed is encoded using the addresscodec package.
-func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfaces.Randomizer) (string, error) <span class="cov8" title="1">{
+func GenerateSeed(entropy string, alg interfaces.KeypairCryptoImplementation, r interfaces.Randomizer) (string, error) <span class="cov8" title="1">{
         var pe []byte
         var err error
         if entropy == "" </span><span class="cov8" title="1">{
@@ -3812,9 +3812,25 @@ func DeriveKeypair(seed string, validator bool) (private, public string, err err
 
 // DeriveClassicAddress derives a classic address from a given public key.
 // The public key has to be encoded using the addresscodec package. Otherwise, it returns an error.
-func DeriveClassicAddress(pubkey string) (string, error) <span class="cov8" title="1">{
-        return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubkey)
+func DeriveClassicAddress(pubKey string) (string, error) <span class="cov8" title="1">{
+        return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubKey)
 }</span>
+
+// Only for SECP256K1 curve.
+func DeriveNodeAddress(pubKey string, alg interfaces.NodeDerivationCryptoImplementation) (string, error) <span class="cov8" title="1">{
+        decoded, err := addresscodec.DecodeNodePublicKey(pubKey)
+        if err != nil </span><span class="cov8" title="1">{
+                return "", err
+        }</span>
+        <span class="cov8" title="1">accountPubKey, err := alg.DerivePublicKeyFromPublicGenerator(decoded)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        <span class="cov8" title="1">accountID := addresscodec.Sha256RipeMD160(accountPubKey)
+
+        return addresscodec.EncodeAccountIDToClassicAddress(accountID)</span>
+}
 
 // Sign signs a message with a given private key.
 // The private key needs to satisfy a crypto algorithm implementation. Otherwise, it returns an error.
@@ -4348,6 +4364,45 @@ func (c SECP256K1CryptoAlgorithm) Validate(msg, pubkey, sig string) bool <span c
                 return false
         }</span>
         <span class="cov8" title="1">return parsedSig.Verify(hash, pubKey)</span>
+}
+
+func (c SECP256K1CryptoAlgorithm) DerivePublicKeyFromPublicGenerator(pubKey []byte) ([]byte, error) <span class="cov8" title="1">{
+        // Get the curve
+        curve := btcec.S256()
+
+        // Parse the input public key as a point
+        rootPubKey, err := btcec.ParsePubKey(pubKey)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        // Derive scalar using existing function
+        <span class="cov8" title="1">scalar := c.deriveScalar(pubKey, big.NewInt(0))
+
+        // Multiply base point with scalar
+        x, y := curve.ScalarBaseMult(scalar.Bytes())
+        xField, yField := secp256k1.FieldVal{}, secp256k1.FieldVal{}
+
+        xField.SetByteSlice(x.Bytes())
+        yField.SetByteSlice(y.Bytes())
+
+        scalarPoint := secp256k1.NewPublicKey(&amp;xField, &amp;yField)
+
+        // Add the points
+        resultX, resultY := curve.Add(
+                rootPubKey.X(), rootPubKey.Y(),
+                scalarPoint.X(), scalarPoint.Y(),
+        )
+
+        resultXField, resultYField := secp256k1.FieldVal{}, secp256k1.FieldVal{}
+        resultXField.SetByteSlice(resultX.Bytes())
+        resultYField.SetByteSlice(resultY.Bytes())
+
+        // Create the final public key
+        finalPubKey := secp256k1.NewPublicKey(&amp;resultXField, &amp;resultYField)
+
+        // Return compressed format
+        return finalPubKey.SerializeCompressed(), nil</span>
 }
 </pre>
 		
