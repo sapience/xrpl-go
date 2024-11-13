@@ -57,9 +57,9 @@
 				
 				<option value="file0">github.com/Peersyst/xrpl-go/address-codec/base58.go (100.0%)</option>
 				
-				<option value="file1">github.com/Peersyst/xrpl-go/address-codec/base58check.go (94.7%)</option>
+				<option value="file1">github.com/Peersyst/xrpl-go/address-codec/base58check.go (100.0%)</option>
 				
-				<option value="file2">github.com/Peersyst/xrpl-go/address-codec/codec.go (95.5%)</option>
+				<option value="file2">github.com/Peersyst/xrpl-go/address-codec/codec.go (96.8%)</option>
 				
 				<option value="file3">github.com/Peersyst/xrpl-go/address-codec/sha256.go (100.0%)</option>
 				
@@ -639,7 +639,7 @@ func Base58CheckDecode(input string) (result []byte, err error) <span class="cov
 
         <span class="cov8" title="1">var cksum [4]byte
         copy(cksum[:], decoded[len(decoded)-4:])
-        if checksum(decoded[:len(decoded)-4]) != cksum </span><span class="cov0" title="0">{
+        if checksum(decoded[:len(decoded)-4]) != cksum </span><span class="cov8" title="1">{
                 return nil, ErrChecksum
         }</span>
 
@@ -696,7 +696,7 @@ func (e *EncodeLengthError) Error() string <span class="cov8" title="1">{
 }</span>
 
 // Returns the base58 encoding of byte slice, with the given type prefix, whilst ensuring that the byte slice is the expected length.
-func Encode(b []byte, typePrefix []byte, expectedLength int) (string, error )<span class="cov8" title="1">{
+func Encode(b []byte, typePrefix []byte, expectedLength int) (string, error) <span class="cov8" title="1">{
 
         if len(b) != expectedLength </span><span class="cov8" title="1">{
                 return "", &amp;EncodeLengthError{Instance: "Encode", Expected: expectedLength, Input: len(b)}
@@ -727,21 +727,13 @@ func EncodeClassicAddressFromPublicKeyHex(pubkeyhex string) (string, error) <spa
 
         if err != nil </span><span class="cov8" title="1">{
                 return "", err
-        }</span>
-
-        <span class="cov8" title="1">if len(pubkey) == AccountPublicKeyLength-1 </span><span class="cov8" title="1">{
-                pubkey = append([]byte{crypto.ED25519().Prefix()}, pubkey...)
         }</span> else<span class="cov8" title="1"> if len(pubkey) != AccountPublicKeyLength </span><span class="cov8" title="1">{
                 return "", &amp;EncodeLengthError{Instance: "PublicKey", Expected: AccountPublicKeyLength, Input: len(pubkey)}
         }</span>
 
         <span class="cov8" title="1">accountID := Sha256RipeMD160(pubkey)
 
-        if len(accountID) != AccountAddressLength </span><span class="cov0" title="0">{
-                return "", &amp;EncodeLengthError{Instance: "AccountID", Expected: AccountAddressLength, Input: len(accountID)}
-        }</span>
-
-        <span class="cov8" title="1">address, err := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
+        address, err := Encode(accountID, []byte{AccountAddressPrefix}, AccountAddressLength)
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
