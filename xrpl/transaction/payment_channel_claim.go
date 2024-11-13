@@ -23,15 +23,54 @@ const (
 	tfClose uint32 = 131072 // 0x00020000
 )
 
-// Claim XRP from a payment channel, adjust the payment channel's expiration,
-// or both.
+// Claim XRP from a payment channel, adjust the payment channel's expiration, or both. This transaction can be used differently depending on the transaction sender's role in the specified channel:
+//
+// The source address of a channel can:
+//
+// - Send XRP from the channel to the destination with or without a signed Claim.
+// - Set the channel to expire as soon as the channel's SettleDelay has passed.
+// - Clear a pending Expiration time.
+// - Close a channel immediately, with or without processing a claim first. The source address cannot close the channel immediately if the channel has XRP remaining.
+//
+// The destination address of a channel can:
+//
+// - Receive XRP from the channel using a signed Claim.
+// - Close the channel immediately after processing a Claim, refunding any unclaimed XRP to the channel's source.
+//
+// Any address sending this transaction can:
+//
+// - Cause a channel to be closed if its Expiration or CancelAfter time is older than the previous ledger's close time. Any validly-formed PaymentChannelClaim transaction has this effect regardless of the contents of the transaction.
+//
+// Example:
+//
+// ```json
+//
+//	{
+//		"Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+//		"Balance": "1000000",
+//		"Amount": "1000000",
+//		"Signature": "30440220718D264EF05CAED7C781FF6DE298DCAC68D002562C9BF3A07C1E721B420C0DAB02203A5A4779EF4D2CCC7BC3EF886676D803A9981B928D3B8ACA483B80ECA3CD7B9B",
+//		"PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A"
+//	  }
+//
+// ```
 type PaymentChannelClaim struct {
 	BaseTx
-	Channel   types.Hash256
-	Balance   types.XRPCurrencyAmount `json:",omitempty"`
-	Amount    types.XRPCurrencyAmount `json:",omitempty"`
-	Signature string                  `json:",omitempty"`
-	PublicKey string                  `json:",omitempty"`
+	// The unique ID of the channel, as a 64-character hexadecimal string.
+	Channel types.Hash256
+	// (Optional) Total amount of XRP, in drops, delivered by this channel after processing this claim. Required to deliver XRP.
+	// Must be more than the total amount delivered by the channel so far, but not greater than the Amount of the signed claim. Must be provided except when closing the channel.
+	Balance types.XRPCurrencyAmount `json:",omitempty"`
+	// (Optional) The amount of XRP, in drops, authorized by the Signature. This must match the amount in the signed message.
+	// This is the cumulative amount of XRP that can be dispensed by the channel, including XRP previously redeemed.
+	Amount types.XRPCurrencyAmount `json:",omitempty"`
+	// (Optional) The signature of this claim, as hexadecimal. The signed message contains the channel ID and the amount of the claim.
+	// Required unless the sender of the transaction is the source address of the channel.
+	Signature string `json:",omitempty"`
+	// (Optional) The public key used for the signature, as hexadecimal. This must match the PublicKey stored in the ledger for the channel.
+	// Required unless the sender of the transaction is the source address of the channel and the Signature field is omitted.
+	// (The transaction includes the public key so that rippled can check the validity of the signature before trying to apply the transaction to the ledger.)
+	PublicKey string `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (PaymentChannelClaim).
