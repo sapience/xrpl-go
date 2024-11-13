@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -25,7 +26,10 @@ const (
 	StandardCurrencyCodeLen = 3
 )
 
+// *************************
 // Errors
+// *************************
+
 var (
 	// ErrEmptyPath is returned when the path is empty.
 	ErrEmptyPath = errors.New("path(s) should have at least one path")
@@ -42,6 +46,15 @@ var (
 	// ErrMissingTokenCurrency is returned when the currency field is missing for an issued currency.
 	ErrMissingTokenCurrency = errors.New("currency field is missing for the issued currency")
 )
+
+// ErrMissingAmount is a function that returns an error when a field of type CurrencyAmount is missing.
+func ErrMissingAmount(fieldName string) error {
+	return fmt.Errorf("missing field %s", fieldName)
+}
+
+// *************************
+// Validations
+// *************************
 
 // IsMemo checks if the given object is a valid Memo object.
 func IsMemo(memo Memo) (bool, error) {

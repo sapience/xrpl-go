@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"errors"
-	"fmt"
 )
 
 var (
@@ -19,8 +18,3 @@ var (
 	// ErrInvalidTransactionType is returned when the TransactionType field is invalid or missing.
 	ErrInvalidTransactionType = errors.New("invalid or missing TransactionType")
 )
-
-// ErrMissingAmount is a function that returns an error when a field of type CurrencyAmount is missing.
-func ErrMissingAmount(fieldName string) error {
-	return fmt.Errorf("missing field %s", fieldName)
-}
