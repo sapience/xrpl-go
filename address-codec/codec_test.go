@@ -248,7 +248,7 @@ func TestDecodeSeed(t *testing.T) {
 			name:       "fail - unsuccessful decode - invalid seed",
 			input:             "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1D",
 			expectedOutput:    nil,
-			expectedAlgorithm: crypto.Algorithm{},
+			expectedAlgorithm: nil,
 			expectedErr:       ErrInvalidSeed,
 		},
 	}
