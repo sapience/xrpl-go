@@ -76,7 +76,7 @@ func TestPaymentChannelClaim_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "PaymentChannelClaim with Balance and Amount",
+			name: "pass - PaymentChannelClaim with Balance and Amount",
 			claim: PaymentChannelClaim{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -93,7 +93,7 @@ func TestPaymentChannelClaim_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "PaymentChannelClaim with Signature and PublicKey",
+			name: "pass - PaymentChannelClaim with Signature and PublicKey",
 			claim: PaymentChannelClaim{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -110,7 +110,7 @@ func TestPaymentChannelClaim_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "PaymentChannelClaim with all fields",
+			name: "pass - PaymentChannelClaim with all fields",
 			claim: PaymentChannelClaim{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
