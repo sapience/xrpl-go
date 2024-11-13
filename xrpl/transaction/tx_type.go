@@ -26,6 +26,8 @@ const (
 	NFTokenMintTx          TxType = "NFTokenMint"
 	OfferCreateTx          TxType = "OfferCreate"
 	OfferCancelTx          TxType = "OfferCancel"
+	OracleDeleteTx         TxType = "OracleDelete"
+	OracleSetTx            TxType = "OracleSet"
 	PaymentTx              TxType = "Payment"
 	PaymentChannelClaimTx  TxType = "PaymentChannelClaim"
 	PaymentChannelCreateTx TxType = "PaymentChannelCreate"
