@@ -31,8 +31,12 @@ var (
 	ErrInvalidTokenType = errors.New("an issued currency cannot be of type XRP")
 	// ErrInvalidTokenCurrency is returned when the token currency is XRP.
 	ErrInvalidTokenCurrency = errors.New("invalid token currency, it cannot have a similar standard code as XRP")
+	// ErrMissingTokenCurrency is returned when the currency field is missing for an issued currency.
+	ErrMissingTokenCurrency = errors.New("currency field is missing for the issued currency")
 	// ErrInvalidTokenValue is returned when the value field is not a valid positive number.
 	ErrInvalidTokenValue = errors.New("value field should be a valid positive number")
+	// ErrInvalidTokenFields is returned when the issued currency object does not have the required fields (currency, issuer and value).
+	ErrInvalidTokenFields = errors.New("issued currency object should have 3 fields: currency, issuer, value")
 	// ErrEmptyPath is returned when the path is empty.
 	ErrEmptyPath = errors.New("paths should have at least one path")
 	// ErrInvalidIssuer is returned when the path step is invalid. The fields combination is invalid.
@@ -128,7 +132,7 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 	}
 
 	if strings.TrimSpace(issuedAmount.Currency) == "" {
-		return false, errors.New("currency field is required for an issued currency")
+		return false, ErrMissingTokenCurrency
 	}
 	if strings.ToUpper(issuedAmount.Currency) == currency.NativeCurrencySymbol {
 		return false, ErrInvalidTokenCurrency
