@@ -3734,7 +3734,7 @@ var (
 // GetCryptoImplementationFromKey returns the CryptoImplementation based on the key.
 // It returns nil if the key does not match any crypto implementation.
 // Currently, only ED25519 and SECP256K1 are supported.
-func getCryptoImplementationFromKey(k string) interfaces.KeypairCryptoImplementation <span class="cov8" title="1">{
+func getCryptoImplementationFromKey(k string) interfaces.KeypairCryptoAlg <span class="cov8" title="1">{
         prefix, err := hex.DecodeString(k[:2])
         if err != nil </span><span class="cov8" title="1">{
                 return nil
@@ -3775,7 +3775,7 @@ const (
 // GenerateSeed generates a seed from a given entropy, a crypto algorithm implementation and a randomizer.
 // If the entropy is empty, it generates a random seed. Otherwise, it uses the entropy to generate the seed.
 // The seed is encoded using the addresscodec package.
-func GenerateSeed(entropy string, alg interfaces.KeypairCryptoImplementation, r interfaces.Randomizer) (string, error) <span class="cov8" title="1">{
+func GenerateSeed(entropy string, alg interfaces.KeypairCryptoAlg, r interfaces.Randomizer) (string, error) <span class="cov8" title="1">{
         var pe []byte
         var err error
         if entropy == "" </span><span class="cov8" title="1">{
@@ -3816,8 +3816,9 @@ func DeriveClassicAddress(pubKey string) (string, error) <span class="cov8" titl
         return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubKey)
 }</span>
 
-// Only for SECP256K1 curve.
-func DeriveNodeAddress(pubKey string, alg interfaces.NodeDerivationCryptoImplementation) (string, error) <span class="cov8" title="1">{
+// DeriveNodeAddress derives a node address from a given public key.
+// The public key has to be encoded using the addresscodec package. Otherwise, it returns an error.
+func DeriveNodeAddress(pubKey string, alg interfaces.NodeDerivationCryptoAlg) (string, error) <span class="cov8" title="1">{
         decoded, err := addresscodec.DecodeNodePublicKey(pubKey)
         if err != nil </span><span class="cov8" title="1">{
                 return "", err
