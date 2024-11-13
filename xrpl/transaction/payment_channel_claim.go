@@ -97,25 +97,25 @@ func (*PaymentChannelClaim) TxType() TxType {
 }
 
 // Flatten returns a flattened map of the PaymentChannelClaim transaction.
-func (s *PaymentChannelClaim) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (p *PaymentChannelClaim) Flatten() FlatTransaction {
+	flattened := p.BaseTx.Flatten()
 
 	flattened["TransactionType"] = "PaymentChannelClaim"
 
-	if s.Channel != "" {
-		flattened["Channel"] = s.Channel.String()
+	if p.Channel != "" {
+		flattened["Channel"] = p.Channel.String()
 	}
-	if s.Balance != 0 {
-		flattened["Balance"] = s.Balance.Flatten()
+	if p.Balance != 0 {
+		flattened["Balance"] = p.Balance.Flatten()
 	}
-	if s.Amount != 0 {
-		flattened["Amount"] = s.Amount.Flatten()
+	if p.Amount != 0 {
+		flattened["Amount"] = p.Amount.Flatten()
 	}
-	if s.Signature != "" {
-		flattened["Signature"] = s.Signature
+	if p.Signature != "" {
+		flattened["Signature"] = p.Signature
 	}
-	if s.PublicKey != "" {
-		flattened["PublicKey"] = s.PublicKey
+	if p.PublicKey != "" {
+		flattened["PublicKey"] = p.PublicKey
 	}
 	return flattened
 }
@@ -125,8 +125,8 @@ func (s *PaymentChannelClaim) Flatten() FlatTransaction {
 // Renew: Clear the channel's Expiration time. (Expiration is different from the
 // channel's immutable CancelAfter time.) Only the source address of the
 // payment channel can use this flag.
-func (s *PaymentChannelClaim) SetRenewFlag() {
-	s.Flags |= tfRenew
+func (p *PaymentChannelClaim) SetRenewFlag() {
+	p.Flags |= tfRenew
 }
 
 // SetCloseFlag sets the Close flag.
@@ -142,8 +142,8 @@ func (s *PaymentChannelClaim) SetRenewFlag() {
 // time.) If the destination address uses this flag when the channel still
 // holds XRP, any XRP that remains after processing the claim is returned to
 // the source address.
-func (s *PaymentChannelClaim) SetCloseFlag() {
-	s.Flags |= tfClose
+func (p *PaymentChannelClaim) SetCloseFlag() {
+	p.Flags |= tfClose
 }
 
 // Validate validates the PaymentChannelFund fields.
