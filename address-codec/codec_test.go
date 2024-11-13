@@ -88,12 +88,6 @@ func TestEncodeClassicAddressFromPublicKeyHex(t *testing.T) {
 			expectedErr:    nil,
 		},
 		{
-			name:           "pass - successfully generate address from a 32-byte ED25519 public key hex string WITHOUT prefix",
-			input:          "9434799226374926EDA3B54B1B461B4ABF7237962EAE18528FEA67595397FA32",
-			expectedOutput: "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
-			expectedErr:    nil,
-		},
-		{
 			name:           "pass - derive correct address from public key",
 			input:          "ED731C39781B964904E1FEEFFC9F99442196BCB5F499105A79533E2D678CA7D3D2",
 			expectedOutput: "rhTCnDC7v1Jp7NAupzisv6ynWHD161Q9nV",
@@ -209,51 +203,58 @@ func TestEncodeSeed(t *testing.T) {
 
 func TestDecodeSeed(t *testing.T) {
 	tt := []struct {
-		description       string
+		name       string
 		input             string
 		expectedOutput    []byte
 		expectedAlgorithm interfaces.CryptoImplementation
 		expectedErr       error
 	}{
 		{
-			description:       "successful decode - ED25519",
+			name:       "pass - successful decode - ED25519",
 			input:             "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1H",
 			expectedOutput:    []byte("yurtyurtyurtyurt"),
 			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       nil,
 		},
 		{
-			description:       "successful decode - SECP256K1",
+			name:       "pass - successful decode - SECP256K1",
 			input:             "shPSkLzQNWfyXjZ7bbwgCky6twagA",
 			expectedOutput:    []byte("yurtyurtyurtyurt"),
 			expectedAlgorithm: crypto.SECP256K1(),
 			expectedErr:       nil,
 		},
 		{
-			description:       "successful decode - ED25519 additional",
+			name:       "pass - successful decode - ED25519 additional",
 			input:             "sEdTvLVDRVJsrUyBiCPTHDs46GUKQAr",
 			expectedOutput:    []byte("testingsomething"),
 			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       nil,
 		},
 		{
-			description:       "successful decode - SECP256K1 additional",
+			name:       "pass - successful decode - SECP256K1 additional",
 			input:             "shKMVJjV52uudwfS7HzzaiwmZqVeP",
 			expectedOutput:    []byte("testingsomething"),
 			expectedAlgorithm: crypto.SECP256K1(),
 			expectedErr:       nil,
 		},
 		{
-			description:       "unsuccessful decode - invalid seed",
+			name:       "fail - unsuccessful decode - invalid seed",
 			input:             "yurt",
 			expectedOutput:    nil,
 			expectedAlgorithm: crypto.Algorithm{},
 			expectedErr:       errors.New("invalid seed; could not determine encoding algorithm"),
 		},
+		{
+			name:       "fail - unsuccessful decode - invalid seed",
+			input:             "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1D",
+			expectedOutput:    nil,
+			expectedAlgorithm: crypto.Algorithm{},
+			expectedErr:       ErrInvalidSeed,
+		},
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 
 			got, algorithm, err := DecodeSeed(tc.input)
 
