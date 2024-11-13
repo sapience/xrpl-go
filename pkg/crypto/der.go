@@ -8,6 +8,20 @@ import (
 	"strings"
 )
 
+var (
+	// ErrInvalidHexString is returned when the hex string is invalid.
+	ErrInvalidHexString = errors.New("invalid hex string")
+
+	// ErrInvalidDERNotEnoughData is returned when the DER data is not enough.
+	ErrInvalidDERNotEnoughData = errors.New("invalid DER: not enough data")
+	// ErrInvalidDERIntegerTag is returned when the DER integer tag is invalid.
+	ErrInvalidDERIntegerTag = errors.New("invalid DER: expected integer tag")
+	// ErrInvalidDERSignature is returned when the DER signature is invalid.
+	ErrInvalidDERSignature = errors.New("invalid signature: incorrect length")
+	// ErrLeftoverBytes is returned when there are leftover bytes after parsing the DER signature.
+	ErrLeftoverBytes = errors.New("invalid signature: left bytes after parsing")
+)
+
 // DERHexFromSig converts r and s hex strings to a DER-encoded signature hex string.
 // It returns the DER-encoded signature as a hex string and an error if any occurred during the process.
 func DERHexFromSig(rHex, sHex string) (string, error) {
@@ -30,11 +44,11 @@ func DERHexFromSig(rHex, sHex string) (string, error) {
 	// Convert hex strings to big.Int
 	r, ok := new(big.Int).SetString(rHex, 16)
 	if !ok {
-		return "", errors.New("invalid r hex string: " + rHex)
+		return "", ErrInvalidHexString
 	}
 	s, ok := new(big.Int).SetString(sHex, 16)
 	if !ok {
-		return "", errors.New("invalid s hex string: " + sHex)
+		return "", ErrInvalidHexString
 	}
 
 	// Convert r and s to sliced hex strings
@@ -67,14 +81,14 @@ func DERHexFromSig(rHex, sHex string) (string, error) {
 // and an error if any occurred during parsing.
 func parseInt(data []byte) (*big.Int, []byte, error) {
 	if len(data) < 2 {
-		return nil, nil, errors.New("invalid DER: not enough data")
+		return nil, nil, ErrInvalidDERNotEnoughData
 	}
 	if data[0] != 0x02 {
-		return nil, nil, errors.New("invalid DER: expected integer tag")
+		return nil, nil, ErrInvalidDERIntegerTag
 	}
 	length := int(data[1])
 	if len(data) < 2+length {
-		return nil, nil, errors.New("invalid DER: not enough data")
+		return nil, nil, ErrInvalidDERNotEnoughData
 	}
 	number := new(big.Int).SetBytes(data[2 : 2+length])
 	return number, data[2+length:], nil
@@ -85,28 +99,28 @@ func parseInt(data []byte) (*big.Int, []byte, error) {
 func DERHexToSig(hexSignature string) ([]byte, []byte, error) {
 	data, err := hex.DecodeString(hexSignature)
 	if err != nil {
-		return nil, nil, fmt.Errorf("invalid hex string: %v", err)
+		return nil, nil, ErrInvalidHexString
 	}
 
 	if len(data) < 2 || data[0] != 0x30 {
-		return nil, nil, errors.New("invalid signature tag")
+		return nil, nil, ErrInvalidDERSignature
 	}
 	if int(data[1]) != len(data)-2 {
-		return nil, nil, errors.New("invalid signature: incorrect length")
+		return nil, nil, ErrInvalidDERSignature
 	}
 
 	r, sBytes, err := parseInt(data[2:])
 	if err != nil {
-		return nil, nil, errors.New("invalid signature: incorrect length")
+		return nil, nil, ErrInvalidDERSignature
 	}
 
 	s, leftover, err := parseInt(sBytes)
 	if err != nil {
-		return nil, nil, errors.New("invalid signature: incorrect length")
+		return nil, nil, ErrInvalidDERSignature
 	}
 
 	if len(leftover) > 0 {
-		return nil, nil, errors.New("invalid signature: left bytes after parsing")
+		return nil, nil, ErrLeftoverBytes
 	}
 
 	return r.Bytes(), s.Bytes(), nil
