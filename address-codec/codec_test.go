@@ -175,14 +175,14 @@ func TestEncodeSeed(t *testing.T) {
 		{
 			name:       "fail - unsuccessful encode - invalid encoding type",
 			input:             []byte("testingsomething"),
-			inputEncodingType: crypto.Algorithm{},
+			inputEncodingType: nil,
 			expectedOutput:    "",
 			expectedErr:       errors.New("encoding type must be `ed25519` or `secp256k1`"),
 		},
 		{
 			name:       "fail - invalid CryptoAlgorithm Uint type returns err",
 			input:             []byte("testingsomething"),
-			inputEncodingType: crypto.Algorithm{},
+			inputEncodingType: nil,
 			expectedOutput:    "",
 			expectedErr:       errors.New("encoding type must be `ed25519` or `secp256k1`"),
 		},
@@ -241,14 +241,14 @@ func TestDecodeSeed(t *testing.T) {
 			name:       "fail - unsuccessful decode - invalid seed",
 			input:             "yurt",
 			expectedOutput:    nil,
-			expectedAlgorithm: crypto.Algorithm{},
+			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       errors.New("invalid seed; could not determine encoding algorithm"),
 		},
 		{
 			name:       "fail - unsuccessful decode - invalid seed",
 			input:             "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1D",
 			expectedOutput:    nil,
-			expectedAlgorithm: crypto.Algorithm{},
+			expectedAlgorithm: nil,
 			expectedErr:       ErrInvalidSeed,
 		},
 	}

@@ -2,8 +2,10 @@ package crypto
 
 import (
 	"encoding/hex"
-	"strings"
+	"math/big"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func BenchmarkDERHexToSig(b *testing.B) {
@@ -19,28 +21,56 @@ func TestDERHexToSig(t *testing.T) {
 		hexSignature string
 		expectedR    string
 		expectedS    string
-		expectError  bool
+		expectError  error
 	}{
 		{
-			name:         "Valid DER signature",
-			hexSignature: "3045022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
-			expectedR:    "E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C8297618",
-			expectedS:    "6FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
-			expectError:  false,
-		},
-		{
-			name:         "Invalid hex string",
+			name:         "fail - invalid hex string",
 			hexSignature: "invalid",
 			expectedR:    "",
 			expectedS:    "",
-			expectError:  true,
+			expectError:  ErrInvalidHexString,
 		},
 		{
-			name:         "Invalid signature tag",
+			name:         "fail - invalid signature tag",
 			hexSignature: "3145022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
 			expectedR:    "",
 			expectedS:    "",
-			expectError:  true,
+			expectError:  ErrInvalidDERSignature,
+		},
+		{
+			name:         "fail - invalid length",
+			hexSignature: "3044022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
+			expectedR:    "",
+			expectedS:    "",
+			expectError:  ErrInvalidDERSignature,
+		},
+		{
+			name:         "fail - invalid parseInt",
+			hexSignature: "3003020301",
+			expectedR:    "",
+			expectedS:    "",
+			expectError:  ErrInvalidDERSignature,
+		},
+		{
+			name:         "fail - invalid parseInt - 2",
+			hexSignature: "3006020101020301",
+			expectedR:    "",
+			expectedS:    "",
+			expectError:  ErrInvalidDERSignature,
+		},
+		{
+			name:         "fail - invalid leftover bytes",
+			hexSignature: "300702010102010101",
+			expectedR:    "",
+			expectedS:    "",
+			expectError:  ErrLeftoverBytes,
+		},
+		{
+			name:         "pass - valid DER signature",
+			hexSignature: "3045022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
+			expectedR:    "e1617f1a3c85b5bc8fa6224f893fe9068bea8f8d075ee144f6f9d255c8297618",
+			expectedS:    "6fd9b361cde83a0c3d5654232f1d7cfb1a614e9a8f9b1a861564029065516e64",
+			expectError:  nil,
 		},
 	}
 
@@ -48,20 +78,12 @@ func TestDERHexToSig(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			r, s, err := DERHexToSig(tc.hexSignature)
 
-			if tc.expectError {
-				if err == nil {
-					t.Errorf("Expected an error, but got none")
-				}
+			if tc.expectError != nil {
+				require.Equal(t, tc.expectError, err)
 			} else {
-				if err != nil {
-					t.Errorf("Unexpected error: %v", err)
-				}
-				if hex.EncodeToString(r) != strings.ToLower(tc.expectedR) {
-					t.Errorf("Expected R %s, but got %s", tc.expectedR, hex.EncodeToString(r))
-				}
-				if hex.EncodeToString(s) != strings.ToLower(tc.expectedS) {
-					t.Errorf("Expected S %s, but got %s", tc.expectedS, hex.EncodeToString(s))
-				}
+				require.Equal(t, tc.expectedR, hex.EncodeToString(r))
+				require.Equal(t, tc.expectedS, hex.EncodeToString(s))
+				require.Nil(t, err)
 			}
 		})
 	}
@@ -81,35 +103,35 @@ func TestDERHexFromSig(t *testing.T) {
 		rHex        string
 		sHex        string
 		expectedDER string
-		expectError bool
+		expectError error
 	}{
 		{
-			name:        "Valid r and s values",
-			rHex:        "E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C8297618",
-			sHex:        "6FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
-			expectedDER: strings.ToLower("3045022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64"),
-			expectError: false,
+			name:        "pass - valid r and s values",
+			rHex:        "e1617f1a3c85b5bc8fa6224f893fe9068bea8f8d075ee144f6f9d255c8297618",
+			sHex:        "6fd9b361cde83a0c3d5654232f1d7cfb1a614e9a8f9b1a861564029065516e64",
+			expectedDER: "3045022100e1617f1a3c85b5bc8fa6224f893fe9068bea8f8d075ee144f6f9d255c829761802206fd9b361cde83a0c3d5654232f1d7cfb1a614e9a8f9b1a861564029065516e64",
+			expectError: nil,
 		},
 		{
-			name:        "Invalid r hex string",
+			name:        "fail - invalid r hex string",
 			rHex:        "invalid",
-			sHex:        "6FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
+			sHex:        "6fd9b361cde83a0c3d5654232f1d7cfb1a614e9a8f9b1a861564029065516e64",
 			expectedDER: "",
-			expectError: true,
+			expectError: ErrInvalidHexString,
 		},
 		{
-			name:        "Invalid s hex string",
-			rHex:        "E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C8297618",
+			name:        "fail - invalid s hex string",
+			rHex:        "e1617f1a3c85b5bc8fa6224f893fe9068bea8f8d075ee144f6f9d255c8297618",
 			sHex:        "invalid",
 			expectedDER: "",
-			expectError: true,
+			expectError: ErrInvalidHexString,
 		},
 		{
-			name:        "r value with leading zero",
-			rHex:        "00E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C8297618",
-			sHex:        "6FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64",
-			expectedDER: strings.ToLower("3045022100E1617F1A3C85B5BC8FA6224F893FE9068BEA8F8D075EE144F6F9D255C829761802206FD9B361CDE83A0C3D5654232F1D7CFB1A614E9A8F9B1A861564029065516E64"),
-			expectError: false,
+			name:        "pass - r value with leading zero",
+			rHex:        "00e1617f1a3c85b5bc8fa6224f893fe9068bea8f8d075ee144f6f9d255c8297618",
+			sHex:        "6fd9b361cde83a0c3d5654232f1d7cfb1a614e9a8f9b1a861564029065516e64",
+			expectedDER: "3045022100e1617f1a3c85b5bc8fa6224f893fe9068bea8f8d075ee144f6f9d255c829761802206fd9b361cde83a0c3d5654232f1d7cfb1a614e9a8f9b1a861564029065516e64",
+			expectError: nil,
 		},
 	}
 
@@ -117,17 +139,63 @@ func TestDERHexFromSig(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			result, err := DERHexFromSig(tc.rHex, tc.sHex)
 
-			if tc.expectError {
-				if err == nil {
-					t.Errorf("Expected an error, but got none")
-				}
+			if tc.expectError != nil {
+				require.Equal(t, tc.expectError, err)
 			} else {
-				if err != nil {
-					t.Errorf("Unexpected error: %v", err)
-				}
-				if result != tc.expectedDER {
-					t.Errorf("Expected %s, but got %s", tc.expectedDER, result)
-				}
+				require.Equal(t, tc.expectedDER, result)
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func TestParseInt(t *testing.T) {
+	testcases := []struct {
+		name              string
+		data              []byte
+		expectedInt       *big.Int
+		expectedRemaining []byte
+		expectError       error
+	}{
+		{
+			name:              "fail - not enough data",
+			data:              []byte{},
+			expectedInt:       nil,
+			expectedRemaining: nil,
+			expectError:       ErrInvalidDERNotEnoughData,
+		},
+		{
+			name:              "fail - invalid tag",
+			data:              []byte{0x01, 0x02, 0x03},
+			expectedInt:       nil,
+			expectedRemaining: nil,
+			expectError:       ErrInvalidDERIntegerTag,
+		},
+		{
+			name:              "fail - invalid length",
+			data:              []byte{0x02, 0x02, 0x01},
+			expectedInt:       nil,
+			expectedRemaining: nil,
+			expectError:       ErrInvalidDERNotEnoughData,
+		},
+		{
+			name:              "pass - valid data",
+			data:              []byte{0x02, 0x01, 0x01},
+			expectedInt:       big.NewInt(1),
+			expectedRemaining: []byte{},
+			expectError:       nil,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			n, remaining, err := parseInt(tc.data)
+			if tc.expectError != nil {
+				require.Equal(t, tc.expectError, err)
+			} else {
+				require.Equal(t, tc.expectedInt.Bytes(), n.Bytes())
+				require.Equal(t, tc.expectedRemaining, remaining)
+				require.Nil(t, err)
 			}
 		})
 	}
