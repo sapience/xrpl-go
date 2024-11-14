@@ -216,7 +216,7 @@ func TestNFTokenMint_Validate(t *testing.T) {
 			},
 			wantValid:  false,
 			wantErr:    true,
-			errMessage: ErrInvalidIssuerAddress,
+			errMessage: ErrInvalidIssuer,
 		},
 		{
 			name: "fail - URI not hexadecimal",
