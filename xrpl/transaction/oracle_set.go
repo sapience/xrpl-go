@@ -50,13 +50,13 @@ type OracleSet struct {
 	BaseTx
 	// A unique identifier of the price oracle for the Account.
 	OracleDocumentID uint32
+	// The time the data was last updated, in seconds since the UNIX Epoch.
+	LastUpdatedTime uint32
 	// (Variable) An arbitrary value that identifies an oracle provider, such as Chainlink, Band, or DIA. This field is a string, up to 256 ASCII hex encoded characters (0x20-0x7E).
 	// This field is required when creating a new Oracle ledger entry, but is optional for updates.
 	Provider string `json:",omitempty"`
 	// (Optional) An optional Universal Resource Identifier to reference price data off-chain. This field is limited to 256 bytes.
 	URI string `json:",omitempty"`
-	// The time the data was last updated, in seconds since the UNIX Epoch.
-	LastUpdatedTime uint32
 	// (Variable) Describes the type of asset, such as "currency", "commodity", or "index". This field is a string, up to 16 ASCII hex encoded characters (0x20-0x7E).
 	// This field is required when creating a new Oracle ledger entry, but is optional for updates.
 	AssetClass string `json:",omitempty"`
@@ -69,6 +69,7 @@ func (tx *OracleSet) TxType() TxType {
 	return OracleSetTx
 }
 
+// Returns a flattened transaction.
 func (tx *OracleSet) Flatten() map[string]interface{} {
 	flattened := tx.BaseTx.Flatten()
 

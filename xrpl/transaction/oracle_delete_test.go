@@ -57,7 +57,7 @@ func TestOracleDelete_Validate(t *testing.T) {
 		err  error
 	}{
 		{
-			name: "fail - missing tx type",
+			name: "fail - missing account",
 			tx: &OracleDelete{
 				BaseTx: BaseTx{
 					TransactionType: OracleDeleteTx,
