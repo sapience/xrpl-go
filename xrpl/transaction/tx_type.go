@@ -36,6 +36,8 @@ const (
 	TicketCreateTx         TxType = "TicketCreate"
 	HashedTx               TxType = "HASH"   // TX stored as a string, rather than complete tx obj
 	BinaryTx               TxType = "BINARY" // TX stored as a string, json tagged as 'tx_blob'
+	XChainClaimTx          TxType = "XChainClaim"
+	XChainCommitTx         TxType = "XChainCommit"
 )
 
 func (t TxType) String() string {
