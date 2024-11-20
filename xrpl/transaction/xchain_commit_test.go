@@ -13,10 +13,10 @@ func TestXChainCommit_TxType(t *testing.T) {
 }
 
 func TestXChainCommit_Flatten(t *testing.T) {
-	testcases := []struct{
-		name string
-		tx *XChainCommit
-		expected FlatTransaction
+	testcases := []struct {
+		name        string
+		tx          *XChainCommit
+		expected    FlatTransaction
 		expectedErr error
 	}{
 		{
@@ -25,24 +25,24 @@ func TestXChainCommit_Flatten(t *testing.T) {
 				BaseTx: BaseTx{
 					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				},
-				Amount: types.XRPCurrencyAmount(10000),	
+				Amount: types.XRPCurrencyAmount(10000),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 				XChainClaimID: "13f",
 			},
 			expected: FlatTransaction{
-				"Account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"Account":         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				"TransactionType": "XChainCommit",
-				"Amount": "10000",
-				"XChainClaimID": "13f",
+				"Amount":          "10000",
+				"XChainClaimID":   "13f",
 				"XChainBridge": types.FlatXChainBridge{
-					"LockingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"LockingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"LockingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					"IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"IssuingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"IssuingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
@@ -53,25 +53,25 @@ func TestXChainCommit_Flatten(t *testing.T) {
 				BaseTx: BaseTx{
 					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				},
-				Amount: types.XRPCurrencyAmount(10000),	
+				Amount: types.XRPCurrencyAmount(10000),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
-				XChainClaimID: "13f",
+				XChainClaimID:         "13f",
 				OtherChainDestination: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 			},
 			expected: FlatTransaction{
-				"Account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"Account":         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				"TransactionType": "XChainCommit",
-				"Amount": "10000",
-				"XChainClaimID": "13f",
+				"Amount":          "10000",
+				"XChainClaimID":   "13f",
 				"XChainBridge": types.FlatXChainBridge{
-					"LockingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"LockingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"LockingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					"IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"IssuingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"IssuingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 				"OtherChainDestination": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
@@ -88,70 +88,70 @@ func TestXChainCommit_Flatten(t *testing.T) {
 }
 
 func TestXChainCommit_Validate(t *testing.T) {
-	testcases := []struct{
-		name string
-		tx *XChainCommit
-		expected bool
+	testcases := []struct {
+		name        string
+		tx          *XChainCommit
+		expected    bool
 		expectedErr error
 	}{
 		{
-			name: "fail - missing required fields",
-			tx: &XChainCommit{},
-			expected: false,
+			name:        "fail - missing required fields",
+			tx:          &XChainCommit{},
+			expected:    false,
 			expectedErr: ErrInvalidAccount,
 		},
 		{
 			name: "fail - missing amount",
 			tx: &XChainCommit{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCommitTx,
 				},
 			},
-			expected: false,
+			expected:    false,
 			expectedErr: ErrMissingAmount("Amount"),
 		},
 		{
 			name: "fail - missing xchain bridge",
 			tx: &XChainCommit{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCommitTx,
 				},
 				Amount: types.XRPCurrencyAmount(10000),
 			},
-			expected: false,
+			expected:    false,
 			expectedErr: types.ErrInvalidIssuingChainDoorAddress,
 		},
 		{
 			name: "fail - missing xchain claim id",
 			tx: &XChainCommit{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCommitTx,
 				},
-				Amount: types.XRPCurrencyAmount(10000),	
+				Amount: types.XRPCurrencyAmount(10000),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
-			expected: false,
+			expected:    false,
 			expectedErr: ErrMissingXChainClaimID,
 		},
 		{
 			name: "pass - valid tx",
 			tx: &XChainCommit{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCommitTx,
 				},
-				Amount: types.XRPCurrencyAmount(10000),	
+				Amount: types.XRPCurrencyAmount(10000),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},

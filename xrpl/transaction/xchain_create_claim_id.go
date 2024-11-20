@@ -16,22 +16,24 @@ import (
 // It also includes the account on the source chain that locks or burns the funds on the source chain.
 //
 // ```json
-// {
-//   "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
-//   "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
-//   "TransactionType": "XChainCreateClaimID",
-//   "SignatureReward": "100",
-//   "XChainBridge": {
-//     "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
-//     "LockingChainIssue": {
-//       "currency": "XRP"
-//     },
-//     "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-//     "IssuingChainIssue": {
-//       "currency": "XRP"
-//     }
-//   }
-// }
+//
+//	{
+//	  "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//	  "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//	  "TransactionType": "XChainCreateClaimID",
+//	  "SignatureReward": "100",
+//	  "XChainBridge": {
+//	    "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//	    "LockingChainIssue": {
+//	      "currency": "XRP"
+//	    },
+//	    "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//	    "IssuingChainIssue": {
+//	      "currency": "XRP"
+//	    }
+//	  }
+//	}
+//
 // ```
 type XChainCreateClaimID struct {
 	BaseTx
@@ -40,7 +42,7 @@ type XChainCreateClaimID struct {
 	OtherChainSource types.Address
 	// The amount, in XRP, to reward the witness servers for providing signatures.
 	// This must match the amount on the Bridge ledger object.
-	SignatureReward types.Address
+	SignatureReward types.CurrencyAmount
 	// The bridge to create the claim ID for.
 	XChainBridge types.XChainBridge
 }
@@ -60,8 +62,8 @@ func (x *XChainCreateClaimID) Flatten() FlatTransaction {
 		flatTx["OtherChainSource"] = x.OtherChainSource.String()
 	}
 
-	if x.SignatureReward != "" {
-		flatTx["SignatureReward"] = x.SignatureReward.String()
+	if x.SignatureReward != nil {
+		flatTx["SignatureReward"] = x.SignatureReward.Flatten()
 	}
 
 	if x.XChainBridge != (types.XChainBridge{}) {
@@ -82,8 +84,8 @@ func (x *XChainCreateClaimID) Validate() (bool, error) {
 		return false, ErrInvalidAccount
 	}
 
-	if !addresscodec.IsValidClassicAddress(x.SignatureReward.String()) {
-		return false, ErrInvalidAccount
+	if ok, err := IsAmount(x.SignatureReward, "SignatureReward", true); !ok {
+		return false, err
 	}
 
 	if ok, err := x.XChainBridge.Validate(); !ok {

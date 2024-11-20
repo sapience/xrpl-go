@@ -14,22 +14,24 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 // witnesses’ signing keys, as well as disabling the door accounts’ master key. This ensures that the witness servers are truly in control of the funds.
 //
 // ```json
-// {
-//   "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
-//   "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
-//   "TransactionType": "XChainCreateClaimID",
-//   "SignatureReward": "100",
-//   "XChainBridge": {
-//     "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
-//     "LockingChainIssue": {
-//       "currency": "XRP"
-//     },
-//     "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-//     "IssuingChainIssue": {
-//       "currency": "XRP"
-//     }
-//   }
-// }
+//
+//	{
+//	  "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//	  "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//	  "TransactionType": "XChainCreateClaimID",
+//	  "SignatureReward": "100",
+//	  "XChainBridge": {
+//	    "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//	    "LockingChainIssue": {
+//	      "currency": "XRP"
+//	    },
+//	    "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//	    "IssuingChainIssue": {
+//	      "currency": "XRP"
+//	    }
+//	  }
+//	}
+//
 // ```
 type XChainCreateBridge struct {
 	BaseTx

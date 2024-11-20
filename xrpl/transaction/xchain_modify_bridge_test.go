@@ -7,25 +7,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestXChainCreateClaimID_TxType(t *testing.T) {
-	tx := &XChainCreateClaimID{}
-	require.Equal(t, tx.TxType(), XChainCreateClaimIDTx)
+func TestXChainModifyBridge_TxType(t *testing.T) {
+	tx := &XChainModifyBridge{}
+	require.Equal(t, tx.TxType(), XChainModifyBridgeTx)
 }
 
-func TestXChainCreateClaimID_Flatten(t *testing.T) {
+func TestXChainModifyBridge_Flatten(t *testing.T) {
 	testcases := []struct {
 		name     string
-		tx       *XChainCreateClaimID
+		tx       *XChainModifyBridge
 		expected FlatTransaction
 	}{
 		{
 			name: "pass - valid tx",
-			tx: &XChainCreateClaimID{
+			tx: &XChainModifyBridge{
 				BaseTx: BaseTx{
 					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				},
-				OtherChainSource: "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
-				SignatureReward:  types.XRPCurrencyAmount(100),
+				Flags:                  tfClearAccountCreateAmount,
+				MinAccountCreateAmount: types.XRPCurrencyAmount(100),
+				SignatureReward:        types.XRPCurrencyAmount(10),
 				XChainBridge: types.XChainBridge{
 					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
@@ -34,10 +35,11 @@ func TestXChainCreateClaimID_Flatten(t *testing.T) {
 				},
 			},
 			expected: FlatTransaction{
-				"Account":          "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-				"TransactionType":  "XChainCreateClaimID",
-				"OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
-				"SignatureReward":  "100",
+				"Account":                "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"TransactionType":        "XChainModifyBridge",
+				"Flags":                  uint32(tfClearAccountCreateAmount),
+				"MinAccountCreateAmount": "100",
+				"SignatureReward":        "10",
 				"XChainBridge": types.FlatXChainBridge{
 					"LockingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"IssuingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
@@ -55,64 +57,83 @@ func TestXChainCreateClaimID_Flatten(t *testing.T) {
 	}
 }
 
-func TestXChainCreateClaimID_Validate(t *testing.T) {
+func TestXChainModifyBridge_Validate(t *testing.T) {
 	testcases := []struct {
 		name        string
-		tx          *XChainCreateClaimID
+		tx          *XChainModifyBridge
 		expected    bool
 		expectedErr error
 	}{
 		{
-			name:        "fail - missing required fields",
-			tx:          &XChainCreateClaimID{},
+			name:        "fail - invalid account",
+			tx:          &XChainModifyBridge{},
 			expected:    false,
 			expectedErr: ErrInvalidAccount,
 		},
 		{
-			name: "fail - missing  other chain source",
-			tx: &XChainCreateClaimID{
+			name: "fail - invalid flags",
+			tx: &XChainModifyBridge{
 				BaseTx: BaseTx{
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-					TransactionType: XChainCreateClaimIDTx,
+					TransactionType: XChainModifyBridgeTx,
 				},
 			},
 			expected:    false,
-			expectedErr: ErrInvalidAccount,
+			expectedErr: ErrInvalidFlags,
 		},
 		{
-			name: "fail - missing signature reward",
-			tx: &XChainCreateClaimID{
+			name: "fail - invalid min account create amount",
+			tx: &XChainModifyBridge{
 				BaseTx: BaseTx{
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-					TransactionType: XChainCreateClaimIDTx,
+					TransactionType: XChainModifyBridgeTx,
 				},
-				OtherChainSource: "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+				Flags: tfClearAccountCreateAmount,
+				MinAccountCreateAmount: types.IssuedCurrencyAmount{
+					Currency: "XRP",
+					Value:    "100",
+				},
 			},
 			expected:    false,
-			expectedErr: ErrMissingAmount("SignatureReward"),
+			expectedErr: ErrInvalidTokenFields,
+		},
+		{
+			name: "fail - invalid signature reward",
+			tx: &XChainModifyBridge{
+				BaseTx: BaseTx{
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					TransactionType: XChainModifyBridgeTx,
+				},
+				Flags:                  tfClearAccountCreateAmount,
+				MinAccountCreateAmount: types.XRPCurrencyAmount(100),
+				SignatureReward: types.IssuedCurrencyAmount{
+					Currency: "XRP",
+					Value:    "100",
+				},
+			},
+			expected:    false,
+			expectedErr: ErrInvalidTokenFields,
 		},
 		{
 			name: "fail - invalid xchain bridge",
-			tx: &XChainCreateClaimID{
+			tx: &XChainModifyBridge{
 				BaseTx: BaseTx{
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-					TransactionType: XChainCreateClaimIDTx,
+					TransactionType: XChainModifyBridgeTx,
 				},
-				OtherChainSource: "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
-				SignatureReward:  types.XRPCurrencyAmount(100),
+				Flags: tfClearAccountCreateAmount,
 			},
 			expected:    false,
 			expectedErr: types.ErrInvalidIssuingChainDoorAddress,
 		},
 		{
 			name: "pass - valid tx",
-			tx: &XChainCreateClaimID{
+			tx: &XChainModifyBridge{
 				BaseTx: BaseTx{
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-					TransactionType: XChainCreateClaimIDTx,
+					TransactionType: XChainModifyBridgeTx,
 				},
-				OtherChainSource: "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
-				SignatureReward:  types.XRPCurrencyAmount(100),
+				Flags: tfClearAccountCreateAmount,
 				XChainBridge: types.XChainBridge{
 					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
@@ -120,8 +141,7 @@ func TestXChainCreateClaimID_Validate(t *testing.T) {
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
-			expected:    true,
-			expectedErr: nil,
+			expected: true,
 		},
 	}
 
@@ -129,7 +149,6 @@ func TestXChainCreateClaimID_Validate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ok, err := tc.tx.Validate()
 			if tc.expectedErr != nil {
-				require.Error(t, err)
 				require.Equal(t, err, tc.expectedErr)
 			} else {
 				require.NoError(t, err)

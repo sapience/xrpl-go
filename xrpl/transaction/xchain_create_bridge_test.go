@@ -13,9 +13,9 @@ func TestXChainCreateBridge_TxType(t *testing.T) {
 }
 
 func TestXChainCreateBridge_Flatten(t *testing.T) {
-	testcases := []struct{
-		name string
-		tx *XChainCreateBridge
+	testcases := []struct {
+		name     string
+		tx       *XChainCreateBridge
 		expected FlatTransaction
 	}{
 		{
@@ -26,20 +26,20 @@ func TestXChainCreateBridge_Flatten(t *testing.T) {
 				},
 				SignatureReward: types.XRPCurrencyAmount(0),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
 			expected: FlatTransaction{
-				"Account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"Account":         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				"TransactionType": "XChainCreateBridge",
 				"SignatureReward": "0",
 				"XChainBridge": types.FlatXChainBridge{
-					"LockingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"LockingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"LockingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					"IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"IssuingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"IssuingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
@@ -51,23 +51,23 @@ func TestXChainCreateBridge_Flatten(t *testing.T) {
 					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				},
 				MinAccountCreateAmount: types.XRPCurrencyAmount(10000),
-				SignatureReward: types.XRPCurrencyAmount(10000),
+				SignatureReward:        types.XRPCurrencyAmount(10000),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
 			expected: FlatTransaction{
-				"Account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-				"TransactionType": "XChainCreateBridge",
+				"Account":                "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"TransactionType":        "XChainCreateBridge",
 				"MinAccountCreateAmount": "10000",
-				"SignatureReward": "10000",
+				"SignatureReward":        "10000",
 				"XChainBridge": types.FlatXChainBridge{
-					"LockingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"LockingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"LockingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					"IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					"IssuingChainDoor":  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					"IssuingChainIssue": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
@@ -82,91 +82,91 @@ func TestXChainCreateBridge_Flatten(t *testing.T) {
 }
 
 func TestXChainCreateBridge_Validate(t *testing.T) {
-	testcases := []struct{
-		name string
-		tx *XChainCreateBridge
-		expected bool
+	testcases := []struct {
+		name        string
+		tx          *XChainCreateBridge
+		expected    bool
 		expectedErr error
 	}{
 		{
-			name: "fail - missing required fields",
-			tx: &XChainCreateBridge{},
-			expected: false,
+			name:        "fail - missing required fields",
+			tx:          &XChainCreateBridge{},
+			expected:    false,
 			expectedErr: ErrInvalidAccount,
 		},
 		{
 			name: "fail - missing signature reward",
 			tx: &XChainCreateBridge{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCreateBridgeTx,
 				},
 			},
-			expected: false,
+			expected:    false,
 			expectedErr: ErrMissingAmount("SignatureReward"),
 		},
 		{
 			name: "fail - missing xchain bridge",
 			tx: &XChainCreateBridge{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCreateBridgeTx,
 				},
 				SignatureReward: types.XRPCurrencyAmount(10000),
 			},
-			expected: false,
+			expected:    false,
 			expectedErr: types.ErrInvalidIssuingChainDoorAddress,
 		},
 		{
 			name: "fail - invalid min account create amount",
 			tx: &XChainCreateBridge{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCreateBridgeTx,
 				},
 				MinAccountCreateAmount: types.IssuedCurrencyAmount{
 					Currency: "XRP",
-					Value: "test",
+					Value:    "test",
 				},
 			},
-			expected: false,
+			expected:    false,
 			expectedErr: ErrInvalidTokenFields,
 		},
 		{
 			name: "pass - valid tx with required fields",
 			tx: &XChainCreateBridge{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCreateBridgeTx,
 				},
 				SignatureReward: types.XRPCurrencyAmount(10000),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
-			expected: true,
+			expected:    true,
 			expectedErr: nil,
 		},
 		{
 			name: "pass - valid tx with all fields",
 			tx: &XChainCreateBridge{
 				BaseTx: BaseTx{
-					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: XChainCreateBridgeTx,
 				},
 				MinAccountCreateAmount: types.XRPCurrencyAmount(10000),
-				SignatureReward: types.XRPCurrencyAmount(10000),
+				SignatureReward:        types.XRPCurrencyAmount(10000),
 				XChainBridge: types.XChainBridge{
-					LockingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					IssuingChainDoor: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					LockingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					IssuingChainDoor:  "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					LockingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					IssuingChainIssue: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 				},
 			},
-			expected: true,
+			expected:    true,
 			expectedErr: nil,
 		},
 	}

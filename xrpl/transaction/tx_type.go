@@ -40,6 +40,7 @@ const (
 	XChainCreateClaimIDTx  TxType = "XChainCreateClaimID"
 	XChainClaimTx          TxType = "XChainClaim"
 	XChainCommitTx         TxType = "XChainCommit"
+	XChainModifyBridgeTx   TxType = "XChainModifyBridge"
 )
 
 func (t TxType) String() string {
