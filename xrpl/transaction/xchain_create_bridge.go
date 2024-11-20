@@ -12,9 +12,27 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 //
 // The complete production-grade setup would also include a SignerListSet transaction on the two door accounts for the
 // witnesses’ signing keys, as well as disabling the door accounts’ master key. This ensures that the witness servers are truly in control of the funds.
+//
+// ```json
+// {
+//   "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//   "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//   "TransactionType": "XChainCreateClaimID",
+//   "SignatureReward": "100",
+//   "XChainBridge": {
+//     "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//     "LockingChainIssue": {
+//       "currency": "XRP"
+//     },
+//     "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//     "IssuingChainIssue": {
+//       "currency": "XRP"
+//     }
+//   }
+// }
+// ```
 type XChainCreateBridge struct {
 	BaseTx
-
 	// The minimum amount, in XRP, required for a XChainAccountCreateCommit transaction.
 	// If this isn't present, the XChainAccountCreateCommit transaction will fail.
 	// This field can only be present on XRP-XRP bridges.
