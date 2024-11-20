@@ -12,6 +12,12 @@ func TestXChainModifyBridge_TxType(t *testing.T) {
 	require.Equal(t, tx.TxType(), XChainModifyBridgeTx)
 }
 
+func TestXChainModifyBridge_SetClearAccountCreateAmount(t *testing.T) {
+	tx := &XChainModifyBridge{}
+	tx.SetClearAccountCreateAmount()
+	require.Equal(t, tx.Flags, tfClearAccountCreateAmount)
+}
+
 func TestXChainModifyBridge_Flatten(t *testing.T) {
 	testcases := []struct {
 		name     string
