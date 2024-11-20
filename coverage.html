@@ -439,15 +439,17 @@
 				
 				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_create_bridge.go (100.0%)</option>
 				
-				<option value="file192">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
+				<option value="file192">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_create_claim_id.go (100.0%)</option>
 				
-				<option value="file193">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
+				<option value="file193">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
-				<option value="file194">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
+				<option value="file194">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
 				
-				<option value="file195">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				<option value="file195">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
 				
-				<option value="file196">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
+				<option value="file196">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				
+				<option value="file197">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -12239,6 +12241,7 @@ const (
         HashedTx               TxType = "HASH"   // TX stored as a string, rather than complete tx obj
         BinaryTx               TxType = "BINARY" // TX stored as a string, json tagged as 'tx_blob'
         XChainCreateBridgeTx   TxType = "XChainCreateBridge"
+        XChainCreateClaimIDTx  TxType = "XChainCreateClaimID"
         XChainClaimTx          TxType = "XChainClaim"
         XChainCommitTx         TxType = "XChainCommit"
 )
@@ -13029,9 +13032,27 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 //
 // The complete production-grade setup would also include a SignerListSet transaction on the two door accounts for the
 // witnesses’ signing keys, as well as disabling the door accounts’ master key. This ensures that the witness servers are truly in control of the funds.
+//
+// ```json
+// {
+//   "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//   "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//   "TransactionType": "XChainCreateClaimID",
+//   "SignatureReward": "100",
+//   "XChainBridge": {
+//     "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//     "LockingChainIssue": {
+//       "currency": "XRP"
+//     },
+//     "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//     "IssuingChainIssue": {
+//       "currency": "XRP"
+//     }
+//   }
+// }
+// ```
 type XChainCreateBridge struct {
         BaseTx
-
         // The minimum amount, in XRP, required for a XChainAccountCreateCommit transaction.
         // If this isn't present, the XChainAccountCreateCommit transaction will fail.
         // This field can only be present on XRP-XRP bridges.
@@ -13087,7 +13108,103 @@ func (x *XChainCreateBridge) Validate() (bool, error) <span class="cov8" title="
 }
 </pre>
 		
-		<pre class="file" id="file192" style="display: none">package xrpl
+		<pre class="file" id="file192" style="display: none">package transaction
+
+import (
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+// (Requires the XChainBridge amendment )
+//
+// The XChainCreateClaimID transaction creates a new cross-chain claim ID that is used for a cross-chain transfer.
+// A cross-chain claim ID represents one cross-chain transfer of value.
+//
+// This transaction is the first step of a cross-chain transfer of value and is submitted on the destination chain,
+// not the source chain.
+//
+// It also includes the account on the source chain that locks or burns the funds on the source chain.
+//
+// ```json
+// {
+//   "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//   "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//   "TransactionType": "XChainCreateClaimID",
+//   "SignatureReward": "100",
+//   "XChainBridge": {
+//     "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//     "LockingChainIssue": {
+//       "currency": "XRP"
+//     },
+//     "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//     "IssuingChainIssue": {
+//       "currency": "XRP"
+//     }
+//   }
+// }
+// ```
+type XChainCreateClaimID struct {
+        BaseTx
+
+        // The account that must send the XChainCommit transaction on the source chain.
+        OtherChainSource types.Address
+        // The amount, in XRP, to reward the witness servers for providing signatures.
+        // This must match the amount on the Bridge ledger object.
+        SignatureReward types.Address
+        // The bridge to create the claim ID for.
+        XChainBridge types.XChainBridge
+}
+
+// Returns the type of the transaction.
+func (x *XChainCreateClaimID) TxType() TxType <span class="cov8" title="1">{
+        return XChainCreateClaimIDTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainCreateClaimID) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.OtherChainSource != "" </span><span class="cov8" title="1">{
+                flatTx["OtherChainSource"] = x.OtherChainSource.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.SignatureReward != "" </span><span class="cov8" title="1">{
+                flatTx["SignatureReward"] = x.SignatureReward.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainCreateClaimID) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.OtherChainSource.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAccount
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.SignatureReward.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAccount
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := x.XChainBridge.Validate(); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file193" style="display: none">package xrpl
 
 import (
         "encoding/hex"
@@ -13268,7 +13385,7 @@ func (w *Wallet) GetAddress() string <span class="cov0" title="0">{
 // }
 </pre>
 		
-		<pre class="file" id="file193" style="display: none">package websocket
+		<pre class="file" id="file194" style="display: none">package websocket
 
 import (
         "bytes"
@@ -13656,7 +13773,7 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error <spa
 }
 </pre>
 		
-		<pre class="file" id="file194" style="display: none">package websocket
+		<pre class="file" id="file195" style="display: none">package websocket
 
 type ClientConfig struct {
         // Connection config
@@ -13707,7 +13824,7 @@ func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig <span 
 }</span>
 </pre>
 		
-		<pre class="file" id="file195" style="display: none">package websocket
+		<pre class="file" id="file196" style="display: none">package websocket
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/currency"
@@ -13818,7 +13935,7 @@ func (c *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, e
 }
 </pre>
 		
-		<pre class="file" id="file196" style="display: none">package websocket
+		<pre class="file" id="file197" style="display: none">package websocket
 
 import (
         "fmt"
