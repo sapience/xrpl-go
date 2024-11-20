@@ -427,19 +427,25 @@
 				
 				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (100.0%)</option>
 				
-				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (61.9%)</option>
+				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/types/xchain_bridge.go (0.0%)</option>
 				
-				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
+				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (61.9%)</option>
 				
-				<option value="file188">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
+				<option value="file188">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
 				
-				<option value="file189">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
+				<option value="file189">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_claim.go (100.0%)</option>
 				
-				<option value="file190">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
+				<option value="file190">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_commit.go (100.0%)</option>
 				
-				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
-				<option value="file192">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
+				<option value="file192">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
+				
+				<option value="file193">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
+				
+				<option value="file194">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				
+				<option value="file195">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -12230,6 +12236,8 @@ const (
         TicketCreateTx         TxType = "TicketCreate"
         HashedTx               TxType = "HASH"   // TX stored as a string, rather than complete tx obj
         BinaryTx               TxType = "BINARY" // TX stored as a string, json tagged as 'tx_blob'
+        XChainClaimTx          TxType = "XChainClaim"
+        XChainCommitTx         TxType = "XChainCommit"
 )
 
 func (t TxType) String() string <span class="cov8" title="1">{
@@ -12402,7 +12410,66 @@ func (n *NFTokenURI) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file186" style="display: none">package transaction
+		<pre class="file" id="file186" style="display: none">package types
+
+import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+)
+
+var (
+        ErrInvalidIssuingChainDoorAddress  = errors.New("xchainBridge: invalid issuing chain door address")
+        ErrInvalidIssuingChainIssueAddress = errors.New("xchainBridge: invalid issuing chain issue address")
+        ErrInvalidLockingChainDoorAddress  = errors.New("xchainBridge: invalid locking chain door address")
+        ErrInvalidLockingChainIssueAddress = errors.New("xchainBridge: invalid locking chain issue address")
+)
+
+type XChainBridge struct {
+        // The door account on the issuing chain. For an XRP-XRP bridge, this must be the
+        // genesis account (the account that is created when the network is first started, which contains all of the XRP).
+        IssuingChainDoor Address
+        // The asset that is minted and burned on the issuing chain. For an IOU-IOU bridge,
+        // the issuer of the asset must be the door account on the issuing chain, to avoid supply issues.
+        IssuingChainIssue Address
+        // The door account on the locking chain.
+        LockingChainDoor Address
+        // The asset that is locked and unlocked on the locking chain.
+        LockingChainIssue Address
+}
+
+type FlatXChainBridge map[string]string
+
+func (x *XChainBridge) Flatten() FlatXChainBridge <span class="cov0" title="0">{
+        flat := make(FlatXChainBridge)
+
+        flat["IssuingChainDoor"] = x.IssuingChainDoor.String()
+        flat["IssuingChainIssue"] = x.IssuingChainIssue.String()
+        flat["LockingChainDoor"] = x.LockingChainDoor.String()
+        flat["LockingChainIssue"] = x.LockingChainIssue.String()
+
+        return flat
+}</span>
+
+func (x *XChainBridge) Validate() (bool, error) <span class="cov0" title="0">{
+        if !addresscodec.IsValidClassicAddress(x.IssuingChainDoor.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidIssuingChainDoorAddress
+        }</span>
+        <span class="cov0" title="0">if !addresscodec.IsValidClassicAddress(x.IssuingChainIssue.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidIssuingChainIssueAddress
+        }</span>
+        <span class="cov0" title="0">if !addresscodec.IsValidClassicAddress(x.LockingChainDoor.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidLockingChainDoorAddress
+        }</span>
+        <span class="cov0" title="0">if !addresscodec.IsValidClassicAddress(x.LockingChainIssue.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidLockingChainIssueAddress
+        }</span>
+
+        <span class="cov0" title="0">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file187" style="display: none">package transaction
 
 import (
         "fmt"
@@ -12464,7 +12531,7 @@ func validateSigners(signers []Signer) error <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file187" style="display: none">package transaction
+		<pre class="file" id="file188" style="display: none">package transaction
 
 import (
         "errors"
@@ -12715,7 +12782,237 @@ func IsAsset(asset ledger.Asset) (bool, error) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file188" style="display: none">package xrpl
+		<pre class="file" id="file189" style="display: none">package transaction
+
+import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        ErrInvalidDestinationAddress = errors.New("xchainClaim: invalid destination address")
+        ErrMissingXChainClaimID      = errors.New("xchainClaim: missing XChainClaimID")
+)
+
+// (Requires the XChainBridge amendment)
+// The XChainClaim transaction completes a cross-chain transfer of value. It allows a user to claim the value on the
+// destination chain - the equivalent of the value locked on the source chain. A user can only claim the value if they
+// own the cross-chain claim ID associated with the value locked on the source chain (the Account field).
+// The user can send the funds to anyone (the Destination field). This transaction is only needed if an
+// OtherChainDestination isn't specified in the XChainCommit transaction, or if something goes wrong with the automatic transfer of funds.
+//
+// If the transaction succeeds in moving funds, the referenced XChainOwnedClaimID ledger object will be destroyed.
+// This prevents transaction replay. If the transaction fails, the XChainOwnedClaimID won't be
+// destroyed and the transaction can be re-run with different parameters.
+//
+// ```json
+//
+//        {
+//          "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//          "Amount": "10000",
+//          "TransactionType": "XChainClaim",
+//          "XChainClaimID": "13f",
+//          "Destination": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          }
+//        }
+//
+// ```
+type XChainClaim struct {
+        BaseTx
+
+        // The amount to claim on the destination chain. This must match the amount attested to on the
+        // attestations associated with this XChainClaimID.
+        Amount types.CurrencyAmount
+        // The destination account on the destination chain. It must exist or the transaction will fail.
+        // However, if the transaction fails in this case, the sequence number and collected signatures
+        // won't be destroyed, and the transaction can be rerun with a different destination.
+        Destination types.Address
+        // An integer destination tag.
+        DestinationTag uint32 `json:"omitempty"`
+        // The bridge to use for the transfer.
+        XChainBridge types.XChainBridge
+        // The unique integer ID for the cross-chain transfer that was referenced in the corresponding XChainCommit transaction.
+        XChainClaimID string
+}
+
+// TxType returns the type of the transaction.
+func (x *XChainClaim) TxType() TxType <span class="cov8" title="1">{
+        return XChainClaimTx
+}</span>
+
+// Flatten returns a flattened version of the transaction.
+func (x *XChainClaim) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType()
+
+        if x.Amount != nil </span><span class="cov8" title="1">{
+                flatTx["Amount"] = x.Amount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.Destination != "" </span><span class="cov8" title="1">{
+                flatTx["Destination"] = x.Destination.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.DestinationTag != 0 </span><span class="cov8" title="1">{
+                flatTx["DestinationTag"] = x.DestinationTag
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID != "" </span><span class="cov8" title="1">{
+                flatTx["XChainClaimID"] = x.XChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validate validates the transaction.
+func (x *XChainClaim) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestinationAddress
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID == "" </span><span class="cov8" title="1">{
+                return false, ErrMissingXChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := x.XChainBridge.Validate(); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file190" style="display: none">package transaction
+
+import (
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+// (Requires the XChainBridge amendment)
+//
+// The XChainCommit is the second step in a cross-chain transfer. It puts assets into trust on the locking chain
+// so that they can be wrapped on the issuing chain, or burns wrapped assets on the issuing chain so that they can
+// be returned on the locking chain.
+//
+// ```json
+//
+//        {
+//          "Account": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//          "TransactionType": "XChainCommit",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          },
+//          "Amount": "10000",
+//          "XChainClaimID": "13f"
+//        }
+//
+// ```
+type XChainCommit struct {
+        BaseTx
+
+        // The asset to commit, and the quantity. This must match the door account's LockingChainIssue
+        // (if on the locking chain) or the door account's IssuingChainIssue (if on the issuing chain).
+        Amount types.CurrencyAmount
+        // The destination account on the destination chain. If this is not specified, the account that
+        // submitted the XChainCreateClaimID transaction on the destination chain will need to submit a
+        // XChainClaim transaction to claim the funds.
+        OtherChainDestination types.Address `json:"omitempty"`
+        // The bridge to use to transfer funds.
+        XChainBridge types.XChainBridge
+
+        // The unique integer ID for a cross-chain transfer. This must be acquired on the destination
+        // chain (via a XChainCreateClaimID transaction) and checked from a validated ledger before
+        // submitting this transaction. If an incorrect sequence number is specified, the funds will
+        // be lost.
+        XChainClaimID string
+}
+
+// Returns the type of the transaction.
+func (x *XChainCommit) TxType() TxType <span class="cov8" title="1">{
+        return XChainCommitTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainCommit) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.Amount != nil </span><span class="cov8" title="1">{
+                flatTx["Amount"] = x.Amount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.OtherChainDestination != "" </span><span class="cov8" title="1">{
+                flatTx["OtherChainDestination"] = x.OtherChainDestination.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID != "" </span><span class="cov8" title="1">{
+                flatTx["XChainClaimID"] = x.XChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainCommit) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := x.XChainBridge.Validate(); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID == "" </span><span class="cov8" title="1">{
+                return false, ErrMissingXChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file191" style="display: none">package xrpl
 
 import (
         "encoding/hex"
@@ -12896,7 +13193,7 @@ func (w *Wallet) GetAddress() string <span class="cov0" title="0">{
 // }
 </pre>
 		
-		<pre class="file" id="file189" style="display: none">package websocket
+		<pre class="file" id="file192" style="display: none">package websocket
 
 import (
         "bytes"
@@ -13284,7 +13581,7 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error <spa
 }
 </pre>
 		
-		<pre class="file" id="file190" style="display: none">package websocket
+		<pre class="file" id="file193" style="display: none">package websocket
 
 type ClientConfig struct {
         // Connection config
@@ -13335,7 +13632,7 @@ func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig <span 
 }</span>
 </pre>
 		
-		<pre class="file" id="file191" style="display: none">package websocket
+		<pre class="file" id="file194" style="display: none">package websocket
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/currency"
@@ -13446,7 +13743,7 @@ func (c *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, e
 }
 </pre>
 		
-		<pre class="file" id="file192" style="display: none">package websocket
+		<pre class="file" id="file195" style="display: none">package websocket
 
 import (
         "fmt"
