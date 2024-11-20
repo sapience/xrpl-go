@@ -437,15 +437,17 @@
 				
 				<option value="file190">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_commit.go (100.0%)</option>
 				
-				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
+				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_create_bridge.go (100.0%)</option>
 				
-				<option value="file192">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
+				<option value="file192">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
 				
-				<option value="file193">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
+				<option value="file193">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
 				
-				<option value="file194">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				<option value="file194">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
 				
-				<option value="file195">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
+				<option value="file195">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				
+				<option value="file196">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -12236,6 +12238,7 @@ const (
         TicketCreateTx         TxType = "TicketCreate"
         HashedTx               TxType = "HASH"   // TX stored as a string, rather than complete tx obj
         BinaryTx               TxType = "BINARY" // TX stored as a string, json tagged as 'tx_blob'
+        XChainCreateBridgeTx   TxType = "XChainCreateBridge"
         XChainClaimTx          TxType = "XChainClaim"
         XChainCommitTx         TxType = "XChainCommit"
 )
@@ -13012,7 +13015,79 @@ func (x *XChainCommit) Validate() (bool, error) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file191" style="display: none">package xrpl
+		<pre class="file" id="file191" style="display: none">package transaction
+
+import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+
+// (Requires the XChainBridge amendment )
+//
+// The XChainCreateBridge transaction creates a new Bridge ledger object and defines a new cross-chain bridge entrance on
+// the chain that the transaction is submitted on. It includes information about door accounts and assets for the bridge.
+//
+// The transaction must be submitted first by the locking chain door account. To set up a valid bridge, door accounts on
+// both chains must submit this transaction, in addition to setting up witness servers.
+//
+// The complete production-grade setup would also include a SignerListSet transaction on the two door accounts for the
+// witnesses’ signing keys, as well as disabling the door accounts’ master key. This ensures that the witness servers are truly in control of the funds.
+type XChainCreateBridge struct {
+        BaseTx
+
+        // The minimum amount, in XRP, required for a XChainAccountCreateCommit transaction.
+        // If this isn't present, the XChainAccountCreateCommit transaction will fail.
+        // This field can only be present on XRP-XRP bridges.
+        MinAccountCreateAmount types.CurrencyAmount `json:"omitempty"`
+        // The total amount to pay the witness servers for their signatures. This amount will be split among the signers.
+        SignatureReward types.CurrencyAmount
+        // The bridge (door accounts and assets) to create.
+        XChainBridge types.XChainBridge
+}
+
+// Returns the type of the transaction.
+func (x *XChainCreateBridge) TxType() TxType <span class="cov8" title="1">{
+        return XChainCreateBridgeTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainCreateBridge) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.MinAccountCreateAmount != nil </span><span class="cov8" title="1">{
+                flatTx["MinAccountCreateAmount"] = x.MinAccountCreateAmount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.SignatureReward != nil </span><span class="cov8" title="1">{
+                flatTx["SignatureReward"] = x.SignatureReward.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainCreateBridge) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.MinAccountCreateAmount, "MinAccountCreateAmount", false); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.SignatureReward, "SignatureReward", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return x.XChainBridge.Validate()</span>
+}
+</pre>
+		
+		<pre class="file" id="file192" style="display: none">package xrpl
 
 import (
         "encoding/hex"
@@ -13193,7 +13268,7 @@ func (w *Wallet) GetAddress() string <span class="cov0" title="0">{
 // }
 </pre>
 		
-		<pre class="file" id="file192" style="display: none">package websocket
+		<pre class="file" id="file193" style="display: none">package websocket
 
 import (
         "bytes"
@@ -13581,7 +13656,7 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error <spa
 }
 </pre>
 		
-		<pre class="file" id="file193" style="display: none">package websocket
+		<pre class="file" id="file194" style="display: none">package websocket
 
 type ClientConfig struct {
         // Connection config
@@ -13632,7 +13707,7 @@ func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig <span 
 }</span>
 </pre>
 		
-		<pre class="file" id="file194" style="display: none">package websocket
+		<pre class="file" id="file195" style="display: none">package websocket
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/currency"
@@ -13743,7 +13818,7 @@ func (c *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, e
 }
 </pre>
 		
-		<pre class="file" id="file195" style="display: none">package websocket
+		<pre class="file" id="file196" style="display: none">package websocket
 
 import (
         "fmt"
