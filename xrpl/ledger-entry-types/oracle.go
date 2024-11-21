@@ -37,6 +37,8 @@ type PriceData struct {
 	// The scaling factor to apply to an asset price. For example, if Scale is 6 and original price is 0.155,
 	// then the scaled price is 155000. Valid scale ranges are 0-10.
 	// It's not included if the last update transaction didn't include the BaseAsset/QuoteAsset pair.
+	//
+	// By default, the scale is 0.
 	Scale uint8 `json:",omitempty"`
 }
 
@@ -61,15 +63,17 @@ func (priceData *PriceData) Validate() error {
 	return nil
 }
 
+type FlatPriceData map[string]interface{}
+
 // Flatten flattens the price data.
-func (priceData *PriceData) Flatten() map[string]interface{} {
+func (priceData *PriceData) Flatten() FlatPriceData {
 	mapKeys := 2
 
 	if priceData.Scale != 0 && priceData.AssetPrice != 0 {
 		mapKeys = 4
 	}
 
-	flattened := make(map[string]interface{}, mapKeys)
+	flattened := make(FlatPriceData, mapKeys)
 
 	if priceData.BaseAsset != "" {
 		flattened["BaseAsset"] = priceData.BaseAsset
@@ -80,9 +84,8 @@ func (priceData *PriceData) Flatten() map[string]interface{} {
 	if priceData.AssetPrice != 0 {
 		flattened["AssetPrice"] = priceData.AssetPrice
 	}
-	if priceData.Scale != 0 {
-		flattened["Scale"] = priceData.Scale
-	}
+
+	flattened["Scale"] = priceData.Scale
 
 	return flattened
 }

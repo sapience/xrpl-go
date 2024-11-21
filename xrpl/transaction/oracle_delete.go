@@ -12,7 +12,7 @@ package transaction
 // ```
 type OracleDelete struct {
 	BaseTx
-	// A unique identifier of the price oracle for the Account.
+	// A unique identifier of the price oracle for the Account. By default, it is 0.
 	OracleDocumentID uint32
 }
 

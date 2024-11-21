@@ -23,7 +23,9 @@ func TestOracleSet_Flatten(t *testing.T) {
 			name: "pass - empty",
 			tx:   &OracleSet{},
 			expected: map[string]interface{}{
-				"TransactionType": OracleSetTx,
+				"TransactionType":  OracleSetTx,
+				"OracleDocumentID": uint32(0),
+				"LastUpdatedTime":  uint32(0),
 			},
 		},
 		{

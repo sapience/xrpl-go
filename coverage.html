@@ -5385,6 +5385,8 @@ type PriceData struct {
         // The scaling factor to apply to an asset price. For example, if Scale is 6 and original price is 0.155,
         // then the scaled price is 155000. Valid scale ranges are 0-10.
         // It's not included if the last update transaction didn't include the BaseAsset/QuoteAsset pair.
+        //
+        // By default, the scale is 0.
         Scale uint8 `json:",omitempty"`
 }
 
@@ -5409,15 +5411,17 @@ func (priceData *PriceData) Validate() error <span class="cov8" title="1">{
         <span class="cov8" title="1">return nil</span>
 }
 
+type FlatPriceData map[string]interface{}
+
 // Flatten flattens the price data.
-func (priceData *PriceData) Flatten() map[string]interface{} <span class="cov8" title="1">{
+func (priceData *PriceData) Flatten() FlatPriceData <span class="cov8" title="1">{
         mapKeys := 2
 
         if priceData.Scale != 0 &amp;&amp; priceData.AssetPrice != 0 </span><span class="cov8" title="1">{
                 mapKeys = 4
         }</span>
 
-        <span class="cov8" title="1">flattened := make(map[string]interface{}, mapKeys)
+        <span class="cov8" title="1">flattened := make(FlatPriceData, mapKeys)
 
         if priceData.BaseAsset != "" </span><span class="cov8" title="1">{
                 flattened["BaseAsset"] = priceData.BaseAsset
@@ -5428,11 +5432,10 @@ func (priceData *PriceData) Flatten() map[string]interface{} <span class="cov8" 
         <span class="cov8" title="1">if priceData.AssetPrice != 0 </span><span class="cov8" title="1">{
                 flattened["AssetPrice"] = priceData.AssetPrice
         }</span>
-        <span class="cov8" title="1">if priceData.Scale != 0 </span><span class="cov8" title="1">{
-                flattened["Scale"] = priceData.Scale
-        }</span>
 
-        <span class="cov8" title="1">return flattened</span>
+        <span class="cov8" title="1">flattened["Scale"] = priceData.Scale
+
+        return flattened</span>
 }
 
 // An Oracle ledger entry holds data associated with a single price oracle object.
@@ -10949,7 +10952,7 @@ func (o *OfferCreate) Validate() (bool, error) <span class="cov8" title="1">{
 // ```
 type OracleDelete struct {
         BaseTx
-        // A unique identifier of the price oracle for the Account.
+        // A unique identifier of the price oracle for the Account. By default, it is 0.
         OracleDocumentID uint32
 }
 
@@ -11025,15 +11028,16 @@ var (
 // ```
 type OracleSet struct {
         BaseTx
-        // A unique identifier of the price oracle for the Account.
+        // A unique identifier of the price oracle for the Account. It is 0 by default.
         OracleDocumentID uint32
+        // The time the data was last updated, in seconds since the UNIX Epoch.
+        // It is 0 by default.
+        LastUpdatedTime uint32
         // (Variable) An arbitrary value that identifies an oracle provider, such as Chainlink, Band, or DIA. This field is a string, up to 256 ASCII hex encoded characters (0x20-0x7E).
         // This field is required when creating a new Oracle ledger entry, but is optional for updates.
         Provider string `json:",omitempty"`
         // (Optional) An optional Universal Resource Identifier to reference price data off-chain. This field is limited to 256 bytes.
         URI string `json:",omitempty"`
-        // The time the data was last updated, in seconds since the UNIX Epoch.
-        LastUpdatedTime uint32
         // (Variable) Describes the type of asset, such as "currency", "commodity", or "index". This field is a string, up to 16 ASCII hex encoded characters (0x20-0x7E).
         // This field is required when creating a new Oracle ledger entry, but is optional for updates.
         AssetClass string `json:",omitempty"`
@@ -11046,6 +11050,7 @@ func (tx *OracleSet) TxType() TxType <span class="cov8" title="1">{
         return OracleSetTx
 }</span>
 
+// Returns a flattened transaction.
 func (tx *OracleSet) Flatten() map[string]interface{} <span class="cov8" title="1">{
         flattened := tx.BaseTx.Flatten()
 
@@ -11054,19 +11059,19 @@ func (tx *OracleSet) Flatten() map[string]interface{} <span class="cov8" title="
         if tx.Account != "" </span><span class="cov8" title="1">{
                 flattened["Account"] = tx.Account.String()
         }</span>
-        <span class="cov8" title="1">if tx.OracleDocumentID != 0 </span><span class="cov8" title="1">{
-                flattened["OracleDocumentID"] = tx.OracleDocumentID
-        }</span>
-        <span class="cov8" title="1">if tx.Provider != "" </span><span class="cov8" title="1">{
+
+        <span class="cov8" title="1">flattened["OracleDocumentID"] = tx.OracleDocumentID
+
+        if tx.Provider != "" </span><span class="cov8" title="1">{
                 flattened["Provider"] = tx.Provider
         }</span>
         <span class="cov8" title="1">if tx.URI != "" </span><span class="cov8" title="1">{
                 flattened["URI"] = tx.URI
         }</span>
-        <span class="cov8" title="1">if tx.LastUpdatedTime != 0 </span><span class="cov8" title="1">{
-                flattened["LastUpdatedTime"] = tx.LastUpdatedTime
-        }</span>
-        <span class="cov8" title="1">if tx.AssetClass != "" </span><span class="cov8" title="1">{
+
+        <span class="cov8" title="1">flattened["LastUpdatedTime"] = tx.LastUpdatedTime
+
+        if tx.AssetClass != "" </span><span class="cov8" title="1">{
                 flattened["AssetClass"] = tx.AssetClass
         }</span>
 

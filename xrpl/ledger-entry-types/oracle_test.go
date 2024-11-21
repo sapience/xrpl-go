@@ -15,12 +15,14 @@ func TestPriceData_Flatten(t *testing.T) {
 	testcases := []struct {
 		name      string
 		priceData *PriceData
-		expected  map[string]interface{}
+		expected  FlatPriceData
 	}{
 		{
 			name:      "pass - empty",
 			priceData: &PriceData{},
-			expected:  make(map[string]interface{}, 2),
+			expected: FlatPriceData{
+				"Scale": uint8(0),
+			},
 		},
 		{
 			name: "pass - complete",
@@ -30,7 +32,7 @@ func TestPriceData_Flatten(t *testing.T) {
 				AssetPrice: 740,
 				Scale:      3,
 			},
-			expected: map[string]interface{}{
+			expected: FlatPriceData{
 				"BaseAsset":  "XRP",
 				"QuoteAsset": "USD",
 				"AssetPrice": uint64(740),

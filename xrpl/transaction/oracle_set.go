@@ -48,9 +48,10 @@ var (
 // ```
 type OracleSet struct {
 	BaseTx
-	// A unique identifier of the price oracle for the Account.
+	// A unique identifier of the price oracle for the Account. It is 0 by default.
 	OracleDocumentID uint32
 	// The time the data was last updated, in seconds since the UNIX Epoch.
+	// It is 0 by default.
 	LastUpdatedTime uint32
 	// (Variable) An arbitrary value that identifies an oracle provider, such as Chainlink, Band, or DIA. This field is a string, up to 256 ASCII hex encoded characters (0x20-0x7E).
 	// This field is required when creating a new Oracle ledger entry, but is optional for updates.
@@ -78,18 +79,18 @@ func (tx *OracleSet) Flatten() map[string]interface{} {
 	if tx.Account != "" {
 		flattened["Account"] = tx.Account.String()
 	}
-	if tx.OracleDocumentID != 0 {
-		flattened["OracleDocumentID"] = tx.OracleDocumentID
-	}
+
+	flattened["OracleDocumentID"] = tx.OracleDocumentID
+
 	if tx.Provider != "" {
 		flattened["Provider"] = tx.Provider
 	}
 	if tx.URI != "" {
 		flattened["URI"] = tx.URI
 	}
-	if tx.LastUpdatedTime != 0 {
-		flattened["LastUpdatedTime"] = tx.LastUpdatedTime
-	}
+
+	flattened["LastUpdatedTime"] = tx.LastUpdatedTime
+
 	if tx.AssetClass != "" {
 		flattened["AssetClass"] = tx.AssetClass
 	}
