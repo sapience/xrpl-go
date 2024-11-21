@@ -55,7 +55,7 @@ type XChainClaim struct {
 	// won't be destroyed, and the transaction can be rerun with a different destination.
 	Destination types.Address
 	// An integer destination tag.
-	DestinationTag uint32 `json:"omitempty"`
+	DestinationTag uint32 `json:",omitempty"`
 	// The bridge to use for the transfer.
 	XChainBridge types.XChainBridge
 	// The unique integer ID for the cross-chain transfer that was referenced in the corresponding XChainCommit transaction.

@@ -54,9 +54,9 @@ type XChainModifyBridge struct {
 	// The minimum amount, in XRP, required for a XChainAccountCreateCommit transaction.
 	// If this is not present, the XChainAccountCreateCommit transaction will fail.
 	// This field can only be present on XRP-XRP bridges.
-	MinAccountCreateAmount types.CurrencyAmount `json:"omitempty"`
+	MinAccountCreateAmount types.CurrencyAmount `json:",omitempty"`
 	// The signature reward split between the witnesses for submitting attestations.
-	SignatureReward types.CurrencyAmount `json:"omitempty"`
+	SignatureReward types.CurrencyAmount `json:",omitempty"`
 	// The bridge to modify.
 	XChainBridge types.XChainBridge
 }

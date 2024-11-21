@@ -39,10 +39,9 @@ type XChainCommit struct {
 	// The destination account on the destination chain. If this is not specified, the account that
 	// submitted the XChainCreateClaimID transaction on the destination chain will need to submit a
 	// XChainClaim transaction to claim the funds.
-	OtherChainDestination types.Address `json:"omitempty"`
+	OtherChainDestination types.Address `json:",omitempty"`
 	// The bridge to use to transfer funds.
 	XChainBridge types.XChainBridge
-
 	// The unique integer ID for a cross-chain transfer. This must be acquired on the destination
 	// chain (via a XChainCreateClaimID transaction) and checked from a validated ledger before
 	// submitting this transaction. If an incorrect sequence number is specified, the funds will
