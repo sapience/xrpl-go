@@ -16,6 +16,8 @@ const (
 	CheckCreateTx                       TxType = "CheckCreate"
 	ClawbackTx                          TxType = "Clawback"
 	DepositPreauthTx                    TxType = "DepositPreauth"
+	DIDDeleteTx                         TxType = "DIDDelete"
+	DIDSetTx                            TxType = "DIDSet"
 	EscrowCancelTx                      TxType = "EscrowCancel"
 	EscrowCreateTx                      TxType = "EscrowCreate"
 	EscrowFinishTx                      TxType = "EscrowFinish"
