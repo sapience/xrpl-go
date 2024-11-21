@@ -1,6 +1,27 @@
 package ledger
 
-import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+const (
+	// PriceDataScaleMax is the maximum scale for a price data.
+	PriceDataScaleMax uint8 = 10
+)
+
+var (
+	// ErrPriceDataScale is returned when the scale is greater than the maximum allowed.
+	ErrPriceDataScale = fmt.Errorf("scale must be less than %d", PriceDataScaleMax)
+	// ErrPriceDataAssetPriceAndScale is returned when the asset price and scale are not set together.
+	ErrPriceDataAssetPriceAndScale = fmt.Errorf("asset price and scale must be set together")
+	// ErrPriceDataBaseAsset is returned when the base asset is required but not set.
+	ErrPriceDataBaseAsset = errors.New("base asset is required")
+	// ErrPriceDataQuoteAsset is returned when the quote asset is required but not set.
+	ErrPriceDataQuoteAsset = errors.New("quote asset is required")
+)
 
 // A PriceData object represents the price information for a token pair.
 type PriceData struct {
@@ -16,7 +37,57 @@ type PriceData struct {
 	// The scaling factor to apply to an asset price. For example, if Scale is 6 and original price is 0.155,
 	// then the scaled price is 155000. Valid scale ranges are 0-10.
 	// It's not included if the last update transaction didn't include the BaseAsset/QuoteAsset pair.
+	//
+	// By default, the scale is 0.
 	Scale uint8 `json:",omitempty"`
+}
+
+// Validate validates the price data.
+func (priceData *PriceData) Validate() error {
+	if len(priceData.BaseAsset) == 0 {
+		return ErrPriceDataBaseAsset
+	}
+
+	if len(priceData.QuoteAsset) == 0 {
+		return ErrPriceDataQuoteAsset
+	}
+
+	if priceData.Scale > PriceDataScaleMax {
+		return ErrPriceDataScale
+	}
+
+	if (priceData.AssetPrice == 0) != (priceData.Scale == 0) {
+		return ErrPriceDataAssetPriceAndScale
+	}
+
+	return nil
+}
+
+type FlatPriceData map[string]interface{}
+
+// Flatten flattens the price data.
+func (priceData *PriceData) Flatten() FlatPriceData {
+	mapKeys := 2
+
+	if priceData.Scale != 0 && priceData.AssetPrice != 0 {
+		mapKeys = 4
+	}
+
+	flattened := make(FlatPriceData, mapKeys)
+
+	if priceData.BaseAsset != "" {
+		flattened["BaseAsset"] = priceData.BaseAsset
+	}
+	if priceData.QuoteAsset != "" {
+		flattened["QuoteAsset"] = priceData.QuoteAsset
+	}
+	if priceData.AssetPrice != 0 {
+		flattened["AssetPrice"] = priceData.AssetPrice
+	}
+
+	flattened["Scale"] = priceData.Scale
+
+	return flattened
 }
 
 // An Oracle ledger entry holds data associated with a single price oracle object.
