@@ -172,7 +172,7 @@ func TestPaymentChannelCreate_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.tx.Validate()
-			assert.Equal(t, tt.wantValid, valid)	
+			assert.Equal(t, tt.wantValid, valid)
 			assert.Equal(t, tt.wantErr, err != nil)
 			if err != nil && err != tt.expectedErr {
 				t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
