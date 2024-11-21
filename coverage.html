@@ -427,6 +427,7 @@
 				
 				<option value="file185">github.com/Peersyst/xrpl-go/xrpl/transaction/types/hash256.go (0.0%)</option>
 				
+<<<<<<< HEAD
 				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_id.go (100.0%)</option>
 				
 				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/transaction/types/nftoken_uri.go (100.0%)</option>
@@ -444,6 +445,39 @@
 				<option value="file193">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
 				
 				<option value="file194">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
+=======
+				<option value="file186">github.com/Peersyst/xrpl-go/xrpl/transaction/types/xchain_bridge.go (0.0%)</option>
+				
+				<option value="file187">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_commons.go (61.9%)</option>
+				
+				<option value="file188">github.com/Peersyst/xrpl-go/xrpl/transaction/validations_xrpl_objects.go (100.0%)</option>
+				
+				<option value="file189">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_account_create_commit.go (100.0%)</option>
+				
+				<option value="file190">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_add_account_create_attestation.go (100.0%)</option>
+				
+				<option value="file191">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_add_claim_attestation.go (100.0%)</option>
+				
+				<option value="file192">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_claim.go (100.0%)</option>
+				
+				<option value="file193">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_commit.go (100.0%)</option>
+				
+				<option value="file194">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_create_bridge.go (100.0%)</option>
+				
+				<option value="file195">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_create_claim_id.go (100.0%)</option>
+				
+				<option value="file196">github.com/Peersyst/xrpl-go/xrpl/transaction/xchain_modify_bridge.go (100.0%)</option>
+				
+				<option value="file197">github.com/Peersyst/xrpl-go/xrpl/wallet.go (68.6%)</option>
+				
+				<option value="file198">github.com/Peersyst/xrpl-go/xrpl/websocket/client.go (48.8%)</option>
+				
+				<option value="file199">github.com/Peersyst/xrpl-go/xrpl/websocket/config.go (0.0%)</option>
+				
+				<option value="file200">github.com/Peersyst/xrpl-go/xrpl/websocket/queries.go (87.2%)</option>
+				
+				<option value="file201">github.com/Peersyst/xrpl-go/xrpl/websocket/response.go (75.0%)</option>
+>>>>>>> main
 				
 				</select>
 			</div>
@@ -12293,6 +12327,7 @@ func (tx *BaseTx) Validate() (bool, error) <span class="cov8" title="1">{
 type TxType string
 
 const (
+<<<<<<< HEAD
         AccountSetTx           TxType = "AccountSet"
         AccountDeleteTx        TxType = "AccountDelete"
         AMMBidTx               TxType = "AMMBid"
@@ -12328,6 +12363,49 @@ const (
         TicketCreateTx         TxType = "TicketCreate"
         HashedTx               TxType = "HASH"   // TX stored as a string, rather than complete tx obj
         BinaryTx               TxType = "BINARY" // TX stored as a string, json tagged as 'tx_blob'
+=======
+        AccountSetTx                        TxType = "AccountSet"
+        AccountDeleteTx                     TxType = "AccountDelete"
+        AMMBidTx                            TxType = "AMMBid"
+        AMMCreateTx                         TxType = "AMMCreate"
+        AMMDeleteTx                         TxType = "AMMDelete"
+        AMMDepositTx                        TxType = "AMMDeposit"
+        AMMVoteTx                           TxType = "AMMVote"
+        AMMWithdrawTx                       TxType = "AMMWithdraw"
+        CheckCancelTx                       TxType = "CheckCancel"
+        CheckCashTx                         TxType = "CheckCash"
+        CheckCreateTx                       TxType = "CheckCreate"
+        ClawbackTx                          TxType = "Clawback"
+        DepositPreauthTx                    TxType = "DepositPreauth"
+        EscrowCancelTx                      TxType = "EscrowCancel"
+        EscrowCreateTx                      TxType = "EscrowCreate"
+        EscrowFinishTx                      TxType = "EscrowFinish"
+        NFTokenAcceptOfferTx                TxType = "NFTokenAcceptOffer"
+        NFTokenBurnTx                       TxType = "NFTokenBurn"
+        NFTokenCancelOfferTx                TxType = "NFTokenCancelOffer"
+        NFTokenCreateOfferTx                TxType = "NFTokenCreateOffer"
+        NFTokenMintTx                       TxType = "NFTokenMint"
+        OfferCreateTx                       TxType = "OfferCreate"
+        OfferCancelTx                       TxType = "OfferCancel"
+        PaymentTx                           TxType = "Payment"
+        PaymentChannelClaimTx               TxType = "PaymentChannelClaim"
+        PaymentChannelCreateTx              TxType = "PaymentChannelCreate"
+        PaymentChannelFundTx                TxType = "PaymentChannelFund"
+        SetRegularKeyTx                     TxType = "SetRegularKey"
+        SignerListSetTx                     TxType = "SignerListSet"
+        TrustSetTx                          TxType = "TrustSet"
+        TicketCreateTx                      TxType = "TicketCreate"
+        HashedTx                            TxType = "HASH"   // TX stored as a string, rather than complete tx obj
+        BinaryTx                            TxType = "BINARY" // TX stored as a string, json tagged as 'tx_blob'
+        XChainAccountCreateCommitTx         TxType = "XChainAccountCreateCommit"
+        XChainAddAccountCreateAttestationTx TxType = "XChainAddAccountCreateAttestation"
+        XChainAddClaimAttestationTx         TxType = "XChainAddClaimAttestation"
+        XChainCreateBridgeTx                TxType = "XChainCreateBridge"
+        XChainCreateClaimIDTx               TxType = "XChainCreateClaimID"
+        XChainClaimTx                       TxType = "XChainClaim"
+        XChainCommitTx                      TxType = "XChainCommit"
+        XChainModifyBridgeTx                TxType = "XChainModifyBridge"
+>>>>>>> main
 )
 
 func (t TxType) String() string <span class="cov8" title="1">{
@@ -12500,7 +12578,70 @@ func (n *NFTokenURI) String() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
+<<<<<<< HEAD
 		<pre class="file" id="file188" style="display: none">package transaction
+=======
+		<pre class="file" id="file186" style="display: none">package types
+
+import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+)
+
+var (
+        ErrInvalidIssuingChainDoorAddress  = errors.New("xchainBridge: invalid issuing chain door address")
+        ErrInvalidIssuingChainIssueAddress = errors.New("xchainBridge: invalid issuing chain issue address")
+        ErrInvalidLockingChainDoorAddress  = errors.New("xchainBridge: invalid locking chain door address")
+        ErrInvalidLockingChainIssueAddress = errors.New("xchainBridge: invalid locking chain issue address")
+)
+
+type XChainBridge struct {
+        // The door account on the issuing chain. For an XRP-XRP bridge, this must be the
+        // genesis account (the account that is created when the network is first started, which contains all of the XRP).
+        IssuingChainDoor Address
+        // The asset that is minted and burned on the issuing chain. For an IOU-IOU bridge,
+        // the issuer of the asset must be the door account on the issuing chain, to avoid supply issues.
+        IssuingChainIssue Address
+        // The door account on the locking chain.
+        LockingChainDoor Address
+        // The asset that is locked and unlocked on the locking chain.
+        LockingChainIssue Address
+}
+
+type FlatXChainBridge map[string]string
+
+func (x *XChainBridge) Flatten() FlatXChainBridge <span class="cov0" title="0">{
+        flat := make(FlatXChainBridge)
+
+        flat["IssuingChainDoor"] = x.IssuingChainDoor.String()
+        flat["IssuingChainIssue"] = x.IssuingChainIssue.String()
+        flat["LockingChainDoor"] = x.LockingChainDoor.String()
+        flat["LockingChainIssue"] = x.LockingChainIssue.String()
+
+        return flat
+}</span>
+
+func (x *XChainBridge) Validate() (bool, error) <span class="cov0" title="0">{
+        if !addresscodec.IsValidClassicAddress(x.IssuingChainDoor.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidIssuingChainDoorAddress
+        }</span>
+        <span class="cov0" title="0">if !addresscodec.IsValidClassicAddress(x.IssuingChainIssue.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidIssuingChainIssueAddress
+        }</span>
+        <span class="cov0" title="0">if !addresscodec.IsValidClassicAddress(x.LockingChainDoor.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidLockingChainDoorAddress
+        }</span>
+        <span class="cov0" title="0">if !addresscodec.IsValidClassicAddress(x.LockingChainIssue.String()) </span><span class="cov0" title="0">{
+                return false, ErrInvalidLockingChainIssueAddress
+        }</span>
+
+        <span class="cov0" title="0">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file187" style="display: none">package transaction
+>>>>>>> main
 
 import (
         "fmt"
@@ -12562,7 +12703,11 @@ func validateSigners(signers []Signer) error <span class="cov8" title="1">{
 }
 </pre>
 		
+<<<<<<< HEAD
 		<pre class="file" id="file189" style="display: none">package transaction
+=======
+		<pre class="file" id="file188" style="display: none">package transaction
+>>>>>>> main
 
 import (
         "errors"
@@ -12813,7 +12958,1044 @@ func IsAsset(asset ledger.Asset) (bool, error) <span class="cov8" title="1">{
 }
 </pre>
 		
+<<<<<<< HEAD
 		<pre class="file" id="file190" style="display: none">package xrpl
+=======
+		<pre class="file" id="file189" style="display: none">package transaction
+
+import (
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+// (Requires the XChainBridge amendment )
+//
+// This transaction can only be used for XRP-XRP bridges.
+//
+// The XChainAccountCreateCommit transaction creates a new account for a witness server to submit transactions on an issuing chain.
+//
+// ```json
+//
+//        {
+//          "Account": "rwEqJ2UaQHe7jihxGqmx6J4xdbGiiyMaGa",
+//          "Destination": "rD323VyRjgzzhY4bFpo44rmyh2neB5d8Mo",
+//          "TransactionType": "XChainAccountCreateCommit",
+//          "Amount": "20000000",
+//          "SignatureReward": "100",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          }
+//        }
+//
+// ```
+type XChainAccountCreateCommit struct {
+        BaseTx
+
+        // The amount, in XRP, to use for account creation. This must be greater than or equal to
+        // the MinAccountCreateAmount specified in the Bridge ledger object.
+        Amount types.CurrencyAmount
+        // The destination account on the destination chain.
+        Destination types.Address
+        // The amount, in XRP, to be used to reward the witness servers for providing signatures.
+        // This must match the amount on the Bridge ledger object.
+        SignatureReward types.CurrencyAmount `json:",omitempty"`
+        // The bridge to create accounts for.
+        XChainBridge types.XChainBridge
+}
+
+// Returns the type of the transaction.
+func (x *XChainAccountCreateCommit) TxType() TxType <span class="cov8" title="1">{
+        return XChainAccountCreateCommitTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainAccountCreateCommit) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.Amount != nil </span><span class="cov8" title="1">{
+                flatTx["Amount"] = x.Amount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.Destination != "" </span><span class="cov8" title="1">{
+                flatTx["Destination"] = x.Destination.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.SignatureReward != nil </span><span class="cov8" title="1">{
+                flatTx["SignatureReward"] = x.SignatureReward.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainAccountCreateCommit) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAccount
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.SignatureReward, "SignatureReward", false); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return x.XChainBridge.Validate()</span>
+}
+</pre>
+		
+		<pre class="file" id="file190" style="display: none">package transaction
+
+import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        ErrInvalidAttestationRewardAccount = errors.New("invalid attestation reward account")
+        ErrInvalidAttestationSignerAccount = errors.New("invalid attestation signer account")
+        ErrInvalidOtherChainSource         = errors.New("invalid other chain source")
+        ErrInvalidPublicKey                = errors.New("invalid public key")
+        ErrInvalidWasLockingChainSend      = errors.New("invalid was locking chain send")
+        ErrInvalidXChainAccountCreateCount = errors.New("invalid x chain account create count")
+)
+
+// (Requires the XChainBridge amendment )
+//
+// The XChainAddAccountCreateAttestation transaction provides an attestation from a witness server that an
+// XChainAccountCreateCommit transaction occurred on the other chain.
+//
+// The signature must be from one of the keys on the door's signer list at the time the signature was provided.
+// If the signature list changes between the time the signature was submitted and the quorum is reached,
+// the new signature set is used and some of the currently collected signatures may be removed.
+//
+// Any account can submit signatures.
+//
+// ```json
+//
+//        {
+//          "Account": "rDr5okqGKmMpn44Bbhe5WAfDQx8e9XquEv",
+//          "TransactionType": "XChainAddAccountCreateAttestation",
+//          "OtherChainSource": "rUzB7yg1LcFa7m3q1hfrjr5w53vcWzNh3U",
+//          "Destination": "rJMfWNVbyjcCtds8kpoEjEbYQ41J5B6MUd",
+//          "Amount": "2000000000",
+//          "PublicKey": "EDF7C3F9C80C102AF6D241752B37356E91ED454F26A35C567CF6F8477960F66614",
+//          "Signature": "F95675BA8FDA21030DE1B687937A79E8491CE51832D6BEEBC071484FA5AF5B8A0E9AFF11A4AA46F09ECFFB04C6A8DAE8284AF3ED8128C7D0046D842448478500",
+//          "WasLockingChainSend": 1,
+//          "AttestationRewardAccount": "rpFp36UHW6FpEcZjZqq5jSJWY6UCj3k4Es",
+//          "AttestationSignerAccount": "rpWLegmW9WrFBzHUj7brhQNZzrxgLj9oxw",
+//          "XChainAccountCreateCount": "2",
+//          "SignatureReward": "204",
+//          "XChainBridge": {
+//            "LockingChainDoor": "r3nCVTbZGGYoWvZ58BcxDmiMUU7ChMa1eC",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          },
+//          "Fee": "20"
+//        }
+//
+// ```
+type XChainAddAccountCreateAttestation struct {
+        BaseTx
+
+        // The amount committed by the XChainAccountCreateCommit transaction on the source chain.
+        Amount types.CurrencyAmount
+        // The account that should receive this signer's share of the SignatureReward.
+        AttestationRewardAccount types.Address
+        // The account on the door account's signer list that is signing the transaction.
+        AttestationSignerAccount types.Address
+        // The destination account for the funds on the destination chain.
+        Destination types.Address
+        // The account on the source chain that submitted the XChainAccountCreateCommit transaction
+        // that triggered the event associated with the attestation.
+        OtherChainSource types.Address
+        // The public key used to verify the signature.
+        PublicKey string
+        // The signature attesting to the event on the other chain.
+        Signature string
+        // The signature reward paid in the XChainAccountCreateCommit transaction.
+        SignatureReward types.CurrencyAmount
+        // A boolean representing the chain where the event occurred.
+        WasLockingChainSend uint8
+        // The counter that represents the order that the claims must be processed in.
+        XChainAccountCreateCount string
+        // The bridge associated with the attestation.
+        XChainBridge types.XChainBridge
+}
+
+// Returns the type of the transaction.
+func (x *XChainAddAccountCreateAttestation) TxType() TxType <span class="cov8" title="1">{
+        return XChainAddAccountCreateAttestationTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainAddAccountCreateAttestation) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.Amount != nil </span><span class="cov8" title="1">{
+                flatTx["Amount"] = x.Amount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.AttestationRewardAccount != "" </span><span class="cov8" title="1">{
+                flatTx["AttestationRewardAccount"] = x.AttestationRewardAccount.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.AttestationSignerAccount != "" </span><span class="cov8" title="1">{
+                flatTx["AttestationSignerAccount"] = x.AttestationSignerAccount.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.Destination != "" </span><span class="cov8" title="1">{
+                flatTx["Destination"] = x.Destination.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.OtherChainSource != "" </span><span class="cov8" title="1">{
+                flatTx["OtherChainSource"] = x.OtherChainSource.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.PublicKey != "" </span><span class="cov8" title="1">{
+                flatTx["PublicKey"] = x.PublicKey
+        }</span>
+
+        <span class="cov8" title="1">if x.Signature != "" </span><span class="cov8" title="1">{
+                flatTx["Signature"] = x.Signature
+        }</span>
+
+        <span class="cov8" title="1">if x.SignatureReward != nil </span><span class="cov8" title="1">{
+                flatTx["SignatureReward"] = x.SignatureReward.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">flatTx["WasLockingChainSend"] = x.WasLockingChainSend
+
+        if x.XChainAccountCreateCount != "" </span><span class="cov8" title="1">{
+                flatTx["XChainAccountCreateCount"] = x.XChainAccountCreateCount
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainAddAccountCreateAttestation) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.AttestationRewardAccount.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAttestationRewardAccount
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.AttestationSignerAccount.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAttestationSignerAccount
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestination
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.OtherChainSource.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidOtherChainSource
+        }</span>
+
+        <span class="cov8" title="1">if x.PublicKey == "" </span><span class="cov8" title="1">{
+                return false, ErrInvalidPublicKey
+        }</span>
+
+        <span class="cov8" title="1">if x.Signature == "" </span><span class="cov8" title="1">{
+                return false, ErrInvalidSignature
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.SignatureReward, "SignatureReward", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if x.WasLockingChainSend != 0 &amp;&amp; x.WasLockingChainSend != 1 </span><span class="cov8" title="1">{
+                return false, ErrInvalidWasLockingChainSend
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainAccountCreateCount == "" </span><span class="cov8" title="1">{
+                return false, ErrInvalidXChainAccountCreateCount
+        }</span>
+
+        <span class="cov8" title="1">return x.XChainBridge.Validate()</span>
+}
+</pre>
+		
+		<pre class="file" id="file191" style="display: none">package transaction
+
+import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        ErrInvalidXChainClaimID = errors.New("invalid XChainClaimID")
+)
+
+// (Requires the XChainBridge amendment )
+//
+// The XChainAddClaimAttestation transaction provides proof from a witness server,
+// attesting to an XChainCommit transaction.
+//
+// The signature must be from one of the keys on the door's signer list at the time the signature was provided.
+// However, if the signature list changes between the time the signature was submitted and the quorum is reached,
+// the new signature set is used and some of the currently collected signatures may be removed.
+//
+// Any account can submit signatures.
+//
+// ```json
+//
+//        {
+//          "TransactionType": "XChainAddClaimAttestation",
+//          "Account": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//          "XChainAttestationBatch": {
+//            "XChainBridge": {
+//              "IssuingChainDoor": "rKeSSvHvaMZJp9ykaxutVwkhZgWuWMLnQt",
+//              "IssuingChainIssue": {
+//                "currency": "XRP"
+//              },
+//              "LockingChainDoor": "rJvExveLEL4jNDEeLKCVdxaSCN9cEBnEQC",
+//              "LockingChainIssue": {
+//                "currency": "XRP"
+//              }
+//            },
+//            "XChainClaimAttestationBatch" : [
+//              {
+//                "XChainClaimAttestationBatchElement" : {
+//                  "Account" : "rnJmYAiqEVngtnb5ckRroXLtCbWC7CRUBx",
+//                  "Amount" : "100000000",
+//                  "AttestationSignerAccount" : "rnJmYAiqEVngtnb5ckRroXLtCbWC7CRUBx",
+//                  "Destination" : "r9A8UyNpW3X46FUc6P7JZqgn6WgAPjBwPg",
+//                  "PublicKey" : "03DAB289CA36FF377F3F4304C7A7203FDE5EDCBFC209F430F6A4355361425526D0",
+//                  "Signature" : "616263",
+//                  "WasLockingChainSend" : 1,
+//                  "XChainClaimID" : "0000000000000000"
+//                }
+//              }
+//            ],
+//            "XChainCreateAccountAttestationBatch": [
+//              {
+//                "XChainCreateAccountAttestationBatchElement": {
+//                  "Account": "rnJmYAiqEVngtnb5ckRroXLtCbWC7CRUBx",
+//                  "Amount": "1000000000",
+//                  "AttestationSignerAccount": "rEziJZmeZzsJvGVUmpUTey7qxQLKYxaK9f",
+//                  "Destination": "rKT9gDkaedAosiHyHZTjyZs2HvXpzuiGmC",
+//                  "PublicKey": "03ADB44CA8E56F78A0096825E5667C450ABD5C24C34E027BC1AAF7E5BD114CB5B5",
+//                  "Signature": "3044022036C8B90F85E8073C465F00625248A72D4714600F98EBBADBAD3B7ED226109A3A02204C5A0AE12D169CF790F66541F3DB59C289E0D9CA7511FDFE352BB601F667A26",
+//                  "SignatureReward": "1000000",
+//                  "WasLockingChainSend": 1,
+//                  "XChainAccountCreateCount": "0000000000000001"
+//                }
+//              }
+//            ]
+//          }
+//        }
+//
+// ```
+type XChainAddClaimAttestation struct {
+        BaseTx
+
+        // The amount committed by the XChainCommit transaction on the source chain.
+        Amount types.CurrencyAmount
+        // The account that should receive this signer's share of the SignatureReward.
+        AttestationRewardAccount types.Address
+        // The account on the door account's signer list that is signing the transaction.
+        AttestationSignerAccount types.Address
+        // The destination account for the funds on the destination chain (taken from the XChainCommit transaction).
+        Destination types.Address `json:",omitempty"`
+        // The account on the source chain that submitted the XChainCommit transaction
+        // that triggered the event associated with the attestation.
+        OtherChainSource types.Address
+        // The public key used to verify the attestation signature.
+        PublicKey string
+        // The signature attesting to the event on the other chain.
+        Signature string
+        // A boolean representing the chain where the event occurred.
+        WasLockingChainSend uint8
+        // The bridge to use to transfer funds.
+        XChainBridge types.XChainBridge
+        // The XChainClaimID associated with the transfer, which was included in the XChainCommit transaction.
+        XChainClaimID string
+}
+
+// Returns the type of the transaction.
+func (x *XChainAddClaimAttestation) TxType() TxType <span class="cov8" title="1">{
+        return XChainAddClaimAttestationTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainAddClaimAttestation) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.Amount != nil </span><span class="cov8" title="1">{
+                flatTx["Amount"] = x.Amount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.AttestationRewardAccount != "" </span><span class="cov8" title="1">{
+                flatTx["AttestationRewardAccount"] = x.AttestationRewardAccount.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.AttestationSignerAccount != "" </span><span class="cov8" title="1">{
+                flatTx["AttestationSignerAccount"] = x.AttestationSignerAccount.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.Destination != "" </span><span class="cov8" title="1">{
+                flatTx["Destination"] = x.Destination.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.OtherChainSource != "" </span><span class="cov8" title="1">{
+                flatTx["OtherChainSource"] = x.OtherChainSource.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.PublicKey != "" </span><span class="cov8" title="1">{
+                flatTx["PublicKey"] = x.PublicKey
+        }</span>
+
+        <span class="cov8" title="1">if x.Signature != "" </span><span class="cov8" title="1">{
+                flatTx["Signature"] = x.Signature
+        }</span>
+
+        <span class="cov8" title="1">flatTx["WasLockingChainSend"] = x.WasLockingChainSend
+
+        if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID != "" </span><span class="cov8" title="1">{
+                flatTx["XChainClaimID"] = x.XChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainAddClaimAttestation) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.AttestationRewardAccount.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAttestationRewardAccount
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.AttestationSignerAccount.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAttestationSignerAccount
+        }</span>
+
+        <span class="cov8" title="1">if x.Destination != "" &amp;&amp; !addresscodec.IsValidClassicAddress(x.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestination
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.OtherChainSource.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidOtherChainSource
+        }</span>
+
+        <span class="cov8" title="1">if x.PublicKey == "" </span><span class="cov8" title="1">{
+                return false, ErrInvalidPublicKey
+        }</span>
+
+        <span class="cov8" title="1">if x.Signature == "" </span><span class="cov8" title="1">{
+                return false, ErrInvalidSignature
+        }</span>
+
+        <span class="cov8" title="1">if x.WasLockingChainSend != 0 &amp;&amp; x.WasLockingChainSend != 1 </span><span class="cov8" title="1">{
+                return false, ErrInvalidWasLockingChainSend
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID == "" </span><span class="cov8" title="1">{
+                return false, ErrInvalidXChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return x.XChainBridge.Validate()</span>
+}
+</pre>
+		
+		<pre class="file" id="file192" style="display: none">package transaction
+
+import (
+        "errors"
+
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        ErrInvalidDestinationAddress = errors.New("xchainClaim: invalid destination address")
+        ErrMissingXChainClaimID      = errors.New("xchainClaim: missing XChainClaimID")
+)
+
+// (Requires the XChainBridge amendment)
+// The XChainClaim transaction completes a cross-chain transfer of value. It allows a user to claim the value on the
+// destination chain - the equivalent of the value locked on the source chain. A user can only claim the value if they
+// own the cross-chain claim ID associated with the value locked on the source chain (the Account field).
+// The user can send the funds to anyone (the Destination field). This transaction is only needed if an
+// OtherChainDestination isn't specified in the XChainCommit transaction, or if something goes wrong with the automatic transfer of funds.
+//
+// If the transaction succeeds in moving funds, the referenced XChainOwnedClaimID ledger object will be destroyed.
+// This prevents transaction replay. If the transaction fails, the XChainOwnedClaimID won't be
+// destroyed and the transaction can be re-run with different parameters.
+//
+// ```json
+//
+//        {
+//          "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//          "Amount": "10000",
+//          "TransactionType": "XChainClaim",
+//          "XChainClaimID": "13f",
+//          "Destination": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          }
+//        }
+//
+// ```
+type XChainClaim struct {
+        BaseTx
+
+        // The amount to claim on the destination chain. This must match the amount attested to on the
+        // attestations associated with this XChainClaimID.
+        Amount types.CurrencyAmount
+        // The destination account on the destination chain. It must exist or the transaction will fail.
+        // However, if the transaction fails in this case, the sequence number and collected signatures
+        // won't be destroyed, and the transaction can be rerun with a different destination.
+        Destination types.Address
+        // An integer destination tag.
+        DestinationTag uint32 `json:",omitempty"`
+        // The bridge to use for the transfer.
+        XChainBridge types.XChainBridge
+        // The unique integer ID for the cross-chain transfer that was referenced in the corresponding XChainCommit transaction.
+        XChainClaimID string
+}
+
+// TxType returns the type of the transaction.
+func (x *XChainClaim) TxType() TxType <span class="cov8" title="1">{
+        return XChainClaimTx
+}</span>
+
+// Flatten returns a flattened version of the transaction.
+func (x *XChainClaim) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType()
+
+        if x.Amount != nil </span><span class="cov8" title="1">{
+                flatTx["Amount"] = x.Amount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.Destination != "" </span><span class="cov8" title="1">{
+                flatTx["Destination"] = x.Destination.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.DestinationTag != 0 </span><span class="cov8" title="1">{
+                flatTx["DestinationTag"] = x.DestinationTag
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID != "" </span><span class="cov8" title="1">{
+                flatTx["XChainClaimID"] = x.XChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validate validates the transaction.
+func (x *XChainClaim) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestinationAddress
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID == "" </span><span class="cov8" title="1">{
+                return false, ErrMissingXChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := x.XChainBridge.Validate(); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file193" style="display: none">package transaction
+
+import (
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+// (Requires the XChainBridge amendment)
+//
+// The XChainCommit is the second step in a cross-chain transfer. It puts assets into trust on the locking chain
+// so that they can be wrapped on the issuing chain, or burns wrapped assets on the issuing chain so that they can
+// be returned on the locking chain.
+//
+// ```json
+//
+//        {
+//          "Account": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//          "TransactionType": "XChainCommit",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          },
+//          "Amount": "10000",
+//          "XChainClaimID": "13f"
+//        }
+//
+// ```
+type XChainCommit struct {
+        BaseTx
+
+        // The asset to commit, and the quantity. This must match the door account's LockingChainIssue
+        // (if on the locking chain) or the door account's IssuingChainIssue (if on the issuing chain).
+        Amount types.CurrencyAmount
+        // The destination account on the destination chain. If this is not specified, the account that
+        // submitted the XChainCreateClaimID transaction on the destination chain will need to submit a
+        // XChainClaim transaction to claim the funds.
+        OtherChainDestination types.Address `json:",omitempty"`
+        // The bridge to use to transfer funds.
+        XChainBridge types.XChainBridge
+        // The unique integer ID for a cross-chain transfer. This must be acquired on the destination
+        // chain (via a XChainCreateClaimID transaction) and checked from a validated ledger before
+        // submitting this transaction. If an incorrect sequence number is specified, the funds will
+        // be lost.
+        XChainClaimID string
+}
+
+// Returns the type of the transaction.
+func (x *XChainCommit) TxType() TxType <span class="cov8" title="1">{
+        return XChainCommitTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainCommit) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.Amount != nil </span><span class="cov8" title="1">{
+                flatTx["Amount"] = x.Amount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.OtherChainDestination != "" </span><span class="cov8" title="1">{
+                flatTx["OtherChainDestination"] = x.OtherChainDestination.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID != "" </span><span class="cov8" title="1">{
+                flatTx["XChainClaimID"] = x.XChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainCommit) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.Amount, "Amount", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := x.XChainBridge.Validate(); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainClaimID == "" </span><span class="cov8" title="1">{
+                return false, ErrMissingXChainClaimID
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file194" style="display: none">package transaction
+
+import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+
+// (Requires the XChainBridge amendment )
+//
+// The XChainCreateBridge transaction creates a new Bridge ledger object and defines a new cross-chain bridge entrance on
+// the chain that the transaction is submitted on. It includes information about door accounts and assets for the bridge.
+//
+// The transaction must be submitted first by the locking chain door account. To set up a valid bridge, door accounts on
+// both chains must submit this transaction, in addition to setting up witness servers.
+//
+// The complete production-grade setup would also include a SignerListSet transaction on the two door accounts for the
+// witnesses’ signing keys, as well as disabling the door accounts’ master key. This ensures that the witness servers are truly in control of the funds.
+//
+// ```json
+//
+//        {
+//          "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//          "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//          "TransactionType": "XChainCreateClaimID",
+//          "SignatureReward": "100",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          }
+//        }
+//
+// ```
+type XChainCreateBridge struct {
+        BaseTx
+        // The minimum amount, in XRP, required for a XChainAccountCreateCommit transaction.
+        // If this isn't present, the XChainAccountCreateCommit transaction will fail.
+        // This field can only be present on XRP-XRP bridges.
+        MinAccountCreateAmount types.CurrencyAmount `json:",omitempty"`
+        // The total amount to pay the witness servers for their signatures. This amount will be split among the signers.
+        SignatureReward types.CurrencyAmount
+        // The bridge (door accounts and assets) to create.
+        XChainBridge types.XChainBridge
+}
+
+// Returns the type of the transaction.
+func (x *XChainCreateBridge) TxType() TxType <span class="cov8" title="1">{
+        return XChainCreateBridgeTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainCreateBridge) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.MinAccountCreateAmount != nil </span><span class="cov8" title="1">{
+                flatTx["MinAccountCreateAmount"] = x.MinAccountCreateAmount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.SignatureReward != nil </span><span class="cov8" title="1">{
+                flatTx["SignatureReward"] = x.SignatureReward.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainCreateBridge) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.MinAccountCreateAmount, "MinAccountCreateAmount", false); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.SignatureReward, "SignatureReward", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return x.XChainBridge.Validate()</span>
+}
+</pre>
+		
+		<pre class="file" id="file195" style="display: none">package transaction
+
+import (
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+// (Requires the XChainBridge amendment )
+//
+// The XChainCreateClaimID transaction creates a new cross-chain claim ID that is used for a cross-chain transfer.
+// A cross-chain claim ID represents one cross-chain transfer of value.
+//
+// This transaction is the first step of a cross-chain transfer of value and is submitted on the destination chain,
+// not the source chain.
+//
+// It also includes the account on the source chain that locks or burns the funds on the source chain.
+//
+// ```json
+//
+//        {
+//          "Account": "rahDmoXrtPdh7sUdrPjini3gcnTVYjbjjw",
+//          "OtherChainSource": "rMTi57fNy2UkUb4RcdoUeJm7gjxVQvxzUo",
+//          "TransactionType": "XChainCreateClaimID",
+//          "SignatureReward": "100",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rMAXACCrp3Y8PpswXcg3bKggHX76V3F8M4",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          }
+//        }
+//
+// ```
+type XChainCreateClaimID struct {
+        BaseTx
+
+        // The account that must send the XChainCommit transaction on the source chain.
+        OtherChainSource types.Address
+        // The amount, in XRP, to reward the witness servers for providing signatures.
+        // This must match the amount on the Bridge ledger object.
+        SignatureReward types.CurrencyAmount
+        // The bridge to create the claim ID for.
+        XChainBridge types.XChainBridge
+}
+
+// Returns the type of the transaction.
+func (x *XChainCreateClaimID) TxType() TxType <span class="cov8" title="1">{
+        return XChainCreateClaimIDTx
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainCreateClaimID) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.OtherChainSource != "" </span><span class="cov8" title="1">{
+                flatTx["OtherChainSource"] = x.OtherChainSource.String()
+        }</span>
+
+        <span class="cov8" title="1">if x.SignatureReward != nil </span><span class="cov8" title="1">{
+                flatTx["SignatureReward"] = x.SignatureReward.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainCreateClaimID) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(x.OtherChainSource.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidAccount
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.SignatureReward, "SignatureReward", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := x.XChainBridge.Validate(); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file196" style="display: none">package transaction
+
+import (
+        "errors"
+
+        "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+        ErrInvalidFlags = errors.New("invalid flags")
+)
+
+const (
+        tfClearAccountCreateAmount uint32 = 0x00010000
+)
+
+// (Requires the XChainBridge amendment )
+//
+// The XChainCreateClaimID transaction creates a new cross-chain claim ID that is used
+// for a cross-chain transfer. A cross-chain claim ID represents one cross-chain transfer
+// of value.
+//
+// This transaction is the first step of a cross-chain transfer of value and is submitted
+// on the destination chain, not the source chain.
+//
+// It also includes the account on the source chain that locks or burns the funds on the
+// source chain.
+//
+// ```json
+//
+//        {
+//          "TransactionType": "XChainModifyBridge",
+//          "Account": "rhWQzvdmhf5vFS35vtKUSUwNZHGT53qQsg",
+//          "XChainBridge": {
+//            "LockingChainDoor": "rhWQzvdmhf5vFS35vtKUSUwNZHGT53qQsg",
+//            "LockingChainIssue": {
+//              "currency": "XRP"
+//            },
+//            "IssuingChainDoor": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//            "IssuingChainIssue": {
+//              "currency": "XRP"
+//            }
+//          },
+//          "SignatureReward": 200,
+//          "MinAccountCreateAmount": 1000000
+//        }
+//
+// ```
+type XChainModifyBridge struct {
+        BaseTx
+
+        // Specifies the flags for this transaction.
+        Flags uint32
+        // The minimum amount, in XRP, required for a XChainAccountCreateCommit transaction.
+        // If this is not present, the XChainAccountCreateCommit transaction will fail.
+        // This field can only be present on XRP-XRP bridges.
+        MinAccountCreateAmount types.CurrencyAmount `json:",omitempty"`
+        // The signature reward split between the witnesses for submitting attestations.
+        SignatureReward types.CurrencyAmount `json:",omitempty"`
+        // The bridge to modify.
+        XChainBridge types.XChainBridge
+}
+
+// Returns the type of the transaction.
+func (x *XChainModifyBridge) TxType() TxType <span class="cov8" title="1">{
+        return XChainModifyBridgeTx
+}</span>
+
+// Sets the clear account create amount flag.
+func (x *XChainModifyBridge) SetClearAccountCreateAmount() <span class="cov8" title="1">{
+        x.Flags |= tfClearAccountCreateAmount
+}</span>
+
+// Returns a flattened version of the transaction.
+func (x *XChainModifyBridge) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flatTx := x.BaseTx.Flatten()
+
+        flatTx["TransactionType"] = x.TxType().String()
+
+        if x.Flags != 0 </span><span class="cov8" title="1">{
+                flatTx["Flags"] = x.Flags
+        }</span>
+
+        <span class="cov8" title="1">if x.MinAccountCreateAmount != nil </span><span class="cov8" title="1">{
+                flatTx["MinAccountCreateAmount"] = x.MinAccountCreateAmount.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.SignatureReward != nil </span><span class="cov8" title="1">{
+                flatTx["SignatureReward"] = x.SignatureReward.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">if x.XChainBridge != (types.XChainBridge{}) </span><span class="cov8" title="1">{
+                flatTx["XChainBridge"] = x.XChainBridge.Flatten()
+        }</span>
+
+        <span class="cov8" title="1">return flatTx</span>
+}
+
+// Validates the transaction.
+func (x *XChainModifyBridge) Validate() (bool, error) <span class="cov8" title="1">{
+        _, err := x.BaseTx.Validate()
+        if err != nil </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !IsFlagEnabled(x.Flags, tfClearAccountCreateAmount) </span><span class="cov8" title="1">{
+                return false, ErrInvalidFlags
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.MinAccountCreateAmount, "MinAccountCreateAmount", false); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(x.SignatureReward, "SignatureReward", false); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">return x.XChainBridge.Validate()</span>
+}
+</pre>
+		
+		<pre class="file" id="file197" style="display: none">package xrpl
+>>>>>>> main
 
 import (
         "encoding/hex"
@@ -12994,7 +14176,11 @@ func (w *Wallet) GetAddress() string <span class="cov0" title="0">{
 // }
 </pre>
 		
+<<<<<<< HEAD
 		<pre class="file" id="file191" style="display: none">package websocket
+=======
+		<pre class="file" id="file198" style="display: none">package websocket
+>>>>>>> main
 
 import (
         "bytes"
@@ -13382,7 +14568,11 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error <spa
 }
 </pre>
 		
+<<<<<<< HEAD
 		<pre class="file" id="file192" style="display: none">package websocket
+=======
+		<pre class="file" id="file199" style="display: none">package websocket
+>>>>>>> main
 
 type ClientConfig struct {
         // Connection config
@@ -13433,7 +14623,11 @@ func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig <span 
 }</span>
 </pre>
 		
+<<<<<<< HEAD
 		<pre class="file" id="file193" style="display: none">package websocket
+=======
+		<pre class="file" id="file200" style="display: none">package websocket
+>>>>>>> main
 
 import (
         "github.com/Peersyst/xrpl-go/xrpl/currency"
@@ -13544,7 +14738,11 @@ func (c *Client) GetServerInfo(req *server.InfoRequest) (*server.InfoResponse, e
 }
 </pre>
 		
+<<<<<<< HEAD
 		<pre class="file" id="file194" style="display: none">package websocket
+=======
+		<pre class="file" id="file201" style="display: none">package websocket
+>>>>>>> main
 
 import (
         "fmt"
