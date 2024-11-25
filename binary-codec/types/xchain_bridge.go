@@ -71,10 +71,22 @@ func (x *XChainBridge) ToJSON(p interfaces.BinaryParser, opts ...int) (any, erro
 
 	json := make(map[string]string)
 
-	json["LockingChainDoor"] = addresscodec.Encode(bytes[:20], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
-	json["LockingChainIssue"] = addresscodec.Encode(bytes[20:40], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
-	json["IssuingChainDoor"] = addresscodec.Encode(bytes[40:60], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
-	json["IssuingChainIssue"] = addresscodec.Encode(bytes[60:80], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+	json["LockingChainDoor"], err = addresscodec.Encode(bytes[:20], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+	if err != nil {
+		return nil, err
+	}
+	json["LockingChainIssue"], err = addresscodec.Encode(bytes[20:40], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+	if err != nil {
+		return nil, err
+	}
+	json["IssuingChainDoor"], err = addresscodec.Encode(bytes[40:60], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+	if err != nil {
+		return nil, err
+	}
+	json["IssuingChainIssue"], err = addresscodec.Encode(bytes[60:80], []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
+	if err != nil {
+		return nil, err
+	}
 
 	return json, nil
 }

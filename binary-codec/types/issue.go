@@ -36,5 +36,5 @@ func (i *Issue) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength), nil
+	return addresscodec.Encode(b, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
 }

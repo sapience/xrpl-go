@@ -8,18 +8,26 @@ import (
 	"testing"
 )
 
-var tt = []struct {
+var testcases = []struct {
 	prefix []byte
 	in     []byte
 	out    string
 }{
-	{[]byte{0x00}, []byte{136, 165, 165, 124, 130, 159, 64, 242, 94, 168, 51, 133, 187, 222, 108, 61, 139, 76, 160, 130}, "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN"},
-	{[]byte{SECP256K1}, []byte("testingsomething"), "shKMVJjV52uudwfS7HzzaiwmZqVeP"},
+	{
+		[]byte{0x00},
+		[]byte{136, 165, 165, 124, 130, 159, 64, 242, 94, 168, 51, 133, 187, 222, 108, 61, 139, 76, 160, 130},
+		"rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
+	},
+	{
+		[]byte{SECP256K1},
+		[]byte("testingsomething"),
+		"shKMVJjV52uudwfS7HzzaiwmZqVeP",
+	},
 }
 
 func TestCheckEncode(t *testing.T) {
 
-	for x, tc := range tt {
+	for x, tc := range testcases {
 		// test encoding
 		if res := Base58CheckEncode([]byte(tc.in), tc.prefix...); res != tc.out {
 			t.Errorf("CheckEncode test #%d failed: got %s, want: %s", x, res, tc.out)
@@ -29,7 +37,7 @@ func TestCheckEncode(t *testing.T) {
 
 func TestCheckDecode(t *testing.T) {
 
-	for x, tc := range tt {
+	for x, tc := range testcases {
 
 		res, err := Base58CheckDecode(tc.out)
 		res = res[1:]

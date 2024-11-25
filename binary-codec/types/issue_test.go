@@ -32,7 +32,7 @@ func TestIssue_FromJson(t *testing.T) {
 			name:        "Invalid Issue",
 			input:       "r3e7qTG44Mg8pHXgxPtyRx286Re5Urtx2p2",
 			expected:    nil,
-			expectedErr: &addresscodec.InvalidClassicAddressError{Input: "r3e7qTG44Mg8pHXgxPtyRx286Re5Urtx2p2"},
+			expectedErr: addresscodec.ErrInvalidClassicAddress,
 		},
 	}
 

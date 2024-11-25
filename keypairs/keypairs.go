@@ -23,7 +23,7 @@ const (
 // GenerateSeed generates a seed from a given entropy, a crypto algorithm implementation and a randomizer.
 // If the entropy is empty, it generates a random seed. Otherwise, it uses the entropy to generate the seed.
 // The seed is encoded using the addresscodec package.
-func GenerateSeed(entropy string, alg interfaces.CryptoImplementation, r interfaces.Randomizer) (string, error) {
+func GenerateSeed(entropy string, alg interfaces.KeypairCryptoAlg, r interfaces.Randomizer) (string, error) {
 	var pe []byte
 	var err error
 	if entropy == "" {
@@ -60,8 +60,25 @@ func DeriveKeypair(seed string, validator bool) (private, public string, err err
 
 // DeriveClassicAddress derives a classic address from a given public key.
 // The public key has to be encoded using the addresscodec package. Otherwise, it returns an error.
-func DeriveClassicAddress(pubkey string) (string, error) {
-	return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubkey)
+func DeriveClassicAddress(pubKey string) (string, error) {
+	return addresscodec.EncodeClassicAddressFromPublicKeyHex(pubKey)
+}
+
+// DeriveNodeAddress derives a node address from a given public key.
+// The public key has to be encoded using the addresscodec package. Otherwise, it returns an error.
+func DeriveNodeAddress(pubKey string, alg interfaces.NodeDerivationCryptoAlg) (string, error) {
+	decoded, err := addresscodec.DecodeNodePublicKey(pubKey)
+	if err != nil {
+		return "", err
+	}
+	accountPubKey, err := alg.DerivePublicKeyFromPublicGenerator(decoded)
+	if err != nil {
+		return "", err
+	}
+
+	accountID := addresscodec.Sha256RipeMD160(accountPubKey)
+
+	return addresscodec.EncodeAccountIDToClassicAddress(accountID)
 }
 
 // Sign signs a message with a given private key.
