@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLedgerHashes(t *testing.T) {
@@ -39,4 +40,9 @@ func TestLedgerHashes(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestLedgerHashes_EntryType(t *testing.T) {
+	s := &Hashes{}
+	require.Equal(t, s.EntryType(), LedgerHashesEntry)
 }

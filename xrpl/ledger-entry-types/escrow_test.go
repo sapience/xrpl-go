@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEscrow(t *testing.T) {
@@ -45,4 +46,9 @@ func TestEscrow(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestEscrow_EntryType(t *testing.T) {
+	s := &Escrow{}
+	require.Equal(t, s.EntryType(), EscrowEntry)
 }

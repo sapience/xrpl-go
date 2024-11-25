@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCheck(t *testing.T) {
@@ -41,4 +42,9 @@ func TestCheck(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestCheck_EntryType(t *testing.T) {
+	s := &Check{}
+	require.Equal(t, s.EntryType(), CheckEntry)
 }

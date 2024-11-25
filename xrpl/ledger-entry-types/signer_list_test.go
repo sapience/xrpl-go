@@ -82,3 +82,28 @@ func TestSignerList_EntryType(t *testing.T) {
 	s := &SignerList{}
 	require.Equal(t, s.EntryType(), SignerListEntry)
 }
+
+func TestSignerEntryWrapper_Flatten(t *testing.T) {
+	s := &SignerEntryWrapper{
+		SignerEntry: SignerEntry{
+			Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+			SignerWeight: 2,
+		},
+	}
+
+	flattened := s.Flatten()
+	require.Equal(t, flattened["SignerEntry"], s.SignerEntry.Flatten())
+}
+
+func TestSignerEntry_Flatten(t *testing.T) {
+	s := &SignerEntry{
+		Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+		SignerWeight: 2,
+		WalletLocator: "0000000000000000000000000000000000000000000000000000000000000000",
+	}
+
+	flattened := s.Flatten()
+	require.Equal(t, flattened["Account"], s.Account)
+	require.Equal(t, flattened["SignerWeight"], s.SignerWeight)
+	require.Equal(t, flattened["WalletLocator"], s.WalletLocator)
+}
