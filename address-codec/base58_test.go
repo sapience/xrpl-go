@@ -11,22 +11,22 @@ import (
 
 func TestEncodeBase58(t *testing.T) {
 	tt := []struct {
-		name		   string
+		name           string
 		input          []byte
 		expectedOutput string
 	}{
 		{
-			name:    "pass - successful encode with XRP alphabet - 1",
+			name:           "pass - successful encode with XRP alphabet - 1",
 			input:          []byte("rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN"),
 			expectedOutput: "s2Fku4vaPpFiqqXdAD3V5rYrSx5a9h9qvUJW3423akZSCeD",
 		},
 		{
-			name:    "pass -successful encode with XRP alphabet - 2",
+			name:           "pass -successful encode with XRP alphabet - 2",
 			input:          []byte("rJrpjzcxwQxokkqPxm62o5rtNfe2XimrTr"),
 			expectedOutput: "s2i2Jk6bF44eDSXnnMjxeVhnYZ3qmbteqesuhS6Tz7CSd9j",
 		},
 		{
-			name:    "pass - successful encode with XRP alphabet - 3",
+			name:           "pass - successful encode with XRP alphabet - 3",
 			input:          []byte("rUxb5vn9fGYRV3KZcnu3JLM4q5DTnNSavf"),
 			expectedOutput: "s2uiNSCBQnQfsVtnX49adC9QqtWNP8upC16t7GFLrmbR7tm",
 		},
@@ -41,22 +41,22 @@ func TestEncodeBase58(t *testing.T) {
 
 func TestDecodeBase58(t *testing.T) {
 	tt := []struct {
-		name    string
+		name           string
 		input          string
 		expectedOutput []byte
 	}{
 		{
-			name:    "pass - successful decode with XRP alphabet - 1",
+			name:           "pass - successful decode with XRP alphabet - 1",
 			input:          "s2Fku4vaPpFiqqXdAD3V5rYrSx5a9h9qvUJW3423akZSCeD",
 			expectedOutput: []byte("rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN"),
 		},
 		{
-			name:    "pass - successful decode with XRP alphabet - 2",
+			name:           "pass - successful decode with XRP alphabet - 2",
 			input:          "s2i2Jk6bF44eDSXnnMjxeVhnYZ3qmbteqesuhS6Tz7CSd9j",
 			expectedOutput: []byte("rJrpjzcxwQxokkqPxm62o5rtNfe2XimrTr"),
 		},
 		{
-			name:    "pass - successful decode with XRP alphabet - 3",
+			name:           "pass - successful decode with XRP alphabet - 3",
 			input:          "s2uiNSCBQnQfsVtnX49adC9QqtWNP8upC16t7GFLrmbR7tm",
 			expectedOutput: []byte("rUxb5vn9fGYRV3KZcnu3JLM4q5DTnNSavf"),
 		},

@@ -58,7 +58,14 @@ import (
 //	    ]
 //	}
 type AMM struct {
-	EntryCommonFields
+	// The unique ID for this ledger entry.
+	// In JSON, this field is represented with different names depending on the context and API method.
+	// (Note, even though this is specified as "optional" in the code, every ledger entry should have one unless it's legacy data from very early in the XRP Ledger's history.)
+	Index types.Hash256 `json:"index,omitempty"`
+	// The type of ledger entry. Valid ledger entry types include AccountRoot, Offer, RippleState, and others.
+	LedgerEntryType string `json:",omitempty"`
+	// Set of bit-flags for this ledger entry.
+	Flags uint32
 	// The address of the special account that holds this AMM's assets.
 	Account types.Address
 	// The definition for one of the two assets this AMM holds. In JSON, this is an object with currency and issuer fields.
@@ -74,6 +81,10 @@ type AMM struct {
 	TradingFee uint16
 	// A list of vote objects, representing votes on the pool's trading fee.
 	VoteSlots []VoteSlots `json:",omitempty"`
+	// The identifying hash of the transaction that most recently modified this entry. (Added by the fixPreviousTxnID amendment.)
+	PreviousTxnID types.Hash256 `json:",omitempty"`
+	// The index of the ledger that contains the transaction that most recently modified this entry. (Added by the fixPreviousTxnID amendment.)
+	PreviousTxnLgrSeq uint32 `json:",omitempty"`
 }
 
 // ---------------------------------------------
@@ -87,10 +98,11 @@ type Asset struct {
 	Issuer   types.Address `json:"issuer,omitempty"`
 }
 
+// Returns the flattened representation of the Asset object.
 func (a *Asset) Flatten() map[string]interface{} {
 	flattened := make(map[string]interface{})
 
-	if a.Issuer != "" {
+	if a.Issuer.String() != "" {
 		flattened["issuer"] = a.Issuer
 	}
 
@@ -100,10 +112,6 @@ func (a *Asset) Flatten() map[string]interface{} {
 
 	return flattened
 }
-
-// ---------------------------------------------
-// Auction Slot Object
-// ---------------------------------------------
 
 // A liquidity provider can bid LP Tokens to claim the auction slot to receive a discount on the trading fee for a 24-hour period.
 // The LP tokens that were bid are returned to the AMM.
@@ -130,6 +138,7 @@ type AuthAccounts struct {
 	AuthAccount AuthAccount
 }
 
+// Returns the flattened representation of the AuthAccounts object.
 func (a *AuthAccounts) Flatten() map[string]interface{} {
 	flattened := make(map[string]interface{})
 	flattened["AuthAccount"] = a.AuthAccount.Flatten()
@@ -142,6 +151,7 @@ type AuthAccount struct {
 	Account types.Address
 }
 
+// Returns the flattened representation of the AuthAccount object.
 func (a *AuthAccount) Flatten() map[string]interface{} {
 	flattened := make(map[string]interface{})
 	flattened["Account"] = a.Account
@@ -159,11 +169,16 @@ type VoteSlots struct {
 
 // Represents one liquidity provider's vote to set the trading fee.
 type VoteEntry struct {
-	Account    types.Address
+	// The account that cast the vote.
+	Account types.Address
+	// The proposed trading fee, in units of 1/100,000; a value of 1 is equivalent to 0.001%. The maximum value is 1000, indicating a 1% fee.
 	TradingFee uint16
+	// The weight of the vote, in units of 1/100,000. For example, a value of 1234 means this vote counts as 1.234% of the weighted total vote.
+	// The weight is determined by the percentage of this AMM's LP Tokens the account owns. The maximum value is 100000.
 	VoteWeight uint32
 }
 
+// Returns the type of the ledger entry.
 func (*AMM) EntryType() EntryType {
 	return AMMEntry
 }

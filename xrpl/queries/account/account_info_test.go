@@ -71,10 +71,10 @@ func TestAccountInfoResponse(t *testing.T) {
 
 	j := `{
 	"account_data": {
-		"Account": "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
-		"Balance": "999999999960",
 		"Flags": 8388608,
 		"LedgerEntryType": "AccountRoot",
+		"Account": "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+		"Balance": "999999999960",
 		"OwnerCount": 0,
 		"PreviousTxnID": "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
 		"PreviousTxnLgrSeq": 3,

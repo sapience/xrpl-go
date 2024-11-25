@@ -79,9 +79,10 @@ type XChainClaimAttestation struct {
 type XChainOwnedClaimID struct {
 	// The account that owns this object.
 	Account types.Address
-	// The ledger index is a hash of a unique prefix for XChainOwnedClaimIDs,
-	// the actual XChainClaimID value, and the fields in XChainBridge.
-	LedgerIndex string
+	// The unique ID for this ledger entry. In JSON, this field is represented with different names depending on the
+	// context and API method. (Note, even though this is specified as "optional" in the code, every ledger entry
+	// should have one unless it's legacy data from very early in the XRP Ledger's history.)
+	Index types.Hash256 `json:"index,omitempty"`
 	// The account that must send the corresponding XChainCommit on the source chain. The destination may be specified
 	// in the XChainCommit transaction, which means that if the OtherChainSource isn't specified, another account can
 	// try to specify a different destination and steal the funds. This also allows tracking only a single set of signatures,

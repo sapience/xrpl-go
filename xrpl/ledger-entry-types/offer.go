@@ -6,39 +6,103 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-type OfferFlags uint32
-
 const (
-	PassiveOffer OfferFlags = 0x00010000
-	SellOffer    OfferFlags = 0x00020000
+	// The offer was placed as "passive". This has no effect after the offer is placed into
+	// the ledger.
+	lsfPassive uint32 = 0x00010000
+	// The offer was placed as a "Sell" offer. This has no effect after the offer is placed
+	// in the ledger, because tfSell only matters if you get a better rate than you asked for,
+	// which can only happen when the offer is initially placed.
+	lsfSell uint32 = 0x00020000
 )
 
+// The Offer ledger entry describes an Offer to exchange currencies in the XRP Ledger's
+// decentralized exchange. (In finance, this is more traditionally known as an order.)
+// An OfferCreate transaction only creates an Offer entry in the ledger when the Offer
+// cannot be fully executed immediately by consuming other Offers already in the ledger.
+//
+// An Offer can become unfunded through other activities in the network, while remaining
+// in the ledger. When processing transactions, the network automatically removes any
+// unfunded Offers that those transactions come across. (Otherwise, unfunded Offers remain,
+// because only transactions can change the ledger state.)
+//
+// ```json
+//
+//	{
+//	    "Account": "rBqb89MRQJnMPq8wTwEbtz4kvxrEDfcYvt",
+//	    "BookDirectory": "ACC27DE91DBA86FC509069EAF4BC511D73128B780F2E54BF5E07A369E2446000",
+//	    "BookNode": "0000000000000000",
+//	    "Flags": 131072,
+//	    "LedgerEntryType": "Offer",
+//	    "OwnerNode": "0000000000000000",
+//	    "PreviousTxnID": "F0AB71E777B2DA54B86231E19B82554EF1F8211F92ECA473121C655BFC5329BF",
+//	    "PreviousTxnLgrSeq": 14524914,
+//	    "Sequence": 866,
+//	    "TakerGets": {
+//	        "currency": "XAG",
+//	        "issuer": "r9Dr5xwkeLegBeXq6ujinjSBLQzQ1zQGjH",
+//	        "value": "37"
+//	    },
+//	    "TakerPays": "79550000000",
+//	    "index": "96F76F27D8A327FC48753167EC04A46AA0E382E6F57F32FD12274144D00F1797"
+//	}
+//
+// ```
 type Offer struct {
-	Account           types.Address
-	BookDirectory     types.Hash256
-	BookNode          string
-	Expiration        uint32 `json:",omitempty"`
-	Flags             OfferFlags
-	LedgerEntryType   EntryType
-	OwnerNode         string
-	PreviousTxnID     types.Hash256
+	// The unique ID for this ledger entry. In JSON, this field is represented with different names depending on the
+	// context and API method. (Note, even though this is specified as "optional" in the code, every ledger entry
+	// should have one unless it's legacy data from very early in the XRP Ledger's history.)
+	Index types.Hash256 `json:"index,omitempty"`
+	Flags uint32
+	// The value 0x006F, mapped to the string Offer, indicates that this is an Offer entry.
+	LedgerEntryType EntryType
+	// The address of the account that owns this Offer.
+	Account types.Address
+	// The ID of the Offer Directory that links to this Offer.
+	BookDirectory types.Hash256
+	// A hint indicating which page of the offer directory links to this entry, in case the
+	// directory consists of multiple pages.
+	BookNode string
+	// 	Indicates the time after which this Offer is considered unfunded. See Specifying Time for details.
+	Expiration uint32 `json:",omitempty"`
+	// A hint indicating which page of the owner directory links to this entry, in case the directory consists of multiple pages.
+	OwnerNode string
+	// The identifying hash of the transaction that most recently modified this entry.
+	PreviousTxnID types.Hash256
+	// The index of the ledger that contains the transaction that most recently modified this object.
 	PreviousTxnLgrSeq uint32
-	Sequence          uint32
-	TakerPays         types.CurrencyAmount
-	TakerGets         types.CurrencyAmount
+	// 	The Sequence value of the OfferCreate transaction that created this offer.
+	// Used in combination with the Account to identify this offer.
+	Sequence uint32
+	// The remaining amount and type of currency requested by the Offer creator.
+	TakerPays types.CurrencyAmount
+	// The remaining amount and type of currency being provided by the Offer creator.
+	TakerGets types.CurrencyAmount
 }
 
+// EntryType returns the type of the ledger entry.
 func (*Offer) EntryType() EntryType {
 	return OfferEntry
 }
 
+// Sets the offer as passive.
+func (o *Offer) SetLsfPassive() {
+	o.Flags |= lsfPassive
+}
+
+// Sets the offer as a sell offer.
+func (o *Offer) SetLsfSell() {
+	o.Flags |= lsfSell
+}
+
+// Unmarshals the offer from a JSON byte slice.
 func (o *Offer) UnmarshalJSON(data []byte) error {
 	type offerHelper struct {
 		Account           types.Address
 		BookDirectory     types.Hash256
 		BookNode          string
 		Expiration        uint32
-		Flags             OfferFlags
+		Flags             uint32
 		LedgerEntryType   EntryType
 		OwnerNode         string
 		PreviousTxnID     types.Hash256

@@ -2,7 +2,12 @@ package ledger
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
-type SignerListFlags uint32
+const (
+	// If this flag is enabled, this SignerList counts as one item for purposes of the owner reserve
+	// Otherwise, this list counts as N+2 items, where N is the number of signers it contains. This
+	// flag is automatically enabled if you add or update a signer list after the MultiSignReserve amendment is enabled.
+	lsfOneOwnerCount uint32 = 0x00010000
+)
 
 // A SignerList entry represents a list of parties that, as a group, are authorized to sign a transaction in place of an individual account.
 // You can create, replace, or remove a signer list using a SignerListSet transaction.
@@ -44,6 +49,10 @@ type SignerListFlags uint32
 //
 // ```
 type SignerList struct {
+	// The unique ID for this ledger entry. In JSON, this field is represented with different names depending on the
+	// context and API method. (Note, even though this is specified as "optional" in the code, every ledger entry
+	// should have one unless it's legacy data from very early in the XRP Ledger's history.)
+	Index types.Hash256 `json:"index,omitempty"`
 	// The value 0x0053, mapped to the string SignerList, indicates that this is a SignerList ledger entry.
 	LedgerEntryType EntryType
 	// The identifying hash of the transaction that most recently modified this object.
@@ -58,6 +67,7 @@ type SignerList struct {
 	SignerListID uint32
 	// A target number for signer weights. To produce a valid signature for the owner of this SignerList, the signers must provide valid signatures whose weights sum to this value or more.
 	SignerQuorum uint32
+	Flags        uint32
 }
 
 // Wrapper for SignerEntry
@@ -105,4 +115,9 @@ func (s *SignerEntry) Flatten() FlatLedgerObject {
 // EntryType returns the type of the ledger entry (SignerList)
 func (*SignerList) EntryType() EntryType {
 	return SignerListEntry
+}
+
+// SetLsfOneOwnerCount sets the one owner count flag.
+func (s *SignerList) SetLsfOneOwnerCount() {
+	s.Flags |= lsfOneOwnerCount
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNFTokenOffer(t *testing.T) {
@@ -21,9 +22,9 @@ func TestNFTokenOffer(t *testing.T) {
 	}
 
 	j := `{
-	"Amount": "1000000",
 	"Flags": 1,
 	"LedgerEntryType": "NFTokenOffer",
+	"Amount": "1000000",
 	"NFTokenID": "00081B5825A08C22787716FA031B432EBBC1B101BB54875F0002D2A400000000",
 	"NFTokenOfferNode": "0",
 	"Owner": "rhRxL3MNvuKEjWjL7TBbZSDacb8PmzAd7m",
@@ -35,4 +36,9 @@ func TestNFTokenOffer(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestNFTokenOffer_EntryType(t *testing.T) {
+	s := &NFTokenOffer{}
+	require.Equal(t, s.EntryType(), NFTokenOfferEntry)
 }

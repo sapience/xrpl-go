@@ -131,56 +131,56 @@ func TestEncodeClassicAddressFromPublicKeyHex(t *testing.T) {
 
 func TestEncodeSeed(t *testing.T) {
 	tt := []struct {
-		name       string
+		name              string
 		input             []byte
 		inputEncodingType interfaces.CryptoImplementation
 		expectedOutput    string
 		expectedErr       error
 	}{
 		{
-			name:       "pass - successful encode - ED25519",
+			name:              "pass - successful encode - ED25519",
 			input:             []byte("yurtyurtyurtyurt"),
 			inputEncodingType: crypto.ED25519(),
 			expectedOutput:    "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1H",
 			expectedErr:       nil,
 		},
 		{
-			name:       "pass - successful encode - SECP256K1",
+			name:              "pass - successful encode - SECP256K1",
 			input:             []byte("yurtyurtyurtyurt"),
 			inputEncodingType: crypto.SECP256K1(),
 			expectedOutput:    "shPSkLzQNWfyXjZ7bbwgCky6twagA",
 			expectedErr:       nil,
 		},
 		{
-			name:       "pass - successful encode - ED25519 additional",
+			name:              "pass - successful encode - ED25519 additional",
 			input:             []byte("testingsomething"),
 			inputEncodingType: crypto.ED25519(),
 			expectedOutput:    "sEdTvLVDRVJsrUyBiCPTHDs46GUKQAr",
 			expectedErr:       nil,
 		},
 		{
-			name:       "pass - successful encode - SECP256K1 additional",
+			name:              "pass - successful encode - SECP256K1 additional",
 			input:             []byte("testingsomething"),
 			inputEncodingType: crypto.SECP256K1(),
 			expectedOutput:    "shKMVJjV52uudwfS7HzzaiwmZqVeP",
 			expectedErr:       nil,
 		},
 		{
-			name:       "fail - unsuccessful encode - invalid entropy length",
+			name:              "fail - unsuccessful encode - invalid entropy length",
 			input:             []byte{0x00},
 			inputEncodingType: crypto.ED25519(),
 			expectedOutput:    "",
 			expectedErr:       &EncodeLengthError{Instance: "Entropy", Input: len([]byte{0x00}), Expected: FamilySeedLength},
 		},
 		{
-			name:       "fail - unsuccessful encode - invalid encoding type",
+			name:              "fail - unsuccessful encode - invalid encoding type",
 			input:             []byte("testingsomething"),
 			inputEncodingType: nil,
 			expectedOutput:    "",
 			expectedErr:       errors.New("encoding type must be `ed25519` or `secp256k1`"),
 		},
 		{
-			name:       "fail - invalid CryptoAlgorithm Uint type returns err",
+			name:              "fail - invalid CryptoAlgorithm Uint type returns err",
 			input:             []byte("testingsomething"),
 			inputEncodingType: nil,
 			expectedOutput:    "",
@@ -203,49 +203,49 @@ func TestEncodeSeed(t *testing.T) {
 
 func TestDecodeSeed(t *testing.T) {
 	tt := []struct {
-		name       string
+		name              string
 		input             string
 		expectedOutput    []byte
 		expectedAlgorithm interfaces.CryptoImplementation
 		expectedErr       error
 	}{
 		{
-			name:       "pass - successful decode - ED25519",
+			name:              "pass - successful decode - ED25519",
 			input:             "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1H",
 			expectedOutput:    []byte("yurtyurtyurtyurt"),
 			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       nil,
 		},
 		{
-			name:       "pass - successful decode - SECP256K1",
+			name:              "pass - successful decode - SECP256K1",
 			input:             "shPSkLzQNWfyXjZ7bbwgCky6twagA",
 			expectedOutput:    []byte("yurtyurtyurtyurt"),
 			expectedAlgorithm: crypto.SECP256K1(),
 			expectedErr:       nil,
 		},
 		{
-			name:       "pass - successful decode - ED25519 additional",
+			name:              "pass - successful decode - ED25519 additional",
 			input:             "sEdTvLVDRVJsrUyBiCPTHDs46GUKQAr",
 			expectedOutput:    []byte("testingsomething"),
 			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       nil,
 		},
 		{
-			name:       "pass - successful decode - SECP256K1 additional",
+			name:              "pass - successful decode - SECP256K1 additional",
 			input:             "shKMVJjV52uudwfS7HzzaiwmZqVeP",
 			expectedOutput:    []byte("testingsomething"),
 			expectedAlgorithm: crypto.SECP256K1(),
 			expectedErr:       nil,
 		},
 		{
-			name:       "fail - unsuccessful decode - invalid seed",
+			name:              "fail - unsuccessful decode - invalid seed",
 			input:             "yurt",
 			expectedOutput:    nil,
 			expectedAlgorithm: crypto.ED25519(),
 			expectedErr:       errors.New("invalid seed; could not determine encoding algorithm"),
 		},
 		{
-			name:       "fail - unsuccessful decode - invalid seed",
+			name:              "fail - unsuccessful decode - invalid seed",
 			input:             "sEdTzRkEgPoxDG1mJ6WkSucHWnMkm1D",
 			expectedOutput:    nil,
 			expectedAlgorithm: nil,
@@ -272,35 +272,35 @@ func TestDecodeSeed(t *testing.T) {
 
 func TestDecodeAddressToAccountID(t *testing.T) {
 	tt := []struct {
-		name       string
+		name              string
 		input             string
 		expectedPrefix    []byte
 		expectedAccountID []byte
 		expectedErr       error
 	}{
 		{
-			name:       "pass - successful decode - 1",
+			name:              "pass - successful decode - 1",
 			input:             "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
 			expectedPrefix:    []byte{AccountAddressPrefix},
 			expectedAccountID: []byte{0x88, 0xa5, 0xa5, 0x7c, 0x82, 0x9f, 0x40, 0xf2, 0x5e, 0xa8, 0x33, 0x85, 0xbb, 0xde, 0x6c, 0x3d, 0x8b, 0x4c, 0xa0, 0x82},
 			expectedErr:       nil,
 		},
 		{
-			name:       "pass - successful decode - 2",
+			name:              "pass - successful decode - 2",
 			input:             "rJKhsipKHooQbtS3v5Jro6N5Q7TMNPkoAs",
 			expectedPrefix:    []byte{AccountAddressPrefix},
 			expectedAccountID: []byte{0xbd, 0xe4, 0x2b, 0xbd, 0x77, 0x5b, 0x46, 0x7e, 0x34, 0xfe, 0x48, 0x52, 0xe7, 0xce, 0x3d, 0xd2, 0x61, 0x3, 0xf7, 0x6c},
 			expectedErr:       nil,
 		},
 		{
-			name:       "fail - unsuccessful decode - 1",
+			name:              "fail - unsuccessful decode - 1",
 			input:             "yurt",
 			expectedPrefix:    nil,
 			expectedAccountID: nil,
 			expectedErr:       ErrInvalidClassicAddress,
 		},
 		{
-			name:       "fail - unsuccessful decode - 2",
+			name:              "fail - unsuccessful decode - 2",
 			input:             "davidschwartz",
 			expectedPrefix:    nil,
 			expectedAccountID: nil,
@@ -367,19 +367,19 @@ func TestEncodeAccountIDToClassicAddress(t *testing.T) {
 
 func TestIsValidClassicAddress(t *testing.T) {
 	tt := []struct {
-		name string
-		input       string
-		expected    bool
+		name     string
+		input    string
+		expected bool
 	}{
 		{
-			name: "pass - valid classic address",
-			input:       "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
-			expected:    true,
+			name:     "pass - valid classic address",
+			input:    "rDTXLQ7ZKZVKz33zJbHjgVShjsBnqMBhmN",
+			expected: true,
 		},
 		{
-			name: "fail - invalid classic address",
-			input:       "yurt",
-			expected:    false,
+			name:     "fail - invalid classic address",
+			input:    "yurt",
+			expected: false,
 		},
 	}
 
@@ -396,19 +396,19 @@ func TestIsValidClassicAddress(t *testing.T) {
 
 func TestEncodeNodePublicKey(t *testing.T) {
 	tt := []struct {
-		name    string
+		name           string
 		input          []byte
 		expectedOutput string
 		expectedErr    error
 	}{
 		{
-			name:    "pass - successful encode",
+			name:           "pass - successful encode",
 			input:          []byte{0x3, 0x5f, 0x6d, 0xdb, 0xd6, 0xaf, 0xc5, 0xf2, 0xcb, 0x3d, 0x7d, 0x8, 0x0, 0x55, 0x77, 0x58, 0xdc, 0xc9, 0x2a, 0xc5, 0x29, 0x2d, 0x5d, 0x4f, 0x36, 0x68, 0x31, 0x52, 0x69, 0x19, 0x3e, 0x59, 0xea},
 			expectedOutput: "n9MDGCfimuyCmKXUAMcR12rv39PE6PY5YfFpNs75ZjtY3UWt31td",
 			expectedErr:    nil,
 		},
 		{
-			name:    "fail - length error",
+			name:           "fail - length error",
 			input:          []byte{0x00},
 			expectedOutput: "",
 			expectedErr:    &EncodeLengthError{Instance: "NodePublicKey", Expected: NodePublicKeyLength, Input: 1},
@@ -431,19 +431,19 @@ func TestEncodeNodePublicKey(t *testing.T) {
 
 func TestDecodeNodePublicKey(t *testing.T) {
 	tt := []struct {
-		name    string
+		name           string
 		input          string
 		expectedOutput []byte
 		expectedErr    error
 	}{
 		{
-			name:    "pass - successful decode",
+			name:           "pass - successful decode",
 			input:          "n9MDGCfimuyCmKXUAMcR12rv39PE6PY5YfFpNs75ZjtY3UWt31td",
 			expectedOutput: []byte{0x3, 0x5f, 0x6d, 0xdb, 0xd6, 0xaf, 0xc5, 0xf2, 0xcb, 0x3d, 0x7d, 0x8, 0x0, 0x55, 0x77, 0x58, 0xdc, 0xc9, 0x2a, 0xc5, 0x29, 0x2d, 0x5d, 0x4f, 0x36, 0x68, 0x31, 0x52, 0x69, 0x19, 0x3e, 0x59, 0xea},
 			expectedErr:    nil,
 		},
 		{
-			name:    "fail - length error",
+			name:           "fail - length error",
 			input:          "rfZG9pC1cKF7q96TNZR264H9ykzKCxMyk44ZK8hFL8cNv1G3c8J",
 			expectedOutput: nil,
 			expectedErr:    errors.New("b58string prefix and typeprefix not equal"),
@@ -466,19 +466,19 @@ func TestDecodeNodePublicKey(t *testing.T) {
 
 func TestEncodeAccountPublicKey(t *testing.T) {
 	tt := []struct {
-		name    string
+		name           string
 		input          []byte
 		expectedOutput string
 		expectedErr    error
 	}{
 		{
-			name:    "pass - successful encode",
+			name:           "pass - successful encode",
 			input:          []byte{0xed, 0x94, 0x34, 0x79, 0x92, 0x26, 0x37, 0x49, 0x26, 0xed, 0xa3, 0xb5, 0x4b, 0x1b, 0x46, 0x1b, 0x4a, 0xbf, 0x72, 0x37, 0x96, 0x2e, 0xae, 0x18, 0x52, 0x8f, 0xea, 0x67, 0x59, 0x53, 0x97, 0xfa, 0x32},
 			expectedOutput: "aKEt5wr2oXW5H55Z4m94ioKb1Drmj42UWoQDvFJZ5LaxPv126G9d",
 			expectedErr:    nil,
 		},
 		{
-			name:    "fail - length error",
+			name:           "fail - length error",
 			input:          []byte{0x00},
 			expectedOutput: "",
 			expectedErr:    &EncodeLengthError{Instance: "AccountPublicKey", Expected: AccountPublicKeyLength, Input: 1},
@@ -501,19 +501,19 @@ func TestEncodeAccountPublicKey(t *testing.T) {
 
 func TestDecodeAccountPublicKey(t *testing.T) {
 	tt := []struct {
-		name    string
+		name        string
 		input       string
 		output      []byte
 		expectedErr error
 	}{
 		{
-			name:    "pass - successful decode",
+			name:        "pass - successful decode",
 			input:       "aKEt5wr2oXW5H55Z4m94ioKb1Drmj42UWoQDvFJZ5LaxPv126G9d",
 			output:      []byte{0xed, 0x94, 0x34, 0x79, 0x92, 0x26, 0x37, 0x49, 0x26, 0xed, 0xa3, 0xb5, 0x4b, 0x1b, 0x46, 0x1b, 0x4a, 0xbf, 0x72, 0x37, 0x96, 0x2e, 0xae, 0x18, 0x52, 0x8f, 0xea, 0x67, 0x59, 0x53, 0x97, 0xfa, 0x32},
 			expectedErr: nil,
 		},
 		{
-			name:    "fail - length error",
+			name:        "fail - length error",
 			input:       "nHU75pVH2Tak7adBWNP3H2CU3wcUtSgf45sKrd1uGyFyRcTozXNm",
 			output:      nil,
 			expectedErr: errors.New("b58string prefix and typeprefix not equal"),

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPayChannel(t *testing.T) {
@@ -47,4 +48,9 @@ func TestPayChannel(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestPayChannel_EntryType(t *testing.T) {
+	s := &PayChannel{}
+	require.Equal(t, s.EntryType(), PayChannelEntry)
 }
