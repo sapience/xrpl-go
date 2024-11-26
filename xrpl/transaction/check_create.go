@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -60,4 +61,21 @@ func (c *CheckCreate) Flatten() FlatTransaction {
 		flattened["InvoiceID"] = c.InvoiceID.String()
 	}
 	return flattened
+}
+
+func (c *CheckCreate) Validate() (bool, error) {
+	ok, err := c.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	if ok, err := IsAmount(c.SendMax, "SendMax", true); !ok {
+		return false, err
+	}
+
+	if !addresscodec.IsValidClassicAddress(c.Destination.String()) {
+		return false, ErrInvalidDestination
+	}
+
+	return true, nil
 }

@@ -357,7 +357,7 @@
 				
 				<option value="file150">github.com/Peersyst/xrpl-go/xrpl/transaction/check_cash.go (0.0%)</option>
 				
-				<option value="file151">github.com/Peersyst/xrpl-go/xrpl/transaction/check_create.go (0.0%)</option>
+				<option value="file151">github.com/Peersyst/xrpl-go/xrpl/transaction/check_create.go (100.0%)</option>
 				
 				<option value="file152">github.com/Peersyst/xrpl-go/xrpl/transaction/clawback.go (87.5%)</option>
 				
@@ -9689,26 +9689,84 @@ func (c *CheckCash) Flatten() FlatTransaction <span class="cov0" title="0">{
 		<pre class="file" id="file151" style="display: none">package transaction
 
 import (
+        addresscodec "github.com/Peersyst/xrpl-go/address-codec"
         "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// Create a Check object in the ledger, which is a deferred payment that can be cashed by its intended destination. The sender of this transaction is the sender of the Check.
+//
+// Example:
+//
+// ```json
+//
+//        {
+//            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//            "TransactionType": "EscrowCreate",
+//            "Amount": "10000",
+//            "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+//            "CancelAfter": 533257958,
+//            "FinishAfter": 533171558,
+//            "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+//            "DestinationTag": 23480,
+//            "SourceTag": 11747
+//        }
+//
+// / ```
 type CheckCreate struct {
         BaseTx
-        Destination    types.Address
-        SendMax        types.CurrencyAmount
-        DestinationTag uint32        `json:",omitempty"`
-        Expiration     uint32        `json:",omitempty"`
-        InvoiceID      types.Hash256 `json:",omitempty"`
+        // The unique address of the account that can cash the Check.
+        Destination types.Address
+        // Maximum amount of source currency the Check is allowed to debit the sender, including transfer fees on non-XRP currencies.
+        // The Check can only credit the destination with the same currency (from the same issuer, for non-XRP currencies). For non-XRP amounts, the nested field names MUST be lower-case.
+        SendMax types.CurrencyAmount
+        // (Optional) Arbitrary tag that identifies the reason for the Check, or a hosted recipient to pay.
+        DestinationTag uint32 `json:",omitempty"`
+        // (Optional) Time after which the Check is no longer valid, in seconds since the Ripple Epoch.
+        Expiration uint32 `json:",omitempty"`
+        // (Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this Check.
+        InvoiceID types.Hash256 `json:",omitempty"`
 }
 
-func (*CheckCreate) TxType() TxType <span class="cov0" title="0">{
+// TxType returns the type of the transaction (CheckCreate).
+func (*CheckCreate) TxType() TxType <span class="cov8" title="1">{
         return CheckCreateTx
 }</span>
 
-// TODO: Implement flatten
-func (c *CheckCreate) Flatten() FlatTransaction <span class="cov0" title="0">{
-        return nil
-}</span>
+// Flatten returns the flattened map of the CheckCreate transaction.
+func (c *CheckCreate) Flatten() FlatTransaction <span class="cov8" title="1">{
+        flattened := c.BaseTx.Flatten()
+
+        flattened["TransactionType"] = c.TxType().String()
+        flattened["Destination"] = c.Destination.String()
+        flattened["SendMax"] = c.SendMax.Flatten()
+        if c.DestinationTag != 0 </span><span class="cov8" title="1">{
+                flattened["DestinationTag"] = c.DestinationTag
+        }</span>
+        <span class="cov8" title="1">if c.Expiration != 0 </span><span class="cov8" title="1">{
+                flattened["Expiration"] = c.Expiration
+        }</span>
+        <span class="cov8" title="1">if c.InvoiceID != "" </span><span class="cov8" title="1">{
+                flattened["InvoiceID"] = c.InvoiceID.String()
+        }</span>
+        <span class="cov8" title="1">return flattened</span>
+}
+
+func (c *CheckCreate) Validate() (bool, error) <span class="cov8" title="1">{
+        ok, err := c.BaseTx.Validate()
+        if err != nil || !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if ok, err := IsAmount(c.SendMax, "SendMax", true); !ok </span><span class="cov8" title="1">{
+                return false, err
+        }</span>
+
+        <span class="cov8" title="1">if !addresscodec.IsValidClassicAddress(c.Destination.String()) </span><span class="cov8" title="1">{
+                return false, ErrInvalidDestination
+        }</span>
+
+        <span class="cov8" title="1">return true, nil</span>
+}
 </pre>
 		
 		<pre class="file" id="file152" style="display: none">package transaction
