@@ -73,7 +73,7 @@ func (c *CheckCreate) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(c.Destination.String()) {
+	if !addresscodec.IsValidAddress(c.Destination.String()) {
 		return false, ErrInvalidDestination
 	}
 
