@@ -4,32 +4,49 @@ import (
 	"bytes"
 	"crypto/ed25519"
 	"encoding/hex"
+	"errors"
 	"strings"
 )
 
 const (
-	ed25519Prefix = 0xED
+	// ed25519 prefix - value is 237
+	ed25519Prefix byte = 0xED
 )
 
-type ED25519CryptoAlgorithm Algorithm
+var (
+	_ Algorithm = &ED25519CryptoAlgorithm{}
 
+	// ErrValidatorNotSupported is returned when a validator keypair is used with the ED25519 algorithm.
+	ErrValidatorNotSupported = errors.New("validator keypairs can not use Ed25519")
+)
+
+// ED25519CryptoAlgorithm is the implementation of the ED25519 cryptographic algorithm.
+type ED25519CryptoAlgorithm struct {
+	prefix           byte
+	familySeedPrefix byte
+}
+
+// ED25519 returns the ED25519 cryptographic algorithm.
 func ED25519() ED25519CryptoAlgorithm {
 	return ED25519CryptoAlgorithm{
 		prefix: ed25519Prefix,
 	}
 }
 
+// Prefix returns the prefix for the ED25519 cryptographic algorithm.
 func (c ED25519CryptoAlgorithm) Prefix() byte {
 	return c.prefix
 }
 
+// FamilySeedPrefix returns the family seed prefix for the ED25519 cryptographic algorithm.
 func (c ED25519CryptoAlgorithm) FamilySeedPrefix() byte {
 	return c.familySeedPrefix
 }
 
+// DeriveKeypair derives a keypair from a seed.
 func (c ED25519CryptoAlgorithm) DeriveKeypair(decodedSeed []byte, validator bool) (string, string, error) {
 	if validator {
-		return "", "", &ed25519ValidatorError{}
+		return "", "", ErrValidatorNotSupported
 	}
 	rawPriv := Sha512Half(decodedSeed)
 	pubKey, privKey, err := ed25519.GenerateKey(bytes.NewBuffer(rawPriv))
@@ -53,6 +70,7 @@ func (c ED25519CryptoAlgorithm) Sign(msg, privKey string) (string, error) {
 	return strings.ToUpper(hex.EncodeToString(signedMsg)), nil
 }
 
+// Validate validates a signature for a message with a public key.
 func (c ED25519CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 	bp, err := hex.DecodeString(pubkey)
 	if err != nil {
@@ -65,10 +83,4 @@ func (c ED25519CryptoAlgorithm) Validate(msg, pubkey, sig string) bool {
 	}
 
 	return ed25519.Verify(ed25519.PublicKey(bp[1:]), []byte(msg), bs)
-}
-
-type ed25519ValidatorError struct{}
-
-func (e *ed25519ValidatorError) Error() string {
-	return "validator keypairs can not use Ed25519"
 }
