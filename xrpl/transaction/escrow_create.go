@@ -7,6 +7,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrInvalidEscrowCreateCondition = errors.New("invalid escrow create condition")
+)
+
+// Added by the Escrow amendment.
 // Sequester XRP until the escrow process either finishes or is canceled.
 //
 // Example:
@@ -82,15 +87,11 @@ func (e *EscrowCreate) Validate() (bool, error) {
 	}
 
 	if !addresscodec.IsValidClassicAddress(e.Destination.String()) {
-		return false, errors.New("invalid xrpl destination address")
+		return false, ErrInvalidDestinationAddress
 	}
 
-	if e.CancelAfter == 0 && e.FinishAfter == 0 {
-		return false, errors.New("either CancelAfter or FinishAfter must be set")
-	}
-
-	if e.FinishAfter == 0 && e.Condition == "" {
-		return false, errors.New("either Condition or FinishAfter must be specified")
+	if (e.FinishAfter == 0 && e.CancelAfter == 0) || (e.Condition == "" && e.FinishAfter == 0) {
+		return false, ErrInvalidEscrowCreateCondition
 	}
 
 	return true, nil

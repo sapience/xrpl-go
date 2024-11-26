@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestOfferDirectoryNode(t *testing.T) {
@@ -65,4 +66,81 @@ func TestOwnerDirectoryNode(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestNFTTokenBuyOffersDirectoryNode(t *testing.T) {
+	var s Object = &DirectoryNode{
+		Flags: lsfNFTokenBuyOffers,
+		Indexes: []types.Hash256{
+			"68227B203065DED9EEB8B73FC952494A1DA6A69CEABEAA99923836EB5E77C95A",
+		},
+		LedgerEntryType:   DirectoryNodeEntry,
+		NFTokenID:         "000822603EA060FD1026C04B2D390CC132D07D600DA9B082CB5CE9AC0487E50B",
+		PreviousTxnID:     "EF8A9AD51E7CC6BBD219C3C980EC3145C7B0814ED3184471FD952D9D23A1918D",
+		PreviousTxnLgrSeq: 91448417,
+		RootIndex:         "0EC5802BD1AB56527A9DE524CCA2A2BA25E1085CCE7EA112940ED115FFF91EE2",
+	}
+
+	j := `{
+	"Flags": 1,
+	"Indexes": [
+		"68227B203065DED9EEB8B73FC952494A1DA6A69CEABEAA99923836EB5E77C95A"
+	],
+	"LedgerEntryType": "DirectoryNode",
+	"NFTokenID": "000822603EA060FD1026C04B2D390CC132D07D600DA9B082CB5CE9AC0487E50B",
+	"PreviousTxnID": "EF8A9AD51E7CC6BBD219C3C980EC3145C7B0814ED3184471FD952D9D23A1918D",
+	"PreviousTxnLgrSeq": 91448417,
+	"RootIndex": "0EC5802BD1AB56527A9DE524CCA2A2BA25E1085CCE7EA112940ED115FFF91EE2"
+}`
+
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestNFTTokenSellOffersDirectoryNode(t *testing.T) {
+	var s Object = &DirectoryNode{
+		Flags: lsfNFTokenSellOffers,
+		Indexes: []types.Hash256{
+			"68227B203065DED9EEB8B73FC952494A1DA6A69CEABEAA99923836EB5E77C95A",
+		},
+		LedgerEntryType:   DirectoryNodeEntry,
+		NFTokenID:         "000822603EA060FD1026C04B2D390CC132D07D600DA9B082CB5CE9AC0487E50B",
+		PreviousTxnID:     "EF8A9AD51E7CC6BBD219C3C980EC3145C7B0814ED3184471FD952D9D23A1918D",
+		PreviousTxnLgrSeq: 91448417,
+		RootIndex:         "0EC5802BD1AB56527A9DE524CCA2A2BA25E1085CCE7EA112940ED115FFF91EE2",
+	}
+
+	j := `{
+	"Flags": 2,
+	"Indexes": [
+		"68227B203065DED9EEB8B73FC952494A1DA6A69CEABEAA99923836EB5E77C95A"
+	],
+	"LedgerEntryType": "DirectoryNode",
+	"NFTokenID": "000822603EA060FD1026C04B2D390CC132D07D600DA9B082CB5CE9AC0487E50B",
+	"PreviousTxnID": "EF8A9AD51E7CC6BBD219C3C980EC3145C7B0814ED3184471FD952D9D23A1918D",
+	"PreviousTxnLgrSeq": 91448417,
+	"RootIndex": "0EC5802BD1AB56527A9DE524CCA2A2BA25E1085CCE7EA112940ED115FFF91EE2"
+}`
+
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestDirectoryNode_LedgerEntryType(t *testing.T) {
+	var s Object = &DirectoryNode{}
+	require.Equal(t, s.EntryType(), DirectoryNodeEntry)
+}
+
+func TestDirectoryNode_SetNFTokenBuyOffers(t *testing.T) {
+	s := &DirectoryNode{}
+	s.SetNFTokenBuyOffers()
+	require.Equal(t, s.Flags, lsfNFTokenBuyOffers)
+}
+
+func TestDirectoryNode_SetNFTokenSellOffers(t *testing.T) {
+	s := &DirectoryNode{}
+	s.SetNFTokenSellOffers()
+	require.Equal(t, s.Flags, lsfNFTokenSellOffers)
 }
