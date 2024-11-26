@@ -2,6 +2,10 @@ package transaction
 
 import "errors"
 
+var (
+	ErrOfferCancelMissingOfferSequence = errors.New("missing offer sequence")
+)
+
 // An OfferCancel transaction removes an Offer object from the XRP Ledger.
 //
 // Example:
@@ -45,7 +49,7 @@ func (o *OfferCancel) Validate() (bool, error) {
 	}
 
 	if o.OfferSequence == 0 {
-		return false, errors.New("offerCancel: OfferSequence is required")
+		return false, ErrOfferCancelMissingOfferSequence
 	}
 
 	return true, nil

@@ -95,17 +95,19 @@ func (a *AMMDeposit) SetTwoAssetIfEmptyFlag() {
 	a.Flags |= tfTwoAssetIfEmpty
 }
 
+// TxType implements the TxType method for the AMMDeposit struct.
 func (*AMMDeposit) TxType() TxType {
 	return AMMDepositTx
 }
 
+// Flatten implements the Flatten method for the AMMDeposit struct.
 func (a *AMMDeposit) Flatten() FlatTransaction {
 
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
 
 	// Add AMMDeposit-specific fields
-	flattened["TransactionType"] = "AMMDeposit"
+	flattened["TransactionType"] = AMMDepositTx.String()
 
 	flattened["Asset"] = a.Asset.Flatten()
 	flattened["Asset2"] = a.Asset2.Flatten()
@@ -133,6 +135,7 @@ func (a *AMMDeposit) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validate implements the Validate method for the AMMDeposit struct.
 func (a *AMMDeposit) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {

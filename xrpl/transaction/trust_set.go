@@ -7,6 +7,12 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrTrustSetMissingLimitAmount  = errors.New("missing field LimitAmount")
+	ErrTrustSetQualityInNotNumber  = errors.New("QualityIn must be a number")
+	ErrTrustSetQualityOutNotNumber = errors.New("QualityOut must be a number")
+)
+
 const (
 	// Authorize the other party to hold currency issued by this account. (No
 	// effect unless using the asfRequireAuth AccountSet flag.) Cannot be unset.
@@ -110,7 +116,7 @@ func (t *TrustSet) Validate() (bool, error) {
 
 	// Check if the field LimitAmount is set
 	if t.LimitAmount == nil {
-		return false, errors.New("trustSet: missing field LimitAmount")
+		return false, ErrTrustSetMissingLimitAmount
 	}
 
 	if ok, err := IsAmount(t.LimitAmount, "LimitAmount", true); !ok {
@@ -119,12 +125,12 @@ func (t *TrustSet) Validate() (bool, error) {
 
 	// Check if QualityIn is a number
 	if t.QualityIn != 0 && !typecheck.IsUint32(t.QualityIn) {
-		return false, errors.New("trustSet: QualityIn must be a number")
+		return false, ErrTrustSetQualityInNotNumber
 	}
 
 	// Check if QualityOut is a number
 	if t.QualityOut != 0 && !typecheck.IsUint32(t.QualityOut) {
-		return false, errors.New("trustSet: QualityOut must be a number")
+		return false, ErrTrustSetQualityOutNotNumber
 	}
 
 	return true, nil

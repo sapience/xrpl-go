@@ -18,7 +18,6 @@ package transaction
 // ```
 type DIDSet struct {
 	BaseTx
-
 	// The public attestations of identity credentials associated with the DID.
 	Data string `json:",omitempty"`
 	// The DID document associated with the DID.

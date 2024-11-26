@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAccountSetFlags(t *testing.T) {
@@ -204,4 +205,22 @@ func TestAccountSet_Validate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAccountSet_SetOptionalFlag(t *testing.T) {
+	accountSet := &AccountSet{}
+	accountSet.SetOptionalDestTag()
+	require.Equal(t, accountSet.Flags, tfOptionalDestTag)
+}
+
+func TestAccountSet_SetOptionalAuth(t *testing.T) {
+	accountSet := &AccountSet{}
+	accountSet.SetOptionalAuth()
+	require.Equal(t, accountSet.Flags, tfOptionalAuth)
+}
+
+func TestAccountSet_SetAllowXRP(t *testing.T) {
+	accountSet := &AccountSet{}
+	accountSet.SetAllowXRP()
+	require.Equal(t, accountSet.Flags, tfAllowXRP)
 }

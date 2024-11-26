@@ -55,7 +55,7 @@ func (a *AMMCreate) Flatten() FlatTransaction {
 	flattened := a.BaseTx.Flatten()
 
 	// Add AMMCreate-specific fields
-	flattened["TransactionType"] = "AMMCreate"
+	flattened["TransactionType"] = AMMCreateTx.String()
 
 	if a.Amount != nil {
 		flattened["Amount"] = a.Amount.Flatten()

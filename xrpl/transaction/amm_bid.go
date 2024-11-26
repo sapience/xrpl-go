@@ -61,16 +61,18 @@ type AMMBid struct {
 	AuthAccounts []ledger.AuthAccounts `json:",omitempty"`
 }
 
+// TxType implements the TxType method for the AMMBid struct.
 func (*AMMBid) TxType() TxType {
 	return AMMBidTx
 }
 
+// Flatten implements the Flatten method for the AMMBid struct.
 func (a *AMMBid) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
 
 	// Add AMMBid-specific fields
-	flattened["TransactionType"] = "AMMBid"
+	flattened["TransactionType"] = AMMBidTx.String()
 
 	flattened["Asset"] = a.Asset.Flatten()
 
@@ -97,6 +99,7 @@ func (a *AMMBid) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validate implements the Validate method for the AMMBid struct.
 func (a *AMMBid) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
