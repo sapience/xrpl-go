@@ -21,6 +21,8 @@ var (
 // Since the funds for a check are not guaranteed, redeeming a Check can fail because the sender does not have a high enough balance or because there is not enough liquidity to deliver the funds.
 // If this happens, the Check remains in the ledger and the destination can try to cash it again later, or for a different amount.
 //
+// Example:
+//
 // ```json
 //
 //	{
