@@ -63,6 +63,7 @@ func (c *CheckCreate) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validate checks all the fields of the transaction and returns an error if any of the fields are invalid.
 func (c *CheckCreate) Validate() (bool, error) {
 	ok, err := c.BaseTx.Validate()
 	if err != nil || !ok {

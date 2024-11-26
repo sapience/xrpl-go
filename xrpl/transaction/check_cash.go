@@ -1,7 +1,17 @@
 package transaction
 
 import (
+	"errors"
+
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+	// ErrAmountOrDeliverMinNotProvided is returned when neither Amount nor DeliverMin is provided.
+	ErrAmountOrDeliverMinNotProvided = errors.New("checkCash - either Amount or DeliverMin must be provided")
+	// ErrMutuallyExclusiveAmountDeliverMin is returned when both Amount and DeliverMin are provided.
+	ErrMutuallyExclusiveAmountDeliverMin = errors.New("checkCash - both Amount and DeliverMin cannot be provided")
 )
 
 // Attempts to redeem a Check object in the ledger to receive up to the amount authorized by the corresponding CheckCreate transaction.
@@ -55,4 +65,34 @@ func (c *CheckCash) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+// Validate checks all the fields of the transaction and returns an error if any of the fields are invalid.
+func (c *CheckCash) Validate() (bool, error) {
+	ok, err := c.BaseTx.Validate()
+	if err != nil || !ok {
+		return false, err
+	}
+
+	if !typecheck.IsHex(c.CheckID.String()) {
+		return false, ErrInvalidCheckID
+	}
+
+	if c.Amount != nil && c.DeliverMin != nil {
+		return false, ErrAmountOrDeliverMinNotProvided
+	}
+
+	if c.Amount == nil && c.DeliverMin == nil {
+		return false, ErrMutuallyExclusiveAmountDeliverMin
+	}
+
+	if ok, err := IsAmount(c.Amount, "Amount", false); !ok {
+		return false, err
+	}
+
+	if ok, err := IsAmount(c.DeliverMin, "DeliverMin", false); !ok {
+		return false, err
+	}
+
+	return true, nil
 }
