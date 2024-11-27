@@ -24,19 +24,19 @@ func TestUint32_FromJson(t *testing.T) {
 	}{
 		{
 			name:        "Valid uint32",
-			input:       1,
+			input:       uint32(1),
 			expected:    []byte{0, 0, 0, 1},
 			expectedErr: nil,
 		},
 		{
 			name:        "Valid uint32 (2)",
-			input:       100,
+			input:       uint32(100),
 			expected:    []byte{0, 0, 0, 100},
 			expectedErr: nil,
 		},
 		{
 			name:        "Valid uint32 (3)",
-			input:       255,
+			input:       uint32(255),
 			expected:    []byte{0, 0, 0, 255},
 			expectedErr: nil,
 		},
@@ -64,7 +64,7 @@ func TestUint32_ToJson(t *testing.T) {
 		name        string
 		input       []byte
 		malleate    func(t *testing.T) interfaces.BinaryParser
-		expected    int
+		expected   uint32 
 		expectedErr error
 	}{
 		{
