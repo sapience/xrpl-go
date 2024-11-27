@@ -110,7 +110,7 @@ func TestAccountSet_Validate(t *testing.T) {
 				EmailHash:    "1234567890abcdef",
 				MessageKey:   "messagekey",
 				SetFlag:      2,
-				TransferRate: 1000000000,
+				TransferRate: 1000000001,
 				TickSize:     5,
 			},
 			valid: true,

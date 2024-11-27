@@ -7,7 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-func TestClawbackFlatten(t *testing.T) {
+func TestClawback_Flatten(t *testing.T) {
 	s := Clawback{
 		BaseTx: BaseTx{
 			Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -28,7 +28,7 @@ func TestClawbackFlatten(t *testing.T) {
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "Clawback",
 		"Fee":             "1",
-		"Sequence":        int(1234),
+		"Sequence":        uint32(1234),
 		"Amount": map[string]interface{}{
 			"issuer":   "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 			"currency": "USD",
@@ -40,7 +40,7 @@ func TestClawbackFlatten(t *testing.T) {
 		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
 	}
 }
-func TestClawbackValidate(t *testing.T) {
+func TestClawback_Validate(t *testing.T) {
 	tests := []struct {
 		name       string
 		clawback   Clawback
