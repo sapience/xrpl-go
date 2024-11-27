@@ -334,7 +334,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = uint32(index.Int() + int(LedgerOffset)) 
+	(*tx)["LastLedgerSequence"] = uint32(index.Int() + int(LedgerOffset))
 	return err
 }
 

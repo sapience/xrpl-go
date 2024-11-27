@@ -64,7 +64,7 @@ func TestUint32_ToJson(t *testing.T) {
 		name        string
 		input       []byte
 		malleate    func(t *testing.T) interfaces.BinaryParser
-		expected   uint32 
+		expected    uint32
 		expectedErr error
 	}{
 		{

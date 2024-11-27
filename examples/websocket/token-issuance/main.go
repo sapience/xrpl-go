@@ -95,7 +95,6 @@ func main() {
 
 	flattenedTx := coldWalletAccountSet.Flatten()
 
-	
 	err = client.Autofill(&flattenedTx)
 	if err != nil {
 		fmt.Printf("❌ Error autofilling transaction: %s\n", err)
