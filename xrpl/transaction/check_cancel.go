@@ -49,7 +49,7 @@ func (c *CheckCancel) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !typecheck.IsHex(c.CheckID.String()) {
+	if !typecheck.IsHex(c.CheckID.String()) || len(c.CheckID.String()) != 64 {
 		return false, ErrInvalidCheckID
 	}
 

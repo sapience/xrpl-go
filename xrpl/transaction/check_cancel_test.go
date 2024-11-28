@@ -84,6 +84,21 @@ func TestCheckCancel_Validate(t *testing.T) {
 			wantErr:     true,
 			expectedErr: ErrInvalidAccount,
 		},
+		{
+			name: "fail - CheckID length is not 64",
+			tx: &CheckCancel{
+				BaseTx: BaseTx{
+					Account:         "rMbnCbYfoFo47di25iD2tsJXW83Wpq85Xe",
+					TransactionType: CheckCancelTx,
+					Fee:             types.XRPCurrencyAmount(10),
+					Sequence:        1,
+				},
+				CheckID: "ABC123DEF4567890ABC123D",
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidCheckID,
+		},
 	}
 
 	for _, tt := range tests {
