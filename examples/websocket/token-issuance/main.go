@@ -101,8 +101,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("flattenedTx", flattenedTx)
-
 	txBlob, _, err := coldWallet.Sign(flattenedTx)
 	if err != nil {
 		fmt.Printf("❌ Error signing transaction: %s\n", err)

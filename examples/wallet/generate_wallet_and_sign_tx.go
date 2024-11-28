@@ -63,16 +63,16 @@ func main() {
 	tx := transactions.Payment{
 		BaseTx: transactions.BaseTx{
 			Account: types.Address(wallet.ClassicAddress),
-			Memos: []transactions.MemoWrapper{
+			Memos: []types.MemoWrapper{
 				{
-					Memo: transactions.Memo{
+					Memo: types.Memo{
 						MemoData:   hex.EncodeToString([]byte("Hello, World!")),
 						MemoFormat: hex.EncodeToString([]byte("text/plain")),
 						MemoType:   hex.EncodeToString([]byte("message")),
 					},
 				},
 				{
-					Memo: transactions.Memo{
+					Memo: types.Memo{
 						MemoData:   hex.EncodeToString([]byte("Hello, World 2!")),
 						MemoFormat: hex.EncodeToString([]byte("text/plain")),
 						MemoType:   hex.EncodeToString([]byte("message2")),

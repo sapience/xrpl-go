@@ -65,7 +65,7 @@ type BaseTx struct {
 	//
 	// Additional arbitrary information used to identify this transaction.
 	//
-	Memos []MemoWrapper `json:",omitempty"`
+	Memos []types.MemoWrapper `json:",omitempty"`
 	// The network id of the transaction.
 	NetworkID uint32 `json:",omitempty"`
 	//
