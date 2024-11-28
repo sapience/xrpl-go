@@ -177,6 +177,21 @@ func TestCheckCash_Validate(t *testing.T) {
 			expectedErr: ErrInvalidCheckID,
 		},
 		{
+			name: "invalid - invalid CheckID, length is not 64 characters",
+			checkCash: CheckCash{
+				BaseTx: BaseTx{
+					Account:         "rfkE1aSy9G8Upk4JssnwBxhEv5p4mn2KTy",
+					TransactionType: "CheckCash",
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				CheckID: "838766BA2B995C00744175F69A1B",
+				Amount:  types.XRPCurrencyAmount(100000000),
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrInvalidCheckID,
+		},
+		{
 			name: "fail - Invalid Amount",
 			checkCash: CheckCash{
 				BaseTx: BaseTx{
