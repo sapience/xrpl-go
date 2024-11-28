@@ -117,6 +117,19 @@ func TestNFTokenAcceptOffer_Validate(t *testing.T) {
 		errMessage error
 	}{
 		{
+			name: "fail - invalid NFTokenBrokerFee",
+			tx: &NFTokenAcceptOffer{
+				BaseTx: BaseTx{
+					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
+					TransactionType: NFTokenAcceptOfferTx,
+				},
+				NFTokenBrokerFee: types.XRPCurrencyAmount(0),
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrNFTokenBrokerFeeZero,
+		},
+		{
 			name: "pass - Valid with Sell Offer",
 			tx: &NFTokenAcceptOffer{
 				BaseTx: BaseTx{

@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ErrEscrowCancelMissingOwner         = errors.New("missing owner")
-	ErrEscrowCancelMissingOfferSequence = errors.New("missing offer sequence")
+	ErrEscrowCancelMissingOwner         = errors.New("escrow cancel: missing owner")
+	ErrEscrowCancelMissingOfferSequence = errors.New("escrow cancel: missing offer sequence")
 )
 
 // Return escrowed XRP to the sender.

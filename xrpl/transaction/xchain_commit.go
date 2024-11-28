@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -94,8 +95,8 @@ func (x *XChainCommit) Validate() (bool, error) {
 		return false, err
 	}
 
-	if x.XChainClaimID == "" {
-		return false, ErrMissingXChainClaimID
+	if x.XChainClaimID == "" || !typecheck.IsHex(x.XChainClaimID) {
+		return false, ErrInvalidXChainClaimID
 	}
 
 	return true, nil

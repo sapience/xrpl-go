@@ -7,6 +7,12 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrMustSetAmountWithAmount2 = errors.New("must set Amount with Amount2")
+	ErrMustSetAmountWithEPrice  = errors.New("must set Amount with EPrice")
+	ErrAtLeastOneAssetMustBeSet = errors.New("at least one of the assets must be set")
+)
+
 // Deposit funds into an Automated Market Maker (AMM) instance and receive the AMM's liquidity provider tokens (LP Tokens) in exchange.
 // You can deposit one or both of the assets in the AMM's pool.
 // If successful, this transaction creates a trust line to the AMM Account (limit 0) to hold the LP Tokens.
@@ -152,11 +158,11 @@ func (a *AMMDeposit) Validate() (bool, error) {
 
 	switch {
 	case a.Amount2 != nil && a.Amount == nil:
-		return false, errors.New("ammDeposit: must set Amount with Amount2")
+		return false, ErrMustSetAmountWithAmount2
 	case a.EPrice != nil && a.Amount == nil:
-		return false, errors.New("ammDeposit: must set Amount with EPrice")
+		return false, ErrMustSetAmountWithEPrice
 	case a.LPTokenOut == nil && a.Amount == nil:
-		return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")
+		return false, ErrAtLeastOneAssetMustBeSet
 	}
 
 	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {

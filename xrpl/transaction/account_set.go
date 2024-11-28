@@ -7,6 +7,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrInvalidSetFlag  = errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+	ErrInvalidTickSize = errors.New("accountSet: TickSize must be an integer between 0 and 15 inclusive")
+)
+
 const (
 	//
 	// Account Set Flags
@@ -96,9 +101,12 @@ type AccountSet struct {
 	// Tick size to use for offers involving a currency issued by this address.
 	// The exchange rates of those offers is rounded to this many significant
 	// digits. Valid values are 3 to 15 inclusive, or 0 to disable.
-	TickSize      uint8         `json:",omitempty"`
+	TickSize uint8 `json:",omitempty"`
+	// (Optional) An arbitrary 256-bit value. If specified, the value is stored as
+	// part of the account but has no inherent meaning or requirements.
 	WalletLocator types.Hash256 `json:",omitempty"`
-	WalletSize    uint32        `json:",omitempty"`
+	// (Optional) Not used. This field is valid in AccountSet transactions but does nothing.
+	WalletSize uint32 `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (AccountSet).
@@ -389,13 +397,13 @@ func (s *AccountSet) Validate() (bool, error) {
 	// check if SetFlag is within the valid range
 	if s.SetFlag != 0 {
 		if s.SetFlag < asfRequireDest || s.SetFlag > asfAllowTrustLineClawback {
-			return false, errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+			return false, ErrInvalidSetFlag
 		}
 	}
 
 	// check if TickSize is within the valid range
 	if s.TickSize != 0 && (s.TickSize < MinTickSize || s.TickSize > MaxTickSize) {
-		return false, errors.New("accountSet: TickSize must be between 3 and 15")
+		return false, ErrInvalidTickSize
 	}
 
 	return true, nil

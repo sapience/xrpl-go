@@ -8,8 +8,12 @@ import (
 )
 
 var (
-	ErrDepositPreauthInvalidAuthorize   = errors.New("deposit preauth: invalid Authorize")
-	ErrDepositPreauthInvalidUnauthorize = errors.New("deposit preauth: invalid Unauthorize")
+	ErrDepositPreauthInvalidAuthorize       = errors.New("deposit preauth: invalid Authorize")
+	ErrDepositPreauthInvalidUnauthorize     = errors.New("deposit preauth: invalid Unauthorize")
+	ErrCannotSetBothAuthorizeAndUnauthorize = errors.New("deposit preauth: cannot set both Authorize and Unauthorize")
+	ErrMustSetEitherAuthorizeOrUnauthorize  = errors.New("deposit preauth: must set either Authorize or Unauthorize")
+	ErrAuthorizeCannotBeSender              = errors.New("deposit preauth: Authorize cannot be the same as the sender's account")
+	ErrUnauthorizeCannotBeSender            = errors.New("deposit preauth: Unauthorize cannot be the same as the sender's account")
 )
 
 // Added by the DepositPreauth amendment.
@@ -65,6 +69,22 @@ func (s *DepositPreauth) Validate() (bool, error) {
 	_, err := s.BaseTx.Validate()
 	if err != nil {
 		return false, err
+	}
+
+	if s.Authorize != "" && s.Unauthorize != "" {
+		return false, ErrCannotSetBothAuthorizeAndUnauthorize
+	}
+
+	if s.Authorize == "" && s.Unauthorize == "" {
+		return false, ErrMustSetEitherAuthorizeOrUnauthorize
+	}
+
+	if s.Authorize != "" && s.Authorize.String() == s.Account.String() {
+		return false, ErrAuthorizeCannotBeSender
+	}
+
+	if s.Unauthorize != "" && s.Unauthorize.String() == s.Account.String() {
+		return false, ErrUnauthorizeCannotBeSender
 	}
 
 	if s.Authorize != "" && !addresscodec.IsValidClassicAddress(s.Authorize.String()) {

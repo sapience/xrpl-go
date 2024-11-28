@@ -109,14 +109,15 @@ func TestDepositPreauth_Validate(t *testing.T) {
 			expectedErr: ErrDepositPreauthInvalidUnauthorize,
 		},
 		{
-			name: "pass - base transaction",
+			name: "fail - must set either authorize or unauthorize",
 			tx: &DepositPreauth{
 				BaseTx: BaseTx{
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: DepositPreauthTx,
 				},
 			},
-			expected: true,
+			expected:    false,
+			expectedErr: ErrMustSetEitherAuthorizeOrUnauthorize,
 		},
 		{
 			name: "pass - authorize",
@@ -125,7 +126,7 @@ func TestDepositPreauth_Validate(t *testing.T) {
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: DepositPreauthTx,
 				},
-				Authorize: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				Authorize: "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
 			},
 			expected: true,
 		},
@@ -136,7 +137,7 @@ func TestDepositPreauth_Validate(t *testing.T) {
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 					TransactionType: DepositPreauthTx,
 				},
-				Unauthorize: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				Unauthorize: "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
 			},
 			expected: true,
 		},

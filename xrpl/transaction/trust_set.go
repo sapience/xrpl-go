@@ -3,7 +3,6 @@ package transaction
 import (
 	"errors"
 
-	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -121,16 +120,6 @@ func (t *TrustSet) Validate() (bool, error) {
 
 	if ok, err := IsAmount(t.LimitAmount, "LimitAmount", true); !ok {
 		return false, err
-	}
-
-	// Check if QualityIn is a number
-	if t.QualityIn != 0 && !typecheck.IsUint32(t.QualityIn) {
-		return false, ErrTrustSetQualityInNotNumber
-	}
-
-	// Check if QualityOut is a number
-	if t.QualityOut != 0 && !typecheck.IsUint32(t.QualityOut) {
-		return false, ErrTrustSetQualityOutNotNumber
 	}
 
 	return true, nil

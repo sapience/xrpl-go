@@ -1,8 +1,6 @@
 package transaction
 
 import (
-	"errors"
-
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -145,9 +143,9 @@ func (a *AMMWithdraw) Validate() (bool, error) {
 	}
 
 	if a.Amount2 != nil && a.Amount == nil {
-		return false, errors.New("ammWithdraw: must set Amount with Amount2")
+		return false, ErrMustSetAmountWithAmount2
 	} else if a.EPrice != nil && a.Amount == nil {
-		return false, errors.New("ammWithdraw: must set Amount with EPrice")
+		return false, ErrMustSetAmountWithEPrice
 	}
 
 	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {

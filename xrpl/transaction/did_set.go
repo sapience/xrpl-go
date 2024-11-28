@@ -1,5 +1,11 @@
 package transaction
 
+import "errors"
+
+var (
+	ErrMustSetEitherDataOrDIDDocumentOrURI = errors.New("did set: must set either Data, DIDDocument, or URI")
+)
+
 // (Requires the DID amendment)
 // Creates a new DID ledger entry or updates the fields of an existing one.
 //
@@ -53,5 +59,14 @@ func (tx *DIDSet) Flatten() FlatTransaction {
 
 // Validate validates the DIDSet struct.
 func (tx *DIDSet) Validate() (bool, error) {
-	return tx.BaseTx.Validate()
+
+	if ok, err := tx.BaseTx.Validate(); !ok {
+		return false, err
+	}
+
+	if tx.Data == "" && tx.DIDDocument == "" && tx.URI == "" {
+		return false, ErrMustSetEitherDataOrDIDDocumentOrURI
+	}
+
+	return true, nil
 }

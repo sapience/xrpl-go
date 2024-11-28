@@ -88,9 +88,5 @@ func (x *XChainCreateClaimID) Validate() (bool, error) {
 		return false, err
 	}
 
-	if ok, err := x.XChainBridge.Validate(); !ok {
-		return false, err
-	}
-
-	return true, nil
+	return x.XChainBridge.Validate()
 }

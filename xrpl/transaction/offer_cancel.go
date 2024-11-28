@@ -43,14 +43,5 @@ func (o *OfferCancel) Flatten() FlatTransaction {
 
 // Validates the OfferCancel struct and makes sure all fields are correct.
 func (o *OfferCancel) Validate() (bool, error) {
-	_, err := o.BaseTx.Validate()
-	if err != nil {
-		return false, err
-	}
-
-	if o.OfferSequence == 0 {
-		return false, ErrOfferCancelMissingOfferSequence
-	}
-
-	return true, nil
+	return o.BaseTx.Validate()
 }

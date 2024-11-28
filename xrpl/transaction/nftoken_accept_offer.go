@@ -7,6 +7,8 @@ import (
 )
 
 var (
+	// ErrNFTokenBrokerFeeZero is returned when NFTokenBrokerFee is zero.
+	ErrNFTokenBrokerFeeZero = errors.New("nftoken accept offer: NFTokenBrokerFee cannot be zero")
 	// ErrMissingOffer is returned when at least one of NFTokenSellOffer or NFTokenBuyOffer is not set.
 	ErrMissingOffer = errors.New("at least one of NFTokenSellOffer or NFTokenBuyOffer must be set")
 	// ErrMissingBothOffers is returned when NFTokenBrokerFee is set but neither NFTokenSellOffer nor NFTokenBuyOffer are set (brokered mode).
@@ -82,6 +84,16 @@ func (n *NFTokenAcceptOffer) Validate() (bool, error) {
 	ok, err := n.BaseTx.Validate()
 	if err != nil || !ok {
 		return false, err
+	}
+
+	if xrpAmount, ok := n.NFTokenBrokerFee.(types.XRPCurrencyAmount); ok {
+		if xrpAmount.Uint64() == 0 {
+			return false, ErrNFTokenBrokerFeeZero
+		}
+	} else if issuedAmount, ok := n.NFTokenBrokerFee.(types.IssuedCurrencyAmount); ok {
+		if issuedAmount.Value == "0" {
+			return false, ErrNFTokenBrokerFeeZero
+		}
 	}
 
 	// if NFTokenBrokerFee is set, then both NFTokenSellOffer and NFTokenBuyOffer must be set
