@@ -45,6 +45,12 @@ var (
 	ErrInvalidTokenType = errors.New("an issued currency cannot be of type XRP")
 	// ErrMissingTokenCurrency is returned when the currency field is missing for an issued currency.
 	ErrMissingTokenCurrency = errors.New("currency field is missing for the issued currency")
+	// ErrInvalidAssetFields is returned when the asset object does not have the required fields (currency, or currency and issuer).
+	ErrInvalidAssetFields = errors.New("asset object should have at least one field 'currency', or two fields 'currency' and 'issuer'")
+	// ErrMissingAssetCurrency is returned when the currency field is missing for an asset.
+	ErrMissingAssetCurrency = errors.New("currency field is required for an asset")
+	// ErrInvalidAssetIssuer is returned when the issuer field is invalid for an asset.
+	ErrInvalidAssetIssuer = errors.New("issuer field must be a valid XRPL classic address")
 )
 
 // ErrMissingAmount is a function that returns an error when a field of type CurrencyAmount is missing.
@@ -57,7 +63,7 @@ func ErrMissingAmount(fieldName string) error {
 // *************************
 
 // IsMemo checks if the given object is a valid Memo object.
-func IsMemo(memo Memo) (bool, error) {
+func IsMemo(memo types.Memo) (bool, error) {
 	// Get the size of the Memo object.
 	size := len(maputils.GetKeys(memo.Flatten()))
 
@@ -226,11 +232,11 @@ func IsAsset(asset ledger.Asset) (bool, error) {
 	lenKeys := len(maputils.GetKeys(asset.Flatten()))
 
 	if lenKeys == 0 {
-		return false, errors.New("asset object should have at least one field 'currency', or two fields 'currency' and 'issuer'")
+		return false, ErrInvalidAssetFields
 	}
 
 	if strings.TrimSpace(asset.Currency) == "" {
-		return false, errors.New("currency field is required for an asset")
+		return false, ErrMissingAssetCurrency
 	}
 
 	if strings.ToUpper(asset.Currency) == currency.NativeCurrencySymbol && strings.TrimSpace(asset.Issuer.String()) == "" {
@@ -238,11 +244,11 @@ func IsAsset(asset ledger.Asset) (bool, error) {
 	}
 
 	if strings.ToUpper(asset.Currency) == currency.NativeCurrencySymbol && asset.Issuer != "" {
-		return false, errors.New("issuer field should be omitted for XRP currency")
+		return false, ErrInvalidAssetIssuer
 	}
 
 	if asset.Currency != "" && !addresscodec.IsValidClassicAddress(asset.Issuer.String()) {
-		return false, errors.New("issuer field must be a valid XRPL classic address")
+		return false, ErrInvalidAssetIssuer
 	}
 
 	return true, nil

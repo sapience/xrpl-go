@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ErrEscrowFinishMissingOwner         = errors.New("missing owner")
-	ErrEscrowFinishMissingOfferSequence = errors.New("missing offer sequence")
+	ErrEscrowFinishMissingOwner         = errors.New("escrow finish: missing owner")
+	ErrEscrowFinishMissingOfferSequence = errors.New("escrow finish: missing offer sequence")
 )
 
 // Deliver XRP from a held payment to the recipient.

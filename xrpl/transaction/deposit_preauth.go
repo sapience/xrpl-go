@@ -8,12 +8,12 @@ import (
 )
 
 var (
-	ErrDepositPreauthInvalidAuthorize       = errors.New("deposit preauth: invalid Authorize")
-	ErrDepositPreauthInvalidUnauthorize     = errors.New("deposit preauth: invalid Unauthorize")
-	ErrCannotSetBothAuthorizeAndUnauthorize = errors.New("deposit preauth: cannot set both Authorize and Unauthorize")
-	ErrMustSetEitherAuthorizeOrUnauthorize  = errors.New("deposit preauth: must set either Authorize or Unauthorize")
-	ErrAuthorizeCannotBeSender              = errors.New("deposit preauth: Authorize cannot be the same as the sender's account")
-	ErrUnauthorizeCannotBeSender            = errors.New("deposit preauth: Unauthorize cannot be the same as the sender's account")
+	ErrDepositPreauthInvalidAuthorize                     = errors.New("deposit preauth: invalid Authorize")
+	ErrDepositPreauthInvalidUnauthorize                   = errors.New("deposit preauth: invalid Unauthorize")
+	ErrDepositPreauthCannotSetBothAuthorizeAndUnauthorize = errors.New("deposit preauth: cannot set both Authorize and Unauthorize")
+	ErrDepositPreauthMustSetEitherAuthorizeOrUnauthorize  = errors.New("deposit preauth: must set either Authorize or Unauthorize")
+	ErrDepositPreauthAuthorizeCannotBeSender              = errors.New("deposit preauth: Authorize cannot be the same as the sender's account")
+	ErrDepositPreauthUnauthorizeCannotBeSender            = errors.New("deposit preauth: Unauthorize cannot be the same as the sender's account")
 )
 
 // Added by the DepositPreauth amendment.
@@ -72,19 +72,19 @@ func (s *DepositPreauth) Validate() (bool, error) {
 	}
 
 	if s.Authorize != "" && s.Unauthorize != "" {
-		return false, ErrCannotSetBothAuthorizeAndUnauthorize
+		return false, ErrDepositPreauthCannotSetBothAuthorizeAndUnauthorize
 	}
 
 	if s.Authorize == "" && s.Unauthorize == "" {
-		return false, ErrMustSetEitherAuthorizeOrUnauthorize
+		return false, ErrDepositPreauthMustSetEitherAuthorizeOrUnauthorize
 	}
 
 	if s.Authorize != "" && s.Authorize.String() == s.Account.String() {
-		return false, ErrAuthorizeCannotBeSender
+		return false, ErrDepositPreauthAuthorizeCannotBeSender
 	}
 
 	if s.Unauthorize != "" && s.Unauthorize.String() == s.Account.String() {
-		return false, ErrUnauthorizeCannotBeSender
+		return false, ErrDepositPreauthUnauthorizeCannotBeSender
 	}
 
 	if s.Authorize != "" && !addresscodec.IsValidClassicAddress(s.Authorize.String()) {

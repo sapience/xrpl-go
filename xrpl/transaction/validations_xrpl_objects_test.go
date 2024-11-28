@@ -176,7 +176,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 
 func TestIsMemo(t *testing.T) {
 	t.Run("pass - valid Memo object with all fields", func(t *testing.T) {
-		obj := Memo{
+		obj := types.Memo{
 			MemoData:   "0123456789abcdef",
 			MemoFormat: "abcdef0123456789",
 			MemoType:   "abcdef0123456789",
@@ -190,7 +190,7 @@ func TestIsMemo(t *testing.T) {
 	})
 
 	t.Run("pass - valid memo object with missing fields", func(t *testing.T) {
-		obj := Memo{
+		obj := types.Memo{
 			MemoData: "0123456789abcdef",
 		}
 
@@ -202,7 +202,7 @@ func TestIsMemo(t *testing.T) {
 	})
 
 	t.Run("fail - memo object with MemoData non hex value", func(t *testing.T) {
-		obj := Memo{
+		obj := types.Memo{
 			MemoData: "bob",
 		}
 
@@ -212,7 +212,7 @@ func TestIsMemo(t *testing.T) {
 	})
 
 	t.Run("fail - memo object with MemoFormat non hex value", func(t *testing.T) {
-		obj := Memo{
+		obj := types.Memo{
 			MemoData:   "0123456789abcdef",
 			MemoFormat: "non-hex",
 		}
@@ -223,7 +223,7 @@ func TestIsMemo(t *testing.T) {
 	})
 
 	t.Run("fail - memo object with MemoType non hex value", func(t *testing.T) {
-		obj := Memo{
+		obj := types.Memo{
 			MemoData:   "0123456789abcdef",
 			MemoFormat: "0123456789abcdef",
 			MemoType:   "non-hex",
@@ -235,7 +235,7 @@ func TestIsMemo(t *testing.T) {
 	})
 
 	t.Run("fail - empty object", func(t *testing.T) {
-		obj := Memo{}
+		obj := types.Memo{}
 		if ok, _ := IsMemo(obj); ok {
 			t.Errorf("Expected IsMemo to return false, but got true")
 		}

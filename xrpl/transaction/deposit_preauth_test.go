@@ -117,7 +117,7 @@ func TestDepositPreauth_Validate(t *testing.T) {
 				},
 			},
 			expected:    false,
-			expectedErr: ErrMustSetEitherAuthorizeOrUnauthorize,
+			expectedErr: ErrDepositPreauthMustSetEitherAuthorizeOrUnauthorize,
 		},
 		{
 			name: "pass - authorize",

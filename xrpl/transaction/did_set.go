@@ -3,7 +3,7 @@ package transaction
 import "errors"
 
 var (
-	ErrMustSetEitherDataOrDIDDocumentOrURI = errors.New("did set: must set either Data, DIDDocument, or URI")
+	ErrDIDSetMustSetEitherDataOrDIDDocumentOrURI = errors.New("did set: must set either Data, DIDDocument, or URI")
 )
 
 // (Requires the DID amendment)
@@ -65,7 +65,7 @@ func (tx *DIDSet) Validate() (bool, error) {
 	}
 
 	if tx.Data == "" && tx.DIDDocument == "" && tx.URI == "" {
-		return false, ErrMustSetEitherDataOrDIDDocumentOrURI
+		return false, ErrDIDSetMustSetEitherDataOrDIDDocumentOrURI
 	}
 
 	return true, nil

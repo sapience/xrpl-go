@@ -143,9 +143,9 @@ func (a *AMMWithdraw) Validate() (bool, error) {
 	}
 
 	if a.Amount2 != nil && a.Amount == nil {
-		return false, ErrMustSetAmountWithAmount2
+		return false, ErrAMMMustSetAmountWithAmount2
 	} else if a.EPrice != nil && a.Amount == nil {
-		return false, ErrMustSetAmountWithEPrice
+		return false, ErrAMMMustSetAmountWithEPrice
 	}
 
 	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {

@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ErrInvalidSetFlag  = errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
-	ErrInvalidTickSize = errors.New("accountSet: TickSize must be an integer between 0 and 15 inclusive")
+	ErrAccountSetInvalidSetFlag  = errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+	ErrAccountSetInvalidTickSize = errors.New("accountSet: TickSize must be an integer between 0 and 15 inclusive")
 )
 
 const (
@@ -397,13 +397,13 @@ func (s *AccountSet) Validate() (bool, error) {
 	// check if SetFlag is within the valid range
 	if s.SetFlag != 0 {
 		if s.SetFlag < asfRequireDest || s.SetFlag > asfAllowTrustLineClawback {
-			return false, ErrInvalidSetFlag
+			return false, ErrAccountSetInvalidSetFlag
 		}
 	}
 
 	// check if TickSize is within the valid range
 	if s.TickSize != 0 && (s.TickSize < MinTickSize || s.TickSize > MaxTickSize) {
-		return false, ErrInvalidTickSize
+		return false, ErrAccountSetInvalidTickSize
 	}
 
 	return true, nil

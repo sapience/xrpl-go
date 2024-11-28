@@ -1,17 +1,8 @@
 package transaction
 
 import (
-	"fmt"
-
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
-
-var (
-	ErrTradingFeeTooHigh = fmt.Errorf("trading fee is too high, max value is %d", AmmMaxTradingFee)
-)
-
-// The maximum value is 1000, indicating a 1% fee. The minimum value is 0. https://xrpl.org/docs/references/protocol/transactions/types/ammcreate#ammcreate-fields
-const AmmMaxTradingFee = 1000
 
 // Create a new Automated Market Maker (AMM) instance for trading a pair of assets (fungible tokens or XRP).
 //
@@ -90,7 +81,7 @@ func (a *AMMCreate) Validate() (bool, error) {
 	}
 
 	if a.TradingFee > AmmMaxTradingFee {
-		return false, ErrTradingFeeTooHigh
+		return false, ErrAMMTradingFeeTooHigh
 	}
 
 	return true, nil

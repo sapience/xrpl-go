@@ -103,7 +103,7 @@ func TestDIDSet_Validate(t *testing.T) {
 				},
 			},
 			expected:    false,
-			expectedErr: ErrMustSetEitherDataOrDIDDocumentOrURI,
+			expectedErr: ErrDIDSetMustSetEitherDataOrDIDDocumentOrURI,
 		},
 		{
 			name: "pass - set data",

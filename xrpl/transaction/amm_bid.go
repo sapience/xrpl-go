@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	ErrAtLeastOneAssetMustBeNonXRP = errors.New("at least one of the assets must be non-XRP")
-	ErrAuthAccountsTooMany         = errors.New("authAccounts should have at most 4 AuthAccount objects")
+	ErrAMMAtLeastOneAssetMustBeNonXRP = errors.New("at least one of the assets must be non-XRP")
+	ErrAMMAuthAccountsTooMany         = errors.New("authAccounts should have at most 4 AuthAccount objects")
 )
 
 // Bid on an Automated Market Maker's (AMM's) auction slot. If you win, you can trade against the AMM at a discounted fee until you are outbid or 24 hours have passed.
@@ -120,7 +120,7 @@ func (a *AMMBid) Validate() (bool, error) {
 	}
 
 	if a.Asset.Currency == "XRP" && a.Asset2.Currency == "XRP" {
-		return false, ErrAtLeastOneAssetMustBeNonXRP
+		return false, ErrAMMAtLeastOneAssetMustBeNonXRP
 	}
 
 	if ok, err := IsAmount(a.BidMin, "BidMin", false); !ok {
@@ -141,7 +141,7 @@ func (a *AMMBid) Validate() (bool, error) {
 // Validate the AuthAccounts field.
 func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) {
 	if len(authAccounts) > 4 {
-		return false, ErrAuthAccountsTooMany
+		return false, ErrAMMAuthAccountsTooMany
 	}
 
 	for _, authAccounts := range authAccounts {

@@ -8,9 +8,7 @@ import (
 )
 
 var (
-	ErrMustSetAmountWithAmount2 = errors.New("must set Amount with Amount2")
-	ErrMustSetAmountWithEPrice  = errors.New("must set Amount with EPrice")
-	ErrAtLeastOneAssetMustBeSet = errors.New("at least one of the assets must be set")
+	ErrAMMAtLeastOneAssetMustBeSet = errors.New("at least one of the assets must be set")
 )
 
 // Deposit funds into an Automated Market Maker (AMM) instance and receive the AMM's liquidity provider tokens (LP Tokens) in exchange.
@@ -158,11 +156,11 @@ func (a *AMMDeposit) Validate() (bool, error) {
 
 	switch {
 	case a.Amount2 != nil && a.Amount == nil:
-		return false, ErrMustSetAmountWithAmount2
+		return false, ErrAMMMustSetAmountWithAmount2
 	case a.EPrice != nil && a.Amount == nil:
-		return false, ErrMustSetAmountWithEPrice
+		return false, ErrAMMMustSetAmountWithEPrice
 	case a.LPTokenOut == nil && a.Amount == nil:
-		return false, ErrAtLeastOneAssetMustBeSet
+		return false, ErrAMMAtLeastOneAssetMustBeSet
 	}
 
 	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {
