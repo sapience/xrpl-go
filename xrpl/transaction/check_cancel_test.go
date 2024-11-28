@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCheckCancel_TxType(t *testing.T) {
@@ -26,11 +27,11 @@ func TestCheckCancel_Flatten(t *testing.T) {
 		"TransactionType": "CheckCancel",
 		"Account":         "rMbnCbYfoFo47di25iD2tsJXW83Wpq85Xe",
 		"Fee":             "10",
-		"Sequence":        1,
+		"Sequence":        uint32(1),
 		"CheckID":         "ABC123DEF456",
 	}
 
-	assert.Equal(t, expected, tx.Flatten())
+	require.Equal(t, expected, tx.Flatten())
 }
 
 func TestCheckCancel_Validate(t *testing.T) {
