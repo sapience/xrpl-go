@@ -88,14 +88,10 @@ func (e *EscrowCreate) Validate() (bool, error) {
 	}
 
 	if !addresscodec.IsValidClassicAddress(e.Destination.String()) {
-		return false, ErrEscrowCreateInvalidDestinationAddress
+		return false, ErrInvalidDestinationAddress
 	}
 
-	if e.CancelAfter == 0 && e.FinishAfter == 0 {
-		return false, ErrEscrowCreateNoCancelOrFinishAfterSet
-	}
-
-	if e.FinishAfter == 0 && e.Condition == "" {
+	if (e.FinishAfter == 0 && e.CancelAfter == 0) || (e.Condition == "" && e.FinishAfter == 0) {
 		return false, ErrEscrowCreateNoConditionOrFinishAfterSet
 	}
 

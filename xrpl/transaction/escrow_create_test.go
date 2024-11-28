@@ -20,7 +20,7 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "pass - All fields set",
+			name: "pass - all fields set",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -78,6 +78,76 @@ func TestEscrowCreate_Validate(t *testing.T) {
 		wantValid bool
 		wantErr   bool
 	}{
+		
+		{
+			name: "fail - invalid transaction with only CancelAfter",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				CancelAfter: 533257958,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - invalid transaction with only Condition",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				Condition:   "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - invalid transaction with no Condition and FinishAfter",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				CancelAfter: 533257958,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - invalid transaction with invalid destination address",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: EscrowCreateTx,
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "invalidAddress",
+				CancelAfter: 533257958,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "fail - invalid BaseTx, missing TransactionType",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				},
+				Amount:      types.XRPCurrencyAmount(10000),
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				CancelAfter: 533257958,
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
 		{
 			name: "pass - valid transaction - Conditional with expiration",
 			entry: &EscrowCreate{
@@ -92,19 +162,6 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			},
 			wantValid: true,
 			wantErr:   false,
-		},
-		{
-			name: "fail - invalid BaseTx, missing TransactionType",
-			entry: &EscrowCreate{
-				BaseTx: BaseTx{
-					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-				},
-				Amount:      types.XRPCurrencyAmount(10000),
-				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
-				CancelAfter: 533257958,
-			},
-			wantValid: false,
-			wantErr:   true,
 		},
 		{
 			name: "pass - valid transaction - Time based",
@@ -151,7 +208,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "pass - Valid transaction - Timed conditional with Expiration",
+			name: "pass - valid transaction - Timed conditional with Expiration",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -166,47 +223,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantValid: true,
 			wantErr:   false,
 		},
-		{
-			name: "fail - invalid transaction with no CancelAfter or FinishAfter",
-			entry: &EscrowCreate{
-				BaseTx: BaseTx{
-					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-					TransactionType: EscrowCreateTx,
-				},
-				Amount:      types.XRPCurrencyAmount(10000),
-				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
-			},
-			wantValid: false,
-			wantErr:   true,
-		},
-		{
-			name: "fail - invalid transaction with no Condition and FinishAfter",
-			entry: &EscrowCreate{
-				BaseTx: BaseTx{
-					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-					TransactionType: EscrowCreateTx,
-				},
-				Amount:      types.XRPCurrencyAmount(10000),
-				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
-				CancelAfter: 533257958,
-			},
-			wantValid: false,
-			wantErr:   true,
-		},
-		{
-			name: "fail - invalid transaction with invalid destination address",
-			entry: &EscrowCreate{
-				BaseTx: BaseTx{
-					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-					TransactionType: EscrowCreateTx,
-				},
-				Amount:      types.XRPCurrencyAmount(10000),
-				Destination: "invalidAddress",
-				CancelAfter: 533257958,
-			},
-			wantValid: false,
-			wantErr:   true,
-		},
+		
 	}
 
 	for _, tt := range tests {
