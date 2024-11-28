@@ -20,7 +20,7 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "All fields set",
+			name: "pass - All fields set",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -44,7 +44,7 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Optional fields omitted",
+			name: "pass - optional fields omitted",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -79,7 +79,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name: "Valid transaction - Conditional with expiration",
+			name: "pass - valid transaction - Conditional with expiration",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -94,7 +94,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Invalid BaseTx, missing TransactionType",
+			name: "fail - invalid BaseTx, missing TransactionType",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -107,7 +107,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Valid transaction - Time based",
+			name: "pass - valid transaction - Time based",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -121,7 +121,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Valid transaction - Time based with expiration",
+			name: "pass - valid transaction - Time based with expiration",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -136,7 +136,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Valid transaction - Timed conditional",
+			name: "pass - valid transaction - Timed conditional",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -151,7 +151,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Valid transaction - Timed conditional with Expiration",
+			name: "pass - Valid transaction - Timed conditional with Expiration",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -167,7 +167,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Invalid transaction with no CancelAfter or FinishAfter",
+			name: "fail - invalid transaction with no CancelAfter or FinishAfter",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -180,7 +180,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid transaction with no Condition and FinishAfter",
+			name: "fail - invalid transaction with no Condition and FinishAfter",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -194,7 +194,7 @@ func TestEscrowCreate_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid transaction with invalid destination address",
+			name: "fail - invalid transaction with invalid destination address",
 			entry: &EscrowCreate{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

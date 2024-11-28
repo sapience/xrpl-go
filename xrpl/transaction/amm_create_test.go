@@ -59,7 +59,7 @@ func TestAMMCreateValidate(t *testing.T) {
 		errMsg  string
 	}{
 		{
-			name: "valid AMMCreate",
+			name: "pass - valid AMMCreate",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -80,7 +80,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Invalid BaseTx for AMMCreate, missing Account",
+			name: "fail - invalid BaseTx for AMMCreate, missing Account",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
 					TransactionType: AMMCreateTx,
@@ -100,7 +100,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "missing Amount",
+			name: "fail - missing Amount",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -120,7 +120,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid Amount value",
+			name: "fail - invalid Amount value",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -145,7 +145,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "missing Amount2",
+			name: "fail - missing Amount2",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -161,7 +161,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid Amount2 value",
+			name: "fail - invalid Amount2 value",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -182,7 +182,7 @@ func TestAMMCreateValidate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "trading fee too high",
+			name: "fail - trading fee too high",
 			amm: AMMCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",

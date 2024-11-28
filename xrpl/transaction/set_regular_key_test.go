@@ -19,7 +19,7 @@ func TestSetRegularKey_Flatten(t *testing.T) {
 		want       string
 	}{
 		{
-			name: "Valid SetRegularKey",
+			name: "pass - valid SetRegularKey",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -34,7 +34,7 @@ func TestSetRegularKey_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Without RegularKey",
+			name: "pass - without RegularKey",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -65,7 +65,7 @@ func TestSetRegularKey_Validate(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			name: "Valid SetRegularKey",
+			name: "pass - valid SetRegularKey",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -77,7 +77,7 @@ func TestSetRegularKey_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Invalid SetRegularKey BaseTx",
+			name: "fail - invalid SetRegularKey BaseTx",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -88,7 +88,7 @@ func TestSetRegularKey_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "RegularKey same as Account",
+			name: "fail - RegularKey same as Account",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -100,7 +100,7 @@ func TestSetRegularKey_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid RegularKey address",
+			name: "fail - invalid RegularKey address",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -112,7 +112,7 @@ func TestSetRegularKey_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Without RegularKey",
+			name: "pass - without RegularKey",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

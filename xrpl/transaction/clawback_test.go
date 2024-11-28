@@ -47,7 +47,7 @@ func TestClawback_Validate(t *testing.T) {
 		shouldPass bool
 	}{
 		{
-			name: "Valid Clawback transaction",
+			name: "pass - valid Clawback transaction",
 			clawback: Clawback{
 				BaseTx: BaseTx{
 					Account:         "rnLYcEcYw2r3w6BDsFDSScoFmvZXbwa6EQ",
@@ -66,7 +66,7 @@ func TestClawback_Validate(t *testing.T) {
 			shouldPass: true,
 		},
 		{
-			name: "Clawback transaction with missing Amount field",
+			name: "fail - clawback transaction with missing Amount field",
 			clawback: Clawback{
 				BaseTx: BaseTx{
 					Account:         "rnLYcEcYw2r3w6BDsFDSScoFmvZXbwa6EQ",
@@ -80,7 +80,7 @@ func TestClawback_Validate(t *testing.T) {
 			shouldPass: false,
 		},
 		{
-			name: "Clawback transaction with invalid Amount",
+			name: "fail - clawback transaction with invalid Amount",
 			clawback: Clawback{
 				BaseTx: BaseTx{
 					Account:         "rL2ek7KyeTk6NiyJcxYFrfiPcv8PFVoqgR",
@@ -99,7 +99,7 @@ func TestClawback_Validate(t *testing.T) {
 			shouldPass: false,
 		},
 		{
-			name: "Clawback transaction with Account same as the issuer",
+			name: "fail - clawback transaction with Account same as the issuer",
 			clawback: Clawback{
 				BaseTx: BaseTx{
 					Account:         "rL2ek7KyeTk6NiyJcxYFrfiPcv8PFVoqgR",

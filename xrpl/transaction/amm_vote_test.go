@@ -64,7 +64,7 @@ func TestAMMVote_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "valid AMMVote",
+			name: "pass - valid AMMVote",
 			tx: &AMMVote{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -85,7 +85,7 @@ func TestAMMVote_Validate(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Invalid AMMVote BaseTx, TransactionType missing",
+			name: "fail - invalid AMMVote BaseTx, TransactionType missing",
 			tx: &AMMVote{
 				BaseTx: BaseTx{
 					Account:  "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -105,7 +105,7 @@ func TestAMMVote_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid TradingFee",
+			name: "fail - invalid TradingFee",
 			tx: &AMMVote{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -126,7 +126,7 @@ func TestAMMVote_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid Asset",
+			name: "fail - invalid Asset",
 			tx: &AMMVote{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -147,7 +147,7 @@ func TestAMMVote_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid Asset2",
+			name: "fail - invalid Asset2",
 			tx: &AMMVote{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
