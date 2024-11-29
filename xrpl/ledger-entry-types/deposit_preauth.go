@@ -32,12 +32,13 @@ type DepositPreauthObj struct {
 	// In JSON, this field is represented with different names depending on the context and API method.
 	// (Note, even though this is specified as "optional" in the code, every ledger entry should have one unless it's legacy data from very early in the XRP Ledger's history.)
 	Index types.Hash256 `json:"index,omitempty"`
+	// Set of bit-flags for this ledger entry.
 	Flags uint32
-	// 	The value 0x0070, mapped to the string DepositPreauth, indicates that this is a DepositPreauth object.
+	// The value 0x0070, mapped to the string DepositPreauth, indicates that this is a DepositPreauth object.
 	LedgerEntryType EntryType
 	// The account that granted the preauthorization. (The destination of the preauthorized payments.)
 	Account types.Address
-	// 	The account that received the preauthorization. (The sender of the preauthorized payments.)
+	// The account that received the preauthorization. (The sender of the preauthorized payments.)
 	Authorize types.Address
 	// A hint indicating which page of the sender's owner directory links to this object, in case the directory
 	// consists of multiple pages. Note: The object does not contain a direct link to the owner directory

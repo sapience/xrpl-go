@@ -32,6 +32,7 @@ type NegativeUNL struct {
 	// context and API method. (Note, even though this is specified as "optional" in the code, every ledger entry
 	// should have one unless it's legacy data from very early in the XRP Ledger's history.)
 	Index types.Hash256 `json:"index,omitempty"`
+	// Set of bit-flags for this ledger entry.
 	Flags uint32
 	// The value 0x004E, mapped to the string NegativeUNL, indicates that this entry is the Negative UNL.
 	LedgerEntryType EntryType
