@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestOffer(t *testing.T) {
@@ -27,11 +28,11 @@ func TestOffer(t *testing.T) {
 	}
 
 	j := `{
+	"Flags": 131072,
+	"LedgerEntryType": "Offer",
 	"Account": "rBqb89MRQJnMPq8wTwEbtz4kvxrEDfcYvt",
 	"BookDirectory": "ACC27DE91DBA86FC509069EAF4BC511D73128B780F2E54BF5E07A369E2446000",
 	"BookNode": "0000000000000000",
-	"Flags": 131072,
-	"LedgerEntryType": "Offer",
 	"OwnerNode": "0000000000000000",
 	"PreviousTxnID": "F0AB71E777B2DA54B86231E19B82554EF1F8211F92ECA473121C655BFC5329BF",
 	"PreviousTxnLgrSeq": 14524914,
@@ -47,4 +48,21 @@ func TestOffer(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestOffer_SetLsfPassive(t *testing.T) {
+	o := &Offer{}
+	o.SetLsfPassive()
+	require.Equal(t, o.Flags, uint32(0x00010000))
+}
+
+func TestOffer_SetLsfSell(t *testing.T) {
+	o := &Offer{}
+	o.SetLsfSell()
+	require.Equal(t, o.Flags, uint32(0x00020000))
+}
+
+func TestOffer_EntryType(t *testing.T) {
+	o := &Offer{}
+	require.Equal(t, o.EntryType(), OfferEntry)
 }

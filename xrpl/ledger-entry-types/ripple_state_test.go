@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRippleState(t *testing.T) {
@@ -59,4 +60,63 @@ func TestRippleState(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestRippleState_EntryType(t *testing.T) {
+	s := &RippleState{}
+	require.Equal(t, s.EntryType(), RippleStateEntry)
+}
+
+func TestRippleState_SetLsfAMMNode(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfAMMNode()
+	require.Equal(t, s.Flags&lsfAMMNode, lsfAMMNode)
+}
+
+func TestRippleState_SetLsfLowReserve(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfLowReserve()
+	require.Equal(t, s.Flags&lsfLowReserve, lsfLowReserve)
+}
+
+func TestRippleState_SetLsfHighReserve(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfHighReserve()
+	require.Equal(t, s.Flags&lsfHighReserve, lsfHighReserve)
+}
+
+func TestRippleState_SetLsfLowAuth(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfLowAuth()
+	require.Equal(t, s.Flags&lsfLowAuth, lsfLowAuth)
+}
+
+func TestRippleState_SetLsfHighAuth(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfHighAuth()
+	require.Equal(t, s.Flags&lsfHighAuth, lsfHighAuth)
+}
+
+func TestRippleState_SetLsfLowNoRipple(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfLowNoRipple()
+	require.Equal(t, s.Flags&lsfLowNoRipple, lsfLowNoRipple)
+}
+
+func TestRippleState_SetLsfHighNoRipple(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfHighNoRipple()
+	require.Equal(t, s.Flags&lsfHighNoRipple, lsfHighNoRipple)
+}
+
+func TestRippleState_SetLsfLowFreeze(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfLowFreeze()
+	require.Equal(t, s.Flags&lsfLowFreeze, lsfLowFreeze)
+}
+
+func TestRippleState_SetLsfHighFreeze(t *testing.T) {
+	s := &RippleState{}
+	s.SetLsfHighFreeze()
+	require.Equal(t, s.Flags&lsfHighFreeze, lsfHighFreeze)
 }

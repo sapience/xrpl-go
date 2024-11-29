@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNFTokenPage(t *testing.T) {
@@ -22,6 +23,7 @@ func TestNFTokenPage(t *testing.T) {
 
 	j := `{
 	"LedgerEntryType": "NFTokenPage",
+	"Flags": 0,
 	"PreviousTxnID": "95C8761B22894E328646F7A70035E9DFBECC90EDD83E43B7B973F626D21A0822",
 	"PreviousTxnLgrSeq": 42891441,
 	"NFTokens": [
@@ -35,4 +37,9 @@ func TestNFTokenPage(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestNFTokenPage_EntryType(t *testing.T) {
+	s := &NFTokenPage{}
+	require.Equal(t, s.EntryType(), NFTokenPageEntry)
 }

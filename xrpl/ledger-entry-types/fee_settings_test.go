@@ -17,9 +17,9 @@ func TestFeeSettings(t *testing.T) {
 	}
 
 	j := `{
-	"BaseFee": "000000000000000A",
 	"Flags": 0,
 	"LedgerEntryType": "FeeSettings",
+	"BaseFee": "000000000000000A",
 	"ReferenceFeeUnits": 10,
 	"ReserveBase": 20000000,
 	"ReserveIncrement": 5000000

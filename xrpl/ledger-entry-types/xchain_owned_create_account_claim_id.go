@@ -65,12 +65,13 @@ type XChainCreateAccountAttestation struct {
 type XChainOwnedCreateAccountClaimID struct {
 	// The account that owns this object.
 	Account types.Address
-	// The ledger index is a hash of a unique prefix for XChainOwnedCreateAccountClaimIDs,
-	// the actual XChainAccountClaimCount value, and the fields in XChainBridge.
-	LedgerIndex string
+	// The unique ID for this ledger entry. In JSON, this field is represented with different names depending on the
+	// context and API method. (Note, even though this is specified as "optional" in the code, every ledger entry
+	// should have one unless it's legacy data from very early in the XRP Ledger's history.)
+	Index types.Hash256 `json:"index,omitempty"`
 	// An integer that determines the order that accounts created through cross-chain
 	// transfers must be performed. Smaller numbers must execute before larger numbers.
-	XChainAccountCreateCount uint64
+	XChainAccountCreateCount string
 	// The door accounts and assets of the bridge this object correlates to.
 	XChainBridge types.XChainBridge
 	// Attestations collected from the witness servers. This includes the parameters needed to recreate the message
@@ -79,6 +80,7 @@ type XChainOwnedCreateAccountClaimID struct {
 	XChainCreateAccountAttestations []XChainCreateAccountAttestation
 }
 
+// EntryType returns the type of the ledger entry.
 func (x *XChainOwnedCreateAccountClaimID) EntryType() EntryType {
 	return XChainOwnedCreateAccountClaimIDEntry
 }

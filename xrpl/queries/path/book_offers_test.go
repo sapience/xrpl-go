@@ -96,11 +96,11 @@ func TestBookOffersResponse(t *testing.T) {
 	"ledger_current_index": 7035305,
 	"offers": [
 		{
+			"Flags": 0,
+			"LedgerEntryType": "Offer",
 			"Account": "rM3X3QSr8icjTGpaF52dozhbT2BZSXJQYM",
 			"BookDirectory": "7E5F614417C2D0A7CEFEB73C4AA773ED5B078DE2B5771F6D55055E4C405218EB",
 			"BookNode": "0000000000000000",
-			"Flags": 0,
-			"LedgerEntryType": "Offer",
 			"OwnerNode": "0000000000000AE0",
 			"PreviousTxnID": "6956221794397C25A53647182E5C78A439766D600724074C99D78982E37599F1",
 			"PreviousTxnLgrSeq": 7022646,
@@ -118,11 +118,11 @@ func TestBookOffersResponse(t *testing.T) {
 			"quality": "1.511056473200875"
 		},
 		{
+			"Flags": 131072,
+			"LedgerEntryType": "Offer",
 			"Account": "rhsxKNyN99q6vyYCTHNTC1TqWCeHr7PNgp",
 			"BookDirectory": "7E5F614417C2D0A7CEFEB73C4AA773ED5B078DE2B5771F6D5505DCAA8FE12000",
 			"BookNode": "0000000000000000",
-			"Flags": 131072,
-			"LedgerEntryType": "Offer",
 			"OwnerNode": "0000000000000001",
 			"PreviousTxnID": "8AD748CD489F7FF34FCD4FB73F77F1901E27A6EFA52CCBB0CCDAAB934E5E754D",
 			"PreviousTxnLgrSeq": 7007546,
