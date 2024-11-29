@@ -29,7 +29,7 @@ type DID struct {
 	// The value 0x0049, mapped to the string DID, indicates that this object is a DID object.
 	LedgerEntryType EntryType
 	// Set of bit-flags for this ledger entry.
-	Flags           uint32
+	Flags uint32
 	// The account that controls the DID.
 	Account types.Address
 	// The W3C standard DID document associated with the DID.

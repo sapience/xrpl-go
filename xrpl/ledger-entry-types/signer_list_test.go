@@ -97,8 +97,8 @@ func TestSignerEntryWrapper_Flatten(t *testing.T) {
 
 func TestSignerEntry_Flatten(t *testing.T) {
 	s := &SignerEntry{
-		Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
-		SignerWeight: 2,
+		Account:       "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+		SignerWeight:  2,
 		WalletLocator: "0000000000000000000000000000000000000000000000000000000000000000",
 	}
 
