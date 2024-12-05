@@ -58,7 +58,7 @@ func (n *NFTokenCancelOffer) Validate() (bool, error) {
 		return false, err
 	}
 
-	if len(n.NFTokenOffers) == 0 {
+	if len(n.NFTokenOffers) == 0 || n.NFTokenOffers == nil {
 		return false, ErrEmptyNFTokenOffers
 	}
 

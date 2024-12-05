@@ -95,12 +95,46 @@ func TestDIDSet_Validate(t *testing.T) {
 			expectedErr: ErrInvalidAccount,
 		},
 		{
-			name: "pass - base transaction",
+			name: "fail - no field set",
 			tx: &DIDSet{
 				BaseTx: BaseTx{
 					Account:         "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
 					TransactionType: DIDSetTx,
 				},
+			},
+			expected:    false,
+			expectedErr: ErrDIDSetMustSetEitherDataOrDIDDocumentOrURI,
+		},
+		{
+			name: "pass - set data",
+			tx: &DIDSet{
+				BaseTx: BaseTx{
+					Account:         "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					TransactionType: DIDSetTx,
+				},
+				Data: "data",
+			},
+			expected: true,
+		},
+		{
+			name: "pass - set did document",
+			tx: &DIDSet{
+				BaseTx: BaseTx{
+					Account:         "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					TransactionType: DIDSetTx,
+				},
+				DIDDocument: "did document",
+			},
+			expected: true,
+		},
+		{
+			name: "pass - set uri",
+			tx: &DIDSet{
+				BaseTx: BaseTx{
+					Account:         "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+					TransactionType: DIDSetTx,
+				},
+				URI: "uri",
 			},
 			expected: true,
 		},

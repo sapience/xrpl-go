@@ -21,49 +21,49 @@ func TestAMMWithdraw_Flags(t *testing.T) {
 		expected uint32
 	}{
 		{
-			name: "SetLPTokentFlag",
+			name: "pass - SetLPTokentFlag",
 			setter: func(a *AMMWithdraw) {
 				a.SetLPTokentFlag()
 			},
 			expected: tfLPToken,
 		},
 		{
-			name: "SetWithdrawAllFlag",
+			name: "pass - SetWithdrawAllFlag",
 			setter: func(a *AMMWithdraw) {
 				a.SetWithdrawAllFlag()
 			},
 			expected: tfWithdrawAll,
 		},
 		{
-			name: "SetOneAssetWithdrawAllFlag",
+			name: "pass - SetOneAssetWithdrawAllFlag",
 			setter: func(a *AMMWithdraw) {
 				a.SetOneAssetWithdrawAllFlag()
 			},
 			expected: tfOneAssetWithdrawAll,
 		},
 		{
-			name: "SetSingleAssetFlag",
+			name: "pass - SetSingleAssetFlag",
 			setter: func(a *AMMWithdraw) {
 				a.SetSingleAssetFlag()
 			},
 			expected: tfSingleAsset,
 		},
 		{
-			name: "SetTwoAssetFlag",
+			name: "pass - SetTwoAssetFlag",
 			setter: func(a *AMMWithdraw) {
 				a.SetTwoAssetFlag()
 			},
 			expected: tfTwoAsset,
 		},
 		{
-			name: "SetOneAssetLPTokenFlag",
+			name: "pass - SetOneAssetLPTokenFlag",
 			setter: func(a *AMMWithdraw) {
 				a.SetOneAssetLPTokenFlag()
 			},
 			expected: tfOneAssetLPToken,
 		},
 		{
-			name: "SetLimitLPTokenFlag",
+			name: "pass - SetLimitLPTokenFlag",
 			setter: func(a *AMMWithdraw) {
 				a.SetLimitLPTokenFlag()
 			},
@@ -89,7 +89,7 @@ func TestAMMWithdraw_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Full AMMWithdraw",
+			name: "pass - Full AMMWithdraw",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -162,7 +162,7 @@ func TestAMMWithdraw_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Minimal AMMWithdraw",
+			name: "pass - Minimal AMMWithdraw",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -214,7 +214,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "Valid AMMWithdraw",
+			name: "pass - valid AMMWithdraw",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -254,7 +254,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "Invalid AMMWithdraw BaseTx, TransactionType missing",
+			name: "fail - invalid AMMWithdraw BaseTx, TransactionType missing",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:  "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -293,7 +293,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Asset",
+			name: "fail - invalid Asset",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -313,7 +313,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid, Amount2 without Amount",
+			name: "fail - Amount2 without Amount",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -338,7 +338,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid, EPrice set without Amount",
+			name: "fail - EPrice set without Amount",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -363,7 +363,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Asset2",
+			name: "fail - invalid Asset2",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -384,7 +384,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Amount",
+			name: "fail - invalid Amount",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -409,7 +409,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Amount2",
+			name: "fail - invalid Amount2",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -438,7 +438,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid EPrice",
+			name: "fail - invalid EPrice",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -472,7 +472,7 @@ func TestAMMWithdraw_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid LPTokenIn",
+			name: "fail - invalid LPTokenIn",
 			input: &AMMWithdraw{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",

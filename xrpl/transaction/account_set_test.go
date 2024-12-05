@@ -13,35 +13,35 @@ func TestAccountSetFlags(t *testing.T) {
 		expected uint32
 	}{
 		{
-			name: "SetRequireDestTag",
+			name: "pass - SetRequireDestTag",
 			setter: func(s *AccountSet) {
 				s.SetRequireDestTag()
 			},
 			expected: tfRequireDestTag,
 		},
 		{
-			name: "SetRequireAuth",
+			name: "pass - SetRequireAuth",
 			setter: func(s *AccountSet) {
 				s.SetRequireAuth()
 			},
 			expected: tfRequireAuth,
 		},
 		{
-			name: "SetDisallowXRP",
+			name: "pass - SetDisallowXRP",
 			setter: func(s *AccountSet) {
 				s.SetDisallowXRP()
 			},
 			expected: tfDisallowXRP,
 		},
 		{
-			name: "SetOptionalDestTag",
+			name: "pass - SetOptionalDestTag",
 			setter: func(s *AccountSet) {
 				s.SetOptionalDestTag()
 			},
 			expected: tfOptionalDestTag,
 		},
 		{
-			name: "SetRequireDestTag and SetRequireAuth",
+			name: "pass - SetRequireDestTag and SetRequireAuth",
 			setter: func(s *AccountSet) {
 				s.SetRequireDestTag()
 				s.SetRequireAuth()
@@ -49,7 +49,7 @@ func TestAccountSetFlags(t *testing.T) {
 			expected: tfRequireDestTag | tfRequireAuth,
 		},
 		{
-			name: "SetDisallowXRP and SetOptionalDestTag",
+			name: "pass - SetDisallowXRP and SetOptionalDestTag",
 			setter: func(s *AccountSet) {
 				s.SetDisallowXRP()
 				s.SetOptionalDestTag()
@@ -57,7 +57,7 @@ func TestAccountSetFlags(t *testing.T) {
 			expected: tfDisallowXRP | tfOptionalDestTag,
 		},
 		{
-			name: "SetRequireDestTag, SetRequireAuth, and SetDisallowXRP",
+			name: "pass - SetRequireDestTag, SetRequireAuth, and SetDisallowXRP",
 			setter: func(s *AccountSet) {
 				s.SetRequireDestTag()
 				s.SetRequireAuth()
@@ -66,7 +66,7 @@ func TestAccountSetFlags(t *testing.T) {
 			expected: tfRequireDestTag | tfRequireAuth | tfDisallowXRP,
 		},
 		{
-			name: "All flags",
+			name: "pass - All flags",
 			setter: func(s *AccountSet) {
 				s.SetRequireDestTag()
 				s.SetRequireAuth()
@@ -94,7 +94,7 @@ func TestAccountSet_Validate(t *testing.T) {
 		valid      bool
 	}{
 		{
-			name: "Valid AccountSet",
+			name: "pass - Valid AccountSet",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -109,13 +109,13 @@ func TestAccountSet_Validate(t *testing.T) {
 				EmailHash:    "1234567890abcdef",
 				MessageKey:   "messagekey",
 				SetFlag:      2,
-				TransferRate: 1000000000,
+				TransferRate: 1000000001,
 				TickSize:     5,
 			},
 			valid: true,
 		},
 		{
-			name: "Valid AccountSet without options, just the commons fields",
+			name: "pass - Valid AccountSet without options, just the commons fields",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -129,7 +129,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
-			name: "Invalid AccountSet with high SetFlag",
+			name: "fail - Invalid AccountSet with high SetFlag",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -144,7 +144,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			name: "Invalid AccountSet with low TickSize",
+			name: "fail - Invalid AccountSet with low TickSize",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -159,7 +159,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			name: "Invalid AccountSet with high TickSize",
+			name: "fail - Invalid AccountSet with high TickSize",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -174,7 +174,7 @@ func TestAccountSet_Validate(t *testing.T) {
 			valid: false,
 		},
 		{
-			name: "Valid AccountSet TickSize set to 0 to disable it",
+			name: "pass - Valid AccountSet TickSize set to 0 to disable it",
 			accountSet: AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",

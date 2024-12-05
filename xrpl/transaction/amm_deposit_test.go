@@ -94,42 +94,42 @@ func TestAMMDeposit_Flags(t *testing.T) {
 		expected uint32
 	}{
 		{
-			name: "SetLPTokentFlag",
+			name: "pass - SetLPTokentFlag",
 			setter: func(a *AMMDeposit) {
 				a.SetLPTokentFlag()
 			},
 			expected: tfLPToken,
 		},
 		{
-			name: "SetSingleAssetFlag",
+			name: "pass - SetSingleAssetFlag",
 			setter: func(a *AMMDeposit) {
 				a.SetSingleAssetFlag()
 			},
 			expected: tfSingleAsset,
 		},
 		{
-			name: "SetTwoAssetFlag",
+			name: "pass - SetTwoAssetFlag",
 			setter: func(a *AMMDeposit) {
 				a.SetTwoAssetFlag()
 			},
 			expected: tfTwoAsset,
 		},
 		{
-			name: "SetOneAssetLPTokenFlag",
+			name: "pass - SetOneAssetLPTokenFlag",
 			setter: func(a *AMMDeposit) {
 				a.SetOneAssetLPTokenFlag()
 			},
 			expected: tfOneAssetLPToken,
 		},
 		{
-			name: "SetLimitLPTokenFlag",
+			name: "pass - SetLimitLPTokenFlag",
 			setter: func(a *AMMDeposit) {
 				a.SetLimitLPTokenFlag()
 			},
 			expected: tfLimitLPToken,
 		},
 		{
-			name: "SetTwoAssetIfEmptyFlag",
+			name: "pass - SetTwoAssetIfEmptyFlag",
 			setter: func(a *AMMDeposit) {
 				a.SetTwoAssetIfEmptyFlag()
 			},
@@ -154,7 +154,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "Valid AMMDeposit with Amount and Amount2",
+			name: "pass - valid AMMDeposit with Amount and Amount2",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -180,7 +180,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "Invalid AMMDeposit BaseTx without TransactionType",
+			name: "fail - invalid AMMDeposit BaseTx without TransactionType",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:  "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -205,7 +205,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid AMMDeposit with Amount2 but no Amount",
+			name: "fail - invalid AMMDeposit with Amount2 but no Amount",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -226,7 +226,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid AMMDeposit with EPrice but no Amount",
+			name: "fail - invalid AMMDeposit with EPrice but no Amount",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -251,7 +251,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid AMMDeposit with no LPTokenOut or Amount",
+			name: "fail - invalid AMMDeposit with no LPTokenOut or Amount",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -271,7 +271,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Valid AMMDeposit with LPTokenOut",
+			name: "pass - valid AMMDeposit with LPTokenOut",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -296,7 +296,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "Invalid AMMDeposit, invalid Asset",
+			name: "fail - invalid AMMDeposit, invalid Asset",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -321,7 +321,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid AMMDeposit, invalid Asset2",
+			name: "fail - invalid AMMDeposit, invalid Asset2",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -347,7 +347,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid AMMDeposit, invalid Amount",
+			name: "fail - invalid AMMDeposit, invalid Amount",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -375,7 +375,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid AMMDeposit, invalid Amount2",
+			name: "fail - invalid AMMDeposit, invalid Amount2",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -408,7 +408,7 @@ func TestAMMDeposit_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid AMMDeposit, invalid EPrice",
+			name: "fail - invalid AMMDeposit, invalid EPrice",
 			tx: &AMMDeposit{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",

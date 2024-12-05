@@ -6,6 +6,12 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrClawbackMissingAmount = errors.New("clawback: missing field Amount")
+	ErrClawbackInvalidAmount = errors.New("clawback: invalid Amount")
+	ErrClawbackSameAccount   = errors.New("clawback: Account and Amount.issuer cannot be the same")
+)
+
 // Requires the Clawback amendment.
 // Claw back tokens issued by your account.
 // Clawback is disabled by default. To use clawback, you must send an AccountSet transaction to enable the Allow Trust Line Clawback setting.
@@ -23,10 +29,12 @@ type Clawback struct {
 	Amount types.CurrencyAmount
 }
 
+// TxType implements the TxType method for the Clawback struct.
 func (*Clawback) TxType() TxType {
 	return ClawbackTx
 }
 
+// Flatten implements the Flatten method for the Clawback struct.
 func (c *Clawback) Flatten() FlatTransaction {
 	flattened := c.BaseTx.Flatten()
 
@@ -39,7 +47,7 @@ func (c *Clawback) Flatten() FlatTransaction {
 	return flattened
 }
 
-// Validates the Clawback struct.
+// Validate implements the Validate method for the Clawback struct.
 func (c *Clawback) Validate() (bool, error) {
 	// validate the base transaction
 	_, err := c.BaseTx.Validate()
@@ -49,17 +57,17 @@ func (c *Clawback) Validate() (bool, error) {
 
 	// check if the field Amount is set
 	if c.Amount == nil {
-		return false, errors.New("clawback: missing field Amount")
+		return false, ErrClawbackMissingAmount
 	}
 
 	// check if the Amount is a valid currency amount
 	if ok, _ := IsIssuedCurrency(c.Amount); !ok {
-		return false, errors.New("clawback: invalid Amount")
+		return false, ErrClawbackInvalidAmount
 	}
 
 	// check if Account is not the same as the issuer
 	if c.Account.String() == c.Amount.Flatten().(map[string]interface{})["issuer"] {
-		return false, errors.New("clawback: Account and Amount.issuer cannot be the same")
+		return false, ErrClawbackSameAccount
 	}
 
 	return true, nil

@@ -19,7 +19,7 @@ func TestEscrowFinish_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "All fields set",
+			name: "pass - all fields set",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -40,7 +40,7 @@ func TestEscrowFinish_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Optional fields omitted",
+			name: "pass - optional fields omitted",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -57,7 +57,7 @@ func TestEscrowFinish_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Only BaseTx fields",
+			name: "pass - only BaseTx fields",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -89,7 +89,7 @@ func TestEscrowFinish_Validate(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name: "Valid EscrowFinish",
+			name: "pass - valid EscrowFinish",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -102,7 +102,7 @@ func TestEscrowFinish_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Invalid EscrowFinish BaseTx",
+			name: "fail - invalid EscrowFinish BaseTx",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -114,7 +114,7 @@ func TestEscrowFinish_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid Owner Address",
+			name: "fail - invalid Owner Address",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -127,7 +127,7 @@ func TestEscrowFinish_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Missing OfferSequence",
+			name: "fail - missing OfferSequence",
 			entry: &EscrowFinish{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

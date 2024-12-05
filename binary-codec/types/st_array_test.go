@@ -32,7 +32,7 @@ func TestSTArrayFromJson(t *testing.T) {
 					"DeletedNode": map[string]any{
 						"FinalFields": map[string]any{
 							"ExchangeRate":      "4a0745621d069432",
-							"Flags":             0,
+							"Flags":             uint32(0),
 							"RootIndex":         "036D7E923EF22B65E19D95A6365C3373E1E96586E27015074A0745621D069432",
 							"TakerGetsCurrency": "0000000000000000000000000000000000000000",
 							"TakerGetsIssuer":   "0000000000000000000000000000000000000000",
@@ -46,7 +46,7 @@ func TestSTArrayFromJson(t *testing.T) {
 				map[string]any{
 					"ModifiedNode": map[string]any{
 						"FinalFields": map[string]any{
-							"Flags":     0,
+							"Flags":     uint32(0),
 							"Owner":     "r68xfQkhFxZrbwo6RRKq728JF2fJYQRE1",
 							"RootIndex": "5ED0913938CD6D43BD6450201737394A9991753C4581E5682D61F35048D8FBFC",
 						},
@@ -124,7 +124,7 @@ func TestSTArrayToJson(t *testing.T) {
 					"DeletedNode": map[string]any{
 						"FinalFields": map[string]any{
 							"ExchangeRate":      "4A0745621D069432",
-							"Flags":             0,
+							"Flags":             uint32(0),
 							"RootIndex":         "036D7E923EF22B65E19D95A6365C3373E1E96586E27015074A0745621D069432",
 							"TakerGetsCurrency": "0000000000000000000000000000000000000000",
 							"TakerGetsIssuer":   "0000000000000000000000000000000000000000",
@@ -138,7 +138,7 @@ func TestSTArrayToJson(t *testing.T) {
 				map[string]any{
 					"ModifiedNode": map[string]any{
 						"FinalFields": map[string]any{
-							"Flags":     0,
+							"Flags":     uint32(0),
 							"Owner":     "r68xfQkhFxZrbwo6RRKq728JF2fJYQRE1",
 							"RootIndex": "5ED0913938CD6D43BD6450201737394A9991753C4581E5682D61F35048D8FBFC",
 						},

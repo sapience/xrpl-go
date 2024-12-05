@@ -7,6 +7,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrEscrowCancelMissingOwner         = errors.New("escrow cancel: missing owner")
+	ErrEscrowCancelMissingOfferSequence = errors.New("escrow cancel: missing offer sequence")
+)
+
 // Return escrowed XRP to the sender.
 //
 // Example:
@@ -59,11 +64,11 @@ func (e *EscrowCancel) Validate() (bool, error) {
 	}
 
 	if !addresscodec.IsValidClassicAddress(e.Owner.String()) {
-		return false, errors.New("invalid xrpl address for the Owner field")
+		return false, ErrEscrowCancelMissingOwner
 	}
 
 	if e.OfferSequence == 0 {
-		return false, errors.New("missing OfferSequence")
+		return false, ErrEscrowCancelMissingOfferSequence
 	}
 
 	return true, nil

@@ -136,7 +136,10 @@ func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 	// 	return "", "", err
 	// }
 
-	encodedTx, _ := binarycodec.EncodeForSigning(tx)
+	encodedTx, err := binarycodec.EncodeForSigning(tx)
+	if err != nil {
+		return "", "", err
+	}
 	hexTx, err := hex.DecodeString(encodedTx)
 	if err != nil {
 		return "", "", err

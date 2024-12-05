@@ -7,6 +7,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrInvalidRegularKey        = errors.New("invalid xrpl address for the RegularKey field")
+	ErrRegularKeyMatchesAccount = errors.New("regular key must not match the account address")
+)
+
 // A SetRegularKey transaction assigns, changes, or removes the regular key pair associated with an account.
 //
 // You can protect your account by assigning a regular key pair to it and using it instead of the master key pair to sign transactions whenever possible.
@@ -59,12 +64,12 @@ func (s *SetRegularKey) Validate() (bool, error) {
 
 	// Check if the regular key is not the same as the account address
 	if s.RegularKey != "" && s.RegularKey == s.Account {
-		return false, errors.New("regular key must not match the account address")
+		return false, ErrRegularKeyMatchesAccount
 	}
 
 	// Check if the regular key is a valid xrpl address
 	if s.RegularKey != "" && !addresscodec.IsValidClassicAddress(s.RegularKey.String()) {
-		return false, errors.New("invalid xrpl address for the RegularKey field")
+		return false, ErrInvalidRegularKey
 	}
 
 	return true, nil

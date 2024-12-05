@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -111,7 +112,7 @@ func (x *XChainClaim) Validate() (bool, error) {
 		return false, ErrInvalidDestinationAddress
 	}
 
-	if x.XChainClaimID == "" {
+	if x.XChainClaimID == "" || !typecheck.IsHex(x.XChainClaimID) {
 		return false, ErrMissingXChainClaimID
 	}
 

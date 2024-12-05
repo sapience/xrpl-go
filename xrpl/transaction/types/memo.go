@@ -1,4 +1,4 @@
-package transaction
+package types
 
 type MemoWrapper struct {
 	Memo Memo

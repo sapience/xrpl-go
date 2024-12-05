@@ -14,7 +14,7 @@ func TestIsSigner(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "Valid Signer object",
+			name: "pass - valid Signer object",
 			input: SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				TxnSignature:  "0123456789abcdef",
@@ -23,7 +23,7 @@ func TestIsSigner(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "Signer object with missing fields",
+			name: "fail - Signer object with missing fields",
 			input: SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				SigningPubKey: "abcdef0123456789",
@@ -31,7 +31,7 @@ func TestIsSigner(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Signer object with empty XRPL account",
+			name: "fail - invalid Signer object with empty XRPL account",
 			input: SignerData{
 				Account:       "  ",
 				SigningPubKey: "abcdef0123456789",
@@ -40,7 +40,7 @@ func TestIsSigner(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Signer object with invalid XRPL account",
+			name: "fail - invalid Signer object with invalid XRPL account",
 			input: SignerData{
 				Account:       "invalid",
 				SigningPubKey: "abcdef0123456789",
@@ -49,7 +49,7 @@ func TestIsSigner(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Signer object with empty TxnSignature",
+			name: "fail - invalid Signer object with empty TxnSignature",
 			input: SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				TxnSignature:  "  ",
@@ -58,7 +58,7 @@ func TestIsSigner(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid Signer object with empty SigningPubKey",
+			name: "fail - invalid Signer object with empty SigningPubKey",
 			input: SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				TxnSignature:  "0123456789abcdef",
@@ -67,7 +67,7 @@ func TestIsSigner(t *testing.T) {
 			expected: false,
 		},
 		{
-			name:     "Nil object",
+			name:     "fail - nil object",
 			input:    SignerData{},
 			expected: false,
 		},
@@ -88,7 +88,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "Valid IssuedCurrency object",
+			name: "pass - valid IssuedCurrency object",
 			input: types.IssuedCurrencyAmount{
 				Value:    "100",
 				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
@@ -97,33 +97,33 @@ func TestIsIssuedCurrency(t *testing.T) {
 			expected: true,
 		},
 		{
-			name:     "Invalid IssuedCurrency object",
+			name:     "fail - invalid IssuedCurrency object",
 			input:    types.XRPCurrencyAmount(100), // should be non XRP
 			expected: false,
 		},
 		{
-			name: "IssuedCurrency object with missing currency and issuer fields",
+			name: "fail - issuedCurrency object with missing currency and issuer fields",
 			input: types.IssuedCurrencyAmount{
 				Value: "100",
 			},
 			expected: false,
 		},
 		{
-			name: "IssuedCurrency object with missing issuer and value fields",
+			name: "fail - issuedCurrency object with missing issuer and value fields",
 			input: types.IssuedCurrencyAmount{
 				Currency: "USD",
 			},
 			expected: false,
 		},
 		{
-			name: "IssuedCurrency object with missing currency and value fields",
+			name: "fail - issuedCurrency object with missing currency and value fields",
 			input: types.IssuedCurrencyAmount{
 				Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 			},
 			expected: false,
 		},
 		{
-			name: "IssuedCurrency object with empty currency",
+			name: "fail - issuedCurrency object with empty currency",
 			input: types.IssuedCurrencyAmount{
 				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				Currency: "   ",
@@ -132,7 +132,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "IssuedCurrency object with XRP currency",
+			name: "fail - issuedCurrency object with XRP currency",
 			input: types.IssuedCurrencyAmount{
 				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				Currency: "XRp", // will be uppercased during validation
@@ -141,7 +141,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "IssuedCurrency object with empty value",
+			name: "fail - issuedCurrency object with empty value",
 			input: types.IssuedCurrencyAmount{
 				Issuer:   "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				Currency: "USD",
@@ -150,7 +150,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "IssuedCurrency object with invalid issuer",
+			name: "fail - issuedCurrency object with invalid issuer",
 			input: types.IssuedCurrencyAmount{
 				Issuer:   "invalid",
 				Currency: "USD",
@@ -159,7 +159,7 @@ func TestIsIssuedCurrency(t *testing.T) {
 			expected: false,
 		},
 		{
-			name:     "Empty object",
+			name:     "fail - empty object",
 			input:    types.IssuedCurrencyAmount{},
 			expected: false,
 		},
@@ -175,8 +175,8 @@ func TestIsIssuedCurrency(t *testing.T) {
 }
 
 func TestIsMemo(t *testing.T) {
-	t.Run("Valid Memo object with all fields", func(t *testing.T) {
-		obj := Memo{
+	t.Run("pass - valid Memo object with all fields", func(t *testing.T) {
+		obj := types.Memo{
 			MemoData:   "0123456789abcdef",
 			MemoFormat: "abcdef0123456789",
 			MemoType:   "abcdef0123456789",
@@ -189,8 +189,8 @@ func TestIsMemo(t *testing.T) {
 		}
 	})
 
-	t.Run("Valid memo object with missing fields", func(t *testing.T) {
-		obj := Memo{
+	t.Run("pass - valid memo object with missing fields", func(t *testing.T) {
+		obj := types.Memo{
 			MemoData: "0123456789abcdef",
 		}
 
@@ -201,8 +201,8 @@ func TestIsMemo(t *testing.T) {
 		}
 	})
 
-	t.Run("Memo object with MemoData non hex value", func(t *testing.T) {
-		obj := Memo{
+	t.Run("fail - memo object with MemoData non hex value", func(t *testing.T) {
+		obj := types.Memo{
 			MemoData: "bob",
 		}
 
@@ -211,8 +211,8 @@ func TestIsMemo(t *testing.T) {
 		}
 	})
 
-	t.Run("Memo object with MemoFormat non hex value", func(t *testing.T) {
-		obj := Memo{
+	t.Run("fail - memo object with MemoFormat non hex value", func(t *testing.T) {
+		obj := types.Memo{
 			MemoData:   "0123456789abcdef",
 			MemoFormat: "non-hex",
 		}
@@ -222,8 +222,8 @@ func TestIsMemo(t *testing.T) {
 		}
 	})
 
-	t.Run("Memo object with MemoType non hex value", func(t *testing.T) {
-		obj := Memo{
+	t.Run("fail - memo object with MemoType non hex value", func(t *testing.T) {
+		obj := types.Memo{
 			MemoData:   "0123456789abcdef",
 			MemoFormat: "0123456789abcdef",
 			MemoType:   "non-hex",
@@ -234,15 +234,15 @@ func TestIsMemo(t *testing.T) {
 		}
 	})
 
-	t.Run("Empty object", func(t *testing.T) {
-		obj := Memo{}
+	t.Run("fail - empty object", func(t *testing.T) {
+		obj := types.Memo{}
 		if ok, _ := IsMemo(obj); ok {
 			t.Errorf("Expected IsMemo to return false, but got true")
 		}
 	})
 }
 func TestIsAsset(t *testing.T) {
-	t.Run("Valid Asset object with currency XRP only", func(t *testing.T) {
+	t.Run("pass - valid Asset object with currency XRP only", func(t *testing.T) {
 		obj := ledger.Asset{
 			Currency: "xrP", // will be converted to XRP in the Validate function
 		}
@@ -254,7 +254,7 @@ func TestIsAsset(t *testing.T) {
 		}
 	})
 
-	t.Run("Invalid Asset object with currency XRP and an issuer defined", func(t *testing.T) {
+	t.Run("fail - invalid Asset object with currency XRP and an issuer defined", func(t *testing.T) {
 		obj := ledger.Asset{
 			Currency: "xrP", // will be converted to XRP in the Validate function
 			Issuer:   "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -267,7 +267,7 @@ func TestIsAsset(t *testing.T) {
 		}
 	})
 
-	t.Run("Invalid Asset object with currency only and different than XRP", func(t *testing.T) {
+	t.Run("fail - invalid Asset object with currency only and different than XRP", func(t *testing.T) {
 		obj := ledger.Asset{
 			Currency: "USD", // missing issuer
 		}
@@ -279,7 +279,7 @@ func TestIsAsset(t *testing.T) {
 		}
 	})
 
-	t.Run("Valid Asset object with currency and issuer", func(t *testing.T) {
+	t.Run("pass - valid Asset object with currency and issuer", func(t *testing.T) {
 		obj := ledger.Asset{
 			Currency: "USD",
 			Issuer:   "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -292,7 +292,7 @@ func TestIsAsset(t *testing.T) {
 		}
 	})
 
-	t.Run("Asset object with missing currency", func(t *testing.T) {
+	t.Run("fail - Asset object with missing currency", func(t *testing.T) {
 		obj := ledger.Asset{
 			Issuer: "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
 		}
@@ -306,7 +306,7 @@ func TestIsAsset(t *testing.T) {
 		}
 	})
 
-	t.Run("Empty Asset object", func(t *testing.T) {
+	t.Run("fail - empty Asset object", func(t *testing.T) {
 		obj := ledger.Asset{}
 
 		ok, err := IsAsset(obj)
@@ -325,56 +325,56 @@ func TestIsPath(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "Valid path with account only",
+			name: "pass - valid path with account only",
 			input: []PathStep{
 				{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
 			},
 			expected: true,
 		},
 		{
-			name: "Valid path with currency only",
+			name: "pass - valid path with currency only",
 			input: []PathStep{
 				{Currency: "USD"},
 			},
 			expected: true,
 		},
 		{
-			name: "Valid path with issuer only",
+			name: "pass - valid path with issuer only",
 			input: []PathStep{
 				{Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
 			},
 			expected: true,
 		},
 		{
-			name: "Valid path with currency and issuer",
+			name: "pass - valid path with currency and issuer",
 			input: []PathStep{
 				{Currency: "USD", Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
 			},
 			expected: true,
 		},
 		{
-			name: "Invalid path with account and currency",
+			name: "fail - invalid path with account and currency",
 			input: []PathStep{
 				{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW", Currency: "USD"},
 			},
 			expected: false,
 		},
 		{
-			name: "Invalid path with account and issuer",
+			name: "fail - invalid path with account and issuer",
 			input: []PathStep{
 				{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW", Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
 			},
 			expected: false,
 		},
 		{
-			name: "Invalid path with currency XRP and issuer",
+			name: "fail - invalid path with currency XRP and issuer",
 			input: []PathStep{
 				{Currency: "XRP", Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
 			},
 			expected: false,
 		},
 		{
-			name:     "Empty path",
+			name:     "fail - empty path",
 			input:    []PathStep{},
 			expected: true,
 		},
@@ -395,7 +395,7 @@ func TestIsPaths(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "Valid paths with single path and single step",
+			name: "pass - valid paths with single path and single step",
 			input: [][]PathStep{
 				{
 					{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
@@ -404,7 +404,7 @@ func TestIsPaths(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "Valid paths with multiple paths and steps",
+			name: "pass - valid paths with multiple paths and steps",
 			input: [][]PathStep{
 				{
 					{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
@@ -418,14 +418,14 @@ func TestIsPaths(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "Invalid paths with empty path",
+			name: "fail - invalid paths with empty path",
 			input: [][]PathStep{
 				{},
 			},
 			expected: false,
 		},
 		{
-			name: "Invalid paths with empty path step",
+			name: "fail - invalid paths with empty path step",
 			input: [][]PathStep{
 				{
 					{},
@@ -434,7 +434,7 @@ func TestIsPaths(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid paths with invalid path step, account and currency cannot be together",
+			name: "fail - invalid paths with invalid path step, account and currency cannot be together",
 			input: [][]PathStep{
 				{
 					{Account: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW", Currency: "USD"},
@@ -443,7 +443,7 @@ func TestIsPaths(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid paths with invalid path step having currency XRP and issuer",
+			name: "fail - invalid paths with invalid path step having currency XRP and issuer",
 			input: [][]PathStep{
 				{
 					{Currency: "XRP", Issuer: "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW"},
@@ -452,7 +452,7 @@ func TestIsPaths(t *testing.T) {
 			expected: false,
 		},
 		{
-			name:     "Empty paths",
+			name:     "fail - empty paths",
 			input:    [][]PathStep{},
 			expected: false,
 		},

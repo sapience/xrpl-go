@@ -7,6 +7,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrAccountSetInvalidSetFlag  = errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+	ErrAccountSetInvalidTickSize = errors.New("accountSet: TickSize must be an integer between 0 and 15 inclusive")
+)
+
 const (
 	//
 	// Account Set Flags
@@ -96,9 +101,12 @@ type AccountSet struct {
 	// Tick size to use for offers involving a currency issued by this address.
 	// The exchange rates of those offers is rounded to this many significant
 	// digits. Valid values are 3 to 15 inclusive, or 0 to disable.
-	TickSize      uint8         `json:",omitempty"`
+	TickSize uint8 `json:",omitempty"`
+	// (Optional) An arbitrary 256-bit value. If specified, the value is stored as
+	// part of the account but has no inherent meaning or requirements.
 	WalletLocator types.Hash256 `json:",omitempty"`
-	WalletSize    uint32        `json:",omitempty"`
+	// (Optional) Not used. This field is valid in AccountSet transactions but does nothing.
+	WalletSize uint32 `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (AccountSet).
@@ -113,7 +121,7 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	flattened["TransactionType"] = "AccountSet"
 
 	if s.ClearFlag != 0 {
-		flattened["ClearFlag"] = int(s.ClearFlag)
+		flattened["ClearFlag"] = s.ClearFlag
 	}
 	if s.Domain != "" {
 		flattened["Domain"] = s.Domain
@@ -128,19 +136,19 @@ func (s *AccountSet) Flatten() FlatTransaction {
 		flattened["NFTokenMinter"] = s.NFTokenMinter
 	}
 	if s.SetFlag != 0 {
-		flattened["SetFlag"] = int(s.SetFlag)
+		flattened["SetFlag"] = s.SetFlag
 	}
 	if s.TransferRate != 0 {
-		flattened["TransferRate"] = int(s.TransferRate)
+		flattened["TransferRate"] = s.TransferRate
 	}
 	if s.TickSize != 0 {
-		flattened["TickSize"] = int(s.TickSize)
+		flattened["TickSize"] = s.TickSize
 	}
 	if s.WalletLocator != "" {
 		flattened["WalletLocator"] = s.WalletLocator.String()
 	}
 	if s.WalletSize != 0 {
-		flattened["WalletSize"] = int(s.WalletSize)
+		flattened["WalletSize"] = s.WalletSize
 	}
 
 	return flattened
@@ -336,7 +344,7 @@ func (s *AccountSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flatten, "ClearFlag", typecheck.IsInt)
+	err = ValidateOptionalField(flatten, "ClearFlag", typecheck.IsUint32)
 	if err != nil {
 		return false, err
 	}
@@ -356,17 +364,17 @@ func (s *AccountSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flatten, "SetFlag", typecheck.IsInt)
+	err = ValidateOptionalField(flatten, "SetFlag", typecheck.IsUint32)
 	if err != nil {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flatten, "TransferRate", typecheck.IsInt)
+	err = ValidateOptionalField(flatten, "TransferRate", typecheck.IsUint32)
 	if err != nil {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flatten, "TickSize", typecheck.IsInt)
+	err = ValidateOptionalField(flatten, "TickSize", typecheck.IsUint8)
 	if err != nil {
 		return false, err
 	}
@@ -381,7 +389,7 @@ func (s *AccountSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	err = ValidateOptionalField(flatten, "WalletSize", typecheck.IsInt)
+	err = ValidateOptionalField(flatten, "WalletSize", typecheck.IsUint32)
 	if err != nil {
 		return false, err
 	}
@@ -389,13 +397,13 @@ func (s *AccountSet) Validate() (bool, error) {
 	// check if SetFlag is within the valid range
 	if s.SetFlag != 0 {
 		if s.SetFlag < asfRequireDest || s.SetFlag > asfAllowTrustLineClawback {
-			return false, errors.New("accountSet: SetFlag must be an integer between asfRequireDest (1) and asfAllowTrustLineClawback (16)")
+			return false, ErrAccountSetInvalidSetFlag
 		}
 	}
 
 	// check if TickSize is within the valid range
 	if s.TickSize != 0 && (s.TickSize < MinTickSize || s.TickSize > MaxTickSize) {
-		return false, errors.New("accountSet: TickSize must be between 3 and 15")
+		return false, ErrAccountSetInvalidTickSize
 	}
 
 	return true, nil

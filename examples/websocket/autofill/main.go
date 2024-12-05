@@ -48,16 +48,16 @@ func main() {
 					},
 				},
 			},
-			Memos: []transactions.MemoWrapper{
+			Memos: []types.MemoWrapper{
 				{
-					Memo: transactions.Memo{
+					Memo: types.Memo{
 						MemoData:   hex.EncodeToString([]byte("Hello, World!")),
 						MemoFormat: hex.EncodeToString([]byte("text/plain")),
 						MemoType:   hex.EncodeToString([]byte("message")),
 					},
 				},
 				{
-					Memo: transactions.Memo{
+					Memo: types.Memo{
 						MemoData:   hex.EncodeToString([]byte("Hello, World 2!")),
 						MemoFormat: hex.EncodeToString([]byte("text/plain")),
 						MemoType:   hex.EncodeToString([]byte("message 2")),

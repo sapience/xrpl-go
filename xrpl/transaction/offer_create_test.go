@@ -20,7 +20,7 @@ func TestOfferCreateFlatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "With Expiration and OfferSequence",
+			name: "pass - with Expiration and OfferSequence",
 			input: OfferCreate{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -55,7 +55,7 @@ func TestOfferCreateFlatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Without Expiration and OfferSequence",
+			name: "pass - without Expiration and OfferSequence",
 			input: OfferCreate{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -105,7 +105,7 @@ func TestOfferCreate_Validate(t *testing.T) {
 		expected bool
 	}{
 		{
-			name: "Valid OfferCreate",
+			name: "pass - valid OfferCreate",
 			input: OfferCreate{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -124,7 +124,7 @@ func TestOfferCreate_Validate(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "Invalid OfferCreate, missing Account",
+			name: "fail - invalid OfferCreate, missing Account",
 			input: OfferCreate{
 				BaseTx: BaseTx{
 					TransactionType:    OfferCreateTx,
@@ -142,7 +142,7 @@ func TestOfferCreate_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid TakerGets",
+			name: "fail - invalid TakerGets",
 			input: OfferCreate{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -165,7 +165,7 @@ func TestOfferCreate_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "Invalid TakerPays",
+			name: "fail - invalid TakerPays",
 			input: OfferCreate{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -202,28 +202,28 @@ func TestOfferCreate_Flags(t *testing.T) {
 		expected uint32
 	}{
 		{
-			name: "SetPassiveFlag",
+			name: "pass - SetPassiveFlag",
 			setter: func(a *OfferCreate) {
 				a.SetPassiveFlag()
 			},
 			expected: tfPassive,
 		},
 		{
-			name: "SetImmediateOrCancelFlag",
+			name: "pass - SetImmediateOrCancelFlag",
 			setter: func(a *OfferCreate) {
 				a.SetImmediateOrCancelFlag()
 			},
 			expected: tfImmediateOrCancel,
 		},
 		{
-			name: "SetFillOrKillFlag",
+			name: "pass - SetFillOrKillFlag",
 			setter: func(a *OfferCreate) {
 				a.SetFillOrKillFlag()
 			},
 			expected: tfFillOrKill,
 		},
 		{
-			name: "SetSellFlag",
+			name: "pass - SetSellFlag",
 			setter: func(a *OfferCreate) {
 				a.SetSellFlag()
 			},
