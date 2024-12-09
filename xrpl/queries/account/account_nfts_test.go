@@ -42,6 +42,8 @@ func TestAccountNFTsResponse(t *testing.T) {
 		LedgerHash:         "abc",
 		LedgerCurrentIndex: 1234,
 		Validated:          true,
+		Marker:             "abc",
+		Limit:              123,
 	}
 
 	j := `{
@@ -59,7 +61,9 @@ func TestAccountNFTsResponse(t *testing.T) {
 	"ledger_index": 123,
 	"ledger_hash": "abc",
 	"ledger_current_index": 1234,
-	"validated": true
+	"validated": true,
+	"marker": "abc",
+	"limit": 123
 }`
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
