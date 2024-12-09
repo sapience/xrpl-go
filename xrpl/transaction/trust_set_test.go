@@ -30,9 +30,9 @@ func TestTrustSetFlatten(t *testing.T) {
 		"Account":            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType":    "TrustSet",
 		"Fee":                "12",
-		"Flags":              int(262144),
-		"Sequence":           int(12),
-		"LastLedgerSequence": int(8007750),
+		"Flags":              uint32(262144),
+		"Sequence":           uint32(12),
+		"LastLedgerSequence": uint32(8007750),
 		"LimitAmount": map[string]interface{}{
 			"issuer":   "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
 			"currency": "USD",
@@ -53,28 +53,28 @@ func TestTrustSetFlags(t *testing.T) {
 		expected uint32
 	}{
 		{
-			name: "SetSetAuthFlag",
+			name: "pass - SetSetAuthFlag",
 			setter: func(ts *TrustSet) {
 				ts.SetSetAuthFlag()
 			},
 			expected: tfSetAuth,
 		},
 		{
-			name: "SetSetNoRippleFlag",
+			name: "pass - SetSetNoRippleFlag",
 			setter: func(ts *TrustSet) {
 				ts.SetSetNoRippleFlag()
 			},
 			expected: tfSetNoRipple,
 		},
 		{
-			name: "SetClearNoRippleFlag",
+			name: "pass - SetClearNoRippleFlag",
 			setter: func(ts *TrustSet) {
 				ts.SetClearNoRippleFlag()
 			},
 			expected: tfClearNoRipple,
 		},
 		{
-			name: "SetSetfAuthFlag and SetSetNoRippleFlag",
+			name: "pass - SetSetfAuthFlag and SetSetNoRippleFlag",
 			setter: func(ts *TrustSet) {
 				ts.SetSetAuthFlag()
 				ts.SetSetNoRippleFlag()
@@ -82,7 +82,7 @@ func TestTrustSetFlags(t *testing.T) {
 			expected: tfSetAuth | tfSetNoRipple,
 		},
 		{
-			name: "SetSetfAuthFlag and SetClearNoRippleFlag",
+			name: "pass - SetSetfAuthFlag and SetClearNoRippleFlag",
 			setter: func(ts *TrustSet) {
 				ts.SetSetAuthFlag()
 				ts.SetClearNoRippleFlag()
@@ -90,7 +90,7 @@ func TestTrustSetFlags(t *testing.T) {
 			expected: tfSetAuth | tfClearNoRipple,
 		},
 		{
-			name: "All flags",
+			name: "pass - All flags",
 			setter: func(ts *TrustSet) {
 				ts.SetSetAuthFlag()
 				ts.SetSetNoRippleFlag()
@@ -118,7 +118,7 @@ func TestTrustSetValidate(t *testing.T) {
 		err      error
 	}{
 		{
-			name: "ValidTrustSet",
+			name: "pass - valid TrustSet",
 			trustSet: &TrustSet{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -139,7 +139,7 @@ func TestTrustSetValidate(t *testing.T) {
 			valid: true,
 		},
 		{
-			name: "MissingLimitAmount",
+			name: "fail - missing LimitAmount",
 			trustSet: &TrustSet{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -155,7 +155,7 @@ func TestTrustSetValidate(t *testing.T) {
 			valid: false,
 		},
 		{
-			name: "InvalidLimitAmount",
+			name: "fail - invalid LimitAmount",
 			trustSet: &TrustSet{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",

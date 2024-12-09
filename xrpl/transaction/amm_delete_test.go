@@ -58,7 +58,7 @@ func TestAMMDelete_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Valid AMMDelete",
+			name: "pass - valid AMMDelete",
 			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -77,7 +77,7 @@ func TestAMMDelete_Validate(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Invalid AMMDelete BaseTx, Account missing",
+			name: "fail - invalid AMMDelete BaseTx, Account missing",
 			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					TransactionType: AMMDeleteTx,
@@ -95,7 +95,7 @@ func TestAMMDelete_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid Asset",
+			name: "fail - invalid Asset",
 			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -114,7 +114,7 @@ func TestAMMDelete_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid Asset2, empty currency",
+			name: "fail - invalid Asset2, empty currency",
 			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -132,7 +132,7 @@ func TestAMMDelete_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid Asset2, invalid xrpl address as issuer",
+			name: "fail - invalid Asset2, invalid xrpl address as issuer",
 			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
@@ -151,7 +151,7 @@ func TestAMMDelete_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid Asset2, empty issuer",
+			name: "fail - invalid Asset2, empty issuer",
 			tx: &AMMDelete{
 				BaseTx: BaseTx{
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",

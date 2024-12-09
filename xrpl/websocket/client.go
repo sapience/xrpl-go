@@ -273,7 +273,7 @@ func (c *Client) setTransactionNextValidSequenceNumber(tx *transaction.FlatTrans
 		return err
 	}
 
-	(*tx)["Sequence"] = int(res.AccountData.Sequence)
+	(*tx)["Sequence"] = uint32(res.AccountData.Sequence)
 	return nil
 }
 
@@ -334,7 +334,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Int() + int(LedgerOffset)
+	(*tx)["LastLedgerSequence"] = uint32(index.Int() + int(LedgerOffset))
 	return err
 }
 

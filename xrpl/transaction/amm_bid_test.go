@@ -85,7 +85,7 @@ func TestAMMBid_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Valid AMMBid",
+			name: "pass - valid AMMBid",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -115,7 +115,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Invalid BaseTx AMMBid, Account missing",
+			name: "fail - invalid BaseTx AMMBid, Account missing",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					TransactionType: AMMBidTx,
@@ -144,7 +144,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid AMMBid with more than 4 AuthAccounts",
+			name: "fail - invalid AMMBid with more than 4 AuthAccounts",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -189,7 +189,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid AMMBid with more an AuthAccount with invalid address",
+			name: "fail - invalid AMMBid with more an AuthAccount with invalid address",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -229,7 +229,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid AMMBid with invalid Asset, currency empty",
+			name: "fail - invalid AMMBid with invalid Asset, currency empty",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -259,7 +259,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid AMMBid with invalid Asset2, issuer empty with currency non empty",
+			name: "fail - invalid AMMBid with invalid Asset2, issuer empty with currency non empty",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -289,7 +289,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid AMMBid with invalid Asset and Asset2, two XRP assets",
+			name: "fail - invalid AMMBid with invalid Asset and Asset2, two XRP assets",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -319,7 +319,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid AMMBid with invalid BidMin, missing value and issuer",
+			name: "fail - invalid AMMBid with invalid BidMin, missing value and issuer",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -349,7 +349,7 @@ func TestAMMBid_Validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Invalid AMMBid with invalid BidMax, missing value and issuer",
+			name: "fail - invalid AMMBid with invalid BidMax, missing value and issuer",
 			ammBid: AMMBid{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",

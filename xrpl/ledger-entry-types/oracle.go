@@ -117,6 +117,10 @@ func (priceData *PriceData) Flatten() FlatPriceData {
 //
 // ```
 type Oracle struct {
+	// The unique ID for this ledger entry. In JSON, this field is represented with different names depending on the
+	// context and API method. (Note, even though this is specified as "optional" in the code, every ledger entry
+	// should have one unless it's legacy data from very early in the XRP Ledger's history.)
+	Index types.Hash256 `json:"index,omitempty"`
 	// The XRPL account with update and delete privileges for the oracle.
 	// It's recommended to set up multi-signing on this account.
 	Owner types.Address

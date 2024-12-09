@@ -432,15 +432,15 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 					"id": 1,
 					"result": map[string]any{
 						"account_data": map[string]any{
-							"Sequence": json.Number("42"),
+							"Sequence": uint32(42),
 						},
-						"ledger_current_index": json.Number("100"),
+						"ledger_current_index": uint32(100),
 					},
 				},
 			},
 			expected: transaction.FlatTransaction{
 				"Account":  "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
-				"Sequence": int(42),
+				"Sequence": uint32(42),
 			},
 			expectedErr: nil,
 		},
@@ -636,7 +636,7 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 				},
 			},
 			tx:          transaction.FlatTransaction{},
-			expectedTx:  transaction.FlatTransaction{"LastLedgerSequence": int(1000 + LedgerOffset)},
+			expectedTx:  transaction.FlatTransaction{"LastLedgerSequence": uint32(1000 + LedgerOffset)},
 			expectedErr: nil,
 		},
 	}

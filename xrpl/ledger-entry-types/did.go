@@ -22,6 +22,14 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 //
 // ```
 type DID struct {
+	// The unique ID for this ledger entry.
+	// In JSON, this field is represented with different names depending on the context and API method.
+	// (Note, even though this is specified as "optional" in the code, every ledger entry should have one unless it's legacy data from very early in the XRP Ledger's history.)
+	Index types.Hash256 `json:"index,omitempty"`
+	// The value 0x0049, mapped to the string DID, indicates that this object is a DID object.
+	LedgerEntryType EntryType
+	// Set of bit-flags for this ledger entry.
+	Flags uint32
 	// The account that controls the DID.
 	Account types.Address
 	// The W3C standard DID document associated with the DID.
@@ -30,8 +38,6 @@ type DID struct {
 	// The public attestations of identity credentials associated with the DID.
 	// The Data field isn't checked for validity and is limited to a maximum length of 256 bytes.
 	Data string `json:",omitempty"`
-	// The value 0x0049, mapped to the string DID, indicates that this object is a DID object.
-	LedgerEntryType string
 	// A hint indicating which page of the sender's owner directory links to this entry, in case the directory consists of multiple pages.
 	OwnerNode string
 	// The identifying hash of the transaction that most recently modified this object.

@@ -19,7 +19,7 @@ func TestEscrowCancel_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "complete EscrowCancel",
+			name: "pass - complete EscrowCancel",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -35,7 +35,7 @@ func TestEscrowCancel_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "EscrowCancel without Owner",
+			name: "pass - EscrowCancel without Owner",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -49,7 +49,7 @@ func TestEscrowCancel_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "EscrowCancel without OfferSequence",
+			name: "pass - EscrowCancel without OfferSequence",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -63,7 +63,7 @@ func TestEscrowCancel_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "EscrowCancel with only BaseTx",
+			name: "pass - EscrowCancel with only BaseTx",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -94,7 +94,7 @@ func TestEscrowCancel_Validate(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name: "valid EscrowCancel",
+			name: "pass - valid EscrowCancel",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -107,7 +107,7 @@ func TestEscrowCancel_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Invalid EscrowCancel BaseTx",
+			name: "fail - invalid EscrowCancel BaseTx",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					TransactionType: EscrowCancelTx,
@@ -119,7 +119,7 @@ func TestEscrowCancel_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "invalid Owner address",
+			name: "fail - invalid Owner address",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -132,7 +132,7 @@ func TestEscrowCancel_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "missing OfferSequence",
+			name: "fail - missing OfferSequence",
 			escrow: &EscrowCancel{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

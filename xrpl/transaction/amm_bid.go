@@ -8,6 +8,11 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrAMMAtLeastOneAssetMustBeNonXRP = errors.New("at least one of the assets must be non-XRP")
+	ErrAMMAuthAccountsTooMany         = errors.New("authAccounts should have at most 4 AuthAccount objects")
+)
+
 // Bid on an Automated Market Maker's (AMM's) auction slot. If you win, you can trade against the AMM at a discounted fee until you are outbid or 24 hours have passed.
 // If you are outbid before 24 hours have passed, you are refunded part of the cost of your bid based on how much time remains.
 // If the AMM's trading fee is zero, you can still bid, but the auction slot provides no benefit unless the trading fee changes.
@@ -61,16 +66,18 @@ type AMMBid struct {
 	AuthAccounts []ledger.AuthAccounts `json:",omitempty"`
 }
 
+// TxType implements the TxType method for the AMMBid struct.
 func (*AMMBid) TxType() TxType {
 	return AMMBidTx
 }
 
+// Flatten implements the Flatten method for the AMMBid struct.
 func (a *AMMBid) Flatten() FlatTransaction {
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
 
 	// Add AMMBid-specific fields
-	flattened["TransactionType"] = "AMMBid"
+	flattened["TransactionType"] = AMMBidTx.String()
 
 	flattened["Asset"] = a.Asset.Flatten()
 
@@ -85,7 +92,7 @@ func (a *AMMBid) Flatten() FlatTransaction {
 	}
 
 	if len(a.AuthAccounts) > 0 {
-		authAccountsFlattened := make([]map[string]interface{}, 0)
+		authAccountsFlattened := make([]map[string]interface{}, 0, len(a.AuthAccounts))
 
 		for _, authAccount := range a.AuthAccounts {
 			authAccountsFlattened = append(authAccountsFlattened, authAccount.Flatten())
@@ -97,6 +104,7 @@ func (a *AMMBid) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validate implements the Validate method for the AMMBid struct.
 func (a *AMMBid) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
@@ -112,7 +120,7 @@ func (a *AMMBid) Validate() (bool, error) {
 	}
 
 	if a.Asset.Currency == "XRP" && a.Asset2.Currency == "XRP" {
-		return false, errors.New("at least one of the assets must be non-XRP")
+		return false, ErrAMMAtLeastOneAssetMustBeNonXRP
 	}
 
 	if ok, err := IsAmount(a.BidMin, "BidMin", false); !ok {
@@ -133,12 +141,12 @@ func (a *AMMBid) Validate() (bool, error) {
 // Validate the AuthAccounts field.
 func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) {
 	if len(authAccounts) > 4 {
-		return false, errors.New("authAccounts: AuthAccounts should have at most 4 AuthAccount objects")
+		return false, ErrAMMAuthAccountsTooMany
 	}
 
 	for _, authAccounts := range authAccounts {
 		if ok := addresscodec.IsValidClassicAddress(authAccounts.AuthAccount.Account.String()); !ok {
-			return false, errors.New("authAccounts: Account is not a valid classic address")
+			return false, ErrInvalidAccount
 		}
 	}
 

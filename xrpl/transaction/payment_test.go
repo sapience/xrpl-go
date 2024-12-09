@@ -20,28 +20,28 @@ func TestPaymentFlags(t *testing.T) {
 		expected uint32
 	}{
 		{
-			name: "SetRippleNotDirectFlag",
+			name: "pass - SetRippleNotDirectFlag",
 			setter: func(p *Payment) {
 				p.SetRippleNotDirectFlag()
 			},
 			expected: tfRippleNotDirect,
 		},
 		{
-			name: "SetPartialPaymentFlag",
+			name: "pass - SetPartialPaymentFlag",
 			setter: func(p *Payment) {
 				p.SetPartialPaymentFlag()
 			},
 			expected: tfPartialPayment,
 		},
 		{
-			name: "SetLimitQualityFlag",
+			name: "pass - SetLimitQualityFlag",
 			setter: func(p *Payment) {
 				p.SetLimitQualityFlag()
 			},
 			expected: tfLimitQuality,
 		},
 		{
-			name: "SetRippleNotDirectFlag and SetPartialPaymentFlag",
+			name: "pass - SetRippleNotDirectFlag and SetPartialPaymentFlag",
 			setter: func(p *Payment) {
 				p.SetRippleNotDirectFlag()
 				p.SetPartialPaymentFlag()
@@ -49,7 +49,7 @@ func TestPaymentFlags(t *testing.T) {
 			expected: tfRippleNotDirect | tfPartialPayment,
 		},
 		{
-			name: "SetRippleNotDirectFlag and SetLimitQualityFlag",
+			name: "pass - SetRippleNotDirectFlag and SetLimitQualityFlag",
 			setter: func(p *Payment) {
 				p.SetRippleNotDirectFlag()
 				p.SetLimitQualityFlag()
@@ -57,7 +57,7 @@ func TestPaymentFlags(t *testing.T) {
 			expected: tfRippleNotDirect | tfLimitQuality,
 		},
 		{
-			name: "SetPartialPaymentFlag and SetLimitQualityFlag",
+			name: "pass - SetPartialPaymentFlag and SetLimitQualityFlag",
 			setter: func(p *Payment) {
 				p.SetPartialPaymentFlag()
 				p.SetLimitQualityFlag()
@@ -65,7 +65,7 @@ func TestPaymentFlags(t *testing.T) {
 			expected: tfPartialPayment | tfLimitQuality,
 		},
 		{
-			name: "All flags",
+			name: "pass - all flags",
 			setter: func(p *Payment) {
 				p.SetRippleNotDirectFlag()
 				p.SetPartialPaymentFlag()
@@ -94,7 +94,7 @@ func TestPayment_Validate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			name: "pass - Valid Payment",
+			name: "pass - valid Payment",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
@@ -114,7 +114,7 @@ func TestPayment_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "fail - Invalid BaseTx Payment, missing TransactionType",
+			name: "fail - invalid BaseTx Payment, missing TransactionType",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account: "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
@@ -133,7 +133,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidTransactionType,
 		},
 		{
-			name: "fail - Missing Amount",
+			name: "fail - missing Amount",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
@@ -148,7 +148,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrMissingAmount("Amount"),
 		},
 		{
-			name: "fail - Invalid Amount",
+			name: "fail - invalid Amount",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
@@ -168,7 +168,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidIssuer,
 		},
 		{
-			name: "fail - Invalid SendMax Issuer",
+			name: "fail - invalid SendMax Issuer",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
@@ -193,7 +193,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidIssuer,
 		},
 		{
-			name: "fail - Invalid DeliverMax Value",
+			name: "fail - invalid DeliverMax Value",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
@@ -218,7 +218,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidTokenValue,
 		},
 		{
-			name: "fail - Invalid DeliverMin Currency",
+			name: "fail - invalid DeliverMin Currency",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
@@ -243,7 +243,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidTokenCurrency,
 		},
 		{
-			name: "fail - Invalid Destination",
+			name: "fail - invalid Destination",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
@@ -263,7 +263,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidDestination,
 		},
 		{
-			name: "fail - Invalid Paths, both account and currency",
+			name: "fail - invalid Paths, both account and currency",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
@@ -288,7 +288,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidPathStepCombination,
 		},
 		{
-			name: "fail - Invalid Paths, both Issuer and currency set to XRP",
+			name: "fail - invalid Paths, both Issuer and currency set to XRP",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
@@ -313,7 +313,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrInvalidPathStepCombination,
 		},
 		{
-			name: "fail - Invalid Paths, empty array",
+			name: "fail - invalid Paths, empty array",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "rQLnYrZARjqMhrFhY5Z8Fv1tiRYvHFBXws",
@@ -334,7 +334,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrEmptyPath,
 		},
 		{
-			name: "pass - Valid Partial Payment",
+			name: "pass - valid Partial Payment",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "rLs9Pa3CwsoJTnXf4RzzbGsnD9GeCPAUpj",
@@ -358,7 +358,7 @@ func TestPayment_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "fail - Invalid Partial Payment without Flag",
+			name: "fail - invalid Partial Payment without Flag",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3EeETxLb1JwmN2xWuZZdKrrEkqw7qgeYf",
@@ -383,7 +383,7 @@ func TestPayment_Validate(t *testing.T) {
 			expectedErr: ErrPartialPaymentFlagRequired,
 		},
 		{
-			name: "fail - Invalid Partial Payment with another Flag than PartialPayment",
+			name: "fail - invalid Partial Payment with another Flag than PartialPayment",
 			payment: Payment{
 				BaseTx: BaseTx{
 					Account:         "r3EeETxLb1JwmN2xWuZZdKrrEkqw7qgeYf",
@@ -433,7 +433,7 @@ func TestPayment_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Flatten with all fields",
+			name: "pass - flatten with all fields",
 			payment: &Payment{
 				BaseTx: BaseTx{
 					Account:         "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
@@ -524,7 +524,7 @@ func TestPayment_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Flatten with minimal fields",
+			name: "pass - flatten with minimal fields",
 			payment: &Payment{
 				BaseTx: BaseTx{
 					Account:         "rJwjoukM94WwKwxM428V7b9npHjpkSvif",

@@ -30,16 +30,16 @@ func TestTx_Validate(t *testing.T) {
 				TicketSequence:     2,
 				TxnSignature:       "xyz123",
 				NetworkID:          1,
-				Memos: []MemoWrapper{
+				Memos: []types.MemoWrapper{
 					{
-						Memo: Memo{
+						Memo: types.Memo{
 							MemoType:   hex.EncodeToString([]byte("text")),
 							MemoData:   hex.EncodeToString([]byte("Hello, world!")),
 							MemoFormat: hex.EncodeToString([]byte("plain")),
 						},
 					},
 					{
-						Memo: Memo{
+						Memo: types.Memo{
 							MemoType:   hex.EncodeToString([]byte("text")),
 							MemoData:   hex.EncodeToString([]byte("Hello, world 2!")),
 							MemoFormat: hex.EncodeToString([]byte("plain")),
@@ -88,9 +88,9 @@ func TestTx_Validate(t *testing.T) {
 				SigningPubKey:      "abcdefg",
 				TicketSequence:     2,
 				TxnSignature:       "xyz123",
-				Memos: []MemoWrapper{
+				Memos: []types.MemoWrapper{
 					{
-						Memo: Memo{
+						Memo: types.Memo{
 							MemoType:   "invalid",
 							MemoData:   "Hello, world!",
 							MemoFormat: "plain",
@@ -174,9 +174,9 @@ func TestBaseTx_Flatten(t *testing.T) {
 				AccountTxnID:       "abcdef123456",
 				Flags:              2147483648,
 				LastLedgerSequence: 100,
-				Memos: []MemoWrapper{
+				Memos: []types.MemoWrapper{
 					{
-						Memo: Memo{
+						Memo: types.Memo{
 							MemoType:   hex.EncodeToString([]byte("text")),
 							MemoData:   hex.EncodeToString([]byte("Hello, world!")),
 							MemoFormat: hex.EncodeToString([]byte("plain")),

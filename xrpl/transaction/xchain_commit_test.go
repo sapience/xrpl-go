@@ -139,7 +139,7 @@ func TestXChainCommit_Validate(t *testing.T) {
 				},
 			},
 			expected:    false,
-			expectedErr: ErrMissingXChainClaimID,
+			expectedErr: ErrInvalidXChainClaimID,
 		},
 		{
 			name: "pass - valid tx",

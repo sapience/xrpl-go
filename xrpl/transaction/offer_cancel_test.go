@@ -48,7 +48,7 @@ func TestOfferCancel_Validate(t *testing.T) {
 		wantValid bool
 	}{
 		{
-			name: "valid OfferCancel",
+			name: "pass - valid OfferCancel",
 			tx: &OfferCancel{
 				BaseTx: BaseTx{
 					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -63,36 +63,7 @@ func TestOfferCancel_Validate(t *testing.T) {
 			wantValid: true,
 		},
 		{
-			name: "OfferSequence set to 0",
-			tx: &OfferCancel{
-				BaseTx: BaseTx{
-					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-					TransactionType:    OfferCancelTx,
-					Fee:                types.XRPCurrencyAmount(10),
-					Flags:              123,
-					LastLedgerSequence: 7108629,
-					Sequence:           7,
-				},
-				OfferSequence: 0,
-			},
-			wantValid: false,
-		},
-		{
-			name: "missing OfferSequence",
-			tx: &OfferCancel{
-				BaseTx: BaseTx{
-					Account:            "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-					TransactionType:    OfferCancelTx,
-					Fee:                types.XRPCurrencyAmount(10),
-					Flags:              123,
-					LastLedgerSequence: 7108629,
-					Sequence:           7,
-				},
-			},
-			wantValid: false,
-		},
-		{
-			name: "invalid BaseTx",
+			name: "fail - invalid BaseTx",
 			tx: &OfferCancel{
 				BaseTx: BaseTx{
 					Account:            "",

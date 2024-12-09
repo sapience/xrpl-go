@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"errors"
+	"strconv"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -183,7 +184,7 @@ func (x *XChainAddAccountCreateAttestation) Validate() (bool, error) {
 		return false, ErrInvalidWasLockingChainSend
 	}
 
-	if x.XChainAccountCreateCount == "" {
+	if _, err := strconv.ParseUint(x.XChainAccountCreateCount, 10, 64); err != nil {
 		return false, ErrInvalidXChainAccountCreateCount
 	}
 

@@ -25,7 +25,7 @@ func TestTicketCreate_Flatten(t *testing.T) {
 		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 		"TransactionType": "TicketCreate",
 		"Fee":             "10",
-		"Sequence":        int(50),
+		"Sequence":        uint32(50),
 		"TicketCount":     uint32(5),
 	}
 
@@ -46,7 +46,7 @@ func TestTicketCreate_Validate(t *testing.T) {
 		wantValid bool
 	}{
 		{
-			name: "valid ticket count",
+			name: "pass - valid ticket count",
 			ticket: TicketCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -59,7 +59,7 @@ func TestTicketCreate_Validate(t *testing.T) {
 			wantValid: true,
 		},
 		{
-			name: "Invalid BaseTx",
+			name: "fail - invalid BaseTx",
 			ticket: TicketCreate{
 				BaseTx: BaseTx{
 					Account:         "",
@@ -72,7 +72,7 @@ func TestTicketCreate_Validate(t *testing.T) {
 			wantValid: false,
 		},
 		{
-			name: "ticket count zero",
+			name: "fail - ticket count zero",
 			ticket: TicketCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
@@ -85,7 +85,7 @@ func TestTicketCreate_Validate(t *testing.T) {
 			wantValid: false,
 		},
 		{
-			name: "ticket count exceeds limit",
+			name: "fail - ticket count exceeds limit",
 			ticket: TicketCreate{
 				BaseTx: BaseTx{
 					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",

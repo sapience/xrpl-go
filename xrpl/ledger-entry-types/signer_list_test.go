@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSignerList(t *testing.T) {
@@ -62,10 +63,47 @@ func TestSignerList(t *testing.T) {
 		}
 	],
 	"SignerListID": 0,
-	"SignerQuorum": 3
+	"SignerQuorum": 3,
+	"Flags": 0
 }`
 
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestSignerList_SetLsfOneOwnerCount(t *testing.T) {
+	s := &SignerList{}
+	s.SetLsfOneOwnerCount()
+	require.Equal(t, s.Flags&lsfOneOwnerCount, lsfOneOwnerCount)
+}
+
+func TestSignerList_EntryType(t *testing.T) {
+	s := &SignerList{}
+	require.Equal(t, s.EntryType(), SignerListEntry)
+}
+
+func TestSignerEntryWrapper_Flatten(t *testing.T) {
+	s := &SignerEntryWrapper{
+		SignerEntry: SignerEntry{
+			Account:      "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+			SignerWeight: 2,
+		},
+	}
+
+	flattened := s.Flatten()
+	require.Equal(t, flattened["SignerEntry"], s.SignerEntry.Flatten())
+}
+
+func TestSignerEntry_Flatten(t *testing.T) {
+	s := &SignerEntry{
+		Account:       "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+		SignerWeight:  2,
+		WalletLocator: "0000000000000000000000000000000000000000000000000000000000000000",
+	}
+
+	flattened := s.Flatten()
+	require.Equal(t, flattened["Account"], s.Account)
+	require.Equal(t, flattened["SignerWeight"], s.SignerWeight)
+	require.Equal(t, flattened["WalletLocator"], s.WalletLocator)
 }

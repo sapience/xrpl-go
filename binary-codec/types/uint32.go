@@ -14,8 +14,7 @@ type UInt32 struct{}
 // The input value is assumed to be an integer. If the serialization fails, an error is returned.
 func (u *UInt32) FromJSON(value any) ([]byte, error) {
 	buf := new(bytes.Buffer)
-	//nolint:gosec // G115: Potential hardcoded credentials (gosec)
-	err := binary.Write(buf, binary.BigEndian, uint32(value.(int)))
+	err := binary.Write(buf, binary.BigEndian, value.(uint32))
 
 	if err != nil {
 		return nil, err
@@ -31,5 +30,5 @@ func (u *UInt32) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return int(binary.BigEndian.Uint32(b)), nil
+	return binary.BigEndian.Uint32(b), nil
 }

@@ -22,7 +22,7 @@ func TestSignerListSet_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "With SignerEntries",
+			name: "pass - with SignerEntries",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -78,7 +78,7 @@ func TestSignerListSet_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Without SignerEntries",
+			name: "pass - without SignerEntries",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -94,7 +94,7 @@ func TestSignerListSet_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "Without SignerEntries and SignerQuorum",
+			name: "pass - without SignerEntries and SignerQuorum",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -127,7 +127,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name: "Valid SignerListSet",
+			name: "pass - valid SignerListSet",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -156,7 +156,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name: "Invalid SignerListSet BaseTx",
+			name: "fail - invalid SignerListSet BaseTx",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -182,7 +182,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid SignerListSet with no SignerEntries and quorum > 0",
+			name: "fail - invalid SignerListSet with no SignerEntries and quorum > 0",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -195,7 +195,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid SignerListSet with too many SignerEntries",
+			name: "fail - invalid SignerListSet with too many SignerEntries",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -220,7 +220,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid SignerListSet with invalid WalletLocator",
+			name: "fail - invalid SignerListSet with invalid WalletLocator",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -242,7 +242,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid SignerListSet with SignerQuorum greater than sum of SignerWeights",
+			name: "fail - invalid SignerListSet with SignerQuorum greater than sum of SignerWeights",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -269,7 +269,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Invalid SignerEntry Account, not an xrpl address",
+			name: "fail - invalid SignerEntry Account, not an xrpl address",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -296,7 +296,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "Valid SignerListSet with SignerQuorum 0",
+			name: "pass - valid SignerListSet with SignerQuorum 0",
 			entry: &SignerListSet{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

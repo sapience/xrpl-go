@@ -2,6 +2,8 @@ package transaction
 
 import (
 	"fmt"
+
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 func ValidateRequiredField(tx FlatTransaction, field string, checkValidity func(interface{}) bool) error {
@@ -34,7 +36,7 @@ func ValidateOptionalField(tx FlatTransaction, paramName string, checkValidity f
 }
 
 // validateMemos validates the Memos field in the transaction map.
-func validateMemos(memoWrapper []MemoWrapper) error {
+func validateMemos(memoWrapper []types.MemoWrapper) error {
 	// loop through each memo and validate it
 	for _, memo := range memoWrapper {
 		isMemo, err := IsMemo(memo.Memo)

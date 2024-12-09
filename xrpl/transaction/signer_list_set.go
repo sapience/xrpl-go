@@ -1,11 +1,18 @@
 package transaction
 
 import (
+	"errors"
 	"fmt"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/pkg/typecheck"
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+)
+
+var (
+	ErrInvalidSignerEntries                      = fmt.Errorf("signerEntries must have at least %d entry and no more than %d entries", MinSigners, MaxSigners)
+	ErrInvalidWalletLocator                      = errors.New("invalid WalletLocator in SignerEntry, must be an hexadecimal string")
+	ErrSignerQuorumGreaterThanSumOfSignerWeights = errors.New("signerQuorum must be less than or equal to the sum of all SignerWeights")
 )
 
 const (
@@ -102,18 +109,18 @@ func (s *SignerListSet) Validate() (bool, error) {
 
 	// Check if SignerEntries has at least 1 entry and no more than 32 entries
 	if len(s.SignerEntries) < MinSigners || len(s.SignerEntries) > MaxSigners {
-		return false, fmt.Errorf("signerEntries must have at least %d entry and no more than %d entries", MinSigners, MaxSigners)
+		return false, ErrInvalidSignerEntries
 	}
 
 	for _, signerEntry := range s.SignerEntries {
 		// Check if WalletLocator is an hexadecimal string for each SignerEntry
 		if signerEntry.SignerEntry.WalletLocator != "" && !typecheck.IsHex(signerEntry.SignerEntry.WalletLocator.String()) {
-			return false, fmt.Errorf("invalid WalletLocator in SignerEntry, must be an hexadecimal string")
+			return false, ErrInvalidWalletLocator
 		}
 
 		// Check if Account is a valid xrpl address for each SignerEntry
 		if !addresscodec.IsValidClassicAddress(signerEntry.SignerEntry.Account.String()) {
-			return false, fmt.Errorf("invalid xrpl address for the Account field in SignerEntry")
+			return false, ErrInvalidAccount
 		}
 	}
 
@@ -123,7 +130,7 @@ func (s *SignerListSet) Validate() (bool, error) {
 		sumSignerWeights += signerEntry.SignerEntry.SignerWeight
 	}
 	if s.SignerQuorum > uint32(sumSignerWeights) {
-		return false, fmt.Errorf("signerQuorum must be less than or equal to the sum of all SignerWeights")
+		return false, ErrSignerQuorumGreaterThanSumOfSignerWeights
 	}
 
 	return true, nil

@@ -22,7 +22,7 @@ func TestPaymentChannelFund_Flatten(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "pass - Without Expiration",
+			name: "pass - without Expiration",
 			tx: &PaymentChannelFund{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -39,7 +39,7 @@ func TestPaymentChannelFund_Flatten(t *testing.T) {
 			}`,
 		},
 		{
-			name: "pass - With Expiration",
+			name: "pass - with Expiration",
 			tx: &PaymentChannelFund{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -79,7 +79,7 @@ func TestPaymentChannelFund_Validate(t *testing.T) {
 		expectedErr      error
 	}{
 		{
-			name: "pass - Valid Transaction",
+			name: "pass - valid Transaction",
 			tx: &PaymentChannelFund{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -96,7 +96,7 @@ func TestPaymentChannelFund_Validate(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "fail - Invalid BaseTx, missing Account",
+			name: "fail - invalid BaseTx, missing Account",
 			tx: &PaymentChannelFund{
 				BaseTx: BaseTx{
 					TransactionType: PaymentChannelFundTx,
@@ -112,7 +112,7 @@ func TestPaymentChannelFund_Validate(t *testing.T) {
 			expectedErr: ErrInvalidAccount,
 		},
 		{
-			name: "fail - Invalid Expiration",
+			name: "fail - invalid Expiration",
 			tx: &PaymentChannelFund{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

@@ -7,6 +7,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrAMMAtLeastOneAssetMustBeSet = errors.New("at least one of the assets must be set")
+)
+
 // Deposit funds into an Automated Market Maker (AMM) instance and receive the AMM's liquidity provider tokens (LP Tokens) in exchange.
 // You can deposit one or both of the assets in the AMM's pool.
 // If successful, this transaction creates a trust line to the AMM Account (limit 0) to hold the LP Tokens.
@@ -95,17 +99,19 @@ func (a *AMMDeposit) SetTwoAssetIfEmptyFlag() {
 	a.Flags |= tfTwoAssetIfEmpty
 }
 
+// TxType implements the TxType method for the AMMDeposit struct.
 func (*AMMDeposit) TxType() TxType {
 	return AMMDepositTx
 }
 
+// Flatten implements the Flatten method for the AMMDeposit struct.
 func (a *AMMDeposit) Flatten() FlatTransaction {
 
 	// Add BaseTx fields
 	flattened := a.BaseTx.Flatten()
 
 	// Add AMMDeposit-specific fields
-	flattened["TransactionType"] = "AMMDeposit"
+	flattened["TransactionType"] = AMMDepositTx.String()
 
 	flattened["Asset"] = a.Asset.Flatten()
 	flattened["Asset2"] = a.Asset2.Flatten()
@@ -133,6 +139,7 @@ func (a *AMMDeposit) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validate implements the Validate method for the AMMDeposit struct.
 func (a *AMMDeposit) Validate() (bool, error) {
 	_, err := a.BaseTx.Validate()
 	if err != nil {
@@ -149,11 +156,11 @@ func (a *AMMDeposit) Validate() (bool, error) {
 
 	switch {
 	case a.Amount2 != nil && a.Amount == nil:
-		return false, errors.New("ammDeposit: must set Amount with Amount2")
+		return false, ErrAMMMustSetAmountWithAmount2
 	case a.EPrice != nil && a.Amount == nil:
-		return false, errors.New("ammDeposit: must set Amount with EPrice")
+		return false, ErrAMMMustSetAmountWithEPrice
 	case a.LPTokenOut == nil && a.Amount == nil:
-		return false, errors.New("ammDeposit:  must set at least LPTokenOut or Amount")
+		return false, ErrAMMAtLeastOneAssetMustBeSet
 	}
 
 	if ok, err := IsAmount(a.Amount, "Amount", false); !ok {

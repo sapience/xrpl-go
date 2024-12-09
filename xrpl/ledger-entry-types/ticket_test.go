@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTicket(t *testing.T) {
@@ -30,4 +31,9 @@ func TestTicket(t *testing.T) {
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
 		t.Error(err)
 	}
+}
+
+func TestTicket_EntryType(t *testing.T) {
+	s := &Ticket{}
+	require.Equal(t, s.EntryType(), TicketEntry)
 }

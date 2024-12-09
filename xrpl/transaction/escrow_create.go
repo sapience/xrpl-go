@@ -8,10 +8,11 @@ import (
 )
 
 var (
-	ErrInvalidEscrowCreateCondition = errors.New("invalid escrow create condition")
+	ErrEscrowCreateInvalidDestinationAddress   = errors.New("escrow create: invalid destination address")
+	ErrEscrowCreateNoCancelOrFinishAfterSet    = errors.New("escrow create: either CancelAfter or FinishAfter must be set")
+	ErrEscrowCreateNoConditionOrFinishAfterSet = errors.New("escrow create: either Condition or FinishAfter must be specified")
 )
 
-// Added by the Escrow amendment.
 // Sequester XRP until the escrow process either finishes or is canceled.
 //
 // Example:
@@ -91,7 +92,7 @@ func (e *EscrowCreate) Validate() (bool, error) {
 	}
 
 	if (e.FinishAfter == 0 && e.CancelAfter == 0) || (e.Condition == "" && e.FinishAfter == 0) {
-		return false, ErrInvalidEscrowCreateCondition
+		return false, ErrEscrowCreateNoConditionOrFinishAfterSet
 	}
 
 	return true, nil
