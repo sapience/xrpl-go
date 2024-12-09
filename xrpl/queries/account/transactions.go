@@ -1,11 +1,22 @@
 package account
 
 import (
-	"encoding/json"
-
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
+
+type Transaction struct {
+	LedgerIndex uint64                       `json:"ledger_index"`
+	Meta        transaction.TxObjMeta          `json:"meta"`
+	Tx          transaction.FlatTransaction `json:"tx"`
+	TxBlob      string                       `json:"tx_blob"`
+	Validated   bool                         `json:"validated"`
+}
+
+// ############################################################################
+// Request
+// ############################################################################
 
 type TransactionsRequest struct {
 	Account        types.Address          `json:"account"`
@@ -23,40 +34,9 @@ func (*TransactionsRequest) Method() string {
 	return "account_tx"
 }
 
-func (r *TransactionsRequest) UnmarshalJSON(data []byte) error {
-	type atrHelper struct {
-		Account        types.Address     `json:"account"`
-		LedgerIndexMin int               `json:"ledger_index_min,omitempty"`
-		LedgerIndexMax int               `json:"ledger_index_max,omitempty"`
-		LedgerHash     common.LedgerHash `json:"ledger_hash,omitempty"`
-		LedgerIndex    json.RawMessage   `json:"ledger_index,omitempty"`
-		Binary         bool              `json:"binary,omitempty"`
-		Forward        bool              `json:"forward,omitempty"`
-		Limit          int               `json:"limit,omitempty"`
-		Marker         any               `json:"marker,omitempty"`
-	}
-	var h atrHelper
-	if err := json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*r = TransactionsRequest{
-		Account:        h.Account,
-		LedgerIndexMin: h.LedgerIndexMin,
-		LedgerIndexMax: h.LedgerIndexMax,
-		LedgerHash:     h.LedgerHash,
-		Binary:         h.Binary,
-		Forward:        h.Forward,
-		Limit:          h.Limit,
-		Marker:         h.Marker,
-	}
-
-	i, err := common.UnmarshalLedgerSpecifier(h.LedgerIndex)
-	if err != nil {
-		return err
-	}
-	r.LedgerIndex = i
-	return nil
-}
+// ############################################################################
+// Response
+// ############################################################################
 
 type TransactionsResponse struct {
 	Account        types.Address      `json:"account"`

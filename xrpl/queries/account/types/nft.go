@@ -1,4 +1,4 @@
-package account
+package types
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -11,13 +11,13 @@ const (
 	ReservedFlag NFTokenFlag = 0x8000
 )
 
-type NFTokenFlag uint
+type NFTokenFlag uint32
 
 type NFT struct {
-	Flags        NFTokenFlag
+	Flags        NFTokenFlag `json:",omitempty"`
 	Issuer       types.Address
 	NFTokenID    types.NFTokenID
 	NFTokenTaxon uint
-	URI          types.NFTokenURI
+	URI          types.NFTokenURI `json:",omitempty"`
 	NFTSerial    uint `json:"nft_serial"`
 }

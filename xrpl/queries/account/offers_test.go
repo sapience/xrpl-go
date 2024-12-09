@@ -3,6 +3,7 @@ package account
 import (
 	"testing"
 
+	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -28,7 +29,7 @@ func TestAccountOffersRequest(t *testing.T) {
 func TestAccountOffersResponse(t *testing.T) {
 	s := OffersResponse{
 		Account: "abc",
-		Offers: []OfferResult{
+		Offers: []accounttypes.OfferResult{
 			{Flags: 0,
 				Sequence: 1,
 				TakerGets: types.IssuedCurrencyAmount{

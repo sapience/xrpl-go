@@ -1,4 +1,4 @@
-package account
+package types
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 

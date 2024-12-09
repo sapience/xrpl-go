@@ -3,6 +3,7 @@ package account
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,7 @@ func TestAccountChannelRequest(t *testing.T) {
 	s := ChannelsRequest{
 		Account:            "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 		DestinationAccount: "rnZvsWuLem5Ha46AZs61jLWR9R5esinkG3",
-		LedgerIndex:        common.VALIDATED,
+		LedgerIndex:        common.Validated,
 	}
 
 	j := `{
@@ -29,7 +30,7 @@ func TestAccountChannelRequest(t *testing.T) {
 func TestAccountChannelsResponse(t *testing.T) {
 	s := ChannelsResponse{
 		Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
-		Channels: []ChannelResult{
+		Channels: []types.ChannelResult{
 			{
 				Account:            "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 				Amount:             "100",

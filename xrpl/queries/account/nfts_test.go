@@ -3,6 +3,7 @@ package account
 import (
 	"testing"
 
+	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
@@ -10,7 +11,7 @@ import (
 func TestAccountNFTsRequest(t *testing.T) {
 	s := NFTsRequest{
 		Account:     "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
-		LedgerIndex: common.VALIDATED,
+		LedgerIndex: common.Validated,
 		LedgerHash:  "123",
 		Limit:       2,
 	}
@@ -29,8 +30,8 @@ func TestAccountNFTsRequest(t *testing.T) {
 func TestAccountNFTsResponse(t *testing.T) {
 	s := NFTsResponse{
 		Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
-		AccountNFTs: []NFT{
-			{Flags: Burnable | OnlyXRP,
+		AccountNFTs: []accounttypes.NFT{
+			{Flags: accounttypes.Burnable | accounttypes.OnlyXRP,
 				Issuer:       "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 				NFTokenID:    "abc",
 				NFTokenTaxon: 123,

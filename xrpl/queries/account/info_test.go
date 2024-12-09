@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -12,7 +13,7 @@ import (
 func TestAccountInfoRequest(t *testing.T) {
 	s := InfoRequest{
 		Account:     "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
-		LedgerIndex: common.CLOSED,
+		LedgerIndex: common.Closed,
 		Queue:       true,
 		SignerList:  false,
 		Strict:      true,
@@ -43,13 +44,13 @@ func TestAccountInfoResponse(t *testing.T) {
 			Sequence:          6,
 		},
 		LedgerCurrentIndex: 4,
-		QueueData: QueueData{
+		QueueData: accounttypes.QueueData{
 			TxnCount:           5,
 			AuthChangeQueued:   true,
 			LowestSequence:     6,
 			HighestSequence:    10,
 			MaxSpendDropsTotal: types.XRPCurrencyAmount(500),
-			Transactions: []QueueTransaction{
+			Transactions: []accounttypes.QueueTransaction{
 				{
 					AuthChange:    false,
 					Fee:           types.XRPCurrencyAmount(100),

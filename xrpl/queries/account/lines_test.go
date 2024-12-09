@@ -3,6 +3,7 @@ package account
 import (
 	"testing"
 
+	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
@@ -36,7 +37,7 @@ func TestAccountLinesRequest(t *testing.T) {
 func TestAccountLinesResponse(t *testing.T) {
 	s := LinesResponse{
 		Account: "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
-		Lines: []TrustLine{
+		Lines: []accounttypes.TrustLine{
 			{
 				Account:    "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
 				Balance:    "123",
