@@ -1,4 +1,4 @@
-package path
+package types
 
 import (
 	"encoding/json"
@@ -11,6 +11,8 @@ type NFTokenOffer struct {
 	Flags             uint                 `json:"flags"`
 	NFTokenOfferIndex string               `json:"nft_offer_index"`
 	Owner             types.Address        `json:"owner"`
+	Destination       types.Address        `json:"destination,omitempty"`
+	Expiration        int                  `json:"expiration,omitempty"`
 }
 
 func (o *NFTokenOffer) UnmarshalJSON(data []byte) error {

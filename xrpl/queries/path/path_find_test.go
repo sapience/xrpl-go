@@ -3,32 +3,32 @@ package path
 import (
 	"testing"
 
+	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
-
-func TestPathFindRequest(t *testing.T) {
-	s := FindRequest{
-		Subcommand:         CREATE,
-		SourceAccount:      "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-		DestinationAccount: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-		DestinationAmount: types.IssuedCurrencyAmount{
-			Issuer:   "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-			Currency: "USD",
-			Value:    "0.001",
-		},
+func TestPathFindCloseRequest(t *testing.T) {
+	s := FindCloseRequest{
+		Subcommand: Close,
 	}
 
 	j := `{
-	"subcommand": "create",
-	"source_account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-	"destination_account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-	"destination_amount": {
-		"issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-		"currency": "USD",
-		"value": "0.001"
+	"subcommand": "close"
+}`
+
+	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+		t.Error(err)
 	}
+}
+
+func TestPathFindStatusRequest(t *testing.T) {
+	s := FindStatusRequest{
+		Subcommand: Status,
+	}
+
+	j := `{
+	"subcommand": "status"
 }`
 
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
@@ -38,7 +38,7 @@ func TestPathFindRequest(t *testing.T) {
 
 func TestPathFindResponse(t *testing.T) {
 	s := FindResponse{
-		Alternatives: []Alternative{
+		Alternatives: []pathtypes.Alternative{
 			{
 				PathsComputed: [][]transaction.PathStep{
 					{

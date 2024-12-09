@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -11,7 +12,7 @@ import (
 func TestNFTokenBuyOffersRequest(t *testing.T) {
 	s := NFTokenBuyOffersRequest{
 		NFTokenID:   "00090000D0B007439B080E9B05BF62403911301A7B1F0CFAA048C0A200000007",
-		LedgerIndex: common.VALIDATED,
+		LedgerIndex: common.Validated,
 	}
 
 	j := `{
@@ -27,7 +28,7 @@ func TestNFTokenBuyOffersRequest(t *testing.T) {
 func TestNFTokenBuyOffersResponse(t *testing.T) {
 	s := NFTokenBuyOffersResponse{
 		NFTokenID: "00090000D0B007439B080E9B05BF62403911301A7B1F0CFAA048C0A200000007",
-		Offers: []NFTokenOffer{
+		Offers: []pathtypes.NFTokenOffer{
 			{
 				Amount:            types.XRPCurrencyAmount(1500),
 				Flags:             0,

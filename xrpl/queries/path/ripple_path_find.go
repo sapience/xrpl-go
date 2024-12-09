@@ -1,9 +1,8 @@
 package path
 
 import (
-	"encoding/json"
-
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -21,52 +20,12 @@ func (*RipplePathFindRequest) Method() string {
 	return "ripple_path_find"
 }
 
-func (r *RipplePathFindRequest) UnmarshalJSON(data []byte) error {
-	type rpfHelper struct {
-		SourceAccount      types.Address                `json:"source_account"`
-		DestinationAccount types.Address                `json:"destination_account"`
-		DestinationAmount  json.RawMessage              `json:"destination_amount"`
-		SendMax            json.RawMessage              `json:"send_max,omitempty"`
-		SourceCurrencies   []types.IssuedCurrencyAmount `json:"source_currencies,omitempty"`
-		LedgerHash         common.LedgerHash            `json:"ledger_hash,omitempty"`
-		LedgerIndex        json.RawMessage              `json:"ledger_index,omitempty"`
-	}
-	var h rpfHelper
-	if err := json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-	*r = RipplePathFindRequest{
-		SourceAccount:      h.SourceAccount,
-		DestinationAccount: h.DestinationAccount,
-		SourceCurrencies:   h.SourceCurrencies,
-		LedgerHash:         h.LedgerHash,
-	}
-	var dst, sendMax types.CurrencyAmount
-	var err error
-
-	dst, err = types.UnmarshalCurrencyAmount(h.DestinationAmount)
-	if err != nil {
-		return err
-	}
-	r.DestinationAmount = dst
-
-	sendMax, err = types.UnmarshalCurrencyAmount(h.SendMax)
-	if err != nil {
-		return err
-	}
-	r.SendMax = sendMax
-
-	var i common.LedgerSpecifier
-	i, err = common.UnmarshalLedgerSpecifier(h.LedgerIndex)
-	if err != nil {
-		return err
-	}
-	r.LedgerIndex = i
-	return nil
-}
-
 type RipplePathFindResponse struct {
-	Alternatives          []Alternative `json:"alternatives"`
+	Alternatives          []pathtypes.Alternative `json:"alternatives"`
 	DestinationAccount    types.Address `json:"destination_account"`
 	DestinationCurrencies []string      `json:"destination_currencies"`
+	FullReply             bool          `json:"full_reply,omitempty"`
+	LedgerCurrentIndex    int           `json:"ledger_current_index,omitempty"`
+	SourceAccount         types.Address `json:"source_account"`
+	Validated             bool          `json:"validated"`
 }

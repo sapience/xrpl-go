@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -40,7 +41,7 @@ func TestBookOffersRequest(t *testing.T) {
 func TestBookOffersResponse(t *testing.T) {
 	s := BookOffersResponse{
 		LedgerCurrentIndex: 7035305,
-		Offers: []BookOffer{
+		Offers: []pathtypes.BookOffer{
 			{
 				Offer: ledger.Offer{
 					Account:           "rM3X3QSr8icjTGpaF52dozhbT2BZSXJQYM",

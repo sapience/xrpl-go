@@ -3,6 +3,7 @@ package path
 import (
 	"testing"
 
+	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -51,7 +52,7 @@ func TestRipplePathFindRequest(t *testing.T) {
 
 func TestRipplePathFindResponse(t *testing.T) {
 	s := RipplePathFindResponse{
-		Alternatives: []Alternative{
+		Alternatives: []pathtypes.Alternative{
 			{
 				PathsComputed: [][]transaction.PathStep{
 					{
