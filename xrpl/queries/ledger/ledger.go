@@ -27,6 +27,7 @@ func (*Request) Method() string {
 	return "ledger"
 }
 
+// TODO: Implement V2
 func (*Request) Validate() error {
 	return nil
 }

@@ -13,6 +13,11 @@ func (*ClosedRequest) Method() string {
 	return "ledger_closed"
 }
 
+// TODO: Implement V2
+func (*ClosedRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

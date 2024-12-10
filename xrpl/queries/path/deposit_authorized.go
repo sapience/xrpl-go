@@ -20,6 +20,11 @@ func (*DepositAuthorizedRequest) Method() string {
 	return "deposit_authorized"
 }
 
+// TODO: Implement V2
+func (*DepositAuthorizedRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

@@ -24,6 +24,11 @@ func (*RipplePathFindRequest) Method() string {
 	return "ripple_path_find"
 }
 
+// TODO: Implement V2
+func (*RipplePathFindRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

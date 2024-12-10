@@ -13,6 +13,11 @@ func (*CurrentRequest) Method() string {
 	return "ledger_current"
 }
 
+// TODO: Implement V2
+func (*CurrentRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

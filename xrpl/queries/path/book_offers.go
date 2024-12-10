@@ -23,7 +23,7 @@ func (*BookOffersRequest) Method() string {
 	return "book_offers"
 }
 
-// TODO: Implement
+// TODO: Implement V2
 func (*BookOffersRequest) Validate() error {
 	return nil
 }

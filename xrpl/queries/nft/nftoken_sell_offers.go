@@ -20,6 +20,11 @@ func (*NFTokenSellOffersRequest) Method() string {
 	return "nft_sell_offers"
 }
 
+// TODO: Implement V2
+func (*NFTokenSellOffersRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

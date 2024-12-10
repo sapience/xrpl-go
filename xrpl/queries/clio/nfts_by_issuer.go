@@ -20,6 +20,11 @@ func (*NFTsByIssuerRequest) Method() string {
 	return "nfts_by_issuer"
 }
 
+// TODO: Implement V2
+func (*NFTsByIssuerRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

@@ -23,6 +23,7 @@ func (*DataRequest) Method() string {
 	return "ledger_data"
 }
 
+// TODO: Implement V2
 func (*DataRequest) Validate() error {
 	return nil
 }

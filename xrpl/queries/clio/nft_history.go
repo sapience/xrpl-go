@@ -20,6 +20,7 @@ func (*NFTHistoryRequest) Method() string {
 	return "nft_history"
 }
 
+// TODO: Implement V2
 func (*NFTHistoryRequest) Validate() error {
 	return nil
 }

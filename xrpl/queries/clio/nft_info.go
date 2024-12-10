@@ -19,6 +19,11 @@ func (*NFTInfoRequest) Method() string {
 	return "nft_info"
 }
 
+// TODO: Implement V2
+func (*NFTInfoRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

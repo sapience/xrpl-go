@@ -17,6 +17,11 @@ func (*VerifyRequest) Method() string {
 	return "channel_verify"
 }
 
+// TODO: Implement V2
+func (*VerifyRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################
