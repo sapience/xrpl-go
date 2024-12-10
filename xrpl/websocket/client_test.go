@@ -14,7 +14,33 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSendRequest(t *testing.T) {
+func TestClient_Connect(t *testing.T) {
+	ws := NewClient(NewClientConfig().WithHost("wss://s.altnet.rippletest.net"))
+	err := ws.Connect()
+	require.NoError(t, err)
+	require.True(t, ws.IsConnected())
+	ws.Disconnect()
+	require.False(t, ws.IsConnected())
+}
+
+func TestClient_Disconnect(t *testing.T) {
+	ws := NewClient(NewClientConfig().WithHost("wss://s.altnet.rippletest.net"))
+	ws.Connect()
+	require.True(t, ws.IsConnected())
+	ws.Disconnect()
+	require.False(t, ws.IsConnected())
+}
+
+func TestClient_IsConnected(t *testing.T) {
+	ws := NewClient(NewClientConfig().WithHost("wss://s.altnet.rippletest.net"))
+	require.False(t, ws.IsConnected())
+	ws.Connect()
+	require.True(t, ws.IsConnected())
+	ws.Disconnect()
+	require.False(t, ws.IsConnected())
+}
+
+func TestClient_SendRequest(t *testing.T) {
 	tt := []struct {
 		description    string
 		req            XRPLRequest
@@ -196,7 +222,7 @@ func TestSendRequest(t *testing.T) {
 	}
 }
 
-func TestWebsocketClient_formatRequest(t *testing.T) {
+func TestClient_formatRequest(t *testing.T) {
 	ws := &Client{}
 	tt := []struct {
 		description string
@@ -259,7 +285,7 @@ func TestWebsocketClient_formatRequest(t *testing.T) {
 	}
 }
 
-func TestWebsocketClient_convertTransactionAddressToClassicAddress(t *testing.T) {
+func TestClient_convertTransactionAddressToClassicAddress(t *testing.T) {
 	ws := &Client{}
 	tests := []struct {
 		name      string
@@ -299,7 +325,7 @@ func TestWebsocketClient_convertTransactionAddressToClassicAddress(t *testing.T)
 	}
 }
 
-func TestWebsocketClient_validateTransactionAddress(t *testing.T) {
+func TestClient_validateTransactionAddress(t *testing.T) {
 	ws := &Client{}
 	tests := []struct {
 		name         string
@@ -356,7 +382,7 @@ func TestWebsocketClient_validateTransactionAddress(t *testing.T) {
 	}
 }
 
-func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
+func TestClient_setValidTransactionAddresses(t *testing.T) {
 	tests := []struct {
 		name        string
 		tx          transaction.FlatTransaction
@@ -414,7 +440,7 @@ func TestWebsocketClient_setValidTransactionAddresses(t *testing.T) {
 	}
 }
 
-func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
+func TestClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 	tests := []struct {
 		name           string
 		tx             transaction.FlatTransaction
@@ -500,7 +526,7 @@ func TestWebsocketClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 	}
 }
 
-func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
+func TestClient_calculateFeePerTransactionType(t *testing.T) {
 	tests := []struct {
 		name           string
 		tx             transaction.FlatTransaction
@@ -617,7 +643,7 @@ func TestWebsocket_calculateFeePerTransactionType(t *testing.T) {
 	}
 }
 
-func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
+func TestClient_setLastLedgerSequence(t *testing.T) {
 	tests := []struct {
 		name           string
 		serverMessages []map[string]any
@@ -678,7 +704,7 @@ func TestWebsocketClient_setLastLedgerSequence(t *testing.T) {
 	}
 }
 
-func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
+func TestClient_checkAccountDeleteBlockers(t *testing.T) {
 	tests := []struct {
 		name           string
 		address        types.Address
@@ -739,7 +765,7 @@ func TestWebsocketClient_checkAccountDeleteBlockers(t *testing.T) {
 	}
 }
 
-func TestWebsocketClient_setTransactionFlags(t *testing.T) {
+func TestClient_setTransactionFlags(t *testing.T) {
 	tests := []struct {
 		name     string
 		tx       transaction.FlatTransaction
