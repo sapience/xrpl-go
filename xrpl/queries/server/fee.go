@@ -2,8 +2,12 @@ package server
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	servertypes "github.com/Peersyst/xrpl-go/xrpl/queries/server/types"
 )
+
+// ############################################################################
+// Request
+// ############################################################################
 
 type FeeRequest struct {
 }
@@ -12,26 +16,20 @@ func (*FeeRequest) Method() string {
 	return "fee"
 }
 
+// TODO: Implement V2
+func (*FeeRequest) Validate() error {
+	return nil
+}
+
+// ############################################################################
+// Response
+// ############################################################################
 type FeeResponse struct {
-	CurrentLedgerSize  string             `json:"current_ledger_size"`
-	CurrentQueueSize   string             `json:"current_queue_size"`
-	Drops              FeeDrops           `json:"drops"`
-	ExpectedLedgerSize string             `json:"expected_ledger_size"`
-	LedgerCurrentIndex common.LedgerIndex `json:"ledger_current_index"`
-	Levels             FeeLevels          `json:"levels"`
-	MaxQueueSize       string             `json:"max_queue_size"`
-}
-
-type FeeDrops struct {
-	BaseFee       types.XRPCurrencyAmount `json:"base_fee"`
-	MedianFee     types.XRPCurrencyAmount `json:"median_fee"`
-	MinimumFee    types.XRPCurrencyAmount `json:"minimum_fee"`
-	OpenLedgerFee types.XRPCurrencyAmount `json:"open_ledger_fee"`
-}
-
-type FeeLevels struct {
-	MedianLevel     types.XRPCurrencyAmount `json:"median_level"`
-	MinimumLevel    types.XRPCurrencyAmount `json:"minimum_level"`
-	OpenLedgerLevel types.XRPCurrencyAmount `json:"open_ledger_level"`
-	ReferenceLevel  types.XRPCurrencyAmount `json:"reference_level"`
+	CurrentLedgerSize  string                `json:"current_ledger_size"`
+	CurrentQueueSize   string                `json:"current_queue_size"`
+	Drops              servertypes.FeeDrops  `json:"drops"`
+	ExpectedLedgerSize string                `json:"expected_ledger_size"`
+	LedgerCurrentIndex common.LedgerIndex    `json:"ledger_current_index"`
+	Levels             servertypes.FeeLevels `json:"levels"`
+	MaxQueueSize       string                `json:"max_queue_size"`
 }

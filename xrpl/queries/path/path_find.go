@@ -43,6 +43,11 @@ func (*FindCloseRequest) Method() string {
 	return "path_find"
 }
 
+// TODO: Implement V2
+func (*FindCloseRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Status Request
 // ############################################################################
@@ -53,6 +58,11 @@ type FindStatusRequest struct {
 
 func (*FindStatusRequest) Method() string {
 	return "path_find"
+}
+
+// TODO: Implement V2
+func (*FindStatusRequest) Validate() error {
+	return nil
 }
 
 // ############################################################################
