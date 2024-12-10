@@ -2,6 +2,10 @@ package channel
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
+// ############################################################################
+// Request
+// ############################################################################
+
 type VerifyRequest struct {
 	Amount    types.XRPCurrencyAmount `json:"amount"`
 	ChannelID string                  `json:"channel_id"`
@@ -12,6 +16,10 @@ type VerifyRequest struct {
 func (*VerifyRequest) Method() string {
 	return "channel_verify"
 }
+
+// ############################################################################
+// Response
+// ############################################################################
 
 type VerifyResponse struct {
 	SignatureVerified bool `json:"signature_verified"`
