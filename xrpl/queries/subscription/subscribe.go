@@ -6,6 +6,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// ############################################################################
+// Request
+// ############################################################################
+
 type Request struct {
 	Streams          []string        `json:"streams,omitempty"`
 	Accounts         []types.Address `json:"accounts,omitempty"`
@@ -20,6 +24,11 @@ func (*Request) Method() string {
 	return "subscribe"
 }
 
+// TODO: Implement V2
+func (*Request) Validate() error {
+	return nil
+}
+
 type OrderBook struct {
 	TakerGets types.IssuedCurrencyAmount `json:"taker_gets"`
 	TakerPays types.IssuedCurrencyAmount `json:"taker_pays"`
@@ -27,6 +36,10 @@ type OrderBook struct {
 	Snapshot  bool                       `json:"snapshot,omitempty"`
 	Both      bool                       `json:"both,omitempty"`
 }
+
+// ############################################################################
+// Response
+// ############################################################################
 
 type Response struct {
 	LoadBase         uint               `json:"load_base,omitempty"`

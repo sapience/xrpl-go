@@ -2,6 +2,10 @@ package transaction
 
 import "github.com/Peersyst/xrpl-go/xrpl/transaction"
 
+// ############################################################################
+// Request
+// ############################################################################
+
 type SubmitMultisignedRequest struct {
 	Tx       transaction.FlatTransaction `json:"tx_json"`
 	FailHard bool                        `json:"fail_hard"`
@@ -10,6 +14,14 @@ type SubmitMultisignedRequest struct {
 func (*SubmitMultisignedRequest) Method() string {
 	return "submit_multisigned"
 }
+
+func (*SubmitMultisignedRequest) Validate() error {
+	return nil
+}
+
+// ############################################################################
+// Response
+// ############################################################################
 
 type SubmitMultisignedResponse struct {
 	EngineResult        string                      `json:"engine_result"`

@@ -6,6 +6,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// ############################################################################
+// Request
+// ############################################################################
+
 type TxRequest struct {
 	Transaction string             `json:"transaction"`
 	Binary      bool               `json:"binary,omitempty"`
@@ -17,11 +21,20 @@ func (*TxRequest) Method() string {
 	return "tx"
 }
 
+// TODO: Implement V2
+func (*TxRequest) Validate() error {
+	return nil
+}
+
+// ############################################################################
+// Response
+// ############################################################################
+
 type TxResponse struct {
-	Date        uint                         `json:"date"`
-	Hash        types.Hash256                `json:"hash"`
-	LedgerIndex common.LedgerIndex           `json:"ledger_index"`
+	Date        uint                        `json:"date"`
+	Hash        types.Hash256               `json:"hash"`
+	LedgerIndex common.LedgerIndex          `json:"ledger_index"`
 	Meta        transaction.TxMeta          `json:"meta"`
-	Validated   bool                         `json:"validated"`
+	Validated   bool                        `json:"validated"`
 	Tx          transaction.FlatTransaction `json:",omitempty"`
 }

@@ -7,6 +7,14 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 )
 
+var (
+	ErrNoTxBlob = errors.New("no TxBlob defined")
+)
+
+// ############################################################################
+// Request
+// ############################################################################
+
 type SubmitRequest struct {
 	TxBlob   string `json:"tx_blob"`
 	FailHard bool   `json:"fail_hard,omitempty"`
@@ -18,10 +26,14 @@ func (*SubmitRequest) Method() string {
 
 func (req *SubmitRequest) Validate() error {
 	if req.TxBlob == "" {
-		return errors.New("no TxBlob defined")
+		return ErrNoTxBlob
 	}
 	return nil
 }
+
+// ############################################################################
+// Response
+// ############################################################################
 
 type SubmitResponse struct {
 	EngineResult             string                      `json:"engine_result"`

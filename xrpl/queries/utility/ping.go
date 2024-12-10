@@ -1,5 +1,9 @@
 package utility
 
+// ############################################################################
+// Request
+// ############################################################################
+
 type PingRequest struct{}
 
 func (*PingRequest) Method() string {
@@ -10,4 +14,11 @@ func (*PingRequest) Validate() error {
 	return nil
 }
 
-type PingResponse struct{}
+// ############################################################################
+// Response
+// ############################################################################
+
+type PingResponse struct {
+	Role      string `json:"role,omitempty"`
+	Unlimited bool   `json:"unlimited,omitempty"`
+}
