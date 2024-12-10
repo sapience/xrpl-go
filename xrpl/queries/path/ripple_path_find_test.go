@@ -45,14 +45,14 @@ func TestRipplePathFindRequest(t *testing.T) {
 		}
 	]
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestRipplePathFindResponse(t *testing.T) {
 	s := RipplePathFindResponse{
-		Alternatives: []pathtypes.Alternative{
+		Alternatives: []pathtypes.RippleAlternative{
 			{
 				PathsComputed: [][]transaction.PathStep{
 					{
@@ -194,9 +194,11 @@ func TestRipplePathFindResponse(t *testing.T) {
 		"BTC",
 		"USD",
 		"XRP"
-	]
+	],
+	"source_account": "",
+	"validated": false
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

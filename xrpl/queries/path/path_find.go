@@ -14,6 +14,10 @@ const (
 	Status SubCommand = "status"
 )
 
+// ############################################################################
+// Create Request
+// ############################################################################
+
 type FindCreateRequest struct {
 	Subcommand         SubCommand             `json:"subcommand"`
 	SourceAccount      types.Address          `json:"source_account,omitempty"`
@@ -23,33 +27,45 @@ type FindCreateRequest struct {
 	Paths              []transaction.PathStep `json:"paths,omitempty"`
 }
 
-type FindCloseRequest struct {
-	Subcommand SubCommand `json:"subcommand"`
-}
-
-type FindStatusRequest struct {
-	Subcommand SubCommand `json:"subcommand"`
-}
-
 func (*FindCreateRequest) Method() string {
 	return "path_find"
+}
+
+// ############################################################################
+// Close Request
+// ############################################################################
+
+type FindCloseRequest struct {
+	Subcommand SubCommand `json:"subcommand"`
 }
 
 func (*FindCloseRequest) Method() string {
 	return "path_find"
 }
 
+// ############################################################################
+// Status Request
+// ############################################################################
+
+type FindStatusRequest struct {
+	Subcommand SubCommand `json:"subcommand"`
+}
+
 func (*FindStatusRequest) Method() string {
 	return "path_find"
 }
 
+// ############################################################################
+// Response
+// ############################################################################
+
 // TODO: Add ID handling (v2)
 type FindResponse struct {
-	Alternatives       []pathtypes.Alternative        `json:"alternatives"`
-	DestinationAccount types.Address        `json:"destination_account"`
-	DestinationAmount  types.CurrencyAmount `json:"destination_amount"`
-	SourceAccount      types.Address        `json:"source_account"`
-	FullReply          bool                 `json:"full_reply"`
-	Closed             bool                 `json:"closed,omitempty"`
-	Status             bool                 `json:"status,omitempty"`
+	Alternatives       []pathtypes.Alternative `json:"alternatives"`
+	DestinationAccount types.Address           `json:"destination_account"`
+	DestinationAmount  types.CurrencyAmount    `json:"destination_amount"`
+	SourceAccount      types.Address           `json:"source_account"`
+	FullReply          bool                    `json:"full_reply"`
+	Closed             bool                    `json:"closed,omitempty"`
+	Status             bool                    `json:"status,omitempty"`
 }

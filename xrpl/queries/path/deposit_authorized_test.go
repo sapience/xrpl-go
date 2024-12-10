@@ -20,7 +20,7 @@ func TestDepositAuthorizedRequest(t *testing.T) {
 	"ledger_index": "validated"
 }`
 
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

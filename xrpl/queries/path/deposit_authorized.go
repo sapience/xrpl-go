@@ -5,6 +5,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// ############################################################################
+// Request
+// ############################################################################
+
 type DepositAuthorizedRequest struct {
 	SourceAccount      types.Address          `json:"source_account"`
 	DestinationAccount types.Address          `json:"destination_account"`
@@ -15,6 +19,10 @@ type DepositAuthorizedRequest struct {
 func (*DepositAuthorizedRequest) Method() string {
 	return "deposit_authorized"
 }
+
+// ############################################################################
+// Response
+// ############################################################################
 
 type DepositAuthorizedResponse struct {
 	DepositAuthorized  bool               `json:"deposit_authorized"`
