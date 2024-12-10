@@ -18,6 +18,7 @@ const (
 // Create Request
 // ############################################################################
 
+// Start sending pathfinding information.
 type FindCreateRequest struct {
 	Subcommand         SubCommand             `json:"subcommand"`
 	SourceAccount      types.Address          `json:"source_account,omitempty"`
@@ -35,6 +36,7 @@ func (*FindCreateRequest) Method() string {
 // Close Request
 // ############################################################################
 
+// Stop sending pathfinding information.
 type FindCloseRequest struct {
 	Subcommand SubCommand `json:"subcommand"`
 }
@@ -52,6 +54,7 @@ func (*FindCloseRequest) Validate() error {
 // Status Request
 // ############################################################################
 
+// Get the information of the currently-open pathfinding request.
 type FindStatusRequest struct {
 	Subcommand SubCommand `json:"subcommand"`
 }
@@ -70,6 +73,8 @@ func (*FindStatusRequest) Validate() error {
 // ############################################################################
 
 // TODO: Add ID handling (v2)
+
+// The expected response from the path_find method.
 type FindResponse struct {
 	Alternatives       []pathtypes.Alternative `json:"alternatives"`
 	DestinationAccount types.Address           `json:"destination_account"`

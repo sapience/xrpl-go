@@ -6,6 +6,8 @@ import "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 // Request
 // ############################################################################
 
+// The ledger_current method returns the unique identifiers of the current
+// in-progress ledger.
 type CurrentRequest struct {
 }
 
@@ -22,6 +24,7 @@ func (*CurrentRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the ledger_current method.
 type CurrentResponse struct {
 	LedgerCurrentIndex common.LedgerIndex `json:"ledger_current_index"`
 }

@@ -15,6 +15,8 @@ var (
 // Request
 // ############################################################################
 
+// The submit method applies a transaction and sends it to the network to be
+// confirmed and included in future ledgers.
 type SubmitRequest struct {
 	TxBlob   string `json:"tx_blob"`
 	FailHard bool   `json:"fail_hard,omitempty"`
@@ -35,6 +37,7 @@ func (req *SubmitRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the submit method.
 type SubmitResponse struct {
 	EngineResult             string                      `json:"engine_result"`
 	EngineResultCode         int                         `json:"engine_result_code"`

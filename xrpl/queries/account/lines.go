@@ -10,6 +10,9 @@ import (
 // Request
 // ############################################################################
 
+// The account_lines method returns information about an account's trust lines,
+// including balances in all non-XRP currencies and assets. All information
+// retrieved is relative to a particular version of the ledger.
 type LinesRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -32,6 +35,7 @@ func (*LinesRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the account_lines method.
 type LinesResponse struct {
 	Account            types.Address            `json:"account"`
 	Lines              []accounttypes.TrustLine `json:"lines"`

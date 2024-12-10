@@ -10,6 +10,7 @@ import (
 // Request
 // ############################################################################
 
+// Retrieve information about the public ledger.
 type Request struct {
 	LedgerHash   common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex  common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -36,6 +37,7 @@ func (*Request) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the ledger method.
 type Response struct {
 	Ledger      ledgertypes.BaseLedger  `json:"ledger"`
 	LedgerHash  string                  `json:"ledger_hash"`

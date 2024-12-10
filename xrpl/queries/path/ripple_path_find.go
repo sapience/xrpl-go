@@ -10,6 +10,8 @@ import (
 // Request
 // ############################################################################
 
+// The ripple_path_find method is a simplified version of the path_find method
+// that provides a single response with a payment path you can use right away.
 type RipplePathFindRequest struct {
 	SourceAccount      types.Address                `json:"source_account"`
 	DestinationAccount types.Address                `json:"destination_account"`
@@ -33,6 +35,7 @@ func (*RipplePathFindRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the ripple_path_find method.
 type RipplePathFindResponse struct {
 	Alternatives          []pathtypes.RippleAlternative `json:"alternatives"`
 	DestinationAccount    types.Address                 `json:"destination_account"`

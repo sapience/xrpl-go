@@ -6,6 +6,8 @@ import "github.com/Peersyst/xrpl-go/xrpl/transaction"
 // Request
 // ############################################################################
 
+// The nft_history method retrieves a list of transactions that involved the
+// specified NFToken.
 type NFTHistoryRequest struct {
 	NFTokenID      string `json:"nft_id"`
 	LedgerIndexMin uint   `json:"ledger_index_min,omitempty"`
@@ -37,6 +39,7 @@ type NFTHistoryTransactions struct {
 	Validated   bool                        `json:"validated"`
 }
 
+// The expected response from the nft_history method.
 type NFTHistoryResponse struct {
 	NFTokenID      string                   `json:"nft_id"`
 	LedgerIndexMin uint                     `json:"ledger_index_min,omitempty"`

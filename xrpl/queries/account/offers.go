@@ -10,6 +10,8 @@ import (
 // Request
 // ############################################################################
 
+// The account_offers method retrieves a list of offers made by a given account
+// that are outstanding as of a particular ledger version.
 type OffersRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`

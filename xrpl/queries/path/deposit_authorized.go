@@ -9,6 +9,8 @@ import (
 // Request
 // ############################################################################
 
+// The deposit_authorized command indicates whether one account is authorized to
+// send payments directly to another.
 type DepositAuthorizedRequest struct {
 	SourceAccount      types.Address          `json:"source_account"`
 	DestinationAccount types.Address          `json:"destination_account"`
@@ -29,6 +31,7 @@ func (*DepositAuthorizedRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the deposit_authorized method.
 type DepositAuthorizedResponse struct {
 	DepositAuthorized  bool               `json:"deposit_authorized"`
 	DestinationAccount types.Address      `json:"destination_account"`

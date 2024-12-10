@@ -11,6 +11,8 @@ import (
 // Request
 // ############################################################################
 
+// The nft_buy_offers method retrieves all of buy offers for the specified
+// NFToken.
 type NFTokenBuyOffersRequest struct {
 	NFTokenID   types.NFTokenID        `json:"nft_id"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -30,6 +32,7 @@ func (*NFTokenBuyOffersRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the nft_buy_offers method.
 type NFTokenBuyOffersResponse struct {
 	NFTokenID types.NFTokenID         `json:"nft_id"`
 	Offers    []nfttypes.NFTokenOffer `json:"offers"`

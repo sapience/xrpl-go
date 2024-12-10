@@ -6,6 +6,8 @@ import "github.com/Peersyst/xrpl-go/xrpl/queries/server/types"
 // Feature All Request
 // ############################################################################
 
+// The feature command returns information about amendments this server knows
+// about, including whether they are enabled.
 type FeatureAllRequest struct {
 }
 
@@ -22,6 +24,8 @@ func (*FeatureAllRequest) Validate() error {
 // Feature All Response
 // ############################################################################
 
+// The feature command returns information about amendments this server knows
+// about, including whether they are enabled.
 type FeatureAllResponse struct {
 	Features map[string]types.FeatureStatus `json:"features"`
 }
@@ -47,4 +51,5 @@ func (*FeatureOneRequest) Validate() error {
 // Feature One Response
 // ############################################################################
 
+// The expected response from the feature method.
 type FeatureResponse map[string]types.FeatureStatus

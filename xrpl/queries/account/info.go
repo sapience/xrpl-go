@@ -11,6 +11,9 @@ import (
 // Request
 // ############################################################################
 
+// The `account_info` command retrieves information about an account, its
+// activity, and its XRP balance. All information retrieved is relative to a
+// particular version of the ledger.
 type InfoRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -33,6 +36,7 @@ func (*InfoRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the account_info method.
 type InfoResponse struct {
 	AccountData        ledger.AccountRoot     `json:"account_data"`
 	SignerLists        []ledger.SignerList    `json:"signer_lists,omitempty"`

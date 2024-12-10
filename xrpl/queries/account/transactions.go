@@ -18,6 +18,8 @@ type Transaction struct {
 // Request
 // ############################################################################
 
+// The account_tx method retrieves a list of transactions that involved the
+// specified account.
 type TransactionsRequest struct {
 	Account        types.Address          `json:"account"`
 	LedgerIndexMin int                    `json:"ledger_index_min,omitempty"`
@@ -43,6 +45,7 @@ func (*TransactionsRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the account_tx method.
 type TransactionsResponse struct {
 	Account        types.Address      `json:"account"`
 	LedgerIndexMin common.LedgerIndex `json:"ledger_index_min"`

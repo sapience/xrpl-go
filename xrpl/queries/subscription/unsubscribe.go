@@ -12,6 +12,8 @@ type UnsubscribeOrderBook struct {
 // Request
 // ############################################################################
 
+// The unsubscribe command tells the server to stop sending messages for a
+// particular subscription or set of subscriptions.
 type UnsubscribeRequest struct {
 	Streams          []string               `json:"streams,omitempty"`
 	Accounts         []types.Address        `json:"accounts,omitempty"`
@@ -32,5 +34,6 @@ func (*UnsubscribeRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the unsubscribe method.
 type UnsubscribeResponse struct {
 }

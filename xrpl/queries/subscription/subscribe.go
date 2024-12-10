@@ -10,6 +10,8 @@ import (
 // Request
 // ############################################################################
 
+// The subscribe method requests periodic notifications from the server when
+// certain events happen.
 type Request struct {
 	Streams          []string        `json:"streams,omitempty"`
 	Accounts         []types.Address `json:"accounts,omitempty"`
@@ -41,6 +43,7 @@ type OrderBook struct {
 // Response
 // ############################################################################
 
+// The expected response from the subscribe method.
 type Response struct {
 	LoadBase         uint               `json:"load_base,omitempty"`
 	LoadFactor       uint               `json:"load_factor,omitempty"`

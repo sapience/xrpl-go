@@ -10,6 +10,8 @@ import (
 // Request
 // ############################################################################
 
+// The nft_sell_offers method retrieves all of sell offers for the specified
+// NFToken.
 type NFTokenSellOffersRequest struct {
 	NFTokenID   types.NFTokenID        `json:"nft_id"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -29,6 +31,7 @@ func (*NFTokenSellOffersRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the nft_sell_offers method.
 type NFTokenSellOffersResponse struct {
 	NFTokenID types.NFTokenID         `json:"nft_id"`
 	Offers    []nfttypes.NFTokenOffer `json:"offers"`

@@ -9,6 +9,9 @@ import (
 // Request
 // ############################################################################
 
+// The fee command reports the current state of the open-ledger requirements
+// for the transaction cost. This requires the FeeEscalation amendment to be
+// enabled.
 type FeeRequest struct {
 }
 
@@ -24,6 +27,8 @@ func (*FeeRequest) Validate() error {
 // ############################################################################
 // Response
 // ############################################################################
+
+// The expected response from the fee method.
 type FeeResponse struct {
 	CurrentLedgerSize  string                `json:"current_ledger_size"`
 	CurrentQueueSize   string                `json:"current_queue_size"`

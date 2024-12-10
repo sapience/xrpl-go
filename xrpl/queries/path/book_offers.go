@@ -10,6 +10,8 @@ import (
 // Request
 // ############################################################################
 
+// The book_offers method retrieves a list of offers, also known as the order
+// book, between two currencies.
 type BookOffersRequest struct {
 	TakerGets   pathtypes.BookOfferCurrency `json:"taker_gets"`
 	TakerPays   pathtypes.BookOfferCurrency `json:"taker_pays"`
@@ -32,6 +34,7 @@ func (*BookOffersRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the book_offers method.
 type BookOffersResponse struct {
 	LedgerCurrentIndex common.LedgerIndex    `json:"ledger_current_index,omitempty"`
 	LedgerIndex        common.LedgerIndex    `json:"ledger_index,omitempty"`

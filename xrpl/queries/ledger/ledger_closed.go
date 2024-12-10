@@ -6,6 +6,8 @@ import "github.com/Peersyst/xrpl-go/xrpl/queries/common"
 // Request
 // ############################################################################
 
+// The ledger_closed method returns the unique identifiers of the most recently
+// closed ledger.
 type ClosedRequest struct {
 }
 
@@ -22,6 +24,7 @@ func (*ClosedRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the ledger_closed method.
 type ClosedResponse struct {
 	LedgerHash  string             `json:"ledger_hash"`
 	LedgerIndex common.LedgerIndex `json:"ledger_index"`

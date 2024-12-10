@@ -10,6 +10,8 @@ import (
 // Request
 // ############################################################################
 
+// The tx method retrieves information on a single transaction, by its
+// identifying hash.
 type TxRequest struct {
 	Transaction string             `json:"transaction"`
 	Binary      bool               `json:"binary,omitempty"`
@@ -30,6 +32,7 @@ func (*TxRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the tx method.
 type TxResponse struct {
 	Date        uint                        `json:"date"`
 	Hash        types.Hash256               `json:"hash"`

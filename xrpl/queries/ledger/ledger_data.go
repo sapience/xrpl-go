@@ -10,6 +10,9 @@ import (
 // Request
 // ############################################################################
 
+// The ledger_data method retrieves contents of the specified ledger. You can
+// iterate through several calls to retrieve the entire contents of a single
+// ledger version.
 type DataRequest struct {
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -32,6 +35,7 @@ func (*DataRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the ledger_data method.
 type DataResponse struct {
 	LedgerIndex string              `json:"ledger_index"`
 	LedgerHash  common.LedgerHash   `json:"ledger_hash"`

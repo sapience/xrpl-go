@@ -10,6 +10,8 @@ import (
 // Request
 // ############################################################################
 
+// The `account_nfts` method retrieves all of the NFTs currently owned by the
+// specified account.
 type NFTsRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
@@ -31,6 +33,7 @@ func (*NFTsRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the account_nfts method.
 type NFTsResponse struct {
 	Account            types.Address      `json:"account"`
 	AccountNFTs        []accounttypes.NFT `json:"account_nfts"`

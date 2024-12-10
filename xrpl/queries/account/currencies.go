@@ -9,6 +9,8 @@ import (
 // Request
 // ############################################################################
 
+// The `account_currencies` command retrieves a list of currencies that an
+// account can send or receive, based on its trust lines.
 type CurrenciesRequest struct {
 	Account     types.Address          `json:"account"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -29,6 +31,7 @@ func (*CurrenciesRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the account_currencies method.
 type CurrenciesResponse struct {
 	LedgerHash        common.LedgerHash  `json:"ledger_hash,omitempty"`
 	LedgerIndex       common.LedgerIndex `json:"ledger_index"`

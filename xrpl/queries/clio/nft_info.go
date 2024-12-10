@@ -9,6 +9,7 @@ import (
 // Request
 // ############################################################################
 
+// The nft_info method retrieves information about an NFToken.
 type NFTInfoRequest struct {
 	NFTokenID   types.NFTokenID        `json:"nft_id"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
@@ -28,6 +29,7 @@ func (*NFTInfoRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the nft_info method.
 type NFTInfoResponse struct {
 	NFTokenID       types.NFTokenID    `json:"nft_id"`
 	LedgerIndex     common.LedgerIndex `json:"ledger_index"`

@@ -9,6 +9,8 @@ import (
 // Request
 // ############################################################################
 
+// The nfts_by_issuer method returns a list of NFTokens issued by the account.
+// The order of the NFTs is not associated with the date the NFTs were minted.
 type NFTsByIssuerRequest struct {
 	Issuer   types.Address `json:"issuer"`
 	Marker   any           `json:"marker,omitempty"`
@@ -29,6 +31,7 @@ func (*NFTsByIssuerRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the nfts_by_issuer method.
 type NFTsByIssuerResponse struct {
 	Issuer       types.Address       `json:"issuer"`
 	NFTs         []cliotypes.NFToken `json:"nfts"`

@@ -8,6 +8,8 @@ import (
 // Request
 // ############################################################################
 
+// The server_info command asks the server for a human-readable version of
+// various information about the rippled server being queried.
 type InfoRequest struct {
 }
 
@@ -21,9 +23,10 @@ func (*InfoRequest) Validate() error {
 }
 
 // ############################################################################
-// Request
+// Response
 // ############################################################################
 
+// The expected response from the server_info method.
 type InfoResponse struct {
 	Info servertypes.Info `json:"info"`
 }

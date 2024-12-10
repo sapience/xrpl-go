@@ -24,6 +24,9 @@ const (
 // Request
 // ############################################################################
 
+// The account_objects command returns the raw ledger format for all objects
+// owned by an account. For a higher-level view of an account's trust lines and
+// balances, see the account_lines method instead.
 type ObjectsRequest struct {
 	Account              types.Address          `json:"account"`
 	Type                 ObjectType             `json:"type,omitempty"`
@@ -47,6 +50,7 @@ func (*ObjectsRequest) Validate() error {
 // Response
 // ############################################################################
 
+// The expected response from the account_objects method.
 type ObjectsResponse struct {
 	Account            types.Address             `json:"account"`
 	AccountObjects     []ledger.FlatLedgerObject `json:"account_objects"`
