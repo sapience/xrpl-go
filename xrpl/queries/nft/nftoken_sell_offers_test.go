@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
+	nfttypes "github.com/Peersyst/xrpl-go/xrpl/queries/nft/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -19,7 +19,7 @@ func TestNFTokenSellOffersRequest(t *testing.T) {
 	"nft_id": "00090000D0B007439B080E9B05BF62403911301A7B1F0CFAA048C0A200000007",
 	"ledger_index": "validated"
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
@@ -27,7 +27,7 @@ func TestNFTokenSellOffersRequest(t *testing.T) {
 func TestNFTokenSellOffersResponse(t *testing.T) {
 	s := NFTokenSellOffersResponse{
 		NFTokenID: "00090000D0B007439B080E9B05BF62403911301A7B1F0CFAA048C0A200000007",
-		Offers: []pathtypes.NFTokenOffer{
+		Offers: []nfttypes.NFTokenOffer{
 			{
 				Amount:            types.XRPCurrencyAmount(1000),
 				Flags:             1,
@@ -48,7 +48,7 @@ func TestNFTokenSellOffersResponse(t *testing.T) {
 		}
 	]
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
