@@ -209,6 +209,9 @@ func TestClient_SendRequest(t *testing.T) {
 			cl := &Client{cfg: ClientConfig{
 				host: url,
 			}}
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
 
 			res, err := cl.sendRequest(tc.req)
 
@@ -218,6 +221,8 @@ func TestClient_SendRequest(t *testing.T) {
 				require.NoError(t, err)
 				require.EqualValues(t, tc.res, res)
 			}
+
+			cl.Disconnect()
 		})
 	}
 }
@@ -499,6 +504,10 @@ func TestClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 				},
 			}
 
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
 			err := cl.setTransactionNextValidSequenceNumber(&tt.tx)
 
 			if tt.expectedErr != nil {
@@ -522,6 +531,8 @@ func TestClient_setTransactionNextValidSequenceNumber(t *testing.T) {
 				}
 				t.Errorf("Expected %v but got %v", tt.expected, tt.tx)
 			}
+
+			cl.Disconnect()
 		})
 	}
 }
@@ -625,6 +636,10 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 				},
 			}
 
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
 			err := cl.calculateFeePerTransactionType(&tt.tx)
 
 			if tt.expectedErr != nil {
@@ -639,6 +654,8 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 					t.Errorf("Expected fee %v, but got %v", tt.expectedFee, tt.tx["Fee"])
 				}
 			}
+
+			cl.Disconnect()
 		})
 	}
 }
@@ -686,6 +703,11 @@ func TestClient_setLastLedgerSequence(t *testing.T) {
 					host: url,
 				},
 			}
+
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
 			err := cl.setLastLedgerSequence(&tt.tx)
 
 			if tt.expectedErr != nil {
@@ -700,6 +722,8 @@ func TestClient_setLastLedgerSequence(t *testing.T) {
 					t.Errorf("Expected tx %v, but got %v", tt.expectedTx, tt.tx)
 				}
 			}
+
+			cl.Disconnect()
 		})
 	}
 }
@@ -750,6 +774,10 @@ func TestClient_checkAccountDeleteBlockers(t *testing.T) {
 				},
 			}
 
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
 			err := cl.checkAccountDeleteBlockers(tt.address)
 
 			if tt.expectedErr != nil {
@@ -761,6 +789,8 @@ func TestClient_checkAccountDeleteBlockers(t *testing.T) {
 					t.Errorf("Unexpected error: %v", err)
 				}
 			}
+
+			cl.Disconnect()
 		})
 	}
 }
