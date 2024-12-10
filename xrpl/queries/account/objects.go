@@ -18,7 +18,6 @@ const (
 	SignerListObject     ObjectType = "signer_list"
 	StateObject          ObjectType = "state"
 	TicketObject         ObjectType = "ticket"
-
 )
 
 // ############################################################################
@@ -39,7 +38,7 @@ func (*ObjectsRequest) Method() string {
 	return "account_objects"
 }
 
-// TODO: Implement
+// TODO: Implement (V2)
 func (*ObjectsRequest) Validate() error {
 	return nil
 }

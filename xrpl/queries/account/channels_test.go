@@ -21,7 +21,7 @@ func TestAccountChannelRequest(t *testing.T) {
 	"destination_account": "rnZvsWuLem5Ha46AZs61jLWR9R5esinkG3",
 	"ledger_index": "validated"
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 

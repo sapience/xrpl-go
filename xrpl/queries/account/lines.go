@@ -23,6 +23,7 @@ func (*LinesRequest) Method() string {
 	return "account_lines"
 }
 
+// TODO: Implement (V2)
 func (*LinesRequest) Validate() error {
 	return nil
 }
@@ -32,10 +33,10 @@ func (*LinesRequest) Validate() error {
 // ############################################################################
 
 type LinesResponse struct {
-	Account            types.Address      `json:"account"`
-	Lines              []accounttypes.TrustLine        `json:"lines"`
-	LedgerCurrentIndex common.LedgerIndex `json:"ledger_current_index,omitempty"`
-	LedgerIndex        common.LedgerIndex `json:"ledger_index,omitempty"`
-	LedgerHash         common.LedgerHash  `json:"ledger_hash,omitempty"`
-	Marker             any                `json:"marker,omitempty"`
+	Account            types.Address            `json:"account"`
+	Lines              []accounttypes.TrustLine `json:"lines"`
+	LedgerCurrentIndex common.LedgerIndex       `json:"ledger_current_index,omitempty"`
+	LedgerIndex        common.LedgerIndex       `json:"ledger_index,omitempty"`
+	LedgerHash         common.LedgerHash        `json:"ledger_hash,omitempty"`
+	Marker             any                      `json:"marker,omitempty"`
 }

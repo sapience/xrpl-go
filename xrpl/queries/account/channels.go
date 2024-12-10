@@ -9,18 +9,13 @@ import (
 )
 
 var (
-	ErrNoAccountID error = errors.New("no account ID specified")
+	ErrNoAccountID = errors.New("no account ID specified")
 )
 
 // ############################################################################
 // Request
 // ############################################################################
 
-// The account_channels method returns information about an account's Payment
-// Channels. This includes only channels where the specified account is the
-// channel's source, not the destination. (A channel's "source" and "owner" are
-// the same.) All information retrieved is relative to a particular version of
-// the ledger. Returns an {@link AccountChannelsResponse}.
 type ChannelsRequest struct {
 	Account            types.Address          `json:"account"`
 	DestinationAccount types.Address          `json:"destination_account,omitempty"`
@@ -50,11 +45,11 @@ func (r *ChannelsRequest) Validate() error {
 
 // The expected response from the account_channels method.
 type ChannelsResponse struct {
-	Account     types.Address      `json:"account"`
-	Channels    []accounttypes.ChannelResult    `json:"channels"`
-	LedgerIndex common.LedgerIndex `json:"ledger_index,omitempty"`
-	LedgerHash  common.LedgerHash  `json:"ledger_hash,omitempty"`
-	Validated   bool               `json:"validated,omitempty"`
-	Limit       int                `json:"limit,omitempty"`
-	Marker      any                `json:"marker,omitempty"`
+	Account     types.Address                `json:"account"`
+	Channels    []accounttypes.ChannelResult `json:"channels"`
+	LedgerIndex common.LedgerIndex           `json:"ledger_index,omitempty"`
+	LedgerHash  common.LedgerHash            `json:"ledger_hash,omitempty"`
+	Validated   bool                         `json:"validated,omitempty"`
+	Limit       int                          `json:"limit,omitempty"`
+	Marker      any                          `json:"marker,omitempty"`
 }

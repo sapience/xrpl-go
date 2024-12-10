@@ -20,6 +20,11 @@ func (*CurrenciesRequest) Method() string {
 	return "account_currencies"
 }
 
+// TODO: Implement (V2)
+func (*CurrenciesRequest) Validate() error {
+	return nil
+}
+
 // ############################################################################
 // Response
 // ############################################################################

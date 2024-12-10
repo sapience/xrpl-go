@@ -7,11 +7,11 @@ import (
 )
 
 type Transaction struct {
-	LedgerIndex uint64                       `json:"ledger_index"`
-	Meta        transaction.TxObjMeta          `json:"meta"`
+	LedgerIndex uint64                      `json:"ledger_index"`
+	Meta        transaction.TxObjMeta       `json:"meta"`
 	Tx          transaction.FlatTransaction `json:"tx"`
-	TxBlob      string                       `json:"tx_blob"`
-	Validated   bool                         `json:"validated"`
+	TxBlob      string                      `json:"tx_blob"`
+	Validated   bool                        `json:"validated"`
 }
 
 // ############################################################################
@@ -32,6 +32,11 @@ type TransactionsRequest struct {
 
 func (*TransactionsRequest) Method() string {
 	return "account_tx"
+}
+
+// TODO: Implement (V2)
+func (*TransactionsRequest) Validate() error {
+	return nil
 }
 
 // ############################################################################

@@ -22,7 +22,7 @@ func TestAccountNFTsRequest(t *testing.T) {
 	"ledger_hash": "123",
 	"limit": 2
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

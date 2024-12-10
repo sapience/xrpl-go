@@ -24,6 +24,7 @@ func (*InfoRequest) Method() string {
 	return "account_info"
 }
 
+// TODO: Implement (V2)
 func (*InfoRequest) Validate() error {
 	return nil
 }
@@ -33,10 +34,10 @@ func (*InfoRequest) Validate() error {
 // ############################################################################
 
 type InfoResponse struct {
-	AccountData        ledger.AccountRoot  `json:"account_data"`
-	SignerLists        []ledger.SignerList `json:"signer_lists,omitempty"`
-	LedgerCurrentIndex common.LedgerIndex  `json:"ledger_current_index,omitempty"`
-	LedgerIndex        common.LedgerIndex  `json:"ledger_index,omitempty"`
-	QueueData          accounttypes.QueueData           `json:"queue_data,omitempty"`
-	Validated          bool                `json:"validated"`
+	AccountData        ledger.AccountRoot     `json:"account_data"`
+	SignerLists        []ledger.SignerList    `json:"signer_lists,omitempty"`
+	LedgerCurrentIndex common.LedgerIndex     `json:"ledger_current_index,omitempty"`
+	LedgerIndex        common.LedgerIndex     `json:"ledger_index,omitempty"`
+	QueueData          accounttypes.QueueData `json:"queue_data,omitempty"`
+	Validated          bool                   `json:"validated"`
 }

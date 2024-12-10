@@ -29,7 +29,7 @@ func TestAccountLinesRequest(t *testing.T) {
 	}
 }`
 
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

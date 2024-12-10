@@ -19,5 +19,5 @@ type NFT struct {
 	NFTokenID    types.NFTokenID
 	NFTokenTaxon uint
 	URI          types.NFTokenURI `json:",omitempty"`
-	NFTSerial    uint `json:"nft_serial"`
+	NFTSerial    uint             `json:"nft_serial"`
 }
