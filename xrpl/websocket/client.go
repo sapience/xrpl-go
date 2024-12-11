@@ -187,7 +187,7 @@ func (c *Client) sendRequest(req XRPLRequest) (XRPLResponse, error) {
 	return &res, nil
 }
 
-func (c *Client) SubmitTransactionBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
+func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return nil, err

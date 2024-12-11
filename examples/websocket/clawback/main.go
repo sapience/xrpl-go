@@ -102,7 +102,7 @@ func main() {
 		return
 	}
 
-	response, err := client.SubmitTransactionBlob(txBlob, false)
+	response, err := client.Submit(txBlob, false)
 	if err != nil {
 		fmt.Printf("❌ Error submitting transaction: %s\n", err)
 		return
@@ -147,7 +147,7 @@ func main() {
 		return
 	}
 
-	response, err = client.SubmitTransactionBlob(txBlob, false)
+	response, err = client.Submit(txBlob, false)
 	if err != nil {
 		fmt.Printf("❌ Error submitting transaction: %s\n", err)
 		return
@@ -194,7 +194,7 @@ func main() {
 		return
 	}
 
-	response, err = client.SubmitTransactionBlob(txBlob, false)
+	response, err = client.Submit(txBlob, false)
 	if err != nil {
 		fmt.Printf("❌ Error submitting transaction: %s\n", err)
 		return
@@ -240,7 +240,7 @@ func main() {
 		return
 	}
 
-	response, err = client.SubmitTransactionBlob(txBlob, false)
+	response, err = client.Submit(txBlob, false)
 	if err != nil {
 		fmt.Printf("❌ Error submitting transaction: %s\n", err)
 		return

@@ -43,9 +43,9 @@ func (c *Client) GetAccountObjects(req *account.ObjectsRequest) (*account.Object
 
 // GetXrpBalance retrieves the XRP balance of a given account address.
 // It returns the balance as a string in XRP (not drops) and any error encountered.
-func (c *Client) GetXrpBalance(address string) (string, error) {
+func (c *Client) GetXrpBalance(address types.Address) (string, error) {
 	res, err := c.GetAccountInfo(&account.InfoRequest{
-		Account: types.Address(address),
+		Account: address,
 	})
 	if err != nil {
 		return "", err
