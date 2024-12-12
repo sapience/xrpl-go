@@ -17,7 +17,7 @@ type RipplePathFindRequest struct {
 	DestinationAccount types.Address                `json:"destination_account"`
 	DestinationAmount  types.CurrencyAmount         `json:"destination_amount"`
 	SendMax            types.CurrencyAmount         `json:"send_max,omitempty"`
-	SourceCurrencies   []types.IssuedCurrencyAmount `json:"source_currencies,omitempty"`
+	SourceCurrencies   []pathtypes.RipplePathFindCurrency`json:"source_currencies,omitempty"`
 	LedgerHash         common.LedgerHash            `json:"ledger_hash,omitempty"`
 	LedgerIndex        common.LedgerSpecifier       `json:"ledger_index,omitempty"`
 }
