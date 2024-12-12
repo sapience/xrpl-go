@@ -37,7 +37,8 @@ type TxResponse struct {
 	Date        uint                        `json:"date"`
 	Hash        types.Hash256               `json:"hash"`
 	LedgerIndex common.LedgerIndex          `json:"ledger_index"`
-	Meta        transaction.TxMeta          `json:"meta"`
+	// TODO: Improve Meta parsing
+	Meta        any          `json:"meta"`
 	Validated   bool                        `json:"validated"`
 	Tx          transaction.FlatTransaction `json:",omitempty"`
 }
