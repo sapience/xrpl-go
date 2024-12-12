@@ -143,7 +143,7 @@ func (c *Client) FundWallet(wallet *xrpl.Wallet) error {
 	return nil
 }
 
-func (c *Client) sendRequest(req XRPLRequest) (XRPLResponse, error) {
+func (c *Client) Request(req XRPLRequest) (XRPLResponse, error) {
 	err := req.Validate()
 	if err != nil {
 		return nil, err
@@ -214,7 +214,7 @@ func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse,
 }
 
 func (c *Client) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
-	res, err := c.sendRequest(req)
+	res, err := c.Request(req)
 	if err != nil {
 		return nil, err
 	}

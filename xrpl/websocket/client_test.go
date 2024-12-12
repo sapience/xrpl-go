@@ -213,7 +213,7 @@ func TestClient_SendRequest(t *testing.T) {
 				t.Errorf("Error connecting to server: %v", err)
 			}
 
-			res, err := cl.sendRequest(tc.req)
+			res, err := cl.Request(tc.req)
 
 			if tc.expectedErr != nil {
 				require.EqualError(t, err, tc.expectedErr.Error())
