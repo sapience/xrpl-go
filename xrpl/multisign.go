@@ -12,6 +12,11 @@ var (
 	ErrNoTxToMultisign = errors.New("no transaction to multisign")
 )
 
+// Multisign is a utility for signing a transaction offline.
+// It takes a list of transaction blobs and returns the multisigned transaction blob.
+// These transaction blobs must be signed with the wallet.Multisign method.
+// They cannot contain SigningPubKey, otherwise the transaction will fail to submit.
+// If an error occurs, it will return an error.
 func Multisign(blobs ...string) (string, error) {
 	if len(blobs) == 0 {
 		return "", ErrNoTxToMultisign
@@ -43,6 +48,8 @@ func Multisign(blobs ...string) (string, error) {
 	return blob, nil
 }
 
+// sortSigners sorts the signers of a transaction.
+// It sorts the signers by account.
 func sortSigners(signers []interface{}) []interface{} {
 	sort.Slice(signers, func(i, j int) bool {
 		iSigner := signers[i].(map[string]interface{})["Signer"].(map[string]interface{})

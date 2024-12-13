@@ -162,6 +162,8 @@ func (w *Wallet) GetAddress() types.Address {
 	return types.Address(w.ClassicAddress)
 }
 
+// Signs a multisigned transaction offline.
+// Returns the transaction blob and the transaction hash.
 func (w *Wallet) Multisign(tx map[string]interface{}) (string, string, error) {
 	encodedTx, err := binarycodec.EncodeForMultisigning(tx, w.ClassicAddress.String())
 	if err != nil {
@@ -194,6 +196,8 @@ func (w *Wallet) Multisign(tx map[string]interface{}) (string, string, error) {
 	return blob, blobHash, nil
 }
 
+// Computes the signature of a transaction.
+// Returns the signature of the transaction. If an error occurs, it will return an error.
 func (w *Wallet) computeSignature(encodedTx string) (string, error) {
 	hexTx, err := hex.DecodeString(encodedTx)
 	if err != nil {
