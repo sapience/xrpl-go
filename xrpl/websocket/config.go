@@ -1,12 +1,17 @@
 package websocket
 
+import "time"
+
 type ClientConfig struct {
 	// Connection config
 	host string
+	maxRetries int
+	retryDelay time.Duration
 
 	// Fee config
 	feeCushion float32
 	maxFeeXRP  float32
+
 
 	// Faucet config
 	faucetProvider FaucetProvider
@@ -17,6 +22,8 @@ func NewClientConfig() *ClientConfig {
 		host:       "localhost",
 		feeCushion: DefaultFeeCushion,
 		maxFeeXRP:  DefaultMaxFeeXRP,
+		maxRetries: 10,
+		retryDelay: 1 * time.Second,
 	}
 }
 
@@ -45,5 +52,19 @@ func (wc ClientConfig) WithMaxFeeXRP(maxFeeXrp float32) ClientConfig {
 // Default: faucet.NewLocalFaucetProvider()
 func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig {
 	wc.faucetProvider = fp
+	return wc
+}
+
+// WithMaxRetries sets the maximum number of retries for a transaction.
+// Default: 10
+func (wc ClientConfig) WithMaxRetries(maxRetries int) ClientConfig {
+	wc.maxRetries = maxRetries
+	return wc
+}
+
+// WithRetryDelay sets the delay between retries for a transaction.
+// Default: 1 second
+func (wc ClientConfig) WithRetryDelay(retryDelay time.Duration) ClientConfig {
+	wc.retryDelay = retryDelay
 	return wc
 }
