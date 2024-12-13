@@ -20,15 +20,15 @@ func (e *ErrorWebsocketClientXrplResponse) Error() string {
 }
 
 type ClientResponse struct {
-	ID        int                   `json:"id"`
-	Status    string                `json:"status"`
-	Type      string                `json:"type"`
-	Error     string                `json:"error,omitempty"`
-	Result    map[string]any        `json:"result,omitempty"`
-	Value     map[string]any        `json:"value,omitempty"`
-	Warning   string                `json:"warning,omitempty"`
+	ID        int               `json:"id"`
+	Status    string            `json:"status"`
+	Type      string            `json:"type"`
+	Error     string            `json:"error,omitempty"`
+	Result    map[string]any    `json:"result,omitempty"`
+	Value     map[string]any    `json:"value,omitempty"`
+	Warning   string            `json:"warning,omitempty"`
 	Warnings  []ResponseWarning `json:"warnings,omitempty"`
-	Forwarded bool                  `json:"forwarded,omitempty"`
+	Forwarded bool              `json:"forwarded,omitempty"`
 }
 
 func (r *ClientResponse) GetResult(v any) error {

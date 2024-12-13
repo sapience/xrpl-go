@@ -4,14 +4,13 @@ import "time"
 
 type ClientConfig struct {
 	// Connection config
-	host string
+	host       string
 	maxRetries int
 	retryDelay time.Duration
 
 	// Fee config
 	feeCushion float32
 	maxFeeXRP  float32
-
 
 	// Faucet config
 	faucetProvider FaucetProvider

@@ -41,4 +41,3 @@ func TestWithFaucetProvider(t *testing.T) {
 	config := NewClientConfig().WithFaucetProvider(faucet.NewTestnetFaucetProvider())
 	require.NotNil(t, config.faucetProvider)
 }
-
