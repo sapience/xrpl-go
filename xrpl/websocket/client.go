@@ -137,7 +137,7 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 // AutofillMultisigned fills in the missing fields in a multisigned transaction.
 // This function is used to fill in the missing fields in a multisigned transaction.
 // It fills in the missing fields in the transaction and calculates the fee per number of signers.
-func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners int) error {
+func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners uint64) error {
 	err := c.Autofill(tx)
 	if err != nil {
 		return err
@@ -478,7 +478,7 @@ func (c *Client) getFeeXrp(cushion float32) (string, error) {
 // Calculates the fee per transaction type.
 //
 // TODO: Add fee support for `EscrowFinish` `AccountDelete`, `AMMCreate`, and multisigned transactions.
-func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction, nSigners int) error {
+func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction, nSigners uint64) error {
 	fee, err := c.getFeeXrp(c.cfg.feeCushion)
 	if err != nil {
 		return err
@@ -497,7 +497,7 @@ func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction,
 		}
 
 		// Calculate total signers fee: fee * nSigners
-		signersFee := baseFee * uint64(nSigners)
+		signersFee := baseFee * nSigners
 
 		// Add base fee and signers fee
 		totalFee := baseFee + signersFee
@@ -519,7 +519,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = uint32(index.Int() + int(LedgerOffset))
+	(*tx)["LastLedgerSequence"] = index.Uint32() + LedgerOffset
 	return err
 }
 
