@@ -2,6 +2,12 @@ package websocket
 
 import "time"
 
+const (
+	DefaultHost       = "localhost"
+	DefaultMaxRetries = 10
+	DefaultRetryDelay = 1 * time.Second
+)
+
 type ClientConfig struct {
 	// Connection config
 	host       string
@@ -18,11 +24,11 @@ type ClientConfig struct {
 
 func NewClientConfig() *ClientConfig {
 	return &ClientConfig{
-		host:       "localhost",
+		host:       DefaultHost,
 		feeCushion: DefaultFeeCushion,
 		maxFeeXRP:  DefaultMaxFeeXRP,
-		maxRetries: 10,
-		retryDelay: 1 * time.Second,
+		maxRetries: DefaultMaxRetries,
+		retryDelay: DefaultRetryDelay,
 	}
 }
 

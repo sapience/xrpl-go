@@ -10,11 +10,11 @@ import (
 
 func TestNewClientConfig(t *testing.T) {
 	config := NewClientConfig()
-	require.Equal(t, config.maxRetries, 10)
-	require.Equal(t, config.retryDelay, 1*time.Second)
-	require.Equal(t, config.host, "localhost")
-	require.Equal(t, config.feeCushion, float32(1.2))
-	require.Equal(t, config.maxFeeXRP, float32(2.0))
+	require.Equal(t, config.maxRetries, DefaultMaxRetries)
+	require.Equal(t, config.retryDelay, DefaultRetryDelay)
+	require.Equal(t, config.host, DefaultHost)
+	require.Equal(t, config.feeCushion, DefaultFeeCushion)
+	require.Equal(t, config.maxFeeXRP, DefaultMaxFeeXRP)
 }
 
 func TestWithMaxRetries(t *testing.T) {
