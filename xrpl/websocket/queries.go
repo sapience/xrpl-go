@@ -31,6 +31,22 @@ func (c *Client) GetAccountInfo(req *account.InfoRequest) (*account.InfoResponse
 	return &air, nil
 }
 
+// GetAccountChannels retrieves a list of payment channels associated with an account.
+// It takes an AccountChannelsRequest as input and returns an AccountChannelsResponse,
+// along with any error encountered.
+func (c *Client) GetAccountChannels(req *account.ChannelsRequest) (*account.ChannelsResponse, error) {
+	res, err := c.Request(req)
+	if err != nil {
+		return nil, err
+	}
+	var acr account.ChannelsResponse
+	err = res.GetResult(&acr)
+	if err != nil {
+		return nil, err
+	}
+	return &acr, nil
+}
+
 // GetAccountObjects retrieves a list of objects owned by an account on the XRP Ledger.
 // It takes an AccountObjectsRequest as input and returns an AccountObjectsResponse,
 // along with any error encountered.

@@ -214,6 +214,111 @@ func TestClient_GetAccountInfo(t *testing.T) {
 	}
 }
 
+func TestClient_GetAccountChannels(t *testing.T) {
+	tests := []struct {
+		name           string
+		serverMessages []map[string]any
+		expected       *account.ChannelsResponse
+		expectedErr    error
+	}{
+		{
+			name: "Successful response",
+			serverMessages: []map[string]any{{
+				"id": 1,
+				"result": map[string]any{
+					"account": "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+					"channels": []map[string]any{
+						{
+							"account":             "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+							"destination_account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+							"amount":              "100",
+							"balance":             "0",
+							"channel_id":          "5DB01B7FFED6B67E6B0414DED11E051D2EE2B7619CE0EAA6286D67A3A4D5BDB3",
+						},
+					},
+					"ledger_hash":  "4C99E5F63C0D0B1C2283B4F5DCE2239F80CE92E8B1A6AED1E110C198FC96E659",
+					"ledger_index": 14380380,
+					"validated":    true,
+				},
+			}},
+			expected: &account.ChannelsResponse{
+				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+				Channels: []accounttypes.ChannelResult{
+					{
+						Account:            "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+						DestinationAccount: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+						Amount:             "100",
+						Balance:            "0",
+						ChannelID:          "5DB01B7FFED6B67E6B0414DED11E051D2EE2B7619CE0EAA6286D67A3A4D5BDB3",
+					},
+				},
+				LedgerHash:  "4C99E5F63C0D0B1C2283B4F5DCE2239F80CE92E8B1A6AED1E110C198FC96E659",
+				LedgerIndex: 14380380,
+				Validated:   true,
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "Error response",
+			serverMessages: []map[string]any{{
+				"id":     1,
+				"error":  "invalidParams",
+				"status": "error",
+				"type":   "response",
+			}},
+			expected:    nil,
+			expectedErr: errors.New("invalidParams"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
+			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
+				for _, m := range tt.serverMessages {
+					err := c.WriteJSON(m)
+					if err != nil {
+						t.Errorf("error writing message: %v", err)
+					}
+				}
+			})
+			defer s.Close()
+
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
+					host: url,
+				},
+			}
+
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
+			result, err := cl.GetAccountChannels(&account.ChannelsRequest{
+				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+			})
+
+			if tt.expectedErr != nil {
+				if err == nil || err.Error() != tt.expectedErr.Error() {
+					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
+
+			if !reflect.DeepEqual(tt.expected, result) {
+				t.Errorf("Expected %+v, but got %+v", tt.expected, result)
+			}
+
+			cl.Disconnect()
+		})
+	}
+}
+
+
 func TestClient_GetAccountObjects(t *testing.T) {
 	tests := []struct {
 		name           string
