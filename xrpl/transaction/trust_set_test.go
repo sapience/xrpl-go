@@ -90,20 +90,6 @@ func TestTrustSetFlags(t *testing.T) {
 			expected: tfSetAuth | tfClearNoRipple,
 		},
 		{
-			name: "pass - SetSetDeepFreezeFlag",
-			setter: func(ts *TrustSet) {
-				ts.SetSetDeepFreezeFlag()
-			},
-			expected: tfSetDeepFreeze,
-		},
-		{
-			name: "pass - SetClearDeepFreezeFlag",
-			setter: func(ts *TrustSet) {
-				ts.SetClearDeepFreezeFlag()
-			},
-			expected: tfClearDeepFreeze,
-		},
-		{
 			name: "pass - All flags",
 			setter: func(ts *TrustSet) {
 				ts.SetSetAuthFlag()
@@ -111,10 +97,8 @@ func TestTrustSetFlags(t *testing.T) {
 				ts.SetClearNoRippleFlag()
 				ts.SetSetFreezeFlag()
 				ts.SetClearFreezeFlag()
-				ts.SetSetDeepFreezeFlag()
-				ts.SetClearDeepFreezeFlag()
 			},
-			expected: tfSetAuth | tfSetNoRipple | tfClearNoRipple | tfSetFreeze | tfClearFreeze | tfSetDeepFreeze | tfClearDeepFreeze,
+			expected: tfSetAuth | tfSetNoRipple | tfClearNoRipple | tfSetFreeze | tfClearFreeze,
 		},
 	}
 

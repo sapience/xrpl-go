@@ -25,14 +25,6 @@ const (
 	tfSetFreeze uint32 = 0x00100000
 	// Unfreeze the trust line.
 	tfClearFreeze uint32 = 0x00200000
-
-	// XLS-77d Deep freeze
-	// The following flags are only available in the XLS-77d Deep freeze.
-
-	// Deep freeze the trust line.
-	tfSetDeepFreeze uint32 = 0x00400000
-	// Clear the deep-freeze on the trust line.
-	tfClearDeepFreeze uint32 = 0x00800000
 )
 
 // Create or modify a trust line linking two accounts.
@@ -111,22 +103,6 @@ func (t *TrustSet) SetSetFreezeFlag() {
 // ClearFreeze: Unfreeze the trust line
 func (t *TrustSet) SetClearFreezeFlag() {
 	t.Flags |= tfClearFreeze
-}
-
-// XLS-77d Deep freeze only.
-// Set the SetDeepFreeze flag.
-//
-// SetDeepFreeze: Deep freeze the trust line.
-func (t *TrustSet) SetSetDeepFreezeFlag() {
-	t.Flags |= tfSetDeepFreeze
-}
-
-// XLS-77d Deep freeze only.
-// Set the ClearDeepFreeze flag.
-//
-// ClearDeepFreeze: Clear the deep-freeze on the trust line.
-func (t *TrustSet) SetClearDeepFreezeFlag() {
-	t.Flags |= tfClearDeepFreeze
 }
 
 // Validates the TrustSet transaction.
