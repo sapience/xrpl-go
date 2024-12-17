@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type customHttpClient struct{}
@@ -52,4 +54,25 @@ func TestConfigCreation(t *testing.T) {
 		assert.Equal(t, &Config{HTTPClient: customHttpClient{}, URL: "http://s1.ripple.com:51234/", Headers: headers}, cfg)
 		assert.NoError(t, err)
 	})
+}
+
+func TestWithMaxFeeXRP(t *testing.T) {
+	maxFee := float32(5.0)
+	cfg, _ := NewClientConfig("http://s1.ripple.com:51234", WithMaxFeeXRP(maxFee))
+
+	require.Equal(t, maxFee, cfg.maxFeeXRP)
+}
+
+func TestWithFeeCushion(t *testing.T) {
+	feeCushion := float32(1.5)
+	cfg, _ := NewClientConfig("http://s1.ripple.com:51234", WithFeeCushion(feeCushion))
+
+	require.Equal(t, feeCushion, cfg.feeCushion)
+}
+
+func TestWithFaucetProvider(t *testing.T) {
+	fp := faucet.NewTestnetFaucetProvider()
+	cfg, _ := NewClientConfig("http://s1.ripple.com:51234", WithFaucetProvider(fp))
+
+	require.Equal(t, fp, cfg.faucetProvider)
 }

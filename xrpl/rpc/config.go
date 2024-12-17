@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/Peersyst/xrpl-go/xrpl/rpc/interfaces"
 )
 
 var ErrEmptyURL = errors.New("empty port and IP provided")
@@ -17,6 +19,13 @@ type Config struct {
 	HTTPClient HTTPClient
 	URL        string
 	Headers    map[string][]string
+
+	// Fee config
+	maxFeeXRP  float32
+	feeCushion float32
+
+	// Faucet config
+	faucetProvider interfaces.FaucetProvider
 }
 
 type ConfigOpt func(c *Config)
@@ -24,6 +33,24 @@ type ConfigOpt func(c *Config)
 func WithHTTPClient(cl HTTPClient) ConfigOpt {
 	return func(c *Config) {
 		c.HTTPClient = cl
+	}
+}
+
+func WithMaxFeeXRP(maxFeeXRP float32) ConfigOpt {
+	return func(c *Config) {
+		c.maxFeeXRP = maxFeeXRP
+	}
+}
+
+func WithFeeCushion(feeCushion float32) ConfigOpt {
+	return func(c *Config) {
+		c.feeCushion = feeCushion
+	}
+}
+
+func WithFaucetProvider(fp interfaces.FaucetProvider) ConfigOpt {
+	return func(c *Config) {
+		c.faucetProvider = fp
 	}
 }
 

@@ -1,5 +1,7 @@
 package websocket
 
+import "github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
+
 type ClientConfig struct {
 	// Connection config
 	host string
@@ -9,7 +11,7 @@ type ClientConfig struct {
 	maxFeeXRP  float32
 
 	// Faucet config
-	faucetProvider FaucetProvider
+	faucetProvider interfaces.FaucetProvider
 }
 
 func NewClientConfig() *ClientConfig {
@@ -43,7 +45,7 @@ func (wc ClientConfig) WithMaxFeeXRP(maxFeeXrp float32) ClientConfig {
 
 // WithFaucetProvider sets the faucet provider of the websocket client.
 // Default: faucet.NewLocalFaucetProvider()
-func (wc ClientConfig) WithFaucetProvider(fp FaucetProvider) ClientConfig {
+func (wc ClientConfig) WithFaucetProvider(fp interfaces.FaucetProvider) ClientConfig {
 	wc.faucetProvider = fp
 	return wc
 }
