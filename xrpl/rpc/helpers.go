@@ -10,18 +10,20 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Peersyst/xrpl-go/xrpl/currency"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
+	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	jsoniter "github.com/json-iterator/go"
 )
 
 const (
-	LedgerOffset uint = 20
+	LedgerOffset uint32 = 20
 )
 
 // CreateRequest formats the parameters and method name ready for sending request
@@ -195,7 +197,7 @@ func (c *Client) getFeeXrp(cushion float32) (string, error) {
 // Calculates the fee per transaction type.
 //
 // TODO: Add fee support for `EscrowFinish` `AccountDelete`, `AMMCreate`, and multisigned transactions.
-func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction, nSigners int) error {
+func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction, nSigners uint64) error {
 	fee, err := c.getFeeXrp(c.cfg.feeCushion)
 	if err != nil {
 		return err
@@ -214,7 +216,7 @@ func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction,
 		}
 
 		// Calculate total signers fee: fee * nSigners
-		signersFee := baseFee * uint64(nSigners)
+		signersFee := baseFee * nSigners
 
 		// Add base fee and signers fee
 		totalFee := baseFee + signersFee
@@ -236,7 +238,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = uint32(index.Int() + int(LedgerOffset))
+	(*tx)["LastLedgerSequence"] = index.Uint32() + LedgerOffset
 	return err
 }
 
@@ -285,4 +287,76 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error {
 	}
 
 	return nil
+}
+
+func (c *Client) submitMultisignedRequest(req *requests.SubmitMultisignedRequest) (*requests.SubmitMultisignedResponse, error) {
+	res, err := c.SendRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	var subRes requests.SubmitMultisignedResponse
+	err = res.GetResult(&subRes)
+	if err != nil {
+		return nil, err
+	}
+	return &subRes, nil
+}
+
+func (c *Client) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
+	res, err := c.SendRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	var subRes requests.SubmitResponse
+	err = res.GetResult(&subRes)
+	if err != nil {
+		return nil, err
+	}
+	return &subRes, nil
+}
+
+func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*requests.TxResponse, error) {
+	var txResponse *requests.TxResponse
+	i := 0
+
+	for i < c.cfg.maxRetries {
+		// Get the current ledger index
+		currentLedger, err := c.GetLedgerIndex()
+		if err != nil {
+			return nil, err
+		}
+
+		// Check if the transaction has been included in the current ledger
+		if currentLedger.Int() >= int(lastLedgerSequence) {
+			break
+		}
+
+		// Request the transaction from the server
+		res, err := c.SendRequest(&requests.TxRequest{
+			Transaction: txHash,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		err = res.GetResult(&txResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		// Check if the transaction has been included in the current ledger
+		if txResponse.LedgerIndex.Int() >= int(lastLedgerSequence) {
+			break
+		}
+
+		// Wait for the retry delay before retrying
+		time.Sleep(c.cfg.retryDelay)
+		i++
+	}
+
+	if txResponse == nil {
+		return nil, errors.New("transaction not found")
+	}
+
+	return txResponse, nil
 }

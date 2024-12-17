@@ -5,33 +5,22 @@ import (
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
+	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
-	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
 func main() {
-	fmt.Println("Connecting to testnet...")
-	client := websocket.NewClient(
-		websocket.NewClientConfig().
-			WithHost("wss://s.altnet.rippletest.net:51233").
-			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
+	cfg, err := rpc.NewClientConfig(
+		"https://s.altnet.rippletest.net:51234/",
+		rpc.WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
-	defer client.Disconnect()
-
-	if err := client.Connect(); err != nil {
-		fmt.Println(err)
-		return
+	if err != nil {
+		panic(err)
 	}
 
-	if !client.IsConnected() {
-		fmt.Println("Failed to connect to testnet")
-		return
-	}
-
-	fmt.Println("Connected to testnet")
-	fmt.Println()
+	client := rpc.NewClient(cfg)
 
 	w1, err := wallet.New(crypto.ED25519())
 	if err != nil {
@@ -148,7 +137,6 @@ func main() {
 	fmt.Println("Transaction hash:", res.Hash.String())
 	fmt.Println("Validated:", res.Validated)
 	fmt.Println()
-
 
 	pp := &transaction.Payment{
 		BaseTx: transaction.BaseTx{

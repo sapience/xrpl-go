@@ -75,21 +75,21 @@ func main() {
 		return
 	}
 
-	txBlob, hash, err := w.Sign(flattenedTx)
+	txBlob, _, err := w.Sign(flattenedTx)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	fmt.Println("Submitting transaction...")
-	res, err := client.Submit(txBlob, false)
+	res, err := client.SubmitAndWait(txBlob, false)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	fmt.Println()
-	fmt.Println("Transaction hash:", hash)
-	fmt.Printf("Transaction submitted: %s", res.EngineResult)
+	fmt.Println("Transaction hash:", res.Hash)
+	fmt.Println("Transaction submitted:", res.Validated)
 	fmt.Println()
 }

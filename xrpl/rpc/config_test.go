@@ -51,7 +51,7 @@ func TestConfigCreation(t *testing.T) {
 			"Content-Type": {"application/json"},
 		}
 		req.Header = cfg.Headers
-		assert.Equal(t, &Config{HTTPClient: customHttpClient{}, URL: "http://s1.ripple.com:51234/", Headers: headers}, cfg)
+		assert.Equal(t, &Config{HTTPClient: customHttpClient{}, URL: "http://s1.ripple.com:51234/", Headers: headers, maxRetries: DefaultMaxRetries, retryDelay: DefaultRetryDelay, feeCushion: DefaultFeeCushion, maxFeeXRP: DefaultMaxFeeXRP, faucetProvider: nil}, cfg)
 		assert.NoError(t, err)
 	})
 }

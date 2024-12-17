@@ -8,6 +8,7 @@ import (
 	"time"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
+	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -154,32 +155,6 @@ func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.Subm
 	})
 }
 
-func (c *Client) submitMultisignedRequest(req *requests.SubmitMultisignedRequest) (*requests.SubmitMultisignedResponse, error) {
-	res, err := c.SendRequest(req)
-	if err != nil {
-		return nil, err
-	}
-	var subRes requests.SubmitMultisignedResponse
-	err = res.GetResult(&subRes)
-	if err != nil {
-		return nil, err
-	}
-	return &subRes, nil
-}
-
-func (c *Client) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
-	res, err := c.SendRequest(req)
-	if err != nil {
-		return nil, err
-	}
-	var subRes requests.SubmitResponse
-	err = res.GetResult(&subRes)
-	if err != nil {
-		return nil, err
-	}
-	return &subRes, nil
-}
-
 // Autofill fills in the missing fields in a transaction.
 func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 	if err := c.setValidTransactionAddresses(tx); err != nil {
@@ -231,6 +206,23 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 	return nil
 }
 
+// AutofillMultisigned fills in the missing fields in a multisigned transaction.
+// This function is used to fill in the missing fields in a multisigned transaction.
+// It fills in the missing fields in the transaction and calculates the fee per number of signers.
+func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners uint64) error {
+	err := c.Autofill(tx)
+	if err != nil {
+		return err
+	}
+
+	err = c.calculateFeePerTransactionType(tx, nSigners)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	if wallet.ClassicAddress == "" {
 		return errors.New("fund wallet: cannot fund a wallet without a classic address")
@@ -242,4 +234,32 @@ func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	}
 
 	return nil
+}
+
+// SubmitAndWait sends a transaction to the server and waits for it to be included in a ledger.
+// This function is used to send transactions to the server and wait for them to be included in a ledger.
+// It returns the transaction response from the server.
+func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
+	tx, err := binarycodec.Decode(txBlob)
+	if err != nil {
+		return nil, err
+	}
+
+	lastLedgerSequence := tx["LastLedgerSequence"].(uint32)
+
+	txResponse, err := c.Submit(txBlob, failHard)
+	if err != nil {
+		return nil, err
+	}
+
+	if txResponse.EngineResult != "tesSUCCESS" {
+		return nil, errors.New("transaction failed to submit with engine result: " + txResponse.EngineResult)
+	}
+
+	txHash, err := hash.TxBlob(txBlob)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.waitForTransaction(txHash, lastLedgerSequence)
 }

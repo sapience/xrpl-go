@@ -6,10 +6,10 @@ import (
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/path"
+	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
-	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 
 	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 )
@@ -27,26 +27,15 @@ var (
 )
 
 func main() {
-	fmt.Println("Connecting to testnet...")
-	client := websocket.NewClient(
-		websocket.NewClientConfig().
-			WithHost("wss://s.altnet.rippletest.net:51233").
-			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
+	cfg, err := rpc.NewClientConfig(
+		"https://s.altnet.rippletest.net:51234/",
+		rpc.WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
-	defer client.Disconnect()
-
-	if err := client.Connect(); err != nil {
-		fmt.Println(err)
-		return
+	if err != nil {
+		panic(err)
 	}
 
-	if !client.IsConnected() {
-		fmt.Println("Failed to connect to testnet")
-		return
-	}
-
-	fmt.Println("Connected to testnet")
-	fmt.Println()
+	client := rpc.NewClient(cfg)
 
 	wallet, err := wallet.New(crypto.ED25519())
 	if err != nil {
@@ -64,7 +53,7 @@ func main() {
 	fmt.Printf("Wallet %s funded", wallet.GetAddress())
 	fmt.Println()
 
-	r, err := client.Request(&path.RipplePathFindRequest{
+	res, err := client.GetRipplePathFind(&path.RipplePathFindRequest{
 		SourceAccount: wallet.GetAddress(),
 		SourceCurrencies: []pathtypes.RipplePathFindCurrency{
 			{
@@ -74,13 +63,6 @@ func main() {
 		DestinationAccount: DestinationAccount,
 		DestinationAmount:  DestinationAmount,
 	})
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var res path.RipplePathFindResponse
-	err = r.GetResult(&res)
 	if err != nil {
 		fmt.Println(err)
 		return

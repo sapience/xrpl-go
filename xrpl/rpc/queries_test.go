@@ -465,7 +465,7 @@ func TestGetXrpBalance(t *testing.T) {
 
 			client := NewClient(cfg)
 
-			balance, err := client.GetXrpBalance(tt.address)
+			balance, err := client.GetXrpBalance(types.Address(tt.address))
 
 			if tt.expectedError != "" {
 				require.Error(t, err)
