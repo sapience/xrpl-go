@@ -25,7 +25,6 @@ const (
 	tfSetFreeze uint32 = 0x00100000
 	// Unfreeze the trust line.
 	tfClearFreeze uint32 = 0x00200000
-
 )
 
 // Create or modify a trust line linking two accounts.
