@@ -1,10 +1,22 @@
 package websocket
 
-import "github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
+import (
+	"time"
+
+	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
+)
+
+const (
+	DefaultHost       = "localhost"
+	DefaultMaxRetries = 10
+	DefaultRetryDelay = 1 * time.Second
+)
 
 type ClientConfig struct {
 	// Connection config
-	host string
+	host       string
+	maxRetries int
+	retryDelay time.Duration
 
 	// Fee config
 	feeCushion float32
@@ -16,9 +28,11 @@ type ClientConfig struct {
 
 func NewClientConfig() *ClientConfig {
 	return &ClientConfig{
-		host:       "localhost",
+		host:       DefaultHost,
 		feeCushion: DefaultFeeCushion,
 		maxFeeXRP:  DefaultMaxFeeXRP,
+		maxRetries: DefaultMaxRetries,
+		retryDelay: DefaultRetryDelay,
 	}
 }
 
@@ -47,5 +61,19 @@ func (wc ClientConfig) WithMaxFeeXRP(maxFeeXrp float32) ClientConfig {
 // Default: faucet.NewLocalFaucetProvider()
 func (wc ClientConfig) WithFaucetProvider(fp interfaces.FaucetProvider) ClientConfig {
 	wc.faucetProvider = fp
+	return wc
+}
+
+// WithMaxRetries sets the maximum number of retries for a transaction.
+// Default: 10
+func (wc ClientConfig) WithMaxRetries(maxRetries int) ClientConfig {
+	wc.maxRetries = maxRetries
+	return wc
+}
+
+// WithRetryDelay sets the delay between retries for a transaction.
+// Default: 1 second
+func (wc ClientConfig) WithRetryDelay(retryDelay time.Duration) ClientConfig {
+	wc.retryDelay = retryDelay
 	return wc
 }
