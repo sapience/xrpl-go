@@ -16,8 +16,8 @@ import (
 // GetAccountInfo retrieves information about an account on the XRP Ledger.
 // It takes an AccountInfoRequest as input and returns an AccountInfoResponse,
 // along with the raw XRPL response and any error encountered.
-func (r *Client) GetAccountInfo(req *account.InfoRequest) (*account.InfoResponse, error) {
-	res, err := r.SendRequest(req)
+func (c *Client) GetAccountInfo(req *account.InfoRequest) (*account.InfoResponse, error) {
+	res, err := c.SendRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +32,8 @@ func (r *Client) GetAccountInfo(req *account.InfoRequest) (*account.InfoResponse
 // GetAccountChannels retrieves a list of payment channels associated with an account.
 // It takes an AccountChannelsRequest as input and returns an AccountChannelsResponse,
 // along with any error encountered.
-func (r *Client) GetAccountChannels(req *account.ChannelsRequest) (*account.ChannelsResponse, error) {
-	res, err := r.SendRequest(req)
+func (c *Client) GetAccountChannels(req *account.ChannelsRequest) (*account.ChannelsResponse, error) {
+	res, err := c.SendRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func (r *Client) GetAccountChannels(req *account.ChannelsRequest) (*account.Chan
 // GetAccountObjects retrieves a list of objects owned by an account on the XRP Ledger.
 // It takes an AccountObjectsRequest as input and returns an AccountObjectsResponse,
 // along with any error encountered.
-func (r *Client) GetAccountObjects(req *account.ObjectsRequest) (*account.ObjectsResponse, error) {
-	res, err := r.SendRequest(req)
+func (c *Client) GetAccountObjects(req *account.ObjectsRequest) (*account.ObjectsResponse, error) {
+	res, err := c.SendRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +64,8 @@ func (r *Client) GetAccountObjects(req *account.ObjectsRequest) (*account.Object
 // GetAccountLines retrieves the lines associated with an account on the XRP Ledger.
 // It takes an AccountLinesRequest as input and returns an AccountLinesResponse,
 // along with any error encountered.
-func (r *Client) GetAccountLines(req *account.LinesRequest) (*account.LinesResponse, error) {
-	res, err := r.SendRequest(req)
+func (c *Client) GetAccountLines(req *account.LinesRequest) (*account.LinesResponse, error) {
+	res, err := c.SendRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +79,8 @@ func (r *Client) GetAccountLines(req *account.LinesRequest) (*account.LinesRespo
 
 // GetXrpBalance retrieves the XRP balance of a given account address.
 // It returns the balance as a string in XRP (not drops) and any error encountered.
-func (r *Client) GetXrpBalance(address string) (string, error) {
-	res, err := r.GetAccountInfo(&account.InfoRequest{
+func (c *Client) GetXrpBalance(address string) (string, error) {
+	res, err := c.GetAccountInfo(&account.InfoRequest{
 		Account: types.Address(address),
 	})
 	if err != nil {

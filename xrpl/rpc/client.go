@@ -109,7 +109,7 @@ func (c *Client) SendRequest(reqParams XRPLRequest) (XRPLResponse, error) {
 	return &jr, nil
 }
 
-func (c *Client) SubmitTransactionBlob(txBlob string, failHard bool) (XRPLResponse, error) {
+func (c *Client) Submit(txBlob string, failHard bool) (XRPLResponse, error) {
 	submitRequest := &requests.SubmitRequest{
 		TxBlob:   txBlob,
 		FailHard: failHard,
