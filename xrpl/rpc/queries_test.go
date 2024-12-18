@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetAccountInfo(t *testing.T) {
+func TestClient_GetAccountInfo(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -105,7 +105,7 @@ func TestGetAccountInfo(t *testing.T) {
 	}
 }
 
-func TestGetAccountChannels(t *testing.T) {
+func TestClient_GetAccountChannels(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -202,7 +202,7 @@ func TestGetAccountChannels(t *testing.T) {
 	}
 }
 
-func TestGetAccountObjects(t *testing.T) {
+func TestClient_GetAccountObjects(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -319,7 +319,7 @@ func TestGetAccountObjects(t *testing.T) {
 	}
 }
 
-func TestGetAccountLines(t *testing.T) {
+func TestClient_GetAccountLines(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -415,7 +415,7 @@ func TestGetAccountLines(t *testing.T) {
 	}
 }
 
-func TestGetXrpBalance(t *testing.T) {
+func TestClient_GetXrpBalance(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -479,7 +479,7 @@ func TestGetXrpBalance(t *testing.T) {
 	}
 }
 
-func TestGetAccountNFTs(t *testing.T) {
+func TestClient_GetAccountNFTs(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -572,7 +572,7 @@ func TestGetAccountNFTs(t *testing.T) {
 	}
 }
 
-func TestGetAccountCurrencies(t *testing.T) {
+func TestClient_GetAccountCurrencies(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -649,7 +649,7 @@ func TestGetAccountCurrencies(t *testing.T) {
 	}
 }
 
-func TestGetAccountOffers(t *testing.T) {
+func TestClient_GetAccountOffers(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -749,7 +749,7 @@ func TestGetAccountOffers(t *testing.T) {
 	}
 }
 
-func TestGetAccountTransactions(t *testing.T) {
+func TestClient_GetAccountTransactions(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -866,7 +866,7 @@ func TestGetAccountTransactions(t *testing.T) {
 	}
 }
 
-func TestGetChannelVerify(t *testing.T) {
+func TestClient_GetChannelVerify(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -939,7 +939,7 @@ func TestGetChannelVerify(t *testing.T) {
 	}
 }
 
-func TestGetLedgerIndex(t *testing.T) {
+func TestClient_GetLedgerIndex(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -996,7 +996,7 @@ func TestGetLedgerIndex(t *testing.T) {
 	}
 }
 
-func TestGetClosedLedger(t *testing.T) {
+func TestClient_GetClosedLedger(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1055,7 +1055,7 @@ func TestGetClosedLedger(t *testing.T) {
 	}
 }
 
-func TestGetCurrentLedger(t *testing.T) {
+func TestClient_GetCurrentLedger(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1112,7 +1112,7 @@ func TestGetCurrentLedger(t *testing.T) {
 	}
 }
 
-func TestGetLedgerData(t *testing.T) {
+func TestClient_GetLedgerData(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1195,7 +1195,7 @@ func TestGetLedgerData(t *testing.T) {
 	}
 }
 
-func TestGetLedger(t *testing.T) {
+func TestClient_GetLedger(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1290,7 +1290,7 @@ func TestGetLedger(t *testing.T) {
 	}
 }
 
-func TestGetNFTBuyOffers(t *testing.T) {
+func TestClient_GetNFTBuyOffers(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1375,7 +1375,7 @@ func TestGetNFTBuyOffers(t *testing.T) {
 	}
 }
 
-func TestGetNFTSellOffers(t *testing.T) {
+func TestClient_GetNFTSellOffers(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1458,7 +1458,7 @@ func TestGetNFTSellOffers(t *testing.T) {
 	}
 }
 
-func TestGetBookOffers(t *testing.T) {
+func TestClient_GetBookOffers(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1564,7 +1564,7 @@ func TestGetBookOffers(t *testing.T) {
 	}
 }
 
-func TestGetDepositAuthorized(t *testing.T) {
+func TestClient_GetDepositAuthorized(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1641,7 +1641,7 @@ func TestGetDepositAuthorized(t *testing.T) {
 	}
 }
 
-func TestFindPathCreate(t *testing.T) {
+func TestClient_FindPathCreate(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1760,7 +1760,7 @@ func TestFindPathCreate(t *testing.T) {
 	}
 }
 
-func TestFindPathClose(t *testing.T) {
+func TestClient_FindPathClose(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1865,7 +1865,7 @@ func TestFindPathClose(t *testing.T) {
 	}
 }
 
-func TestFindPathStatus(t *testing.T) {
+func TestClient_FindPathStatus(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -1984,7 +1984,7 @@ func TestFindPathStatus(t *testing.T) {
 	}
 }
 
-func TestGetRipplePathFind(t *testing.T) {
+func TestClient_GetRipplePathFind(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2092,7 +2092,7 @@ func TestGetRipplePathFind(t *testing.T) {
 	}
 }
 
-func TestGetServerInfo(t *testing.T) {
+func TestClient_GetServerInfo(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2201,7 +2201,7 @@ func TestGetServerInfo(t *testing.T) {
 	}
 }
 
-func TestGetAllFeatures(t *testing.T) {
+func TestClient_GetAllFeatures(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2288,7 +2288,7 @@ func TestGetAllFeatures(t *testing.T) {
 	}
 }
 
-func TestGetFeature(t *testing.T) {
+func TestClient_GetFeature(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2363,7 +2363,7 @@ func TestGetFeature(t *testing.T) {
 	}
 }
 
-func TestGetFee(t *testing.T) {
+func TestClient_GetFee(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2460,7 +2460,7 @@ func TestGetFee(t *testing.T) {
 	}
 }
 
-func TestGetManifest(t *testing.T) {
+func TestClient_GetManifest(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2537,7 +2537,7 @@ func TestGetManifest(t *testing.T) {
 	}
 }
 
-func TestGetServerState(t *testing.T) {
+func TestClient_GetServerState(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2641,7 +2641,7 @@ func TestGetServerState(t *testing.T) {
 	}
 }
 
-func TestPing(t *testing.T) {
+func TestClient_Ping(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string
@@ -2708,7 +2708,7 @@ func TestPing(t *testing.T) {
 	}
 }
 
-func TestGetRandom(t *testing.T) {
+func TestClient_GetRandom(t *testing.T) {
 	tests := []struct {
 		name          string
 		mockResponse  string

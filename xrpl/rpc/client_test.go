@@ -9,8 +9,10 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc/testutil"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient(t *testing.T) {
@@ -25,7 +27,7 @@ func TestClient(t *testing.T) {
 	})
 }
 
-func TestSendRequest(t *testing.T) {
+func TestClient_SendRequest(t *testing.T) {
 
 	t.Run("SendRequest - Check headers and URL", func(t *testing.T) {
 
@@ -273,4 +275,176 @@ func TestSendRequest(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "timeout")
 	})
+}
+
+func TestClient_Submit(t *testing.T) {
+	tests := []struct {
+		name          string
+		mockResponse  string
+		txBlob        string
+		expectError   error
+		expectResult  *requests.SubmitResponse
+	}{
+		{
+			name: "success",
+			mockResponse: `{
+				"result": {
+					"engine_result": "tesSUCCESS",
+					"engine_result_code": 0,
+					"engine_result_message": "The transaction was applied.",
+					"tx_blob": "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754",
+					"tx_json": {
+						"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+						"Amount": {
+							"currency": "USD",
+							"issuer": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+							"value": "1"
+						},
+						"Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+						"Fee": "10",
+						"Flags": 2147483648,
+						"Sequence": 359,
+						"SigningPubKey": "03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB",
+						"TransactionType": "Payment",
+						"TxnSignature": "3045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE",
+						"hash": "4D5D90890F8D49519E4151938601EF3D0B30B16CD6A519D9C99102C9FA77F7E0"
+					}
+				},
+				"status": "success",
+				"type": "response"
+			}`,
+			txBlob: "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754",
+			expectError: nil,
+			expectResult: &requests.SubmitResponse{
+				EngineResult:        "tesSUCCESS",
+				EngineResultCode:    0,
+				EngineResultMessage: "The transaction was applied.",
+			},
+		},
+		{
+			name:        "missing signature",
+			txBlob:      "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A70",
+			expectError: errors.New("parser out of bounds"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mc := &testutil.JSONRPCMockClient{}
+			if tt.mockResponse != "" {
+				mc.DoFunc = testutil.MockResponse(tt.mockResponse, 200, mc)
+			}
+
+			cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
+			assert.NoError(t, err)
+
+			jsonRpcClient := NewClient(cfg)
+
+			response, err := jsonRpcClient.Submit(tt.txBlob, false)
+
+			if tt.expectError != nil {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectError, err)
+				return
+			}
+
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expectResult.EngineResult, response.EngineResult)
+			assert.Equal(t, tt.expectResult.EngineResultCode, response.EngineResultCode)
+			assert.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
+		})
+	}
+}
+
+func TestClient_SubmitMultisigned(t *testing.T) {
+	tests := []struct {
+		name          string
+		mockResponse  string
+		txBlob        string
+		expectError   error
+		expectResult  *requests.SubmitResponse
+	}{
+		{
+			name: "successful multisign submit",
+			mockResponse: `{
+				"result": {
+					"engine_result": "tesSUCCESS",
+					"engine_result_code": 0,
+					"engine_result_message": "The transaction was applied.",
+					"tx_blob": "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754",
+					"tx_json": {
+						"Account": "rUAi7pipxGpYfPNg3LtPcf2ApiS8aw9A93",
+						"Fee": "10",
+						"Flags": 2147483648,
+						"Sequence": 4,
+						"SigningPubKey": "",
+						"TransactionType": "Payment",
+						"TxnSignature": "3045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE",
+						"hash": "4D5D90890F8D49519E4151938601EF3D0B30B16CD6A519D9C99102C9FA77F7E0"
+					}
+				},
+				"status": "success",
+				"type": "response"
+			}`,
+			txBlob: "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754",
+			expectError: nil,
+			expectResult: &requests.SubmitResponse{
+				EngineResult:        "tesSUCCESS",
+				EngineResultCode:    0,
+				EngineResultMessage: "The transaction was applied.",
+			},
+		},
+		{
+			name: "invalid multisign json",
+			mockResponse: `{
+				"result": {
+					"engine_result": "tesSUCCESS",
+					"engine_result_code": 0,
+					"engine_result_message": "The transaction was applied.",
+					"tx_blob": "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754",
+					"tx_json": {
+						"Account": "rUAi7pipxGpYfPNg3LtPcf2ApiS8aw9A93",
+						"Fee": "10",
+						"Flags": 2147483648,
+						"Sequence": 4,
+						"SigningPubKey": "",
+						"TransactionType": "Payment",
+						"TxnSignature": "3045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE",
+						"hash": "4D5D90890F8D49519E4151938601EF3D0B30B16CD6A519D9C99102C9FA77F7E0"
+					}
+				},
+				"status": "success",
+				"type": "response"
+			}`,
+			txBlob: "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B80",
+			expectError: errors.New("parser out of bounds"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mc := &testutil.JSONRPCMockClient{}
+			if tt.mockResponse != "" {
+				mc.DoFunc = testutil.MockResponse(tt.mockResponse, 200, mc)
+			}
+
+			cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
+			require.NoError(t, err)
+
+			jsonRpcClient := NewClient(cfg)
+
+			response, err := jsonRpcClient.SubmitMultisigned(tt.txBlob, false)
+
+			if tt.expectError != nil {
+				require.Error(t, err)
+				require.Equal(t, tt.expectError.Error(), err.Error())
+				return
+			}
+
+			require.NoError(t, err)
+			require.Equal(t, tt.expectResult.EngineResult, response.EngineResult)
+			require.Equal(t, tt.expectResult.EngineResultCode, response.EngineResultCode)
+			require.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
+		})
+	}
 }
