@@ -3,7 +3,6 @@ package rpc
 import (
 	"bytes"
 	"context"
-	"errors"
 	"net/http"
 	"time"
 
@@ -15,22 +14,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
-var (
-	ErrIncorrectID = errors.New("incorrect id")
-)
-
 type Client struct {
 	cfg *Config
 
 	NetworkID uint32
-}
-
-type ClientError struct {
-	ErrorString string
-}
-
-func (e *ClientError) Error() string {
-	return e.ErrorString
 }
 
 func NewClient(cfg *Config) *Client {
@@ -123,7 +110,7 @@ func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse,
 	_, okPubKey := tx["SigningPubKey"].(string)
 
 	if !okTxSig && !okPubKey {
-		return nil, errors.New("transaction must have a TxSignature or SigningPubKey set")
+		return nil, ErrMissingTxSignatureOrSigningPubKey
 	}
 
 	return c.submitRequest(&requests.SubmitRequest{
@@ -144,7 +131,7 @@ func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.Subm
 			signer := sig.(map[string]any)
 			signerData := signer["Signer"].(map[string]any)
 			if signerData["SigningPubKey"] == "" && signerData["TxnSignature"] == "" {
-				return nil, errors.New("signer data is empty")
+				return nil, ErrSignerDataIsEmpty
 			}
 		}
 	}
@@ -225,7 +212,7 @@ func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners u
 
 func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	if wallet.ClassicAddress == "" {
-		return errors.New("fund wallet: cannot fund a wallet without a classic address")
+		return ErrCannotFundWalletWithoutClassicAddress
 	}
 
 	err := c.cfg.faucetProvider.FundWallet(wallet.ClassicAddress)
@@ -253,7 +240,7 @@ func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxRespon
 	}
 
 	if txResponse.EngineResult != "tesSUCCESS" {
-		return nil, errors.New("transaction failed to submit with engine result: " + txResponse.EngineResult)
+		return nil, &ClientError{ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult}
 	}
 
 	txHash, err := hash.TxBlob(txBlob)
