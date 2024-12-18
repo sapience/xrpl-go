@@ -13,11 +13,26 @@ func main() {
 
 	fmt.Println("Funding wallet on testnet:")
 
-	testnetFaucet := faucet.NewTestnetFaucetProvider()
-	testnetClientCfg := websocket.NewClientConfig().
-		WithHost("wss://s.altnet.rippletest.net:51233").
-		WithFaucetProvider(testnetFaucet)
-	testnetClient := websocket.NewClient(testnetClientCfg)
+	fmt.Println("Connecting to testnet...")
+	client := websocket.NewClient(
+		websocket.NewClientConfig().
+			WithHost("wss://s.altnet.rippletest.net:51233").
+			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
+	)
+	defer client.Disconnect()
+
+	if err := client.Connect(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if !client.IsConnected() {
+		fmt.Println("Failed to connect to testnet")
+		return
+	}
+
+	fmt.Println("Connected to testnet")
+	fmt.Println()
 
 	wallet, err := wallet.New(crypto.ED25519())
 	if err != nil {
@@ -25,7 +40,7 @@ func main() {
 		return
 	}
 
-	balance, err := testnetClient.GetXrpBalance(wallet.ClassicAddress)
+	balance, err := client.GetXrpBalance(wallet.ClassicAddress)
 	if err != nil {
 		balance = "0"
 	}
@@ -33,13 +48,13 @@ func main() {
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
 
 	fmt.Println("Funding wallet", wallet.ClassicAddress)
-	err = testnetClient.FundWallet(&wallet)
+	err = client.FundWallet(&wallet)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	balance, err = testnetClient.GetXrpBalance(wallet.ClassicAddress)
+	balance, err = client.GetXrpBalance(wallet.ClassicAddress)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -48,15 +63,8 @@ func main() {
 
 	fmt.Println("Funding wallet on devnet:")
 
-	devnetFaucet := faucet.NewDevnetFaucetProvider()
 
-	clientCfg := websocket.NewClientConfig().
-		WithHost("wss://s.devnet.rippletest.net:51233").
-		WithFaucetProvider(devnetFaucet)
-
-	devnetClient := websocket.NewClient(clientCfg)
-
-	balance, err = devnetClient.GetXrpBalance(wallet.ClassicAddress)
+	balance, err = client.GetXrpBalance(wallet.ClassicAddress)
 	if err != nil {
 		balance = "0"
 	}
@@ -64,13 +72,13 @@ func main() {
 	fmt.Println("Balance", wallet.ClassicAddress, balance)
 
 	fmt.Println("Funding wallet", wallet.ClassicAddress)
-	err = devnetClient.FundWallet(&wallet)
+	err = client.FundWallet(&wallet)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	balance, err = devnetClient.GetXrpBalance(wallet.ClassicAddress)
+	balance, err = client.GetXrpBalance(wallet.ClassicAddress)
 	if err != nil {
 		fmt.Println(err)
 		return
