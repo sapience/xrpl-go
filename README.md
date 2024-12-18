@@ -13,7 +13,7 @@ This library is still in development and not yet intended for production use.
 
 ## Requirements
 
-Requiring Go version `1.21.0` and later.
+Requiring Go version `1.22.0` and later.
 [Download latest Go version](https://go.dev/dl/)
 
 ## Packages
