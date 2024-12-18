@@ -20,10 +20,8 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	jsoniter "github.com/json-iterator/go"
-)
 
-const (
-	LedgerOffset uint32 = 20
+	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 // CreateRequest formats the parameters and method name ready for sending request
@@ -238,7 +236,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Uint32() + LedgerOffset
+	(*tx)["LastLedgerSequence"] = index.Uint32() + commonconstants.LedgerOffset
 	return err
 }
 

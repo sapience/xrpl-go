@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -51,7 +52,7 @@ func TestConfigCreation(t *testing.T) {
 			"Content-Type": {"application/json"},
 		}
 		req.Header = cfg.Headers
-		assert.Equal(t, &Config{HTTPClient: customHttpClient{}, URL: "http://s1.ripple.com:51234/", Headers: headers, maxRetries: DefaultMaxRetries, retryDelay: DefaultRetryDelay, feeCushion: DefaultFeeCushion, maxFeeXRP: DefaultMaxFeeXRP, faucetProvider: nil}, cfg)
+		assert.Equal(t, &Config{HTTPClient: customHttpClient{}, URL: "http://s1.ripple.com:51234/", Headers: headers, maxRetries: common.DefaultMaxRetries, retryDelay: common.DefaultRetryDelay, feeCushion: common.DefaultFeeCushion, maxFeeXRP: common.DefaultMaxFeeXRP, faucetProvider: nil}, cfg)
 		assert.NoError(t, err)
 	})
 }

@@ -52,7 +52,6 @@ func main() {
 
 	fmt.Println("Funding wallet on devnet:")
 
-
 	balance, err = client.GetXrpBalance(wallet.ClassicAddress)
 	if err != nil {
 		balance = "0"

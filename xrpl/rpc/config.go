@@ -6,16 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Peersyst/xrpl-go/xrpl/rpc/interfaces"
-)
-
-const (
-	DefaultHost       = "localhost"
-	DefaultMaxRetries = 10
-	DefaultRetryDelay = 1 * time.Second
-
-	DefaultFeeCushion float32 = 1.2
-	DefaultMaxFeeXRP  float32 = 2
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 var ErrEmptyURL = errors.New("empty port and IP provided")
@@ -38,7 +29,7 @@ type Config struct {
 	feeCushion float32
 
 	// Faucet config
-	faucetProvider interfaces.FaucetProvider
+	faucetProvider common.FaucetProvider
 }
 
 type ConfigOpt func(c *Config)
@@ -61,7 +52,7 @@ func WithFeeCushion(feeCushion float32) ConfigOpt {
 	}
 }
 
-func WithFaucetProvider(fp interfaces.FaucetProvider) ConfigOpt {
+func WithFaucetProvider(fp common.FaucetProvider) ConfigOpt {
 	return func(c *Config) {
 		c.faucetProvider = fp
 	}
@@ -85,11 +76,11 @@ func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) {
 			"Content-Type": {"application/json"},
 		},
 
-		maxRetries: DefaultMaxRetries,
-		retryDelay: DefaultRetryDelay,
+		maxRetries: common.DefaultMaxRetries,
+		retryDelay: common.DefaultRetryDelay,
 
-		maxFeeXRP:  DefaultMaxFeeXRP,
-		feeCushion: DefaultFeeCushion,
+		maxFeeXRP:  common.DefaultMaxFeeXRP,
+		feeCushion: common.DefaultFeeCushion,
 	}
 
 	for _, opt := range opts {

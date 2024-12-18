@@ -3,13 +3,7 @@ package websocket
 import (
 	"time"
 
-	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
-)
-
-const (
-	DefaultHost       = "localhost"
-	DefaultMaxRetries = 10
-	DefaultRetryDelay = 1 * time.Second
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 type ClientConfig struct {
@@ -23,16 +17,16 @@ type ClientConfig struct {
 	maxFeeXRP  float32
 
 	// Faucet config
-	faucetProvider interfaces.FaucetProvider
+	faucetProvider common.FaucetProvider
 }
 
 func NewClientConfig() *ClientConfig {
 	return &ClientConfig{
-		host:       DefaultHost,
-		feeCushion: DefaultFeeCushion,
-		maxFeeXRP:  DefaultMaxFeeXRP,
-		maxRetries: DefaultMaxRetries,
-		retryDelay: DefaultRetryDelay,
+		host:       common.DefaultHost,
+		feeCushion: common.DefaultFeeCushion,
+		maxFeeXRP:  common.DefaultMaxFeeXRP,
+		maxRetries: common.DefaultMaxRetries,
+		retryDelay: common.DefaultRetryDelay,
 	}
 }
 
@@ -59,7 +53,7 @@ func (wc ClientConfig) WithMaxFeeXRP(maxFeeXrp float32) ClientConfig {
 
 // WithFaucetProvider sets the faucet provider of the websocket client.
 // Default: faucet.NewLocalFaucetProvider()
-func (wc ClientConfig) WithFaucetProvider(fp interfaces.FaucetProvider) ClientConfig {
+func (wc ClientConfig) WithFaucetProvider(fp common.FaucetProvider) ClientConfig {
 	wc.faucetProvider = fp
 	return wc
 }
