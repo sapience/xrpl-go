@@ -62,11 +62,11 @@ func main() {
 	fmt.Println("⏳ Sending TrustSet transaction...")
 	ts := &transaction.TrustSet{
 		BaseTx: transaction.BaseTx{
-			Account: w2.GetAddress(),
+			Account: w2.ClassicAddress,
 		},
 		LimitAmount: types.IssuedCurrencyAmount{
 			Currency: "FOO",
-			Issuer:   w1.GetAddress(),
+			Issuer:   w1.ClassicAddress,
 			Value:    "10000000000",
 		},
 	}
