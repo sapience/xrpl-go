@@ -52,7 +52,7 @@ func main() {
 		return
 	}
 	fmt.Println("💸 Sender wallet funded!")
-	
+
 	if err := client.FundWallet(&receiverWallet); err != nil {
 		fmt.Println(err)
 		return
@@ -105,8 +105,6 @@ func main() {
 	fmt.Println("✅ Check created!")
 	fmt.Printf("🌐 Hash: %s\n", res.Hash.String())
 	fmt.Println()
-
-	
 
 	meta, ok := res.Meta.(map[string]interface{})
 	if !ok {

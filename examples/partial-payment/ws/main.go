@@ -60,7 +60,6 @@ func main() {
 	fmt.Println("💸 Wallet 2 funded")
 	fmt.Println()
 
-
 	time.Sleep(5 * time.Second)
 
 	fmt.Println("⏳ Sending TrustSet transaction...")

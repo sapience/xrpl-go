@@ -13,6 +13,7 @@ var (
 	// definitions is the singleton instance of the Definitions struct.
 	definitions *Definitions
 )
+
 type Definitions struct {
 	Types              map[string]int32
 	LedgerEntryTypes   map[string]int32
