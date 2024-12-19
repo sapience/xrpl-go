@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Peersyst/xrpl-go/v1/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/v1/xrpl/faucet"
@@ -47,6 +48,8 @@ func main() {
 
 	fmt.Println("💸 Wallet 2 funded")
 	fmt.Println()
+
+	time.Sleep(5 * time.Second)
 
 	fmt.Println("⏳ Sending TrustSet transaction...")
 	ts := &transaction.TrustSet{
