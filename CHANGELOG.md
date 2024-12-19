@@ -24,11 +24,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### keypairs
 
+- New `DeriveNodeAddress` function.
+
 #### xrpl
 
+- New `AccountRoot`, `Amendments`, `Bridge`, `DID`, `DirectoryNode`, `Oracle`, `RippleState`, `XChainOwnedClaimID`, `XChainOwnedCreateAccountClaimID` ledger entry types.
+- New `Multisign` utility function.
+- New `NftHistory`, `NftsByIssuer`, `LedgerData`, `Check`, `BookOffers`, `PathFind`, `FeatureOne`, `FeatureAll` queries.
+- New `SubmitMultisigned` request.
+- New `AMMBid`, `AMMCreate`, `AMMDelete`, `AMMDeposit`, `AMMVote`, `AMMWithdraw` amm transactions.
+- New `CheckCancel`, `CheckCash`, `CheckCreate` check transactions.
+- New `DepositPreauth` transaction.
+- New `DIDSet` and `DIDDelete` transactions.
+- New `EscrowCreate`, `EscrowFinish`, `EscrowCancel` escrow transactions.
+- New `OracleSet` and `OracleDelete` oracle transactions.
+- New `XChainAccountCreateCommitment`, `XChainAddAccountCreateAttestation`, `XChainAddClaimAttestation`, `XChainClaim`, `XChainCommit`, `XChainCreateBridge`, `XChainCreateClaimID` and `XChainModifyBridge` cross-chain transactions.
+- New `Multisign` wallet method.
+- Ripple time conversion utility functions.
+- Added query methods for websocket and rpc clients.
+- New `SubmitMultisigned`, `AutofillMultisigned` and `SubmitAndWait` methods for both clients.
+- Added `Autofill` method for rpc client.
+- New `MaxRetries` and `RetryDelay` config options for both clients.
+
+#### Other
+
+- Implemented `secp256k1` algorithm.
 
 ### Changed
-
 
 #### binary-codec
 
@@ -36,30 +58,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `NewBinaryParser` constructor to accept `definitions.Definitions` as a parameter.
 - Updated `NewSerializer` to `NewBinarySerializer` constructor.
 - Refactored `FieldIDCodec` to be a struct with `Encode` and `Decode` methods.
-- `FromJson` methods to `FromJSON`
-- `ToJson` methods to `ToJSON`
+- `FromJson` methods to `FromJSON`.
+- `ToJson` methods to `ToJSON`.
 
 #### address-codec
 
-
+No changes were made.
 
 #### keypairs
 
+- Decoupled `ed25519` and `secp256k1` algorithms from `keypairs` package.
+- Decoupled `der` parsing from `keypairs` package.
+
 #### xrpl
 
-### Deprecated
-- Method `oldFunction()` will be removed in next major version
-- Configuration option `deprecatedSetting` is no longer recommended
-
-### Removed
-- Dropped support for legacy platform Y
-- Eliminated unused utility functions
+- Renamed `CurrencyStringToHex` to `ConvertStringToHex` and `CurrencyHexToString` to `ConvertHexToString`.
+- Renamed `HashSignedTx` to `TxBlob`.
+- Wallet API methods have been renamed for better usability.
+- Renamed `SendRequest` to `Request` methods for websocket and rpc clients.
 
 ### Fixed
-- Resolved critical bug in data processing module
-- Corrected rendering issue on mobile devices
-- Fixed memory leak in background service
 
-### Security
-- Patched vulnerability in authentication mechanism
-- Updated encryption libraries to address potential security risks
+#### xrpl
+
+- Some queries did not have proper fields. All queries have been updated with the fields that are required by the XRP Ledger.
+- Some transaction types did not have proper fields. All transaction types have been updated with the fields that are required by the XRP Ledger.

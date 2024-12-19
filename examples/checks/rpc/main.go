@@ -89,7 +89,7 @@ func main() {
 	fmt.Println("Validated: ", res.Validated)
 	fmt.Println()
 
-	r, err := client.SendRequest(&transactionquery.TxRequest{
+	r, err := client.Request(&transactionquery.TxRequest{
 		Transaction: hash,
 	})
 	if err != nil {

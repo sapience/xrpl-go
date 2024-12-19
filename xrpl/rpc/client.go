@@ -26,8 +26,8 @@ func NewClient(cfg *Config) *Client {
 	}
 }
 
-// SendRequest sends a request to the XRPL server and returns the response and any error encountered.
-func (c *Client) SendRequest(reqParams XRPLRequest) (XRPLResponse, error) {
+// Request sends a request to the XRPL server and returns the response and any error encountered.
+func (c *Client) Request(reqParams XRPLRequest) (XRPLResponse, error) {
 
 	err := reqParams.Validate()
 	if err != nil {
