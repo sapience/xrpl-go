@@ -96,7 +96,7 @@ make test-ci
 
 ## Licensing
 
-By contributing, you agree that your contributions will be licensed under the project's [LICENSE TYPE].
+By contributing, you agree that your contributions will be licensed under the project's MIT license.
 
 ## Questions?
 
