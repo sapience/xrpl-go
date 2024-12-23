@@ -5,10 +5,10 @@ import (
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
+	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
-	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
 const (
@@ -20,22 +20,16 @@ func main() {
 	// Configure client
 	//
 	fmt.Println("⏳ Setting up client...")
-	client := websocket.NewClient(
-		websocket.NewClientConfig().
-			WithHost("wss://s.altnet.rippletest.net").
-			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
+	cfg, err := rpc.NewClientConfig(
+		"https://s.altnet.rippletest.net:51234/",
+		rpc.WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
-	defer client.Disconnect()
-	fmt.Println("✅ Client configured!")
-	fmt.Println()
-
-	fmt.Println("Connecting to server...")
-	if err := client.Connect(); err != nil {
-		fmt.Println(err)
-		return
+	if err != nil {
+		panic(err)
 	}
 
-	fmt.Println("Connection: ", client.IsConnected())
+	client := rpc.NewClient(cfg)
+	fmt.Println("✅ Client configured!")
 	fmt.Println()
 
 	//
@@ -436,7 +430,7 @@ func main() {
 	if err == nil {
 		return
 	}
-	
+
 	fmt.Println("❌ Tokens not sent from hot wallet to customer one!")
 	fmt.Println()
 
