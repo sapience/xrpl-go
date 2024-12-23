@@ -2,27 +2,29 @@ package transaction
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 type TxMeta interface {
 	TxMeta()
 }
 
+// TODO: Improve CurrencyAmount parsing
 type TxObjMeta struct {
-	AffectedNodes          []AffectedNode       `json:"AffectedNodes,omitempty"`
-	PartialDeliveredAmount types.CurrencyAmount `json:"DeliveredAmount,omitempty"`
-	TransactionIndex       uint64               `json:"TransactionIndex,omitempty"`
-	TransactionResult      string               `json:"TransactionResult,omitempty"`
-	DeliveredAmount        types.CurrencyAmount `json:"delivered_amount,omitempty"`
+	AffectedNodes []AffectedNode `json:"AffectedNodes,omitempty"`
+	// PartialDeliveredAmount types.CurrencyAmount `json:"DeliveredAmount,omitempty"`
+	PartialDeliveredAmount any    `json:"DeliveredAmount,omitempty"`
+	TransactionIndex       uint64 `json:"TransactionIndex,omitempty"`
+	TransactionResult      string `json:"TransactionResult,omitempty"`
+	// DeliveredAmount        types.CurrencyAmount `json:"delivered_amount,omitempty"`
+	DeliveredAmount any `json:"delivered_amount,omitempty"`
 }
 
 func (TxObjMeta) TxMeta() {}
 
 type AffectedNode struct {
-	CreatedNode  *CreatedNode  `json:"CreatedNode,omitempty"`
-	ModifiedNode *ModifiedNode `json:"ModifiedNode,omitempty"`
-	DeletedNode  *DeletedNode  `json:"DeletedNode,omitempty"`
+	CreatedNode  CreatedNode  `json:"CreatedNode,omitempty"`
+	ModifiedNode ModifiedNode `json:"ModifiedNode,omitempty"`
+	DeletedNode  DeletedNode  `json:"DeletedNode,omitempty"`
 }
 
 type CreatedNode struct {

@@ -3,6 +3,7 @@ package path
 import (
 	"testing"
 
+	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -17,7 +18,7 @@ func TestRipplePathFindRequest(t *testing.T) {
 			Currency: "USD",
 			Value:    "0.001",
 		},
-		SourceCurrencies: []types.IssuedCurrencyAmount{
+		SourceCurrencies: []pathtypes.RipplePathFindCurrency{
 			{
 				Currency: "XRP",
 			},
@@ -44,14 +45,14 @@ func TestRipplePathFindRequest(t *testing.T) {
 		}
 	]
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestRipplePathFindResponse(t *testing.T) {
 	s := RipplePathFindResponse{
-		Alternatives: []Alternative{
+		Alternatives: []pathtypes.RippleAlternative{
 			{
 				PathsComputed: [][]transaction.PathStep{
 					{
@@ -193,9 +194,11 @@ func TestRipplePathFindResponse(t *testing.T) {
 		"BTC",
 		"USD",
 		"XRP"
-	]
+	],
+	"source_account": "",
+	"validated": false
 }`
-	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
+	if err := testutil.Serialize(t, s, j); err != nil {
 		t.Error(err)
 	}
 }

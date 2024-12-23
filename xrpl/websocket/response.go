@@ -1,16 +1,10 @@
 package websocket
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 )
 
-type XRPLResponse interface {
-	GetResult(v any) error
-}
-
-type XRPLResponseWarning struct {
+type ResponseWarning struct {
 	ID      int    `json:"id"`
 	Message string `json:"message"`
 	Details any    `json:"details,omitempty"`
@@ -25,32 +19,31 @@ func (e *ErrorWebsocketClientXrplResponse) Error() string {
 	return e.Type
 }
 
-type ClientXrplResponse struct {
-	ID        int                   `json:"id"`
-	Status    string                `json:"status"`
-	Type      string                `json:"type"`
-	Error     string                `json:"error,omitempty"`
-	Result    map[string]any        `json:"result,omitempty"`
-	Value     map[string]any        `json:"value,omitempty"`
-	Warning   string                `json:"warning,omitempty"`
-	Warnings  []XRPLResponseWarning `json:"warnings,omitempty"`
-	Forwarded bool                  `json:"forwarded,omitempty"`
+type ClientResponse struct {
+	ID        int               `json:"id"`
+	Status    string            `json:"status"`
+	Type      string            `json:"type"`
+	Error     string            `json:"error,omitempty"`
+	Result    map[string]any    `json:"result,omitempty"`
+	Value     map[string]any    `json:"value,omitempty"`
+	Warning   string            `json:"warning,omitempty"`
+	Warnings  []ResponseWarning `json:"warnings,omitempty"`
+	Forwarded bool              `json:"forwarded,omitempty"`
 }
 
-func (r *ClientXrplResponse) GetResult(v any) error {
+func (r *ClientResponse) GetResult(v any) error {
 	dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json", Result: &v, DecodeHook: mapstructure.TextUnmarshallerHookFunc()})
 	if err != nil {
 		return err
 	}
 	err = dec.Decode(r.Result)
 	if err != nil {
-		fmt.Println("aqui", err)
 		return err
 	}
 	return nil
 }
 
-func (r *ClientXrplResponse) CheckError() error {
+func (r *ClientResponse) CheckError() error {
 	if r.Error != "" {
 		return &ErrorWebsocketClientXrplResponse{
 			Type:    r.Error,

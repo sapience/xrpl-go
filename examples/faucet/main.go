@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
-	"github.com/Peersyst/xrpl-go/xrpl"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
+	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
@@ -14,12 +14,12 @@ func main() {
 	fmt.Println("Funding wallet on testnet:")
 
 	testnetFaucet := faucet.NewTestnetFaucetProvider()
-	testnetClientCfg := websocket.NewWebsocketClientConfig().
+	testnetClientCfg := websocket.NewClientConfig().
 		WithHost("wss://s.altnet.rippletest.net:51233").
 		WithFaucetProvider(testnetFaucet)
 	testnetClient := websocket.NewClient(testnetClientCfg)
 
-	wallet, err := xrpl.NewWallet(crypto.ED25519())
+	wallet, err := wallet.New(crypto.ED25519())
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -50,7 +50,7 @@ func main() {
 
 	devnetFaucet := faucet.NewDevnetFaucetProvider()
 
-	clientCfg := websocket.NewWebsocketClientConfig().
+	clientCfg := websocket.NewClientConfig().
 		WithHost("wss://s.devnet.rippletest.net:51233").
 		WithFaucetProvider(devnetFaucet)
 
