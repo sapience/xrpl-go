@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Peersyst/xrpl-go/v1/xrpl/common"
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 var ErrEmptyURL = errors.New("empty port and IP provided")

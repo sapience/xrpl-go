@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	binarycodec "github.com/Peersyst/xrpl-go/v1/binary-codec"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/hash"
-	requests "github.com/Peersyst/xrpl-go/v1/xrpl/queries/transactions"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/transaction"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/transaction/types"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/wallet"
+	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
+	"github.com/Peersyst/xrpl-go/xrpl/hash"
+	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
 type Client struct {

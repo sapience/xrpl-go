@@ -1,4 +1,4 @@
-module github.com/Peersyst/xrpl-go/v1
+module github.com/Peersyst/xrpl-go
 
 go 1.22
 
