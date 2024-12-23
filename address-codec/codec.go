@@ -5,8 +5,8 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"github.com/Peersyst/xrpl-go/v1/address-codec/interfaces"
-	"github.com/Peersyst/xrpl-go/v1/pkg/crypto"
+	"github.com/Peersyst/xrpl-go/address-codec/interfaces"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
 const (

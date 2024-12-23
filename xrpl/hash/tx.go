@@ -6,8 +6,8 @@ import (
 	"errors"
 	"strings"
 
-	binarycodec "github.com/Peersyst/xrpl-go/v1/binary-codec"
-	"github.com/Peersyst/xrpl-go/v1/pkg/crypto"
+	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
+	"github.com/Peersyst/xrpl-go/pkg/crypto"
 )
 
 // SignTxBlob hashes a signed transaction blob

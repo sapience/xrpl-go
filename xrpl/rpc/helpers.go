@@ -12,16 +12,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Peersyst/xrpl-go/v1/xrpl/currency"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/queries/account"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/queries/common"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/queries/server"
-	requests "github.com/Peersyst/xrpl-go/v1/xrpl/queries/transactions"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/transaction"
-	"github.com/Peersyst/xrpl-go/v1/xrpl/transaction/types"
+	"github.com/Peersyst/xrpl-go/xrpl/currency"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
+	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	jsoniter "github.com/json-iterator/go"
 
-	commonconstants "github.com/Peersyst/xrpl-go/v1/xrpl/common"
+	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 // CreateRequest formats the parameters and method name ready for sending request
