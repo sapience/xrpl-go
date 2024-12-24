@@ -288,7 +288,7 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error {
 }
 
 func (c *Client) submitMultisignedRequest(req *requests.SubmitMultisignedRequest) (*requests.SubmitMultisignedResponse, error) {
-	res, err := c.SendRequest(req)
+	res, err := c.Request(req)
 	if err != nil {
 		return nil, err
 	}
@@ -301,7 +301,7 @@ func (c *Client) submitMultisignedRequest(req *requests.SubmitMultisignedRequest
 }
 
 func (c *Client) submitRequest(req *requests.SubmitRequest) (*requests.SubmitResponse, error) {
-	res, err := c.SendRequest(req)
+	res, err := c.Request(req)
 	if err != nil {
 		return nil, err
 	}
@@ -330,7 +330,7 @@ func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*
 		}
 
 		// Request the transaction from the server
-		res, err := c.SendRequest(&requests.TxRequest{
+		res, err := c.Request(&requests.TxRequest{
 			Transaction: txHash,
 		})
 		if err != nil {

@@ -6,7 +6,6 @@ import (
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
-	transactionquery "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -36,26 +35,27 @@ func main() {
 		return
 	}
 
-	fmt.Println("Wallet: ", w.GetAddress())
-	fmt.Println("Requesting XRP from faucet...")
+	fmt.Println("⏳ Setting up wallets...")
 	if err := client.FundWallet(&w); err != nil {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("💸 Sender wallet funded!")
 
-	fmt.Printf("Wallet %s funded", w.GetAddress())
-	fmt.Println()
-
-	fmt.Println("Wallet: ", receiverWallet.GetAddress())
-	fmt.Println("Requesting XRP from faucet...")
 	if err := client.FundWallet(&receiverWallet); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Printf("Wallet %s funded", receiverWallet.GetAddress())
+	fmt.Println("💸 Receiver wallet funded!")
 	fmt.Println()
 
+	fmt.Println("✅ Wallets setup complete!")
+	fmt.Println("💳 Sender wallet:", w.ClassicAddress)
+	fmt.Println("💳 Receiver wallet:", receiverWallet.ClassicAddress)
+	fmt.Println()
+
+	fmt.Println("⏳ Creating check...")
 	cc := &transaction.CheckCreate{
 		BaseTx: transaction.BaseTx{
 			Account: w.GetAddress(),
@@ -72,7 +72,7 @@ func main() {
 		return
 	}
 
-	blob, hash, err := w.Sign(flatCc)
+	blob, _, err := w.Sign(flatCc)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -84,29 +84,20 @@ func main() {
 		return
 	}
 
-	fmt.Println("CheckCreate transaction submitted")
-	fmt.Println("Transaction hash: ", res.Hash.String())
-	fmt.Println("Validated: ", res.Validated)
+	if !res.Validated {
+		fmt.Println("❌ Check creation failed!")
+		fmt.Println("Try again!")
+		fmt.Println()
+		return
+	}
+
+	fmt.Println("✅ Check created!")
+	fmt.Printf("🌐 Hash: %s\n", res.Hash.String())
 	fmt.Println()
 
-	r, err := client.SendRequest(&transactionquery.TxRequest{
-		Transaction: hash,
-	})
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var txRes transactionquery.TxResponse
-	if err := r.GetResult(&txRes); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	meta, ok := txRes.Meta.(map[string]interface{})
+	meta, ok := res.Meta.(map[string]interface{})
 	if !ok {
-		fmt.Println(txRes.Meta)
-		fmt.Println("Meta is not of type TxObjMeta")
+		fmt.Println("❌ Meta is not of type TxObjMeta")
 		return
 	}
 
@@ -117,7 +108,7 @@ func main() {
 	for _, node := range affectedNodes {
 		affectedNode, ok := node.(map[string]interface{})
 		if !ok {
-			fmt.Println("Node is not of type map[string]interface{}")
+			fmt.Println("❌ Node is not of type map[string]interface{}")
 			return
 		}
 
@@ -137,8 +128,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Check created with ID: ", checkID)
-
+	fmt.Println("⏳ Cashing out check...")
 	checkCash := &transaction.CheckCash{
 		BaseTx: transaction.BaseTx{
 			Account: receiverWallet.GetAddress(),
@@ -166,7 +156,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("CheckCash transaction submitted")
-	fmt.Println("Transaction hash: ", res.Hash.String())
-	fmt.Println("Validated: ", res.Validated)
+	fmt.Println("✅ Check cashed out!")
+	fmt.Printf("🌐 Hash: %s\n", res.Hash.String())
+	fmt.Println()
 }
