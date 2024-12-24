@@ -4,17 +4,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewClientConfig(t *testing.T) {
 	config := NewClientConfig()
-	require.Equal(t, config.maxRetries, DefaultMaxRetries)
-	require.Equal(t, config.retryDelay, DefaultRetryDelay)
-	require.Equal(t, config.host, DefaultHost)
-	require.Equal(t, config.feeCushion, DefaultFeeCushion)
-	require.Equal(t, config.maxFeeXRP, DefaultMaxFeeXRP)
+	require.Equal(t, config.maxRetries, common.DefaultMaxRetries)
+	require.Equal(t, config.retryDelay, common.DefaultRetryDelay)
+	require.Equal(t, config.host, common.DefaultHost)
+	require.Equal(t, config.feeCushion, common.DefaultFeeCushion)
+	require.Equal(t, config.maxFeeXRP, common.DefaultMaxFeeXRP)
 }
 
 func TestWithMaxRetries(t *testing.T) {

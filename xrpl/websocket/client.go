@@ -24,6 +24,8 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
 	"github.com/gorilla/websocket"
+
+	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 const (
@@ -281,7 +283,7 @@ func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxRespon
 		return nil, errors.New("transaction failed to submit with engine result: " + txResponse.EngineResult)
 	}
 
-	txHash, err := hash.TxBlob(txBlob)
+	txHash, err := hash.SignTxBlob(txBlob)
 	if err != nil {
 		return nil, err
 	}
@@ -519,7 +521,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Uint32() + LedgerOffset
+	(*tx)["LastLedgerSequence"] = index.Uint32() + commonconstants.LedgerOffset
 	return err
 }
 
