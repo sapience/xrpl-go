@@ -207,7 +207,7 @@ func TestBaseTx_Flatten(t *testing.T) {
 						}
 					}
 				],
-				"NetworkId": 1,
+				"NetworkID": 1,
 				"Signers": [
 					{
 						"Signer": {
