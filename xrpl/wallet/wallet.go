@@ -18,6 +18,10 @@ import (
 	"github.com/tyler-smith/go-bip39"
 )
 
+var (
+	ErrAddressTagNotZero = errors.New("address tag is not zero")
+)
+
 // A utility for deriving a wallet composed of a keypair (publicKey/privateKey).
 // A wallet can be derived from either a seed, mnemonic, or entropy (array of random numbers).
 // It provides functionality to sign/verify transactions offline.
@@ -47,8 +51,12 @@ func FromSeed(seed string, masterAddress string) (Wallet, error) {
 	}
 
 	var classicAddr types.Address
-	if ok := addresscodec.IsValidClassicAddress(masterAddress); ok {
-		classicAddr = types.Address(masterAddress)
+
+	if masterAddress != "" {
+		classicAddr, err = ensureClassicAddress(masterAddress)
+		if err != nil {
+			return Wallet{}, err
+		}
 	} else {
 		addr, err := keypairs.DeriveClassicAddress(pubKey)
 		if err != nil {
@@ -210,6 +218,26 @@ func (w *Wallet) computeSignature(encodedTx string) (string, error) {
 	}
 
 	return txHash, nil
+}
+
+// Ensures that the address is a classic address.
+// If the address is an x-address with a tag of 0 (no tag), it will be converted to a classic address.
+// If the address is not a classic address, it will be returned as is.
+func ensureClassicAddress(account string) (types.Address, error) {
+	if ok := addresscodec.IsValidXAddress(account); ok {
+		classicAddr, tag, _, err := addresscodec.XAddressToClassicAddress(account)
+		if err != nil {
+			return "", err
+		}
+
+		if tag != 0 {
+			return "", ErrAddressTagNotZero
+		}
+
+		return types.Address(classicAddr), nil
+	}
+
+	return types.Address(account), nil
 }
 
 // Verifies a signed transaction offline.
