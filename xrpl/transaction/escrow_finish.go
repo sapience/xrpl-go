@@ -77,7 +77,7 @@ func (e *EscrowFinish) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(e.Owner.String()) {
+	if !addresscodec.IsValidAddress(e.Owner.String()) {
 		return false, ErrEscrowFinishMissingOwner
 	}
 

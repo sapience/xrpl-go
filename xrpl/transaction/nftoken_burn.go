@@ -72,7 +72,7 @@ func (n *NFTokenBurn) Validate() (bool, error) {
 	}
 
 	// check owner is a valid xrpl address
-	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
+	if n.Owner != "" && !addresscodec.IsValidAddress(n.Owner.String()) {
 		return false, ErrInvalidOwner
 	}
 

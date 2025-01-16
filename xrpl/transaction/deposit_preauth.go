@@ -87,11 +87,11 @@ func (s *DepositPreauth) Validate() (bool, error) {
 		return false, ErrDepositPreauthUnauthorizeCannotBeSender
 	}
 
-	if s.Authorize != "" && !addresscodec.IsValidClassicAddress(s.Authorize.String()) {
+	if s.Authorize != "" && !addresscodec.IsValidAddress(s.Authorize.String()) {
 		return false, ErrDepositPreauthInvalidAuthorize
 	}
 
-	if s.Unauthorize != "" && !addresscodec.IsValidClassicAddress(s.Unauthorize.String()) {
+	if s.Unauthorize != "" && !addresscodec.IsValidAddress(s.Unauthorize.String()) {
 		return false, ErrDepositPreauthInvalidUnauthorize
 	}
 
