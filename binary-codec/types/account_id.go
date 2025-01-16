@@ -41,7 +41,7 @@ func (a *AccountID) FromJSON(value any) ([]byte, error) {
 		return accountID, nil
 
 	default:
-		return nil, addresscodec.ErrInvalidXrplAddress
+		return nil, addresscodec.ErrInvalidAddressFormat
 	}
 }
 

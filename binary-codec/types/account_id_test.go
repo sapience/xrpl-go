@@ -64,7 +64,7 @@ func TestAccountID_FromJson(t *testing.T) {
 			name:        "Invalid XRPL address",
 			input:       "abcde",
 			expected:    nil,
-			expectedErr: addresscodec.ErrInvalidXrplAddress,
+			expectedErr: addresscodec.ErrInvalidAddressFormat,
 		},
 		{
 			name:        "Invalid input type",
