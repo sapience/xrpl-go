@@ -122,7 +122,7 @@ func (s *SignerListSet) Validate() (bool, error) {
 		}
 
 		// Check if Account is a valid xrpl address for each SignerEntry
-		if !addresscodec.IsValidClassicAddress(signerEntry.SignerEntry.Account.String()) {
+		if !addresscodec.IsValidAddress(signerEntry.SignerEntry.Account.String()) {
 			return false, ErrInvalidAccount
 		}
 	}

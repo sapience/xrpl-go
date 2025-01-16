@@ -151,7 +151,7 @@ func (n *NFTokenMint) Validate() (bool, error) {
 	}
 
 	// check issuer is a valid xrpl address
-	if n.Issuer != "" && !addresscodec.IsValidClassicAddress(n.Issuer.String()) {
+	if n.Issuer != "" && !addresscodec.IsValidAddress(n.Issuer.String()) {
 		return false, ErrInvalidIssuer
 	}
 

@@ -95,22 +95,32 @@ func main() {
 					SignerWeight: 1,
 				},
 			},
+			{
+				SignerEntry: ledger.SignerEntry{
+					Account:      "XVYRdEocC28DRx94ZFGP3qNJ1D5Ln7ecXFMd3vREB5Pesju",
+					SignerWeight: 1,
+				},
+			},
 		},
 	}
 
+	fmt.Println("⏳ Flattening transaction...")
 	flatSs := ss.Flatten()
 
+	fmt.Println("⏳ Autofilling transaction...")
 	if err := client.Autofill(&flatSs); err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	fmt.Println("⏳ Signing transaction...")
 	blob, _, err := master.Sign(flatSs)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	fmt.Println("⏳ Submitting transaction...")
 	res, err := client.SubmitAndWait(blob, false)
 	if err != nil {
 		fmt.Println(err)

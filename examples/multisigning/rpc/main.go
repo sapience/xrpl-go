@@ -84,6 +84,12 @@ func main() {
 					SignerWeight: 1,
 				},
 			},
+			{
+				SignerEntry: ledger.SignerEntry{
+					Account:      "XVYRdEocC28DRx94ZFGP3qNJ1D5Ln7ecXFMd3vREB5Pesju",
+					SignerWeight: 1,
+				},
+			},
 		},
 	}
 

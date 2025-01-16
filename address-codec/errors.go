@@ -20,6 +20,9 @@ var (
 	// Invalid accountId
 	ErrInvalidAccountID = errors.New("invalid accountId")
 
+	// Invalid xrpl address, general error
+	ErrInvalidAddressFormat = errors.New("invalid address format")
+
 	// ErrChecksum indicates that the checksum of a check-encoded string does not verify against
 	// the checksum.
 	ErrChecksum = errors.New("checksum error")

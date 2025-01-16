@@ -77,6 +77,18 @@ func TestSetRegularKey_Validate(t *testing.T) {
 			wantErr:   false,
 		},
 		{
+			name: "pass - valid SetRegularKey with X-address",
+			regularKey: &SetRegularKey{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SetRegularKeyTx,
+				},
+				RegularKey: "XVYRdEocC28DRx94ZFGP3qNJ1D5Ln7ecXFMd3vREB5Pesju",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
 			name: "fail - invalid SetRegularKey BaseTx",
 			regularKey: &SetRegularKey{
 				BaseTx: BaseTx{

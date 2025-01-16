@@ -170,7 +170,7 @@ func (p *Payment) Validate() (bool, error) {
 	}
 
 	// Check if Destination is a valid xrpl address
-	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
+	if !addresscodec.IsValidAddress(p.Destination.String()) {
 		return false, ErrInvalidDestination
 	}
 

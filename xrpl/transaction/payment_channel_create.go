@@ -78,7 +78,7 @@ func (p *PaymentChannelCreate) Validate() (bool, error) {
 	}
 
 	// check valid xrpl address for Destination
-	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
+	if !addresscodec.IsValidAddress(p.Destination.String()) {
 		return false, ErrInvalidDestination
 	}
 

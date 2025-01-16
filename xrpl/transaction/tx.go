@@ -165,7 +165,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 func (tx *BaseTx) Validate() (bool, error) {
 	flattenTx := tx.Flatten()
 
-	if !addresscodec.IsValidClassicAddress(tx.Account.String()) {
+	if !addresscodec.IsValidAddress(tx.Account.String()) {
 		return false, ErrInvalidAccount
 	}
 
