@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `XChainClaim`
   - `XChainCreateClaimID`
 - Master address derivation on wallet `FromSeed` function.
+- `NetworkID` field on `BaseTx` type.
 
 ## [v0.1.0]
 
