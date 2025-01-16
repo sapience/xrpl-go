@@ -19,6 +19,7 @@ import (
 )
 
 var (
+	// ErrAddressTagNotZero is returned when the address tag is not zero.
 	ErrAddressTagNotZero = errors.New("address tag is not zero")
 )
 
