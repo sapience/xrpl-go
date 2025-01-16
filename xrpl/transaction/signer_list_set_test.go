@@ -148,6 +148,13 @@ func TestSignerListSet_Validate(t *testing.T) {
 							WalletLocator: types.Hash256(hex.EncodeToString([]byte("Ledger Nano"))),
 						},
 					},
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:       "XVYRdEocC28DRx94ZFGP3qNJ1D5Ln7ecXFMd3vREB5Pesju",
+							SignerWeight:  1,
+							WalletLocator: types.Hash256(hex.EncodeToString([]byte("Ledger Nano"))),
+						},
+					},
 				},
 			},
 			wantValid: true,
