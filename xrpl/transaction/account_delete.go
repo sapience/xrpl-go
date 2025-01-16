@@ -59,7 +59,7 @@ func (s *AccountDelete) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(s.Destination.String()) {
+	if !addresscodec.IsValidAddress(s.Destination.String()) {
 		return false, ErrInvalidDestinationAddress
 	}
 

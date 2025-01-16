@@ -12,6 +12,7 @@ func TestNewWalletFromSeed(t *testing.T) {
 		PublicKey      string
 		PrivateKey     string
 		ClassicAddress types.Address
+		MasterAddress  types.Address
 	}{
 		{
 			Seed:           "sEd7io6yt5dFJrcePgRiFVHvmkJhJD1",
@@ -31,10 +32,16 @@ func TestNewWalletFromSeed(t *testing.T) {
 			PrivateKey:     "ED2C0EAB27E1411DBB8FACC88D531A69967DA0E45AC7821A4041A5AEE24BB8FF29",
 			ClassicAddress: "rs7cvHcsEF54DEs2y24Tpph3Xf71xUUrFu",
 		},
+		{
+			Seed:           "sh8i92YRnEjJy3fpFkL8txQSCVo79",
+			PublicKey: "03AEEFE1E8ED4BBC009DE996AC03A8C6B5713B1554794056C66E5B8D1753C7DD0E",
+			PrivateKey:     "004265A28F3E18340A490421D47B2EB8DBC2C0BF2C24CEFEA971B61CED2CABD233",
+			MasterAddress:  "rUAi7pipxGpYfPNg3LtPcf2ApiS8aw9A93",
+		},
 	}
 
 	for _, tc := range testCases {
-		wallet, err := FromSeed(tc.Seed, "")
+		wallet, err := FromSeed(tc.Seed, tc.MasterAddress.String())
 		if err != nil {
 			t.Errorf("Error generating wallet from seed: %s", err)
 		}
@@ -47,8 +54,14 @@ func TestNewWalletFromSeed(t *testing.T) {
 			t.Errorf("Private key does not match expected value. Expected: %s, got: %s", tc.PrivateKey, wallet.PrivateKey)
 		}
 
-		if wallet.ClassicAddress != tc.ClassicAddress {
-			t.Errorf("Classic address does not match expected value. Expected: %s, got: %s", tc.ClassicAddress, wallet.ClassicAddress)
+		if tc.MasterAddress != "" {
+			if wallet.ClassicAddress != tc.MasterAddress {
+				t.Errorf("Classic address does not match expected value. Expected: %s, got: %s", tc.MasterAddress, wallet.ClassicAddress)
+			}
+		} else {
+			if wallet.ClassicAddress != tc.ClassicAddress {
+				t.Errorf("Classic address does not match expected value. Expected: %s, got: %s", tc.ClassicAddress, wallet.ClassicAddress)
+			}
 		}
 	}
 }

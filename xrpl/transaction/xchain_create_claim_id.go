@@ -80,7 +80,7 @@ func (x *XChainCreateClaimID) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(x.OtherChainSource.String()) {
+	if !addresscodec.IsValidAddress(x.OtherChainSource.String()) {
 		return false, ErrInvalidAccount
 	}
 

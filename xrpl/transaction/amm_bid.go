@@ -145,7 +145,7 @@ func validateAuthAccounts(authAccounts []ledger.AuthAccounts) (bool, error) {
 	}
 
 	for _, authAccounts := range authAccounts {
-		if ok := addresscodec.IsValidClassicAddress(authAccounts.AuthAccount.Account.String()); !ok {
+		if ok := addresscodec.IsValidAddress(authAccounts.AuthAccount.Account.String()); !ok {
 			return false, ErrInvalidAccount
 		}
 	}
