@@ -15,11 +15,11 @@ func TestAccountInfoRequest(t *testing.T) {
 		Account:     "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 		LedgerIndex: common.Closed,
 		Queue:       true,
-		SignerList:  false,
+		SignerLists: false,
 		Strict:      true,
 	}
 
-	// SignerList assigned to default, omitted due to omitempty
+	// SignerLists assigned to default, omitted due to omitempty
 	j := `{
 	"account": "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 	"ledger_index": "closed",

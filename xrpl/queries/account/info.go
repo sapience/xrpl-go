@@ -19,7 +19,7 @@ type InfoRequest struct {
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
 	Queue       bool                   `json:"queue,omitempty"`
-	SignerList  bool                   `json:"signer_list,omitempty"`
+	SignerLists bool                   `json:"signer_lists,omitempty"`
 	Strict      bool                   `json:"strict,omitempty"`
 }
 
