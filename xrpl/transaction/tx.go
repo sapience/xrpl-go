@@ -137,7 +137,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["Memos"] = flattenedMemos
 	}
 	if tx.NetworkID != 0 {
-		flattened["NetworkId"] = tx.NetworkID
+		flattened["NetworkID"] = tx.NetworkID
 	}
 	if len(tx.Signers) > 0 {
 		flattenedSigners := make([]interface{}, len(tx.Signers))
