@@ -1,4 +1,4 @@
-package clio
+package v1
 
 import (
 	cliotypes "github.com/Peersyst/xrpl-go/xrpl/queries/clio/types"
@@ -26,7 +26,7 @@ func (*NFTsByIssuerRequest) Method() string {
 }
 
 func (*NFTsByIssuerRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // TODO: Implement V2

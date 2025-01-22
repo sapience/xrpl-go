@@ -1,4 +1,4 @@
-package clio
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -23,9 +23,10 @@ func (*NFTInfoRequest) Method() string {
 }
 
 func (*NFTInfoRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
+// TODO: Implement V2
 func (*NFTInfoRequest) Validate() error {
 	return nil
 }
