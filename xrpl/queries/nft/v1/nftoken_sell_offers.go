@@ -1,36 +1,35 @@
-package nft
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	nfttypes "github.com/Peersyst/xrpl-go/xrpl/queries/nft/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/version"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-
-	nfttypes "github.com/Peersyst/xrpl-go/xrpl/queries/nft/types"
 )
 
 // ############################################################################
 // Request
 // ############################################################################
 
-// The nft_buy_offers method retrieves all of buy offers for the specified
+// The nft_sell_offers method retrieves all of sell offers for the specified
 // NFToken.
-type NFTokenBuyOffersRequest struct {
+type NFTokenSellOffersRequest struct {
 	common.BaseRequest
 	NFTokenID   types.NFTokenID        `json:"nft_id"`
 	LedgerHash  common.LedgerHash      `json:"ledger_hash,omitempty"`
 	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 }
 
-func (*NFTokenBuyOffersRequest) Method() string {
-	return "nft_buy_offers"
+func (*NFTokenSellOffersRequest) Method() string {
+	return "nft_sell_offers"
 }
 
-func (*NFTokenBuyOffersRequest) APIVersion() int {
-	return version.RippleAPIV2
+func (*NFTokenSellOffersRequest) APIVersion() int {
+	return version.RippleAPIV1
 }
 
 // TODO: Implement V2
-func (*NFTokenBuyOffersRequest) Validate() error {
+func (*NFTokenSellOffersRequest) Validate() error {
 	return nil
 }
 
@@ -38,8 +37,8 @@ func (*NFTokenBuyOffersRequest) Validate() error {
 // Response
 // ############################################################################
 
-// The expected response from the nft_buy_offers method.
-type NFTokenBuyOffersResponse struct {
+// The expected response from the nft_sell_offers method.
+type NFTokenSellOffersResponse struct {
 	NFTokenID types.NFTokenID         `json:"nft_id"`
 	Offers    []nfttypes.NFTokenOffer `json:"offers"`
 }
