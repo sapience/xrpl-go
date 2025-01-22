@@ -1,4 +1,4 @@
-package ledger
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -9,22 +9,22 @@ import (
 // Request
 // ############################################################################
 
-// The ledger_closed method returns the unique identifiers of the most recently
-// closed ledger.
-type ClosedRequest struct {
+// The ledger_current method returns the unique identifiers of the current
+// in-progress ledger.
+type CurrentRequest struct {
 	common.BaseRequest
 }
 
-func (*ClosedRequest) Method() string {
-	return "ledger_closed"
+func (*CurrentRequest) Method() string {
+	return "ledger_current"
 }
 
-func (*ClosedRequest) APIVersion() int {
-	return version.RippleAPIV2
+func (*CurrentRequest) APIVersion() int {
+	return version.RippleAPIV1
 }
 
 // TODO: Implement V2
-func (*ClosedRequest) Validate() error {
+func (*CurrentRequest) Validate() error {
 	return nil
 }
 
@@ -32,8 +32,7 @@ func (*ClosedRequest) Validate() error {
 // Response
 // ############################################################################
 
-// The expected response from the ledger_closed method.
-type ClosedResponse struct {
-	LedgerHash  string             `json:"ledger_hash"`
-	LedgerIndex common.LedgerIndex `json:"ledger_index"`
+// The expected response from the ledger_current method.
+type CurrentResponse struct {
+	LedgerCurrentIndex common.LedgerIndex `json:"ledger_current_index"`
 }
