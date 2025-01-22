@@ -1,4 +1,4 @@
-package channel
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -25,7 +25,7 @@ func (*VerifyRequest) Method() string {
 }
 
 func (*VerifyRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // TODO: Implement V2
