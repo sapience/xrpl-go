@@ -1,4 +1,4 @@
-package utility
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -20,7 +20,7 @@ func (*PingRequest) Method() string {
 }
 
 func (*PingRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 func (*PingRequest) Validate() error {

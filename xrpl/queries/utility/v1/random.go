@@ -1,29 +1,30 @@
-package utility
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/version"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 // ############################################################################
 // Request
 // ############################################################################
 
-// The ping command returns an acknowledgement, so that clients can test the
-// connection status and latency.
-type PingRequest struct {
+// The random command provides a random number to be used as a source of
+// entropy for random number generation by clients.
+type RandomRequest struct {
 	common.BaseRequest
 }
 
-func (*PingRequest) Method() string {
-	return "ping"
+func (*RandomRequest) Method() string {
+	return "random"
 }
 
-func (*PingRequest) APIVersion() int {
-	return version.RippleAPIV2
+func (*RandomRequest) APIVersion() int {
+	return version.RippleAPIV1
 }
 
-func (*PingRequest) Validate() error {
+func (*RandomRequest) Validate() error {
 	return nil
 }
 
@@ -31,8 +32,7 @@ func (*PingRequest) Validate() error {
 // Response
 // ############################################################################
 
-// The expected response from the ping method.
-type PingResponse struct {
-	Role      string `json:"role,omitempty"`
-	Unlimited bool   `json:"unlimited,omitempty"`
+// The expected response from the random method.
+type RandomResponse struct {
+	Random types.Hash256 `json:"random"`
 }
