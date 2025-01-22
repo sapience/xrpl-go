@@ -1,4 +1,4 @@
-package path
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -58,10 +58,6 @@ func (*FindCloseRequest) Method() string {
 	return "path_find"
 }
 
-func (*FindCloseRequest) APIVersion() int {
-	return version.RippleAPIV2
-}
-
 // TODO: Implement V2
 func (*FindCloseRequest) Validate() error {
 	return nil
@@ -79,10 +75,6 @@ type FindStatusRequest struct {
 
 func (*FindStatusRequest) Method() string {
 	return "path_find"
-}
-
-func (*FindStatusRequest) APIVersion() int {
-	return version.RippleAPIV2
 }
 
 // TODO: Implement V2

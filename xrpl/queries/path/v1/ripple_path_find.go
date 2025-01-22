@@ -1,4 +1,4 @@
-package path
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -29,7 +29,7 @@ func (*RipplePathFindRequest) Method() string {
 }
 
 func (*RipplePathFindRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // TODO: Implement V2
