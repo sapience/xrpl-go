@@ -1,4 +1,4 @@
-package transactions
+package v1
 
 import (
 	"errors"
@@ -29,7 +29,7 @@ func (*SubmitRequest) Method() string {
 }
 
 func (*SubmitRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 func (req *SubmitRequest) Validate() error {

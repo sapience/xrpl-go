@@ -1,4 +1,4 @@
-package transactions
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -23,7 +23,7 @@ func (*SubmitMultisignedRequest) Method() string {
 }
 
 func (*SubmitMultisignedRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 func (*SubmitMultisignedRequest) Validate() error {
