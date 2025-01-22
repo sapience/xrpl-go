@@ -1,4 +1,4 @@
-package server
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -21,7 +21,7 @@ func (*FeatureAllRequest) Method() string {
 }
 
 func (*FeatureAllRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // TODO: Implement V2
@@ -50,10 +50,6 @@ type FeatureOneRequest struct {
 
 func (*FeatureOneRequest) Method() string {
 	return "feature"
-}
-
-func (*FeatureOneRequest) APIVersion() int {
-	return version.RippleAPIV2
 }
 
 // TODO: Implement V2
