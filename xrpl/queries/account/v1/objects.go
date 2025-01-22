@@ -1,4 +1,4 @@
-package account
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
@@ -44,7 +44,7 @@ func (*ObjectsRequest) Method() string {
 }
 
 func (*ObjectsRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // TODO: Implement (V2)

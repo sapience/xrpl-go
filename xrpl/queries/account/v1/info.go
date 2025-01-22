@@ -1,4 +1,4 @@
-package account
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
@@ -30,17 +30,7 @@ func (*InfoRequest) Method() string {
 }
 
 func (*InfoRequest) APIVersion() int {
-	return version.RippleAPIV2
-}
-
-type InfoRequestV2 struct{}
-
-func (*InfoRequestV2) Method() string {
-	return "account_info"
-}
-
-func (*InfoRequestV2) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // TODO: Implement (V2)

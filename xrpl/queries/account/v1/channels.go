@@ -1,16 +1,10 @@
-package account
+package v1
 
 import (
-	"errors"
-
 	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/version"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-)
-
-var (
-	ErrNoAccountID = errors.New("no account ID specified")
 )
 
 // ############################################################################
@@ -39,13 +33,13 @@ func (*ChannelsRequest) Method() string {
 }
 
 func (*ChannelsRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // Validate method to be added to each request struct
 func (r *ChannelsRequest) Validate() error {
 	if r.Account == "" {
-		return ErrNoAccountID
+		return accounttypes.ErrNoAccountID
 	}
 
 	return nil

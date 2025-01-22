@@ -1,4 +1,4 @@
-package account
+package v1
 
 import (
 	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
@@ -28,7 +28,7 @@ func (*OffersRequest) Method() string {
 }
 
 func (*OffersRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippleAPIV1
 }
 
 // TODO: Implement (V2)
