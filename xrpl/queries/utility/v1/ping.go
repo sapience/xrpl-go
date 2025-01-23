@@ -20,7 +20,7 @@ func (*PingRequest) Method() string {
 }
 
 func (*PingRequest) APIVersion() int {
-	return version.RippleAPIV1
+	return version.RippledAPIV1
 }
 
 func (*PingRequest) Validate() error {

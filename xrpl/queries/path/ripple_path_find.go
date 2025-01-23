@@ -29,7 +29,7 @@ func (*RipplePathFindRequest) Method() string {
 }
 
 func (*RipplePathFindRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2

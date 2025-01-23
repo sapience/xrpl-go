@@ -33,7 +33,7 @@ func (*ChannelsRequest) Method() string {
 }
 
 func (*ChannelsRequest) APIVersion() int {
-	return version.RippleAPIV1
+	return version.RippledAPIV1
 }
 
 // Validate method to be added to each request struct

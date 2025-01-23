@@ -23,7 +23,7 @@ func (*SubmitMultisignedRequest) Method() string {
 }
 
 func (*SubmitMultisignedRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 func (*SubmitMultisignedRequest) Validate() error {

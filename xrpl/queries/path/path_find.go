@@ -36,7 +36,7 @@ func (*FindCreateRequest) Method() string {
 }
 
 func (*FindCreateRequest) APIVersion() int {
-	return version.RippleAPIV1
+	return version.RippledAPIV1
 }
 
 // TODO: Implement V2
@@ -59,7 +59,7 @@ func (*FindCloseRequest) Method() string {
 }
 
 func (*FindCloseRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2
@@ -82,7 +82,7 @@ func (*FindStatusRequest) Method() string {
 }
 
 func (*FindStatusRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2

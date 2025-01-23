@@ -29,7 +29,7 @@ func (*SubmitRequest) Method() string {
 }
 
 func (*SubmitRequest) APIVersion() int {
-	return version.RippleAPIV1
+	return version.RippledAPIV1
 }
 
 func (req *SubmitRequest) Validate() error {

@@ -20,7 +20,7 @@ func (*CurrentRequest) Method() string {
 }
 
 func (*CurrentRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2

@@ -27,7 +27,7 @@ func (*NFTsRequest) Method() string {
 }
 
 func (*NFTsRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement (V2)

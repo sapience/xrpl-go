@@ -28,7 +28,7 @@ func (*OffersRequest) Method() string {
 }
 
 func (*OffersRequest) APIVersion() int {
-	return version.RippleAPIV1
+	return version.RippledAPIV1
 }
 
 // TODO: Implement (V2)

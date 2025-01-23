@@ -29,7 +29,7 @@ func (*LinesRequest) Method() string {
 }
 
 func (*LinesRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement (V2)

@@ -21,7 +21,7 @@ func (*FeatureAllRequest) Method() string {
 }
 
 func (*FeatureAllRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2
@@ -53,7 +53,7 @@ func (*FeatureOneRequest) Method() string {
 }
 
 func (*FeatureOneRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2

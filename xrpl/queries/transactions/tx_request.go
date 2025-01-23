@@ -26,7 +26,7 @@ func (*TxRequest) Method() string {
 }
 
 func (*TxRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2

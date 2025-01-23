@@ -23,7 +23,7 @@ func (*StateRequest) Method() string {
 }
 
 func (*StateRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2

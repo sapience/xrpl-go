@@ -21,7 +21,7 @@ func (*RandomRequest) Method() string {
 }
 
 func (*RandomRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 func (*RandomRequest) Validate() error {

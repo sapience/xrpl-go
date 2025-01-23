@@ -23,7 +23,7 @@ func (*NFTInfoRequest) Method() string {
 }
 
 func (*NFTInfoRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 func (*NFTInfoRequest) Validate() error {

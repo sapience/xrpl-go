@@ -39,7 +39,7 @@ func (*TransactionsRequest) Method() string {
 }
 
 func (*TransactionsRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement (V2)

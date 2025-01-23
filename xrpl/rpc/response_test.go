@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/stretchr/testify/assert"
 )
 

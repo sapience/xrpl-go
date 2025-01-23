@@ -28,7 +28,7 @@ func (*BookOffersRequest) Method() string {
 }
 
 func (*BookOffersRequest) APIVersion() int {
-	return version.RippleAPIV2
+	return version.RippledAPIV2
 }
 
 // TODO: Implement V2
