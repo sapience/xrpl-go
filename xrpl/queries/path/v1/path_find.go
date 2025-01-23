@@ -92,10 +92,10 @@ func (*FindStatusRequest) Validate() error {
 type FindResponse struct {
 	Alternatives       []pathtypes.Alternative `json:"alternatives"`
 	DestinationAccount types.Address           `json:"destination_account"`
-	DestinationAmount any           `json:"destination_amount"`
-	ID any           `json:"id,omitempty"`
-	SourceAccount     types.Address `json:"source_account"`
-	FullReply         bool          `json:"full_reply"`
-	Closed            bool          `json:"closed,omitempty"`
-	Status            bool          `json:"status,omitempty"`
+	DestinationAmount  any                     `json:"destination_amount"`
+	ID                 any                     `json:"id,omitempty"`
+	SourceAccount      types.Address           `json:"source_account"`
+	FullReply          bool                    `json:"full_reply"`
+	Closed             bool                    `json:"closed,omitempty"`
+	Status             bool                    `json:"status,omitempty"`
 }

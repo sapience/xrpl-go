@@ -43,7 +43,7 @@ func (*DataRequest) Validate() error {
 
 // The expected response from the ledger_data method.
 type DataResponse struct {
-	LedgerIndex uint32 `json:"ledger_index"`
+	LedgerIndex uint32              `json:"ledger_index"`
 	LedgerHash  common.LedgerHash   `json:"ledger_hash"`
 	State       []ledgertypes.State `json:"state"`
 	Marker      any                 `json:"marker"`

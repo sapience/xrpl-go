@@ -35,7 +35,7 @@ func TestAccountInfoRequest(t *testing.T) {
 func TestAccountInfoResponse(t *testing.T) {
 	s := InfoResponse{
 		AccountData: typesv1.AccountData{
-				AccountRoot: ledger.AccountRoot{
+			AccountRoot: ledger.AccountRoot{
 				Account:           "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 				Balance:           types.XRPCurrencyAmount(999999999960),
 				Flags:             8388608,
@@ -47,17 +47,17 @@ func TestAccountInfoResponse(t *testing.T) {
 			},
 			SignerLists: []ledger.SignerList{
 				{
-					LedgerEntryType: ledger.SignerListEntry,
-					Flags:           0,
-					PreviousTxnID:   "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
+					LedgerEntryType:   ledger.SignerListEntry,
+					Flags:             0,
+					PreviousTxnID:     "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
 					PreviousTxnLgrSeq: 3,
-					OwnerNode:        "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42" ,
-					SignerListID: 1,
-					SignerQuorum: 3,
+					OwnerNode:         "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
+					SignerListID:      1,
+					SignerQuorum:      3,
 					SignerEntries: []ledger.SignerEntryWrapper{
 						{
 							SignerEntry: ledger.SignerEntry{
-								Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+								Account:      "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
 								SignerWeight: 1,
 							},
 						},

@@ -44,7 +44,7 @@ func (*InfoRequest) Validate() error {
 
 // The expected response from the account_info method.
 type InfoResponse struct {
-	AccountData        typesv1.AccountData     `json:"account_data"`
+	AccountData        typesv1.AccountData    `json:"account_data"`
 	LedgerCurrentIndex common.LedgerIndex     `json:"ledger_current_index,omitempty"`
 	LedgerIndex        common.LedgerIndex     `json:"ledger_index,omitempty"`
 	QueueData          accounttypes.QueueData `json:"queue_data,omitempty"`
