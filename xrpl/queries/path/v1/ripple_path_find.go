@@ -46,7 +46,9 @@ type RipplePathFindResponse struct {
 	Alternatives          []pathtypes.RippleAlternative `json:"alternatives"`
 	DestinationAccount    types.Address                 `json:"destination_account"`
 	DestinationCurrencies []string                      `json:"destination_currencies"`
+	DestinationAmount     any                           `json:"destination_amount"`
 	FullReply             bool                          `json:"full_reply,omitempty"`
+	ID                    any                           `json:"id,omitempty"`
 	LedgerCurrentIndex    int                           `json:"ledger_current_index,omitempty"`
 	SourceAccount         types.Address                 `json:"source_account"`
 	Validated             bool                          `json:"validated"`

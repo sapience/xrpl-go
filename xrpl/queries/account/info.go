@@ -33,16 +33,6 @@ func (*InfoRequest) APIVersion() int {
 	return version.RippleAPIV2
 }
 
-type InfoRequestV2 struct{}
-
-func (*InfoRequestV2) Method() string {
-	return "account_info"
-}
-
-func (*InfoRequestV2) APIVersion() int {
-	return version.RippleAPIV2
-}
-
 // TODO: Implement (V2)
 func (*InfoRequest) Validate() error {
 	return nil

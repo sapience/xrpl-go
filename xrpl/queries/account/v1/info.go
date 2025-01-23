@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
+	typesv1 "github.com/Peersyst/xrpl-go/xrpl/queries/account/v1/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/version"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -44,8 +44,7 @@ func (*InfoRequest) Validate() error {
 
 // The expected response from the account_info method.
 type InfoResponse struct {
-	AccountData        ledger.AccountRoot     `json:"account_data"`
-	SignerLists        []ledger.SignerList    `json:"signer_lists,omitempty"`
+	AccountData        typesv1.AccountData     `json:"account_data"`
 	LedgerCurrentIndex common.LedgerIndex     `json:"ledger_current_index,omitempty"`
 	LedgerIndex        common.LedgerIndex     `json:"ledger_index,omitempty"`
 	QueueData          accounttypes.QueueData `json:"queue_data,omitempty"`

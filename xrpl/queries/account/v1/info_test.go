@@ -5,6 +5,7 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	accounttypes "github.com/Peersyst/xrpl-go/xrpl/queries/account/types"
+	typesv1 "github.com/Peersyst/xrpl-go/xrpl/queries/account/v1/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -33,15 +34,36 @@ func TestAccountInfoRequest(t *testing.T) {
 
 func TestAccountInfoResponse(t *testing.T) {
 	s := InfoResponse{
-		AccountData: ledger.AccountRoot{
-			Account:           "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
-			Balance:           types.XRPCurrencyAmount(999999999960),
-			Flags:             8388608,
-			LedgerEntryType:   ledger.AccountRootEntry,
-			OwnerCount:        0,
-			PreviousTxnID:     "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
-			PreviousTxnLgrSeq: 3,
-			Sequence:          6,
+		AccountData: typesv1.AccountData{
+				AccountRoot: ledger.AccountRoot{
+				Account:           "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+				Balance:           types.XRPCurrencyAmount(999999999960),
+				Flags:             8388608,
+				LedgerEntryType:   ledger.AccountRootEntry,
+				OwnerCount:        0,
+				PreviousTxnID:     "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
+				PreviousTxnLgrSeq: 3,
+				Sequence:          6,
+			},
+			SignerLists: []ledger.SignerList{
+				{
+					LedgerEntryType: ledger.SignerListEntry,
+					Flags:           0,
+					PreviousTxnID:   "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
+					PreviousTxnLgrSeq: 3,
+					OwnerNode:        "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42" ,
+					SignerListID: 1,
+					SignerQuorum: 3,
+					SignerEntries: []ledger.SignerEntryWrapper{
+						{
+							SignerEntry: ledger.SignerEntry{
+								Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+								SignerWeight: 1,
+							},
+						},
+					},
+				},
+			},
 		},
 		LedgerCurrentIndex: 4,
 		QueueData: accounttypes.QueueData{
@@ -79,7 +101,26 @@ func TestAccountInfoResponse(t *testing.T) {
 		"OwnerCount": 0,
 		"PreviousTxnID": "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
 		"PreviousTxnLgrSeq": 3,
-		"Sequence": 6
+		"Sequence": 6,
+		"signer_lists": [
+			{
+				"LedgerEntryType": "SignerList",
+				"PreviousTxnID": "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
+				"PreviousTxnLgrSeq": 3,
+				"OwnerNode": "4294BEBE5B569A18C0A2702387C9B1E7146DC3A5850C1E87204951C6FDAA4C42",
+				"SignerEntries": [
+					{
+						"SignerEntry": {
+							"Account": "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+							"SignerWeight": 1
+						}
+					}
+				],
+				"SignerListID": 1,
+				"SignerQuorum": 3,
+				"Flags": 0
+			}
+		]
 	},
 	"ledger_current_index": 4,
 	"queue_data": {

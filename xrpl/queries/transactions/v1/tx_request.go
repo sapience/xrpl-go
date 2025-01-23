@@ -41,6 +41,7 @@ func (*TxRequest) Validate() error {
 // The expected response from the tx method.
 type TxResponse struct {
 	Date        uint               `json:"date"`
+	CtID        string             `json:"ct_id,omitempty"`
 	Hash        types.Hash256      `json:"hash"`
 	LedgerIndex common.LedgerIndex `json:"ledger_index"`
 	// TODO: Improve Meta parsing

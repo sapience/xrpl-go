@@ -39,8 +39,6 @@ func TestAccountNFTsResponse(t *testing.T) {
 				NFTSerial:    456,
 			},
 		},
-		LedgerIndex:        123,
-		LedgerHash:         "abc",
 		LedgerCurrentIndex: 1234,
 		Validated:          true,
 		Marker:             "abc",
@@ -59,8 +57,6 @@ func TestAccountNFTsResponse(t *testing.T) {
 			"nft_serial": 456
 		}
 	],
-	"ledger_index": 123,
-	"ledger_hash": "abc",
 	"ledger_current_index": 1234,
 	"validated": true,
 	"marker": "abc",
