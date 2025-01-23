@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `APIVersion` field to the `Client` struct.
 - Added `RippledAPIV1` and `RippledAPIV2` constants.
 - Added missing `ctid` field on `TxRequest` v1 query.
+- Added missing `NoRippleCheck` query (v1 & v2 support).
 
 ### Changed
 
