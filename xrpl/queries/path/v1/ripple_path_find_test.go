@@ -111,6 +111,11 @@ func TestRipplePathFindResponse(t *testing.T) {
 			},
 		},
 		DestinationAccount: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+		DestinationAmount: types.IssuedCurrencyAmount{
+			Issuer:   "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+			Currency: "USD",
+			Value:    "0.001",
+		},
 		DestinationCurrencies: []string{
 			"015841551A748AD2C1F76FF6ECB0CCCD00000000",
 			"JOE",
@@ -195,6 +200,11 @@ func TestRipplePathFindResponse(t *testing.T) {
 		"USD",
 		"XRP"
 	],
+	"destination_amount": {
+		"issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+		"currency": "USD",
+		"value": "0.001"
+	},
 	"source_account": "",
 	"validated": false
 }`
