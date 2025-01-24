@@ -7,6 +7,14 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// ############################################################################
+// Request
+// ############################################################################
+
+// The `noripple_check` command provides a quick way to check the status of the
+// default ripple field for an account and the No Ripple flag of its trust
+// lines, compared with the recommended settings. Expects a response in the form
+// of an NoRippleCheckResponse.
 type NoRippleCheckRequest struct {
 	common.BaseRequest
 	Account      types.Address          `json:"account"`
@@ -29,6 +37,11 @@ func (*NoRippleCheckRequest) Validate() error {
 	return nil
 }
 
+// ############################################################################
+// Response
+// ############################################################################
+
+// Response expected by a NoRippleCheckRequest
 type NoRippleCheckResponse struct {
 	LedgerCurrentIndex common.LedgerIndex            `json:"ledger_current_index"`
 	Problems           []string                      `json:"problems"`
