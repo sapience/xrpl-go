@@ -13,6 +13,7 @@ var (
 	ErrInvalidSignerEntries                      = fmt.Errorf("signerEntries must have at least %d entry and no more than %d entries", MinSigners, MaxSigners)
 	ErrInvalidWalletLocator                      = errors.New("invalid WalletLocator in SignerEntry, must be an hexadecimal string")
 	ErrSignerQuorumGreaterThanSumOfSignerWeights = errors.New("signerQuorum must be less than or equal to the sum of all SignerWeights")
+	ErrInvalidQuorumAndEntries                   = errors.New("signerEntries must be empty when the SignerQuorum is set to 0 to delete a signer list")
 )
 
 const (
@@ -62,7 +63,7 @@ type SignerListSet struct {
 	BaseTx
 	// A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value.
 	// To delete a signer list, use the value 0.
-	SignerQuorum uint32
+	SignerQuorum *uint32
 	// (Omitted when deleting) Array of SignerEntry objects, indicating the addresses and weights of signers in this list.
 	// This signer list must have at least 1 member and no more than 32 members.
 	// No address may appear more than once in the list, nor may the Account submitting the transaction appear in the list.
@@ -80,8 +81,8 @@ func (s *SignerListSet) Flatten() FlatTransaction {
 
 	flattened["TransactionType"] = "SignerListSet"
 
-	if s.SignerQuorum != 0 {
-		flattened["SignerQuorum"] = s.SignerQuorum
+	if s.SignerQuorum != nil {
+		flattened["SignerQuorum"] = *s.SignerQuorum
 	}
 
 	if len(s.SignerEntries) > 0 {
@@ -106,8 +107,12 @@ func (s *SignerListSet) Validate() (bool, error) {
 	}
 
 	// All other checks are for if SignerQuorum is greater than 0
-	if s.SignerQuorum == 0 {
+	if *s.SignerQuorum == 0 && len(s.SignerEntries) == 0 {
 		return true, nil
+	}
+
+	if *s.SignerQuorum == 0 && len(s.SignerEntries) > 0 {
+		return false, ErrInvalidQuorumAndEntries
 	}
 
 	// Check if SignerEntries has at least 1 entry and no more than 32 entries
@@ -132,7 +137,7 @@ func (s *SignerListSet) Validate() (bool, error) {
 	for _, signerEntry := range s.SignerEntries {
 		sumSignerWeights += signerEntry.SignerEntry.SignerWeight
 	}
-	if s.SignerQuorum > uint32(sumSignerWeights) {
+	if *s.SignerQuorum > uint32(sumSignerWeights) {
 		return false, ErrSignerQuorumGreaterThanSumOfSignerWeights
 	}
 
