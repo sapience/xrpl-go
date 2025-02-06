@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ensures SignerQuorum is only included in the Flatten() output when explicitly defined.
   - Updates the `Validate` method to make sure `SignerEntries` is not set when `SignerQuorum` is set to 0
 
-
 ## [v0.1.3]
 
 ### Added
