@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.1.4]
 
+### Added
+
+#### xrpl
+
+- Added `GatewayBalances` query.
+
 ### Fixed
 
 #### xrpl
@@ -15,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - This allows distinguishing between an unset (nil) and an explicitly set value, including 0 to delete a signer list.
   - Ensures SignerQuorum is only included in the Flatten() output when explicitly defined.
   - Updates the `Validate` method to make sure `SignerEntries` is not set when `SignerQuorum` is set to 0
+
 
 ## [v0.1.3]
 
