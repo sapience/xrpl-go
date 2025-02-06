@@ -18,11 +18,9 @@ type GatewayBalancesRequest struct {
 
 	// The Address to check. This should be the issuing address.
 	Account types.Address `json:"account"`
-
 	// If true, only accept an address or public key for the account parameter.
 	// Defaults to false.
 	Strict bool `json:"strict,omitempty"`
-
 	// An operational address to exclude from the balances issued, or an array of
 	// Such addresses.
 	HotWallet interface{} `json:"hotwallet,omitempty"`
