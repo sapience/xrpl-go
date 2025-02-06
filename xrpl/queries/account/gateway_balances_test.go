@@ -8,8 +8,8 @@ import (
 
 func TestGatewayBalancesRequest(t *testing.T) {
 	s := GatewayBalancesRequest{
-		Account:    "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
-		Strict:     true,
+		Account:   "rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu",
+		Strict:    true,
 		HotWallet: []string{"rLHmBn4fT92w4F6ViyYbjoizLTo83tHTHu"},
 	}
 
@@ -39,7 +39,7 @@ func TestGatewayBalancesResponse(t *testing.T) {
 					Value:    "50",
 				},
 				{
-					Currency: "EUR", 
+					Currency: "EUR",
 					Value:    "100",
 				},
 			},
@@ -52,9 +52,9 @@ func TestGatewayBalancesResponse(t *testing.T) {
 				},
 			},
 		},
-		LedgerHash:          "ABC123",
-		LedgerCurrentIndex:  54321,
-		LedgerIndex:         12345,
+		LedgerHash:         "ABC123",
+		LedgerCurrentIndex: 54321,
+		LedgerIndex:        12345,
 	}
 
 	j := `{

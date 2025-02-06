@@ -21,7 +21,7 @@ type GatewayBalancesRequest struct {
 
 	// If true, only accept an address or public key for the account parameter.
 	// Defaults to false.
-	Strict bool          `json:"strict,omitempty"`
+	Strict bool `json:"strict,omitempty"`
 
 	// An operational address to exclude from the balances issued, or an array of
 	// Such addresses.
@@ -40,15 +40,13 @@ func (r *GatewayBalancesRequest) Validate() error {
 	return nil
 }
 
-
-
 // ############################################################################
 // Response
 // ############################################################################
 
 type GatewayBalance struct {
 	Currency string `json:"currency"`
-	Value string `json:"value"`
+	Value    string `json:"value"`
 }
 
 // The expected response from the gateway_balances method.
@@ -80,4 +78,3 @@ type GatewayBalancesResponse struct {
 	// used to retrieve this information.
 	LedgerIndex common.LedgerIndex `json:"ledger_index,omitempty"`
 }
-
