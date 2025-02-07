@@ -162,6 +162,22 @@ func (c *Client) GetAccountTransactions(req *account.TransactionsRequest) (*acco
 	return &acr, nil
 }
 
+// GetGatewayBalances retrieves the gateway balances for an account.
+// It takes a GatewayBalancesRequest as input and returns a GatewayBalancesResponse,
+// along with any error encountered.
+func (c *Client) GetGatewayBalances(req *account.GatewayBalancesRequest) (*account.GatewayBalancesResponse, error) {
+	res, err := c.Request(req)
+	if err != nil {
+		return nil, err
+	}
+	var acr account.GatewayBalancesResponse
+	err = res.GetResult(&acr)
+	if err != nil {
+		return nil, err
+	}
+	return &acr, nil
+}
+
 // Channel queries
 
 // GetChannelVerify verifies the signature of a payment channel claim.

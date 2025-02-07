@@ -866,6 +866,132 @@ func TestClient_GetAccountTransactions(t *testing.T) {
 	}
 }
 
+func TestClient_GetGatewayBalances(t *testing.T) {
+	tests := []struct {
+		name          string
+		mockResponse  string
+		mockStatus    int
+		request       *account.GatewayBalancesRequest
+		expected      account.GatewayBalancesResponse
+		expectedError string
+	}{
+		{
+			name: "successful response",
+			mockResponse: `{
+				"result": {
+					"account": "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+					"assets": {
+						"r9F6wk8HkXrgYWoJ7fsv4VrUBVoqDVtzkH": [
+							{
+								"currency": "BTC",
+								"value": "5444166510000000e-26"
+							}
+						]
+					},
+					"balances": {
+						"rKm4uWpg9tfwbVSeATv4KxDe6mpE9yPkgJ": [
+							{
+								"currency": "EUR",
+								"value": "29826.1965999999"
+							}
+						],
+						"ra7JkEzrgeKHdzKgo4EUUVBnxggY4z37kt": [
+							{
+								"currency": "USD",
+								"value": "13857.70416"
+							}
+						]
+					},
+					"ledger_hash": "61DDBF304AF6E8101576BF161D447CA8E4F0170DDFBEAFFD993DC9383D443388",
+					"ledger_index": 14483212,
+					"obligations": {
+						"EUR": "5599.716599999999",
+						"USD": "12345.9"
+					},
+					"status": "success"
+				}
+			}`,
+			mockStatus: 200,
+			request: &account.GatewayBalancesRequest{
+				Account: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+			},
+			expected: account.GatewayBalancesResponse{
+				Account: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+				Assets: map[string][]account.GatewayBalance{
+					"r9F6wk8HkXrgYWoJ7fsv4VrUBVoqDVtzkH": {
+						{
+							Currency: "BTC",
+							Value:    "5444166510000000e-26",
+						},
+					},
+				},
+				Balances: map[string][]account.GatewayBalance{
+					"rKm4uWpg9tfwbVSeATv4KxDe6mpE9yPkgJ": {
+						{
+							Currency: "EUR",
+							Value:    "29826.1965999999",
+						},
+					},
+					"ra7JkEzrgeKHdzKgo4EUUVBnxggY4z37kt": {
+						{
+							Currency: "USD",
+							Value:    "13857.70416",
+						},
+					},
+				},
+				LedgerHash:  "61DDBF304AF6E8101576BF161D447CA8E4F0170DDFBEAFFD993DC9383D443388",
+				LedgerIndex: 14483212,
+				Obligations: map[string]string{
+					"EUR": "5599.716599999999",
+					"USD": "12345.9",
+				},
+			},
+		},
+		{
+			name: "error response",
+			mockResponse: `{
+				"result": {
+					"error": "actNotFound",
+					"status": "error"
+				}
+			}`,
+			mockStatus: 200,
+			request: &account.GatewayBalancesRequest{
+				Account: "rInvalidAccount",
+			},
+			expectedError: "actNotFound",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mc := testutil.JSONRPCMockClient{}
+			mc.DoFunc = testutil.MockResponse(tt.mockResponse, tt.mockStatus, &mc)
+
+			cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(&mc))
+			require.NoError(t, err)
+
+			client := NewClient(cfg)
+
+			resp, err := client.Request(tt.request)
+
+			if tt.expectedError != "" {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tt.expectedError)
+				return
+			}
+
+			require.NoError(t, err)
+
+			var gatewayBalancesResp account.GatewayBalancesResponse
+			err = resp.GetResult(&gatewayBalancesResp)
+			require.NoError(t, err)
+
+			require.Equal(t, tt.expected, gatewayBalancesResp)
+		})
+	}
+}
+
 func TestClient_GetChannelVerify(t *testing.T) {
 	tests := []struct {
 		name          string
