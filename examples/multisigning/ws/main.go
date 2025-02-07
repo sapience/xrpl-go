@@ -81,7 +81,7 @@ func main() {
 		BaseTx: transaction.BaseTx{
 			Account: master.GetAddress(),
 		},
-		SignerQuorum: 2,
+		SignerQuorum: uint32(2),
 		SignerEntries: []ledger.SignerEntryWrapper{
 			{
 				SignerEntry: ledger.SignerEntry{

@@ -28,7 +28,7 @@ func TestSignerListSet_Flatten(t *testing.T) {
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					Fee:     types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 3,
+				SignerQuorum: uint32(3),
 				SignerEntries: []ledger.SignerEntryWrapper{
 					{
 						SignerEntry: ledger.SignerEntry{
@@ -84,12 +84,13 @@ func TestSignerListSet_Flatten(t *testing.T) {
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					Fee:     types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 0,
+				SignerQuorum: uint32(0),
 			},
 			expected: `{
 				"TransactionType": "SignerListSet",
 				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-				"Fee": "12"
+				"Fee": "12",
+				"SignerQuorum": 0
 			}`,
 		},
 		{
@@ -132,7 +133,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 					TransactionType: SignerListSetTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 3,
+				SignerQuorum: uint32(3),
 				SignerEntries: []ledger.SignerEntryWrapper{
 					{
 						SignerEntry: ledger.SignerEntry{
@@ -167,7 +168,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					Fee:     types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 3,
+				SignerQuorum: uint32(3),
 				SignerEntries: []ledger.SignerEntryWrapper{
 					{
 						SignerEntry: ledger.SignerEntry{
@@ -194,7 +195,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 					TransactionType: SignerListSetTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 3,
+				SignerQuorum: uint32(3),
 			},
 			wantValid: false,
 			wantErr:   true,
@@ -207,7 +208,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 					TransactionType: SignerListSetTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 3,
+				SignerQuorum: uint32(3),
 				SignerEntries: func() []ledger.SignerEntryWrapper {
 					entries := make([]ledger.SignerEntryWrapper, 33)
 					for i := range entries {
@@ -232,7 +233,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 					TransactionType: SignerListSetTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 3,
+				SignerQuorum: uint32(3),
 				SignerEntries: []ledger.SignerEntryWrapper{
 					{
 						SignerEntry: ledger.SignerEntry{
@@ -254,7 +255,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 					TransactionType: SignerListSetTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 5,
+				SignerQuorum: uint32(5),
 				SignerEntries: []ledger.SignerEntryWrapper{
 					{
 						SignerEntry: ledger.SignerEntry{
@@ -281,7 +282,7 @@ func TestSignerListSet_Validate(t *testing.T) {
 					TransactionType: SignerListSetTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 2,
+				SignerQuorum: uint32(2),
 				SignerEntries: []ledger.SignerEntryWrapper{
 					{
 						SignerEntry: ledger.SignerEntry{
@@ -308,10 +309,37 @@ func TestSignerListSet_Validate(t *testing.T) {
 					TransactionType: SignerListSetTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				SignerQuorum: 0,
+				SignerQuorum: uint32(0),
 			},
 			wantValid: true,
 			wantErr:   false,
+		},
+		{
+			name: "fail - invalid SignerListSet with SignerQuorum 0 but a SignerEntries not empty",
+			entry: &SignerListSet{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: SignerListSetTx,
+					Fee:             types.XRPCurrencyAmount(12),
+				},
+				SignerQuorum: uint32(0),
+				SignerEntries: []ledger.SignerEntryWrapper{
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "invalid",
+							SignerWeight: 2,
+						},
+					},
+					{
+						SignerEntry: ledger.SignerEntry{
+							Account:      "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+							SignerWeight: 1,
+						},
+					},
+				},
+			},
+			wantValid: false,
+			wantErr:   true,
 		},
 	}
 
