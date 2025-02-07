@@ -705,7 +705,6 @@ func TestClient_GetGatewayBalances(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetLedgerIndex(t *testing.T) {
 	tests := []struct {
 		name           string

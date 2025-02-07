@@ -175,7 +175,7 @@ func (c *Client) GetGatewayBalances(req *account.GatewayBalancesRequest) (*accou
 	if err != nil {
 		return nil, err
 	}
-	return &acr, nil	
+	return &acr, nil
 }
 
 // Channel queries

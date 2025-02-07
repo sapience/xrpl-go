@@ -992,7 +992,6 @@ func TestClient_GetGatewayBalances(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetChannelVerify(t *testing.T) {
 	tests := []struct {
 		name          string
