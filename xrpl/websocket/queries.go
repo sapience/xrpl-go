@@ -7,6 +7,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/ledger"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/nft"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/oracle"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/path"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/utility"
@@ -501,6 +502,24 @@ func (c *Client) GetServerState(req *server.StateRequest) (*server.StateResponse
 		return nil, err
 	}
 	var lr server.StateResponse
+	err = res.GetResult(&lr)
+	if err != nil {
+		return nil, err
+	}
+	return &lr, nil
+}
+
+// Oracle queries
+
+// GetAggregatePrice retrieves the aggregate price of an asset.
+// It takes a GetAggregatePriceRequest as input and returns a GetAggregatePriceResponse,
+// along with any error encountered.
+func (c *Client) GetAggregatePrice(req *oracle.GetAggregatePriceRequest) (*oracle.GetAggregatePriceResponse, error) {
+	res, err := c.Request(req)
+	if err != nil {
+		return nil, err
+	}
+	var lr oracle.GetAggregatePriceResponse
 	err = res.GetResult(&lr)
 	if err != nil {
 		return nil, err
