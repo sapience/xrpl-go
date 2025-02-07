@@ -24,6 +24,10 @@ type GatewayBalancesRequest struct {
 	// An operational address to exclude from the balances issued, or an array of
 	// Such addresses.
 	HotWallet interface{} `json:"hotwallet,omitempty"`
+	// A 20-byte hex string for the ledger version to use.
+	LedgerHash common.LedgerHash `json:"ledger_hash,omitempty"`
+	// The ledger index of the ledger to use, or a shortcut string.
+	LedgerIndex common.LedgerSpecifier `json:"ledger_index,omitempty"`
 }
 
 func (r *GatewayBalancesRequest) Method() string {
