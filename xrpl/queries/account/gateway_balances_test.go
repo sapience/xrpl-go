@@ -3,6 +3,7 @@ package account
 import (
 	"testing"
 
+
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 )
