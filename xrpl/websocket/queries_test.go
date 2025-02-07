@@ -586,6 +586,126 @@ func TestClient_GetAccountLines(t *testing.T) {
 	}
 }
 
+func TestClient_GetGatewayBalances(t *testing.T) {
+	tests := []struct {
+		name           string
+		serverMessages []map[string]any
+		expected       *account.GatewayBalancesResponse
+		expectedErr    error
+	}{
+		{
+			name: "Successful response",
+			serverMessages: []map[string]any{{
+				"id": 1,
+				"result": map[string]any{
+					"account": "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+					"assets": map[string][]map[string]string{
+						"r9F6wk8HkXrgYWoJ7fsv4VrUBVoqDVtzkH": {
+							{
+								"currency": "BTC",
+								"value":    "5444166510000000e-26",
+							},
+						},
+					},
+					"balances": map[string][]map[string]string{
+						"rKm4uWpg9tfwbVSeATv4KxDe6mpE9yPkgJ": {
+							{
+								"currency": "EUR",
+								"value":    "29826.1965999999",
+							},
+						},
+					},
+					"ledger_hash":  "61DDBF304AF6E8101576BF161D447CA8E4F0170DDFBEAFFD993DC9383D443388",
+					"ledger_index": 14483212,
+					"obligations": map[string]string{
+						"EUR": "5599.716599999999",
+						"USD": "12345.9",
+					},
+				},
+			}},
+			expected: &account.GatewayBalancesResponse{
+				Account: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+				Assets: map[string][]account.GatewayBalance{
+					"r9F6wk8HkXrgYWoJ7fsv4VrUBVoqDVtzkH": {
+						{
+							Currency: "BTC",
+							Value:    "5444166510000000e-26",
+						},
+					},
+				},
+				Balances: map[string][]account.GatewayBalance{
+					"rKm4uWpg9tfwbVSeATv4KxDe6mpE9yPkgJ": {
+						{
+							Currency: "EUR",
+							Value:    "29826.1965999999",
+						},
+					},
+				},
+				LedgerHash:  "61DDBF304AF6E8101576BF161D447CA8E4F0170DDFBEAFFD993DC9383D443388",
+				LedgerIndex: 14483212,
+				Obligations: map[string]string{
+					"EUR": "5599.716599999999",
+					"USD": "12345.9",
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name:           "Error response",
+			serverMessages: []map[string]any{{"error": "actNotFound"}},
+			expected:       nil,
+			expectedErr:    errors.New("incorrect id"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
+			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
+				for _, m := range tt.serverMessages {
+					err := c.WriteJSON(m)
+					if err != nil {
+						t.Errorf("error writing message: %v", err)
+					}
+				}
+			})
+			defer s.Close()
+
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
+					host: url,
+				},
+			}
+
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
+			result, err := cl.GetGatewayBalances(&account.GatewayBalancesRequest{
+				Account: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+			})
+
+			if tt.expectedErr != nil {
+				if err == nil || err.Error() != tt.expectedErr.Error() {
+					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
+
+			if !reflect.DeepEqual(tt.expected, result) {
+				t.Errorf("Expected %+v, but got %+v", tt.expected, result)
+			}
+
+			cl.Disconnect()
+		})
+	}
+}
+
+
 func TestClient_GetLedgerIndex(t *testing.T) {
 	tests := []struct {
 		name           string
