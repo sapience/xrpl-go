@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.1.4]
+
+### Fixed
+
+#### xrpl
+
+- Updated SignerQuorum in SignerListSet to be an interface{} with uint32 type assertion instead of a value (uint32).
+  - This allows distinguishing between an unset (nil) and an explicitly set value, including 0 to delete a signer list.
+  - Ensures SignerQuorum is only included in the Flatten() output when explicitly defined.
+  - Updates the `Validate` method to make sure `SignerEntries` is not set when `SignerQuorum` is set to 0
+
+## [v0.1.3]
 
 ### Added
 
