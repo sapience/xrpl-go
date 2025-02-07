@@ -13,6 +13,7 @@ import (
 	ledgertypes "github.com/Peersyst/xrpl-go/xrpl/queries/ledger/types"
 	nft "github.com/Peersyst/xrpl-go/xrpl/queries/nft"
 	nfttypes "github.com/Peersyst/xrpl-go/xrpl/queries/nft/types"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/oracle"
 	path "github.com/Peersyst/xrpl-go/xrpl/queries/path"
 	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	server "github.com/Peersyst/xrpl-go/xrpl/queries/server"
@@ -2763,6 +2764,73 @@ func TestClient_GetServerState(t *testing.T) {
 			require.NoError(t, err)
 
 			require.Equal(t, tt.expected, stateResp)
+		})
+	}
+}
+
+func TestClient_GetAggregatePrice(t *testing.T) {
+	tests := []struct {
+		name          string
+		mockResponse  string
+		mockStatus    int
+		request       *oracle.GetAggregatePriceRequest
+		expected      oracle.GetAggregatePriceResponse
+		expectedError string
+	}{
+		{
+			name: "successful response",
+			mockResponse: `{
+				"result": {
+					"median": "123.45",
+					"time": 1234567890
+				}
+			}`,
+			mockStatus: 200,
+			request:    &oracle.GetAggregatePriceRequest{},
+			expected: oracle.GetAggregatePriceResponse{
+				Median: "123.45",
+				Time:   1234567890,
+			},
+		},
+		{
+			name: "error response",
+			mockResponse: `{
+				"result": {
+					"error": "invalidParams",
+					"status": "error"
+				}
+			}`,
+			mockStatus:    200,
+			request:       &oracle.GetAggregatePriceRequest{},
+			expectedError: "invalidParams",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mc := testutil.JSONRPCMockClient{}
+			mc.DoFunc = testutil.MockResponse(tt.mockResponse, tt.mockStatus, &mc)
+
+			cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(&mc))
+			require.NoError(t, err)
+
+			client := NewClient(cfg)
+
+			resp, err := client.Request(tt.request)
+
+			if tt.expectedError != "" {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tt.expectedError)
+				return
+			}
+
+			require.NoError(t, err)
+
+			var priceResp oracle.GetAggregatePriceResponse
+			err = resp.GetResult(&priceResp)
+			require.NoError(t, err)
+
+			require.Equal(t, tt.expected, priceResp)
 		})
 	}
 }

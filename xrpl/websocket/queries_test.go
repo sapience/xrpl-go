@@ -14,6 +14,7 @@ import (
 	ledgertypes "github.com/Peersyst/xrpl-go/xrpl/queries/ledger/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/nft"
 	nfttypes "github.com/Peersyst/xrpl-go/xrpl/queries/nft/types"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/oracle"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/path"
 	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
@@ -2845,6 +2846,90 @@ func TestClient_GetServerState(t *testing.T) {
 			}
 
 			result, err := cl.GetServerState(&server.StateRequest{})
+
+			if tt.expectedErr != nil {
+				if err == nil || err.Error() != tt.expectedErr.Error() {
+					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
+
+			if !reflect.DeepEqual(tt.expected, result) {
+				t.Errorf("Expected %+v, but got %+v", tt.expected, result)
+			}
+
+			cl.Disconnect()
+		})
+	}
+}
+
+func TestClient_GetAggregatePrice(t *testing.T) {
+	tests := []struct {
+		name           string
+		serverMessages []map[string]any
+		expected       *oracle.GetAggregatePriceResponse
+		expectedErr    error
+	}{
+		{
+			name: "Valid aggregate price",
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"median": "123.45",
+						"time":   float64(1234567890),
+					},
+				},
+			},
+			expected: &oracle.GetAggregatePriceResponse{
+				Median: "123.45",
+				Time:   1234567890,
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "error response",
+			serverMessages: []map[string]any{
+				{
+					"id":     1,
+					"error":  "invalidParams",
+					"status": "error",
+					"type":   "response",
+				},
+			},
+			expected:    nil,
+			expectedErr: errors.New("invalidParams"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
+			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
+				for _, m := range tt.serverMessages {
+					err := c.WriteJSON(m)
+					if err != nil {
+						t.Errorf("error writing message: %v", err)
+					}
+				}
+			})
+			defer s.Close()
+
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
+					host: url,
+				},
+			}
+
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
+			result, err := cl.GetAggregatePrice(&oracle.GetAggregatePriceRequest{})
 
 			if tt.expectedErr != nil {
 				if err == nil || err.Error() != tt.expectedErr.Error() {
