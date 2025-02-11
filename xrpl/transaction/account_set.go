@@ -86,13 +86,13 @@ type AccountSet struct {
 	// The domain that owns this account, as a string of hex representing the.
 	// ASCII for the domain in lowercase.
 	Domain *string `json:",omitempty"`
-	// Hash of an email address to be used for generating an avatar image.
+	// An arbitrary 128-bit value. Conventionally, clients treat this as the md5 hash of an email address to use for displaying a Gravatar image.
 	EmailHash *types.Hash128 `json:",omitempty"`
 	// Public key for sending encrypted messages to this account.
 	MessageKey *string `json:",omitempty"`
 	// Sets an alternate account that is allowed to mint NFTokens on this
 	// account's behalf using NFTokenMint's `Issuer` field.
-	NFTokenMinter string `json:",omitempty"`
+	NFTokenMinter *string `json:",omitempty"`
 	// Integer flag to enable for this account.
 	SetFlag uint32 `json:",omitempty"`
 	// The fee to charge when users transfer this account's issued currencies,
@@ -133,8 +133,8 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	if s.MessageKey != nil {
 		flattened["MessageKey"] = *s.MessageKey
 	}
-	if s.NFTokenMinter != "" {
-		flattened["NFTokenMinter"] = s.NFTokenMinter
+	if s.NFTokenMinter != nil {
+		flattened["NFTokenMinter"] = *s.NFTokenMinter
 	}
 	if s.SetFlag != 0 {
 		flattened["SetFlag"] = s.SetFlag
@@ -149,46 +149,54 @@ func (s *AccountSet) Flatten() FlatTransaction {
 		flattened["WalletLocator"] = s.WalletLocator.String()
 	}
 	if s.WalletSize != nil {
-		flattened["WalletSize"] = s.WalletSize
+		flattened["WalletSize"] = *s.WalletSize
 	}
 
 	return flattened
 }
 
-// Sets the domain
-func (a *AccountSet) SetDomain(domain string) {
-	a.Domain = &domain
+// The domain that owns this account, as a string of hex representing the.
+// ASCII for the domain in lowercase.
+func Domain(value string) *string {
+	return &value
 }
 
-// Sets the EmailHash
-func (a *AccountSet) SetEmailHash(emailHash types.Hash128) {
-	a.EmailHash = &emailHash
+// An arbitrary 128-bit value. Conventionally, clients treat this as the md5 hash of an email address to use for displaying a Gravatar image.
+func EmailHash(value types.Hash128) *types.Hash128 {
+	return &value
 }
 
-// Sets the MessageKey
-func (a *AccountSet) SetMessageKey(messageKey string) {
-	a.MessageKey = &messageKey
+// Public key for sending encrypted messages to this account.
+func MessageKey(value string) *string {
+	return &value
+}
+
+// Sets an alternate account that is allowed to mint NFTokens on this
+// account's behalf using NFTokenMint's `Issuer` field.
+func NFTokenMinter(value string) *string {
+	return &value
 }
 
 // (Optional) Sets the TransferRate. The fee to charge when users transfer this account's tokens, represented as billionths of a unit.
 // Cannot be more than 2000000000 or less than 1000000000, except for the special case 0 meaning no fee.
-func (a *AccountSet) SetTransferRate(transferRate uint32) {
-	a.TransferRate = &transferRate
+func TransferRate(value uint32) *uint32 {
+	return &value
 }
 
 // (Optional) Tick size to use for offers involving a currency issued by this address.
 // The exchange rates of those offers is rounded to this many significant digits. Valid values are 3 to 15 inclusive, or 0 to disable.
-func (a *AccountSet) SetTickSize(tickSize uint8) {
-	a.TickSize = &tickSize
+func TickSize(value uint8) *uint8 {
+	return &value
 }
 
 // (Optional) An arbitrary 256-bit value. If specified, the value is stored as part of the account but has no inherent meaning or requirements.
-func (a *AccountSet) SetWalletLocator(walletLocator types.Hash256) {
-	a.WalletLocator = &walletLocator
+func WalletLocator(value types.Hash256) *types.Hash256 {
+	return &value
 }
 
-func (a *AccountSet) SetWalletSize(walletSize uint32) {
-	a.WalletSize = &walletSize
+// (Optional) Not used. This field is valid in AccountSet transactions but does nothing.
+func WalletSize(value uint32) *uint32 {
+	return &value
 }
 
 /**********************************

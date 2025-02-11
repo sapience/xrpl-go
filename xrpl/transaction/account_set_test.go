@@ -93,7 +93,6 @@ func TestAccountSet_Validate(t *testing.T) {
 		name       string
 		accountSet *AccountSet
 		valid      bool
-		setters    func(*AccountSet)
 	}{
 		{
 			name: "pass - Valid AccountSet",
@@ -106,15 +105,13 @@ func TestAccountSet_Validate(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-				ClearFlag: 1,
-				SetFlag:   2,
-			},
-			setters: func(a *AccountSet) {
-				a.SetDomain("A5B21758D2318FA2C")
-				a.SetEmailHash("1234567890abcdef")
-				a.SetMessageKey("messageKey")
-				a.SetTransferRate(1000000001)
-				a.SetTickSize(5)
+				ClearFlag:    1,
+				SetFlag:      2,
+				Domain:       Domain("A5B21758D2318FA2C"),
+				EmailHash:    EmailHash("1234567890abcdef"),
+				MessageKey:   MessageKey("messageKey"),
+				TransferRate: TransferRate(1000000001),
+				TickSize:     TickSize(5),
 			},
 			valid: true,
 		},
@@ -158,9 +155,7 @@ func TestAccountSet_Validate(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-			},
-			setters: func(a *AccountSet) {
-				a.SetTickSize(2) // too low
+				TickSize: TickSize(2),
 			},
 			valid: false,
 		},
@@ -175,9 +170,7 @@ func TestAccountSet_Validate(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-			},
-			setters: func(a *AccountSet) {
-				a.SetTickSize(16) // too high
+				TickSize: TickSize(16),
 			},
 			valid: false,
 		},
@@ -192,9 +185,7 @@ func TestAccountSet_Validate(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-			},
-			setters: func(a *AccountSet) {
-				a.SetTickSize(0)
+				TickSize: TickSize(0),
 			},
 			valid: true,
 		},
@@ -202,9 +193,6 @@ func TestAccountSet_Validate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.setters != nil {
-				tc.setters(tc.accountSet)
-			}
 			valid, err := tc.accountSet.Validate()
 			if valid != tc.valid {
 				t.Errorf("Validation result for %s is incorrect. Expected: %v, Got: %v", tc.name, tc.valid, valid)
@@ -224,7 +212,6 @@ func TestAccountSet_Flatten(t *testing.T) {
 		name       string
 		accountSet *AccountSet
 		expected   FlatTransaction
-		setters    func(*AccountSet)
 	}{
 		{
 			name: "pass - Flatten with all fields",
@@ -237,25 +224,16 @@ func TestAccountSet_Flatten(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-				ClearFlag: asfRequireDest,
-				// Domain:        "A5B21758D2318FA2C",
-				// EmailHash:     "1234567890abcdef",
-				// MessageKey:    "messagekey",
-				// NFTokenMinter: "nftokenminter",
-				// SetFlag:       asfRequireAuth,
-				// TransferRate:  1000000001,
-				// TickSize:      5,
-				// WalletLocator: "walletlocator",
-				// WalletSize:    10,
-
-			},
-			setters: func(a *AccountSet) {
-				a.SetDomain("A5B21758D2318FA2C")
-				a.SetEmailHash("1234567890abcdef")
-				a.SetMessageKey("messagekey")
-				a.SetTransferRate(1000000001)
-				a.SetTickSize(5)
-				a.SetWalletLocator("walletLocator")
+				ClearFlag:     asfRequireDest,
+				Domain:        Domain("A5B21758D2318FA2C"),
+				EmailHash:     EmailHash("1234567890abcdef"),
+				MessageKey:    MessageKey("messagekey"),
+				NFTokenMinter: NFTokenMinter("nftokenminter"),
+				SetFlag:       asfRequireAuth,
+				TransferRate:  TransferRate(1000000001),
+				TickSize:      TickSize(5),
+				WalletLocator: WalletLocator("walletLocator"),
+				WalletSize:    WalletSize(10),
 			},
 			expected: FlatTransaction{
 				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -268,12 +246,12 @@ func TestAccountSet_Flatten(t *testing.T) {
 				"Domain":          "A5B21758D2318FA2C",
 				"EmailHash":       "1234567890abcdef",
 				"MessageKey":      "messagekey",
-				// "NFTokenMinter":   "nftokenminter",
-				// "SetFlag":         asfRequireAuth,
-				"TransferRate":  uint32(1000000001),
-				"TickSize":      uint8(5),
-				"WalletLocator": "walletLocator",
-				// "WalletSize":      uint32(10),
+				"NFTokenMinter":   "nftokenminter",
+				"SetFlag":         asfRequireAuth,
+				"TransferRate":    uint32(1000000001),
+				"TickSize":        uint8(5),
+				"WalletLocator":   "walletLocator",
+				"WalletSize":      uint32(10),
 			},
 		},
 		{
@@ -287,10 +265,13 @@ func TestAccountSet_Flatten(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-			},
-			setters: func(a *AccountSet) {
-				a.SetDomain("")
-				a.SetEmailHash("")
+				Domain:        Domain(""),
+				EmailHash:     EmailHash(""),
+				TickSize:      TickSize(0),
+				TransferRate:  TransferRate(0),
+				NFTokenMinter: NFTokenMinter(""),
+				WalletLocator: WalletLocator(""),
+				WalletSize:    WalletSize(0),
 			},
 			expected: FlatTransaction{
 				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -301,23 +282,38 @@ func TestAccountSet_Flatten(t *testing.T) {
 				"TxnSignature":    "A1B2C3D4E5F6",
 				"Domain":          "",
 				"EmailHash":       "",
+				"TickSize":        uint8(0),
+				"TransferRate":    uint32(0),
+				"NFTokenMinter":   "",
+				"WalletLocator":   "",
+				"WalletSize":      uint32(0),
+			},
+		},
+		{
+			name: "pass - Flatten with required strings only",
+			accountSet: &AccountSet{
+				BaseTx: BaseTx{
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+					TransactionType: AccountSetTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+			},
+			expected: FlatTransaction{
+				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+				"TransactionType": "AccountSet",
+				"Fee":             "1",
+				"Sequence":        uint32(1234),
+				"SigningPubKey":   "ghijk",
+				"TxnSignature":    "A1B2C3D4E5F6",
 			},
 		},
 	}
 
-	// for _, tt := range tests {
-	// 	t.Run(tt.name, func(t *testing.T) {
-	// 		flattened := tt.accountSet.Flatten()
-	// 		for key, expectedValue := range tt.expected {
-	// 			if flattened[key] != expectedValue {
-	// 				t.Errorf("Expected %s to be %v, got %v", key, expectedValue, flattened[key])
-	// 			}
-	// 		}
-	// 	})
-	// }
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			tc.setters(tc.accountSet)
 			flattened := tc.accountSet.Flatten()
 			require.Equal(t, tc.expected, flattened)
 		})
