@@ -32,7 +32,7 @@ func TestPaymentChannelCreate_Flatten(t *testing.T) {
 				SettleDelay:    86400,
 				PublicKey:      "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
 				CancelAfter:    533171558,
-				DestinationTag: 23480,
+				DestinationTag: DestinationTag(23480),
 			},
 			expected: `{
 				"Account":       "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
@@ -43,6 +43,31 @@ func TestPaymentChannelCreate_Flatten(t *testing.T) {
 				"PublicKey":     "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
 				"CancelAfter":   533171558,
 				"DestinationTag": 23480
+			}`,
+		},
+		{
+			name: "pass - All fields set with DestinationTag to 0",
+			tx: &PaymentChannelCreate{
+				BaseTx: BaseTx{
+					Account:         "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
+					TransactionType: PaymentChannelCreateTx,
+				},
+				Amount:         types.XRPCurrencyAmount(10000),
+				Destination:    types.Address("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
+				SettleDelay:    86400,
+				PublicKey:      "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+				CancelAfter:    533171558,
+				DestinationTag: DestinationTag(0),
+			},
+			expected: `{
+				"Account":       "r2UeJh4HhYc5VtYc8U2YpZfQzY5Lw8kZV",
+				"TransactionType": "PaymentChannelCreate",
+				"Amount":        "10000",
+				"Destination":   "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"SettleDelay":   86400,
+				"PublicKey":     "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+				"CancelAfter":   533171558,
+				"DestinationTag": 0
 			}`,
 		},
 		{
@@ -98,7 +123,7 @@ func TestPaymentChannelCreate_Validate(t *testing.T) {
 				SettleDelay:    86400,
 				PublicKey:      "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
 				CancelAfter:    533171558,
-				DestinationTag: 23480,
+				DestinationTag: DestinationTag(23480),
 			},
 			wantValid: true,
 			wantErr:   false,
@@ -114,7 +139,7 @@ func TestPaymentChannelCreate_Validate(t *testing.T) {
 				SettleDelay:    86400,
 				PublicKey:      "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
 				CancelAfter:    533171558,
-				DestinationTag: 23480,
+				DestinationTag: DestinationTag(23480),
 			},
 			wantValid:   false,
 			wantErr:     true,
