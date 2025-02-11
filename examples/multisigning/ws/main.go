@@ -137,7 +137,7 @@ func main() {
 		BaseTx: transaction.BaseTx{
 			Account: master.GetAddress(),
 		},
-		Domain: strings.ToUpper(hex.EncodeToString([]byte("example.com"))),
+		Domain: transaction.Domain(strings.ToUpper(hex.EncodeToString([]byte("example.com")))),
 	}
 
 	flatAs := as.Flatten()
