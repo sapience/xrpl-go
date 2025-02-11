@@ -216,6 +216,130 @@ func TestAccountSetAsfFlags(t *testing.T) {
 	}
 }
 
+func TestAccountClearAsfFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*AccountSet)
+		expected uint32
+	}{
+		{
+			name: "pass - ClearAsfRequireDest",
+			setter: func(s *AccountSet) {
+				s.ClearAsfRequireDest()
+			},
+			expected: asfRequireDest,
+		},
+		{
+			name: "pass - ClearAsfRequireAuth",
+			setter: func(s *AccountSet) {
+				s.ClearAsfRequireAuth()
+			},
+			expected: asfRequireAuth,
+		},
+		{
+			name: "pass - ClearAsfDisallowXRP",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowXRP()
+			},
+			expected: asfDisallowXRP,
+		},
+		{
+			name: "pass - ClearAsfDisableMaster",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisableMaster()
+			},
+			expected: asfDisableMaster,
+		},
+		{
+			name: "pass - ClearAsfAccountTxnID",
+			setter: func(s *AccountSet) {
+				s.ClearAsfAccountTxnID()
+			},
+			expected: asfAccountTxnID,
+		},
+		{
+			name: "pass - asfNoFreeze",
+			setter: func(s *AccountSet) {
+				s.ClearAsfNoFreeze()
+			},
+			expected: asfNoFreeze,
+		},
+		{
+			name: "pass - asfGlobalFreeze",
+			setter: func(s *AccountSet) {
+				s.ClearAsfGlobalFreeze()
+			},
+			expected: asfGlobalFreeze,
+		},
+		{
+			name: "pass - ClearAsfDefaultRipple",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDefaultRipple()
+			},
+			expected: asfDefaultRipple,
+		},
+		{
+			name: "pass - ClearAsfDepositAuth",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDepositAuth()
+			},
+			expected: asfDepositAuth,
+		},
+		{
+			name: "pass - ClearAsfAuthorizedNFTokenMinter",
+			setter: func(s *AccountSet) {
+				s.ClearAsfAuthorizedNFTokenMinter()
+			},
+			expected: asfAuthorizedNFTokenMinter,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingNFTokenOffer",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingNFTokenOffer()
+			},
+			expected: asfDisallowIncomingNFTokenOffer,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingCheck",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingCheck()
+			},
+			expected: asfDisallowIncomingCheck,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingPayChan",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingPayChan()
+			},
+			expected: asfDisallowIncomingPayChan,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingTrustLine",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingTrustLine()
+			},
+			expected: asfDisallowIncomingTrustLine,
+		},
+		{
+			name: "pass - ClearAsfAllowTrustLineClawback",
+			setter: func(s *AccountSet) {
+				s.ClearAsfAllowTrustLineClawback()
+			},
+			expected: asfAllowTrustLineClawback,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &AccountSet{}
+			tt.setter(s)
+			if s.ClearFlag != tt.expected {
+				t.Errorf("Expected Flags to be %d, got %d", tt.expected, s.Flags)
+			}
+		})
+	}
+}
+
 func TestAccountSet_Validate(t *testing.T) {
 	testCases := []struct {
 		name       string
