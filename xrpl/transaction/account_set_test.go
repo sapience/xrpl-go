@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAccountSetFlags(t *testing.T) {
+func TestAccountSetTfFlags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*AccountSet)
@@ -74,8 +74,10 @@ func TestAccountSetFlags(t *testing.T) {
 				s.SetRequireAuth()
 				s.SetDisallowXRP()
 				s.SetOptionalDestTag()
+				s.SetOptionalAuth()
+				s.SetAllowXRP()
 			},
-			expected: tfRequireDestTag | tfRequireAuth | tfDisallowXRP | tfOptionalDestTag,
+			expected: tfRequireDestTag | tfRequireAuth | tfDisallowXRP | tfOptionalDestTag | tfOptionalAuth | tfAllowXRP,
 		},
 	}
 
@@ -89,6 +91,131 @@ func TestAccountSetFlags(t *testing.T) {
 		})
 	}
 }
+
+func TestAccountSetAsfFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*AccountSet)
+		expected uint32
+	}{
+		{
+			name: "pass - SetAsfRequireDest",
+			setter: func(s *AccountSet) {
+				s.SetAsfRequireDest()
+			},
+			expected: asfRequireDest,
+		},
+		{
+			name: "pass - asfRequireAuth",
+			setter: func(s *AccountSet) {
+				s.SetAsfRequireAuth()
+			},
+			expected: asfRequireAuth,
+		},
+		{
+			name: "pass - asfDisallowXRP",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowXRP()
+			},
+			expected: asfDisallowXRP,
+		},
+		{
+			name: "pass - asfDisableMaster",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisableMaster()
+			},
+			expected: asfDisableMaster,
+		},
+		{
+			name: "pass - asfAccountTxnID",
+			setter: func(s *AccountSet) {
+				s.SetAsfAccountTxnID()
+			},
+			expected: asfAccountTxnID,
+		},
+		{
+			name: "pass - asfNoFreeze",
+			setter: func(s *AccountSet) {
+				s.SetAsfNoFreeze()
+			},
+			expected: asfNoFreeze,
+		},
+		{
+			name: "pass - asfGlobalFreeze",
+			setter: func(s *AccountSet) {
+				s.SetAsfGlobalFreeze()
+			},
+			expected: asfGlobalFreeze,
+		},
+		{
+			name: "pass - asfDefaultRipple",
+			setter: func(s *AccountSet) {
+				s.SetAsfDefaultRipple()
+			},
+			expected: asfDefaultRipple,
+		},
+		{
+			name: "pass - asfDepositAuth",
+			setter: func(s *AccountSet) {
+				s.SetAsfDepositAuth()
+			},
+			expected: asfDepositAuth,
+		},
+		{
+			name: "pass - asfAuthorizedNFTokenMinter",
+			setter: func(s *AccountSet) {
+				s.SetAsfAuthorizedNFTokenMinter()
+			},
+			expected: asfAuthorizedNFTokenMinter,
+		},
+		{
+			name: "pass - asfDisallowIncomingNFTokenOffer",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingNFTokenOffer()
+			},
+			expected: asfDisallowIncomingNFTokenOffer,
+		},
+		{
+			name: "pass - asfDisallowIncomingCheck",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingCheck()
+			},
+			expected: asfDisallowIncomingCheck,
+		},
+		{
+			name: "pass - asfDisallowIncomingPayChan",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingPayChan()
+			},
+			expected: asfDisallowIncomingPayChan,
+		},
+		{
+			name: "pass - asfDisallowIncomingTrustLine",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingTrustLine()
+			},
+			expected: asfDisallowIncomingTrustLine,
+		},
+		{
+			name: "pass - asfAllowTrustLineClawback",
+			setter: func(s *AccountSet) {
+				s.SetAsfAllowTrustLineClawback()
+			},
+			expected: asfAllowTrustLineClawback,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &AccountSet{}
+			tt.setter(s)
+			if s.SetFlag != tt.expected {
+				t.Errorf("Expected Flags to be %d, got %d", tt.expected, s.Flags)
+			}
+		})
+	}
+}
+
 func TestAccountSet_Validate(t *testing.T) {
 	testCases := []struct {
 		name       string
