@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -318,4 +319,9 @@ func TestAccountSet_Flatten(t *testing.T) {
 			require.Equal(t, tc.expected, flattened)
 		})
 	}
+}
+
+func TestAccountSet_TxType(t *testing.T) {
+	entry := &AccountSet{}
+	assert.Equal(t, AccountSetTx, entry.TxType())
 }
