@@ -129,10 +129,6 @@ func (p *Payment) Flatten() FlatTransaction {
 	return flattened
 }
 
-func DestinationTag(value uint32) *uint32 {
-	return &value
-}
-
 // SetRippleNotDirectFlag sets the RippleNotDirect flag.
 //
 // RippleNotDirect: Do not use the default path; only use paths included in the Paths field.
