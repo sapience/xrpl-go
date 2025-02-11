@@ -74,7 +74,7 @@ func (e *EscrowCreate) Flatten() FlatTransaction {
 		flattened["Condition"] = e.Condition
 	}
 	if e.DestinationTag != nil {
-		flattened["DestinationTag"] = e.DestinationTag
+		flattened["DestinationTag"] = *e.DestinationTag
 	}
 
 	return flattened

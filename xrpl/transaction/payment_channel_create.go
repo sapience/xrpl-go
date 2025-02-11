@@ -64,7 +64,7 @@ func (p *PaymentChannelCreate) Flatten() FlatTransaction {
 	}
 
 	if p.DestinationTag != nil {
-		flattened["DestinationTag"] = p.DestinationTag
+		flattened["DestinationTag"] = *p.DestinationTag
 	}
 
 	return flattened
