@@ -30,7 +30,7 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 				CancelAfter:    533257958,
 				FinishAfter:    533171558,
 				Condition:      "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
-				DestinationTag: 23480,
+				DestinationTag: DestinationTag(23480),
 			},
 			expected: `{
 				"TransactionType": "EscrowCreate",
@@ -41,6 +41,30 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 				"FinishAfter":     533171558,
 				"Condition":       "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
 				"DestinationTag":  23480
+			}`,
+		},
+		{
+			name: "pass - all fields set with DestinationTag to 0",
+			entry: &EscrowCreate{
+				BaseTx: BaseTx{
+					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				},
+				Amount:         types.XRPCurrencyAmount(10000),
+				Destination:    "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				CancelAfter:    533257958,
+				FinishAfter:    533171558,
+				Condition:      "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+				DestinationTag: DestinationTag(0),
+			},
+			expected: `{
+				"TransactionType": "EscrowCreate",
+				"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Amount":          "10000",
+				"Destination":     "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+				"CancelAfter":     533257958,
+				"FinishAfter":     533171558,
+				"Condition":       "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+				"DestinationTag":  0
 			}`,
 		},
 		{
