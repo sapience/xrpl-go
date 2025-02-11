@@ -106,98 +106,98 @@ func TestAccountSetAsfFlags(t *testing.T) {
 			expected: asfRequireDest,
 		},
 		{
-			name: "pass - asfRequireAuth",
+			name: "pass - SetAsfRequireAuth",
 			setter: func(s *AccountSet) {
 				s.SetAsfRequireAuth()
 			},
 			expected: asfRequireAuth,
 		},
 		{
-			name: "pass - asfDisallowXRP",
+			name: "pass - SetAsfDisallowXRP",
 			setter: func(s *AccountSet) {
 				s.SetAsfDisallowXRP()
 			},
 			expected: asfDisallowXRP,
 		},
 		{
-			name: "pass - asfDisableMaster",
+			name: "pass - SetAsfDisableMaster",
 			setter: func(s *AccountSet) {
 				s.SetAsfDisableMaster()
 			},
 			expected: asfDisableMaster,
 		},
 		{
-			name: "pass - asfAccountTxnID",
+			name: "pass - SetAsfAccountTxnID",
 			setter: func(s *AccountSet) {
 				s.SetAsfAccountTxnID()
 			},
 			expected: asfAccountTxnID,
 		},
 		{
-			name: "pass - asfNoFreeze",
+			name: "pass - SetAsfNoFreeze",
 			setter: func(s *AccountSet) {
 				s.SetAsfNoFreeze()
 			},
 			expected: asfNoFreeze,
 		},
 		{
-			name: "pass - asfGlobalFreeze",
+			name: "pass - SetAsfGlobalFreeze",
 			setter: func(s *AccountSet) {
 				s.SetAsfGlobalFreeze()
 			},
 			expected: asfGlobalFreeze,
 		},
 		{
-			name: "pass - asfDefaultRipple",
+			name: "pass - SetAsfDefaultRipple",
 			setter: func(s *AccountSet) {
 				s.SetAsfDefaultRipple()
 			},
 			expected: asfDefaultRipple,
 		},
 		{
-			name: "pass - asfDepositAuth",
+			name: "pass - SetAsfDepositAuth",
 			setter: func(s *AccountSet) {
 				s.SetAsfDepositAuth()
 			},
 			expected: asfDepositAuth,
 		},
 		{
-			name: "pass - asfAuthorizedNFTokenMinter",
+			name: "pass - SetAsfAuthorizedNFTokenMinter",
 			setter: func(s *AccountSet) {
 				s.SetAsfAuthorizedNFTokenMinter()
 			},
 			expected: asfAuthorizedNFTokenMinter,
 		},
 		{
-			name: "pass - asfDisallowIncomingNFTokenOffer",
+			name: "pass - SetAsfDisallowIncomingNFTokenOffer",
 			setter: func(s *AccountSet) {
 				s.SetAsfDisallowIncomingNFTokenOffer()
 			},
 			expected: asfDisallowIncomingNFTokenOffer,
 		},
 		{
-			name: "pass - asfDisallowIncomingCheck",
+			name: "pass - SetAsfDisallowIncomingCheck",
 			setter: func(s *AccountSet) {
 				s.SetAsfDisallowIncomingCheck()
 			},
 			expected: asfDisallowIncomingCheck,
 		},
 		{
-			name: "pass - asfDisallowIncomingPayChan",
+			name: "pass - SetAsfDisallowIncomingPayChan",
 			setter: func(s *AccountSet) {
 				s.SetAsfDisallowIncomingPayChan()
 			},
 			expected: asfDisallowIncomingPayChan,
 		},
 		{
-			name: "pass - asfDisallowIncomingTrustLine",
+			name: "pass - SetAsfDisallowIncomingTrustLine",
 			setter: func(s *AccountSet) {
 				s.SetAsfDisallowIncomingTrustLine()
 			},
 			expected: asfDisallowIncomingTrustLine,
 		},
 		{
-			name: "pass - asfAllowTrustLineClawback",
+			name: "pass - SetAsfAllowTrustLineClawback",
 			setter: func(s *AccountSet) {
 				s.SetAsfAllowTrustLineClawback()
 			},
