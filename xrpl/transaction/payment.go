@@ -256,7 +256,7 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 	}
 
 	// Unmarshal the nested CurrencyAmount fields
-	var amount, sendMax, min, max types.CurrencyAmount
+	var amount, sendMax, deliverMin, deliverMax types.CurrencyAmount
 	var err error
 
 	amount, err = types.UnmarshalCurrencyAmount(h.Amount)
@@ -269,20 +269,20 @@ func (p *Payment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	min, err = types.UnmarshalCurrencyAmount(h.DeliverMin)
+	deliverMin, err = types.UnmarshalCurrencyAmount(h.DeliverMin)
 	if err != nil {
 		return err
 	}
 
-	max, err = types.UnmarshalCurrencyAmount(h.DeliverMax)
+	deliverMax, err = types.UnmarshalCurrencyAmount(h.DeliverMax)
 	if err != nil {
 		return err
 	}
 
 	// Assign the unmarshaled CurrencyAmount fields to the Payment struct
 	p.Amount = amount
-	p.DeliverMin = min
-	p.DeliverMax = max
+	p.DeliverMin = deliverMin
+	p.DeliverMax = deliverMax
 	p.SendMax = sendMax
 
 	return nil
