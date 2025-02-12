@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -555,6 +556,118 @@ func TestPayment_Flatten(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			require.Equal(t, test.expected, test.payment.Flatten())
+
+		})
+	}
+}
+
+// TestUnmarshalPayment tests the JSON unmarshalling of the Payment struct
+func TestUnmarshalPayment(t *testing.T) {
+	tests := []struct {
+		name                 string
+		jsonData             string
+		expectedTag          *uint32
+		expectUnmarshalError bool
+	}{
+		{
+			name: "pass - full payment with DestinationTag",
+			jsonData: `{
+				"Account": "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
+				"TransactionType": "Payment",
+				"Fee": "1000",
+				"Flags": 196608,
+				"Amount": {
+					"currency": "USD",
+					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value": "1"
+				},
+				"DeliverMax": {
+					"currency": "USD",
+					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value": "2"
+				},
+				"DeliverMin": {
+					"currency": "USD",
+					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value": "0.5"
+				},
+				"Destination": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+				"DestinationTag": 12345,
+				"InvoiceID": "ABC123",
+				"Paths": [
+					[
+						{
+							"account": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+							"currency": "USD",
+							"issuer": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+						},
+						{
+							"account": "r4D6ptkGYmpNpUWTtc3MpKcdcEtsonrbVf",
+							"currency": "USD",
+							"issuer": "rJwrc4W71kVUNTJX77qGHySRJj7BxSgQqt"
+						}
+					]
+				],
+				"SendMax": {
+					"currency": "USD",
+					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value": "3"
+				}
+			}`,
+			expectedTag:          func() *uint32 { v := uint32(12345); return &v }(),
+			expectUnmarshalError: false,
+		},
+		{
+			name: "pass - without DestinationTag",
+			jsonData: `{
+				"Account": "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
+				"TransactionType": "Payment",
+				"Fee": "1000",
+				"Flags": 196608,
+				"Amount": {
+					"currency": "USD",
+					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value": "1"
+				},
+				"Destination": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn"
+			}`,
+			expectedTag:          nil,
+			expectUnmarshalError: false,
+		},
+		{
+			name: "pass - with DestinationTag set to 0",
+			jsonData: `{
+				"Account": "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
+				"TransactionType": "Payment",
+				"Fee": "1000",
+				"Flags": 196608,
+				"Amount": {
+					"currency": "USD",
+					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value": "1"
+				},
+				"Destination": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+				"DestinationTag": 0
+			}`,
+			expectedTag:          func() *uint32 { v := uint32(0); return &v }(),
+			expectUnmarshalError: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var payment Payment
+			err := json.Unmarshal([]byte(tt.jsonData), &payment)
+			if (err != nil) != tt.expectUnmarshalError {
+				t.Errorf("Unmarshal() error = %v, expectUnmarshalError %v", err, tt.expectUnmarshalError)
+				return
+			}
+			if tt.expectedTag == nil {
+				require.Nil(t, payment.DestinationTag, "Expected DestinationTag to be nil")
+			} else {
+				require.NotNil(t, payment.DestinationTag, "Expected DestinationTag not to be nil")
+				require.Equal(t, *tt.expectedTag, *payment.DestinationTag)
+			}
 		})
 	}
 }
