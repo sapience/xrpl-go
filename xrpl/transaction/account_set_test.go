@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -575,4 +576,65 @@ func TestAccountSet_Flatten(t *testing.T) {
 func TestAccountSet_TxType(t *testing.T) {
 	entry := &AccountSet{}
 	assert.Equal(t, AccountSetTx, entry.TxType())
+}
+
+func TestAccountSet_Unmarshal(t *testing.T) {
+	tests := []struct {
+		name                 string
+		jsonData             string
+		expectUnmarshalError bool
+	}{
+		{
+			name: "pass - full AccountSet",
+			jsonData: `{
+				"TransactionType": "AccountSet",
+				"Account": "rEXAMPLE123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"Fee": "10",
+				"Sequence": 1,
+				"Flags": 2147483648,
+				"LastLedgerSequence": 12345678,
+				"SetFlag": 5,
+				"ClearFlag": 6,
+				"Domain": "6578616D706C652E636F6D", 
+				"EmailHash": "98B4375E1D753E5A3F075C48A3C9AE0A",
+				"MessageKey": "020000000000000000000000000000000000000000000000000000000000000001",
+				"TransferRate": 1005000000,
+				"TickSize": 5,
+				"NFTokenMinter": "rNFTMINTERADDRESS123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"NetworkID": 1024,
+				"Memos": [
+					{
+						"Memo": {
+							"MemoType": "74657374",
+							"MemoData": "48656C6C6F2C20584D52"
+						}
+					}
+				],
+				"Signers": [
+					{
+					"Signer": {
+						"Account": "rSIGNER123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+						"SigningPubKey": "ED5F93AB1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF12345678",
+						"TxnSignature": "3045022100D7F67A81F343...B87D"
+					}
+					}
+				],
+				"SourceTag": 12345,
+				"SigningPubKey": "ED5F93AB1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF12345678",
+				"TxnSignature": "3045022100D7F67A81F343...B87D"
+			}`,
+			expectUnmarshalError: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var accountSet AccountSet
+			err := json.Unmarshal([]byte(tt.jsonData), &accountSet)
+			if (err != nil) != tt.expectUnmarshalError {
+				t.Errorf("Unmarshal() error = %v, expectUnmarshalError %v", err, tt.expectUnmarshalError)
+				return
+			}
+		})
+	}
 }
