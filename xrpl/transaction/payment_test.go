@@ -109,7 +109,7 @@ func TestPayment_Validate(t *testing.T) {
 					Value:    "1",
 				},
 				Destination:    "rDgHn3T2P7eNAaoHh43iRudhAUjAHmDgEP",
-				DestinationTag: DestinationTag(123),
+				DestinationTag: types.DestinationTag(123),
 			},
 			wantValid: true,
 			wantErr:   false,
@@ -458,7 +458,7 @@ func TestPayment_Flatten(t *testing.T) {
 					Value:    "0.5",
 				},
 				Destination:    "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
-				DestinationTag: DestinationTag(12345),
+				DestinationTag: types.DestinationTag(12345),
 				InvoiceID:      "ABC123",
 				Paths: [][]PathStep{
 					{

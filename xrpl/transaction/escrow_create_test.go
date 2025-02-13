@@ -30,7 +30,7 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 				CancelAfter:    533257958,
 				FinishAfter:    533171558,
 				Condition:      "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
-				DestinationTag: DestinationTag(23480),
+				DestinationTag: types.DestinationTag(23480),
 			},
 			expected: `{
 				"TransactionType": "EscrowCreate",
@@ -54,7 +54,7 @@ func TestEscrowCreate_Flatten(t *testing.T) {
 				CancelAfter:    533257958,
 				FinishAfter:    533171558,
 				Condition:      "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
-				DestinationTag: DestinationTag(0),
+				DestinationTag: types.DestinationTag(0),
 			},
 			expected: `{
 				"TransactionType": "EscrowCreate",

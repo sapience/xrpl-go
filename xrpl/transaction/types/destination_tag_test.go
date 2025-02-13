@@ -1,7 +1,9 @@
-package transaction
+package types
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestDestinationTag(t *testing.T) {
@@ -16,8 +18,9 @@ func TestDestinationTag(t *testing.T) {
 
 	for _, test := range tests {
 		result := DestinationTag(test.input)
-		if *result != test.expected {
-			t.Errorf("DestinationTag(%d) = %d; expected %d", test.input, *result, test.expected)
-		}
+		require.Equal(t, test.expected, *result, "DestinationTag(%d) = %d; expected %d", test.input, *result, test.expected)
+		// if *result != test.expected {
+		// 	t.Errorf("DestinationTag(%d) = %d; expected %d", test.input, *result, test.expected)
+		// }
 	}
 }

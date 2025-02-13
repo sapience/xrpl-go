@@ -38,7 +38,7 @@ func TestXChainClaim_Flatten(t *testing.T) {
 				},
 				Amount:         types.XRPCurrencyAmount(1000000000),
 				Destination:    "r9cZA1mR1tMM4Gx5JqZxtFU1XxHtHa3gE3",
-				DestinationTag: DestinationTag(1),
+				DestinationTag: types.DestinationTag(1),
 				XChainBridge: types.XChainBridge{
 					LockingChainDoor:  "r9cZA1mR1tMM4Gx5JqZxtFU1XxHtHa3gE3",
 					LockingChainIssue: "r9cZA1mR1tMM4Gx5JqZxtFU1XxHtHa3gE3",
@@ -144,7 +144,7 @@ func TestXChainClaim_Validate(t *testing.T) {
 				},
 				Amount:         types.XRPCurrencyAmount(1000000000),
 				Destination:    "r9cZA1mR1tMM4Gx5JqZxtFU1XxHtHa3gE3",
-				DestinationTag: DestinationTag(1),
+				DestinationTag: types.DestinationTag(1),
 				XChainBridge: types.XChainBridge{
 					LockingChainDoor:  "r9cZA1mR1tMM4Gx5JqZxtFU1XxHtHa3gE3",
 					LockingChainIssue: "r9cZA1mR1tMM4Gx5JqZxtFU1XxHtHa3gE3",
