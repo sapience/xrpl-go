@@ -155,11 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// An arbitrary 128-bit value. Conventionally, clients treat this as the md5 hash of an email address to use for displaying a Gravatar image.
-func EmailHash(value types.Hash128) *types.Hash128 {
-	return &value
-}
-
 // Public key for sending encrypted messages to this account.
 func MessageKey(value string) *string {
 	return &value
