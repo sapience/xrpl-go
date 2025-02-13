@@ -199,9 +199,9 @@ func WalletSize(value uint32) *uint32 {
 	return &value
 }
 
-/**********************************
-************* FLAGS ***************
-**********************************/
+// -----------------------------------
+// -------------- FLAGS --------------
+// -----------------------------------
 
 // SetRequireDestTag sets the require destination tag flag.
 func (s *AccountSet) SetRequireDestTag() {
