@@ -485,7 +485,7 @@ func TestAccountSet_Flatten(t *testing.T) {
 				TransferRate:  types.TransferRate(1000000001),
 				TickSize:      types.TickSize(5),
 				WalletLocator: types.WalletLocator("walletLocator"),
-				WalletSize:    WalletSize(10),
+				WalletSize:    types.WalletSize(10),
 			},
 			expected: FlatTransaction{
 				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
@@ -523,7 +523,7 @@ func TestAccountSet_Flatten(t *testing.T) {
 				TransferRate:  types.TransferRate(0),
 				NFTokenMinter: types.NFTokenMinter(""),
 				WalletLocator: types.WalletLocator(""),
-				WalletSize:    WalletSize(0),
+				WalletSize:    types.WalletSize(0),
 			},
 			expected: FlatTransaction{
 				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",

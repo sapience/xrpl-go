@@ -155,11 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// (Optional) Not used. This field is valid in AccountSet transactions but does nothing.
-func WalletSize(value uint32) *uint32 {
-	return &value
-}
-
 // -----------------------------------
 // -------------- FLAGS --------------
 // -----------------------------------
