@@ -95,7 +95,7 @@ func main() {
 		},
 		TickSize:     transactions.TickSize(5),
 		TransferRate: transactions.TransferRate(0),
-		Domain:       transactions.Domain("6578616D706C652E636F6D"), // example.com
+		Domain:       types.Domain("6578616D706C652E636F6D"), // example.com
 	}
 
 	coldWalletAccountSet.SetAsfDefaultRipple()
@@ -142,7 +142,7 @@ func main() {
 		BaseTx: transactions.BaseTx{
 			Account: types.Address(hotWallet.ClassicAddress),
 		},
-		Domain: transactions.Domain("6578616D706C652E636F6D"), // example.com
+		Domain: types.Domain("6578616D706C652E636F6D"), // example.com
 	}
 
 	hotWalletAccountSet.SetAsfRequireAuth()
@@ -283,7 +283,7 @@ func main() {
 			Value:    "3800",
 		},
 		Destination:    types.Address(hotWallet.ClassicAddress),
-		DestinationTag: transactions.DestinationTag(1),
+		DestinationTag: types.DestinationTag(1),
 	}
 
 	flattenedTx = coldToHotPayment.Flatten()
