@@ -155,11 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// Public key for sending encrypted messages to this account.
-func MessageKey(value string) *string {
-	return &value
-}
-
 // Sets an alternate account that is allowed to mint NFTokens on this
 // account's behalf using NFTokenMint's `Issuer` field.
 func NFTokenMinter(value string) *string {
