@@ -22,5 +22,3 @@ The SDK can be split into the following packages:
 - [`address-codec`](packages/address-codec.md): A package for encoding and decoding XRPL addresses.
 - [`keypairs`](packages/keypairs.md): A package for generating and managing cryptographic keypairs.
 - [`xrpl`](packages/xrpl.md): The biggest package of the SDK. It contains clients, types, transactions, and utils to interact with the XRP Ledger.
-
-
