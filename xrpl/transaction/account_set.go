@@ -155,11 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// (Optional) An arbitrary 256-bit value. If specified, the value is stored as part of the account but has no inherent meaning or requirements.
-func WalletLocator(value types.Hash256) *types.Hash256 {
-	return &value
-}
-
 // (Optional) Not used. This field is valid in AccountSet transactions but does nothing.
 func WalletSize(value uint32) *uint32 {
 	return &value

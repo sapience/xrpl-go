@@ -484,7 +484,7 @@ func TestAccountSet_Flatten(t *testing.T) {
 				SetFlag:       asfRequireAuth,
 				TransferRate:  types.TransferRate(1000000001),
 				TickSize:      types.TickSize(5),
-				WalletLocator: WalletLocator("walletLocator"),
+				WalletLocator: types.WalletLocator("walletLocator"),
 				WalletSize:    WalletSize(10),
 			},
 			expected: FlatTransaction{
@@ -522,7 +522,7 @@ func TestAccountSet_Flatten(t *testing.T) {
 				TickSize:      types.TickSize(0),
 				TransferRate:  types.TransferRate(0),
 				NFTokenMinter: types.NFTokenMinter(""),
-				WalletLocator: WalletLocator(""),
+				WalletLocator: types.WalletLocator(""),
 				WalletSize:    WalletSize(0),
 			},
 			expected: FlatTransaction{
