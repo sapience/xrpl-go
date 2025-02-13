@@ -624,11 +624,7 @@ func TestUnmarshalPayment(t *testing.T) {
 				"TransactionType": "Payment",
 				"Fee": "1000",
 				"Flags": 196608,
-				"Amount": {
-					"currency": "USD",
-					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
-					"value": "1"
-				},
+				"Amount": "10000",
 				"Destination": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn"
 			}`,
 			expectedTag:          nil,
