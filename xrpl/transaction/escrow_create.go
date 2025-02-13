@@ -87,7 +87,7 @@ func (e *EscrowCreate) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(e.Destination.String()) {
+	if !addresscodec.IsValidAddress(e.Destination.String()) {
 		return false, ErrInvalidDestinationAddress
 	}
 

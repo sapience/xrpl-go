@@ -6,7 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
+	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
+	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
@@ -249,8 +250,10 @@ func TestClient_formatRequest(t *testing.T) {
 			marker: nil,
 			expected: `{
 				"id": 1,
-				"command":"account_channels",
+				"BaseRequest": {},
 				"account":"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"api_version":2,
+				"command":"account_channels",
 				"destination_account":"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				"limit":70
 			}`,
@@ -267,8 +270,10 @@ func TestClient_formatRequest(t *testing.T) {
 			marker: "hdsohdaoidhadasd",
 			expected: `{
 				"id": 1,
-				"command":"account_channels",
+				"BaseRequest": {},
 				"account":"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"api_version": 2,
+				"command":"account_channels",
 				"destination_account":"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				"limit":70,
 				"marker":"hdsohdaoidhadasd"
@@ -680,7 +685,7 @@ func TestClient_setLastLedgerSequence(t *testing.T) {
 				},
 			},
 			tx:          transaction.FlatTransaction{},
-			expectedTx:  transaction.FlatTransaction{"LastLedgerSequence": uint32(1000 + LedgerOffset)},
+			expectedTx:  transaction.FlatTransaction{"LastLedgerSequence": uint32(1000 + commonconstants.LedgerOffset)},
 			expectedErr: nil,
 		},
 	}

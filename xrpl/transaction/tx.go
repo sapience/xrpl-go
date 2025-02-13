@@ -137,7 +137,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 		flattened["Memos"] = flattenedMemos
 	}
 	if tx.NetworkID != 0 {
-		flattened["NetworkId"] = tx.NetworkID
+		flattened["NetworkID"] = tx.NetworkID
 	}
 	if len(tx.Signers) > 0 {
 		flattenedSigners := make([]interface{}, len(tx.Signers))
@@ -165,7 +165,7 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 func (tx *BaseTx) Validate() (bool, error) {
 	flattenTx := tx.Flatten()
 
-	if !addresscodec.IsValidClassicAddress(tx.Account.String()) {
+	if !addresscodec.IsValidAddress(tx.Account.String()) {
 		return false, ErrInvalidAccount
 	}
 

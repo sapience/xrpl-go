@@ -88,7 +88,7 @@ func (x *XChainAccountCreateCommit) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(x.Destination.String()) {
+	if !addresscodec.IsValidAddress(x.Destination.String()) {
 		return false, ErrInvalidAccount
 	}
 

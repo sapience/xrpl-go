@@ -68,7 +68,7 @@ func (s *SetRegularKey) Validate() (bool, error) {
 	}
 
 	// Check if the regular key is a valid xrpl address
-	if s.RegularKey != "" && !addresscodec.IsValidClassicAddress(s.RegularKey.String()) {
+	if s.RegularKey != "" && !addresscodec.IsValidAddress(s.RegularKey.String()) {
 		return false, ErrInvalidRegularKey
 	}
 

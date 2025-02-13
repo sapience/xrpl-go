@@ -40,16 +40,16 @@ func (x *XChainBridge) Flatten() FlatXChainBridge {
 }
 
 func (x *XChainBridge) Validate() (bool, error) {
-	if !addresscodec.IsValidClassicAddress(x.IssuingChainDoor.String()) {
+	if !addresscodec.IsValidAddress(x.IssuingChainDoor.String()) {
 		return false, ErrInvalidIssuingChainDoorAddress
 	}
-	if !addresscodec.IsValidClassicAddress(x.IssuingChainIssue.String()) {
+	if !addresscodec.IsValidAddress(x.IssuingChainIssue.String()) {
 		return false, ErrInvalidIssuingChainIssueAddress
 	}
-	if !addresscodec.IsValidClassicAddress(x.LockingChainDoor.String()) {
+	if !addresscodec.IsValidAddress(x.LockingChainDoor.String()) {
 		return false, ErrInvalidLockingChainDoorAddress
 	}
-	if !addresscodec.IsValidClassicAddress(x.LockingChainIssue.String()) {
+	if !addresscodec.IsValidAddress(x.LockingChainIssue.String()) {
 		return false, ErrInvalidLockingChainIssueAddress
 	}
 
