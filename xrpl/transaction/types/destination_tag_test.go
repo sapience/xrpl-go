@@ -19,8 +19,5 @@ func TestDestinationTag(t *testing.T) {
 	for _, test := range tests {
 		result := DestinationTag(test.input)
 		require.Equal(t, test.expected, *result, "DestinationTag(%d) = %d; expected %d", test.input, *result, test.expected)
-		// if *result != test.expected {
-		// 	t.Errorf("DestinationTag(%d) = %d; expected %d", test.input, *result, test.expected)
-		// }
 	}
 }
