@@ -79,7 +79,7 @@ func main() {
 			Account: types.Address(coldWallet.ClassicAddress),
 		},
 		TickSize:     transactions.TickSize(5),
-		TransferRate: transactions.TransferRate(0),
+		TransferRate: types.TransferRate(0),
 		Domain:       types.Domain("6578616D706C652E636F6D"), // example.com
 	}
 

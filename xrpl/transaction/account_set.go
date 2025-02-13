@@ -155,12 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// (Optional) Sets the TransferRate. The fee to charge when users transfer this account's tokens, represented as billionths of a unit.
-// Cannot be more than 2000000000 or less than 1000000000, except for the special case 0 meaning no fee.
-func TransferRate(value uint32) *uint32 {
-	return &value
-}
-
 // (Optional) Tick size to use for offers involving a currency issued by this address.
 // The exchange rates of those offers is rounded to this many significant digits. Valid values are 3 to 15 inclusive, or 0 to disable.
 func TickSize(value uint8) *uint8 {
