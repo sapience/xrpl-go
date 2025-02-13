@@ -4,11 +4,21 @@ sidebar_position: 3
 
 # keypairs
 
-## Description
+## Introduction 
 
-The `keypairs` package provides a set of functions for generating and managing cryptographic keypairs. It includes functionality for creating new keypairs, deriving public keys from private keys, and verifying signatures.
+The keypairs package provides a set of functions for generating and managing cryptographic keypairs. It includes functionality for creating new keypairs, deriving public keys from private keys, and verifying signatures.
 
-This package is used internally by the `xrpl`[Afegir link] package to expose a `Wallet`[Afegir link] interface for easier wallet management. Never the less, it can be used independently from the `xrpl`[Afegir link] package for cryptographic operations.
+This package is used internally by the [`xrpl`](./xrpl.md) package to expose a `Wallet`[Afegir link] interface for easier wallet management. Nevertheless, it can be used independently from the [`xrpl`](./xrpl.md) package for cryptographic operations.
+
+## Key components
+
+This package works with the following key components from the XRP Ledger:
+
+- **Seed**: A base58-encoded string that represents a keypair.
+- **Keypair**: A pair of a private and public key.
+- **Address**: A base58-encoded string that represents an account.
+
+To learn more about these components, you can check the [official documentation](https://xrpl.org/docs/concepts/accounts/cryptographic-keys).
 
 ## Supported algorithms
 
@@ -19,11 +29,11 @@ Cryptographic algorithms supported by this package are:
 
  Every function in the package that requires a cryptographic algorithm will accept any type that satisfies the `KeypairCryptoAlg` interface. So, if desired, you can implement your own algorithm and use it in this package.
 
- However, `xrpl-go` library already exports both algorithm getters that satisfy the `KeypairCryptoAlg` and `NodeDerivationCryptoAlg` interfaces. They're available under the package `github.com/Peersyst/xrpl-go/pkg/crypto`, which exports both algorithm getters that satisfy the `KeypairCryptoAlg` and `NodeDerivationCryptoAlg` interfaces.
+ However, the library already exports both algorithm getters that satisfy the `KeypairCryptoAlg` and `NodeDerivationCryptoAlg` interfaces. They're available under the package `github.com/Peersyst/xrpl-go/pkg/crypto`, which exports both algorithm getters that satisfy the `KeypairCryptoAlg`, `NodeDerivationCryptoAlg` interfaces.
 
 ### crypto package
 
-The `crypto` package exports the following algorithm getters that satisfy the `KeypairCryptoAlg` and `NodeDerivationCryptoAlg` interfaces:
+The `crypto` package exports the following algorithm getters that satisfy the `KeypairCryptoAlg`, `NodeDerivationCryptoAlg` interfaces:
 
 - `ED25519()`
 - `SECP256K1()`
@@ -63,9 +73,13 @@ They can be split into two groups:
 func GenerateSeed(entropy string, alg interfaces.KeypairCryptoAlg, r interfaces.Randomizer) (string, error)
 ```
 
-Generate a seed that can be used to generate keypairs. You can specify the entropy, of the seed or let the function generate a random one (by passing an empty string as entropy and providing a randomizer) and use one of the [supported algorithms][afegir link] the provided algorithm to generate the seed. The result is a base58 encoded seed, which starts with the character `s`. 
+Generate a seed that can be used to generate keypairs. You can specify the entropy, of the seed or let the function generate a random one (by passing an empty string as entropy and providing a randomizer) and use one of the [supported algorithms][afegir link] the provided algorithm to generate the seed. The result is a base58-encoded seed, which starts with the character `s`. 
 
-[Afegir callout randomizer ha de satisfer el randomizer.Randomizer interface]
+:::info
+
+A randomizer satisfies the `Randomizer` interface. The `random` package exports a `NewRandomizer` function that returns a new randomizer.
+
+:::
 
 #### DeriveKeypair
 
@@ -73,7 +87,7 @@ Generate a seed that can be used to generate keypairs. You can specify the entro
 func DeriveKeypair(seed string, validator bool) (private, public string, err error)
 ```
 
-Derives a keypair (private and public keys) from a seed. If the `validator` parameter is `true`, the keypair will be a validator keypair, otherwise it will be a user keypair. The result for both the private and public keys is a 33-byte hexadecimal string.
+Derives a keypair (private and public keys) from a seed. If the `validator` parameter is `true`, the keypair will be a validator keypair; otherwise, it will be a user keypair. The result for both the private and public keys is a 33-byte hexadecimal string.
 
 
 #### DeriveClassicAddress
@@ -82,7 +96,7 @@ Derives a keypair (private and public keys) from a seed. If the `validator` para
 func DeriveClassicAddress(pubKey string) (string, error)
 ```
 
-After deriving a keypair, you can derive the classic address from the public key. The result is a base58 encoded address, which starts with the character `r`. If you're interested in X-Address derivation, address-codec[afegir link] package contains functions to encode and decode X-Addresses from and to classic addresses.
+After deriving a keypair, you can derive the classic address from the public key. The result is a base58 encoded address, which starts with the character `r`. If you're interested in X-Address derivation, [`address-codec`](./address-codec.md) package contains functions to encode and decode X-Addresses from and to classic addresses.
 
 #### DeriveNodeAddress
 
@@ -90,7 +104,7 @@ After deriving a keypair, you can derive the classic address from the public key
 func DeriveNodeAddress(pubKey string, alg interfaces.NodeDerivationCryptoAlg) (string, error)
 ```
 
-Derives a node address from a public key. The result is a base58 encoded address, which starts with the character `n`.
+Derives a node address from a public key. The result is a base58-encoded address, which starts with the character `n`.
 
 ### Signing
 
@@ -108,7 +122,7 @@ Signs the provided message with the provided private key. To be able to sign a m
 func Validate(msg, pubKey, sig string) (bool, error)
 ```
 
-Verifies a signature of a message. To be able to verify a signature, the public key must be valid and the message and the signature must be hex-encoded. The result is a boolean value that indicates if the signature is valid or not.
+Verifies a signature of a message. To be able to verify a signature, the public key must be valid, and the message and the signature must be hex-encoded. The result is a boolean value that indicates if the signature is valid or not.
 
 ## Guides
 
@@ -151,7 +165,6 @@ func main() {
 }
 ```
 
-This example generates a new keypair using the `SECP256K1` algorithm and a random entropy. It then derives a keypair from the seed and derives the classic address from the public key.
 
 ### How to generate a new keypair from entropy
 
