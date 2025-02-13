@@ -155,12 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// The domain that owns this account, as a string of hex representing the.
-// ASCII for the domain in lowercase.
-func Domain(value string) *string {
-	return &value
-}
-
 // An arbitrary 128-bit value. Conventionally, clients treat this as the md5 hash of an email address to use for displaying a Gravatar image.
 func EmailHash(value types.Hash128) *types.Hash128 {
 	return &value
