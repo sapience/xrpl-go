@@ -155,12 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// Sets an alternate account that is allowed to mint NFTokens on this
-// account's behalf using NFTokenMint's `Issuer` field.
-func NFTokenMinter(value string) *string {
-	return &value
-}
-
 // (Optional) Sets the TransferRate. The fee to charge when users transfer this account's tokens, represented as billionths of a unit.
 // Cannot be more than 2000000000 or less than 1000000000, except for the special case 0 meaning no fee.
 func TransferRate(value uint32) *uint32 {
