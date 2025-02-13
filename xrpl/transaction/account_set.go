@@ -155,12 +155,6 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	return flattened
 }
 
-// (Optional) Tick size to use for offers involving a currency issued by this address.
-// The exchange rates of those offers is rounded to this many significant digits. Valid values are 3 to 15 inclusive, or 0 to disable.
-func TickSize(value uint8) *uint8 {
-	return &value
-}
-
 // (Optional) An arbitrary 256-bit value. If specified, the value is stored as part of the account but has no inherent meaning or requirements.
 func WalletLocator(value types.Hash256) *types.Hash256 {
 	return &value
