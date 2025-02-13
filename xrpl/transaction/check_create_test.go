@@ -1,10 +1,12 @@
 package transaction
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCheckCreate_TxType(t *testing.T) {
@@ -148,6 +150,75 @@ func TestCheckCreate_Validate(t *testing.T) {
 			assert.Equal(t, tt.wantErr, err != nil)
 			if err != nil && err != tt.expectedErr {
 				t.Errorf("Validate() error = %v, expectedErr %v", err, tt.expectedErr)
+			}
+		})
+	}
+}
+
+func TestCheckCreate_Unmarshal(t *testing.T) {
+	tests := []struct {
+		name                 string
+		jsonData             string
+		expectedTag          *uint32
+		expectUnmarshalError bool
+	}{
+		{
+			name: "pass - CheckCreate with DestinationTag",
+			jsonData: `{
+				"TransactionType": "CheckCreate",
+				"Account": "rEXAMPLE123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"Destination": "rDEST123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"DestinationTag": 12345,
+				"SendMax": "1000000",
+				"Fee": "10",
+				"Sequence": 1
+			}`,
+			expectedTag:          func() *uint32 { v := uint32(12345); return &v }(),
+			expectUnmarshalError: false,
+		},
+		{
+			name: "pass - CheckCreate with DestinationTag set to 0",
+			jsonData: `{
+				"TransactionType": "CheckCreate",
+				"Account": "rEXAMPLE123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"Destination": "rDEST123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"DestinationTag": 0,
+				"SendMax": "1000000",
+				"Fee": "10",
+				"Sequence": 1
+			}`,
+			expectedTag:          func() *uint32 { v := uint32(0); return &v }(),
+			expectUnmarshalError: false,
+		},
+		{
+			name: "pass - CheckCreate with DestinationTag undefined",
+			jsonData: `{
+				"TransactionType": "CheckCreate",
+				"Account": "rEXAMPLE123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"Destination": "rDEST123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"SendMax": "1000000",
+				"Fee": "10",
+				"Sequence": 1
+			}`,
+			expectedTag:          nil,
+			expectUnmarshalError: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var checkCreate CheckCreate
+			err := json.Unmarshal([]byte(tt.jsonData), &checkCreate)
+
+			if (err != nil) != tt.expectUnmarshalError {
+				t.Errorf("Unmarshal() error = %v, expectUnmarshalError %v", err, tt.expectUnmarshalError)
+				return
+			}
+			if tt.expectedTag == nil {
+				require.Nil(t, checkCreate.DestinationTag, "Expected DestinationTag to be nil")
+			} else {
+				require.NotNil(t, checkCreate.DestinationTag, "Expected DestinationTag not to be nil")
+				require.Equal(t, *tt.expectedTag, *checkCreate.DestinationTag)
 			}
 		})
 	}

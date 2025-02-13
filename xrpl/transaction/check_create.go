@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"encoding/json"
+
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -79,4 +81,48 @@ func (c *CheckCreate) Validate() (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (c *CheckCreate) UnmarshalJSON(data []byte) error {
+	// Define a helper struct to match the JSON structure
+	type cHelper struct {
+		BaseTx
+		Destination    types.Address
+		SendMax        json.RawMessage
+		DestinationTag *uint32       `json:",omitempty"`
+		Expiration     uint32        `json:",omitempty"`
+		InvoiceID      types.Hash256 `json:",omitempty"`
+	}
+
+	// Unmarshal the JSON data into the helper struct
+	var h cHelper
+	if err := json.Unmarshal(data, &h); err != nil {
+		return err
+	}
+
+	// Populate the CheckCreate struct with the unmarshaled data
+	*c = CheckCreate{
+		BaseTx:      h.BaseTx,
+		Destination: h.Destination,
+		Expiration:  h.Expiration,
+		InvoiceID:   h.InvoiceID,
+	}
+
+	if h.DestinationTag != nil {
+		c.DestinationTag = h.DestinationTag
+	}
+
+	// Unmarshal the nested CurrencyAmount fields
+	var sendMax types.CurrencyAmount
+	var err error
+
+	sendMax, err = types.UnmarshalCurrencyAmount(h.SendMax)
+	if err != nil {
+		return err
+	}
+
+	// Assign the unmarshaled SendMax field to the CheckCreate struct
+	c.SendMax = sendMax
+
+	return nil
 }
