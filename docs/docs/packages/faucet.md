@@ -2,7 +2,7 @@
 
 ## Overview
 
-Faucet is a package that allows the user to get XRP for testing purposes on `testnet` and `devnet` ledgers and even from custom chains. To be able to fund your accounts programmatically, you can initialize the desired `FaucetProvider` for the ledger you want to use.
+`faucet` is a package that allows the user to get XRP for testing purposes on `testnet` and `devnet` ledgers and even from custom chains. To be able to fund your accounts programmatically, you can initialize the desired `FaucetProvider` for the ledger you want to use.
 
 The package already exposes the `TestnetFaucetProvider` and `DevnetFaucetProvider` providers. If you want to use a custom chain, you can implement the `FaucetProvider` interface and use your own provider.
 

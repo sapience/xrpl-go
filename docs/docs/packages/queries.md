@@ -2,11 +2,11 @@
 
 ## Overview
 
-The `queries` package contains mainly requests and responses types for the [XRPL methods](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods). This package is used by the package clients `rpc` and `websocket` to send client queries to the ledger.
+The `queries` package contains mainly request and response types for the [XRPL methods](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods). This package is used by the package clients `rpc` and `websocket` to send client queries to the ledger.
 
 :::info
 
-As a developer, you may be interested in calling the queries using the `websocket` or `rpc` clients. Both clients expose methods to call each query exposed by the `queries` package.    
+As a developer, you may be interested in calling the queries using the `websocket` or `rpc` clients. Both clients expose methods to call each query exposed by the `queries` package. 
 
 :::
 
@@ -37,10 +37,10 @@ import accountv1 "github.com/Peersyst/xrpl-go/xrpl/queries/account/v1"
 
 The `account` package contains methods to interact with XRPL accounts. These methods allow you to:
 
-- Retrieve account information like balances, settings, and objects
-- Get account transaction history
-- Query account channels and escrows
-- Check account offers and payment channels
+- Retrieve account information like balances, settings, and objects.
+- Get account transaction history.
+- Query account channels and escrows.
+- Check account offers and payment channels.
 
 The available methods correspond to the [Account Methods](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods#account-methods) in the XRPL API.
 
@@ -114,7 +114,6 @@ The `transaction` subpackage provides the following queries requests:
 The `path`, `nft` and `oracle` packages contain methods to interact with XRPL paths, NFTs and oracles. These methods allow you to:
 
 - Retrieve paths and order books.
-- Retrieve AMMs information.
 - Get NFTs buy and sell offers.
 
 The available methods correspond to the [Path and Order Book Methods](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/path-and-order-book-methods) in the XRPL API.

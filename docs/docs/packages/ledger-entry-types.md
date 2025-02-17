@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ledger-entry-types` package contains types and functions to handle ledger objects. They are used by other packages like `transactions` to type the transaction's fields.
+The `ledger-entry-types` package contains types and functions to handle ledger objects. They are used by other packages, like `transactions` to type the transaction's fields.
 
 - [`AccountRoot`](https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/accountroot)
 - [`Amendments`](https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/amendments)

@@ -4,14 +4,14 @@
 
 The `rpc` package provides the RPC client for interacting with the XRPL network via its RPC API. This client handles the communication with XRPL nodes, allowing you to:
 
-- Send requests to query the ledger state
-- Submit transactions to the network 
-- Receive responses and handle errors
-- Manage the connections configuration 
+- Send requests to query the ledger state.
+- Submit transactions to the network.
+- Receive responses and handle errors.
+- Manage the connections configuration. 
 
 ## Client
 
-The `rpc` package provides a `Client` type which and communication with XRPL nodes. This client is configurable and let the user submit transactions and make queries. 
+The `rpc` package provides a `Client` type of communication with XRPL nodes. This client is configurable and let the user submit transactions and make queries.
 
 In order to create a new `Client`, you can use the `NewClient` function:
 
@@ -23,16 +23,32 @@ if err != nil {
 client := rpc.NewClient(cfg)
 ```
 
-Every time you create a new `Client`, you need to pass a `Config` struct as argument. You can initialize a `Config` struct using the `NewClientConfig` function.
+Every time you create a new `Client`, you need to provde a `Config` struct as an argument. You can initialize a `Config` struct using the `NewClientConfig` function.
 
-`Config` struct follows the options pattern, so you can pass different options to the `NewClientConfig` function:
+`Config` struct follows the options pattern, so you can pass different options to the `NewClientConfig` function.
+
+### FaucetProvider
+
+The `WithFaucetProvider` option allows you to set the faucet provider of the WebSocket client. There're two predefined faucet providers: `TestnetFaucetProvider` and `DevnetFaucetProvider`. You can also implement your own faucet provider by implementing the `FaucetProvider` interface.
 
 ```go
-// RPC Client config options
-func WithHTTPClient(cl HTTPClient) ConfigOpt
-func WithMaxFeeXRP(maxFeeXRP float32) ConfigOpt
-func WithFeeCushion(feeCushion float32) ConfigOpt
-func WithFaucetProvider(fp common.FaucetProvider) ConfigOpt
+func (wc ClientConfig) WithFaucetProvider(fp common.FaucetProvider) ClientConfig
+```
+
+### MaxFeeXRP
+
+The `WithMaxFeeXRP` option allows you to set the maximum fee in XRP that the client will use.
+
+```go
+func (wc ClientConfig) WithMaxFeeXRP(maxFeeXRP float32) ClientConfig
+```
+
+### FeeCushion
+
+The `WithFeeCushion` option allows you to set the fee cushion for a transaction.
+
+```go
+func (wc ClientConfig) WithFeeCushion(feeCushion float32) ClientConfig
 ```
 
 So, for example, if you want to set a custom `FaucetProvider` and `FeeCushion`, you can do it this way:

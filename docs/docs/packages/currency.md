@@ -2,11 +2,11 @@
 
 ## Overview
 
-Currency is a package that provides utility functions to handle with XRPL ledger currency types. For **native currency**, it provides XRP and drops conversions. For **IOUs**, it provides utility functions to convert non-standard currency codes (you can learn more about it in the [official documentation](https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes)).
+`currency` is a package that provides utility functions to handle XRPL ledger currency types. For **native currency**, it provides XRP and drops conversions. For **IOUs**, it provides utility functions to convert non-standard currency codes (you can learn more about it in the [official documentation](https://xrpl.org/docs/references/protocol/data-types/currency-formats#nonstandard-currency-codes)).
 
 ## XRP/Drops conversions
 
-`currency` package provides the following functions to convert XRP to drops and vice versa:
+The package provides the following functions to convert XRP to drops and vice versa:
 
 ```go
 func XrpToDrops(value string) (string, error)

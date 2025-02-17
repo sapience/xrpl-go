@@ -11,7 +11,7 @@ The `websocket` package provides a WebSocket client for interacting with the XRP
 
 ## Config
 
-The `websocket` package provides a `Config` struct that allows you to configure the WebSocket client. Every time you create a new `Client`, you need to pass a `Config` struct as argument. You can initialize a `Config` struct using the `NewClientConfig` function.
+The `websocket` package provides a `Config` struct that allows you to configure the WebSocket client. Every time you create a new `Client`, you need to pass a `Config` struct as an argument. You can initialize a `Config` struct using the `NewClientConfig` function.
 
 `Config` struct follows the options pattern, so you can pass different options to the `NewClientConfig` function:
 
