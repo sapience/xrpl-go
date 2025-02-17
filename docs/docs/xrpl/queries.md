@@ -2,11 +2,11 @@
 
 ## Overview
 
-The `queries` package contains mainly request and response types for the [XRPL methods](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods). This package is used by the package clients `rpc` and `websocket` to send client queries to the ledger.
+The `queries` package contains mainly request and response types for the [XRPL methods](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods). This package is used by the package clients [`rpc`](/docs/xrpl/rpc) and [`websocket`](/docs/xrpl/websocket) to send client queries to the ledger.
 
 :::info
 
-As a developer, you may be interested in calling the queries using the `websocket` or `rpc` clients. Both clients expose methods to call each query exposed by the `queries` package. 
+As a developer, you may be interested in calling the queries using the [`websocket`](/docs/xrpl/websocket) or [`rpc`](/docs/xrpl/rpc) clients. Both clients expose methods to call each query exposed by the `queries` package. 
 
 :::
 
@@ -19,8 +19,8 @@ Queries are grouped by different categories or packages:
 - `path`: Methods to use paths and order books.
 - `nft`: Methods to work with NFTs.
 - `oracle`: Methods to work with oracles.
-- `clio`: Methods to use the Clio API, not `rippled`.
-- `server`: Methods to retrieve information about the current state of the rippled server.
+- `clio`: Methods to use the Clio API, not [`rippled`](https://github.com/XRPLF/rippled).
+- `server`: Methods to retrieve information about the current state of the [`rippled`](https://github.com/XRPLF/rippled) server.
 - `utility`: Perform convenient tasks, such as ping and random number generation.
 
 
@@ -33,7 +33,9 @@ For example, if you want to use the XRPL API version `v1` queries of the `accoun
 import accountv1 "github.com/Peersyst/xrpl-go/xrpl/queries/account/v1"
 ```
 
-## account
+## Categories
+
+### account
 
 The `account` package contains methods to interact with XRPL accounts. These methods allow you to:
 
@@ -59,7 +61,17 @@ The account subpackage provides the following queries requests:
 | `OffersRequest` | [account_offers](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/account-methods/account_offers) | ✅ |
 | `TransactionsRequest` | [account_tx](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/account-methods/account_tx) | ✅ |
 
-## channel
+#### Usage
+
+To use the `account` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/account"
+```
+
+
+
+### channel
 
 The `channel` package contains methods to interact with XRPL channels. These methods allow you to:
 
@@ -73,7 +85,16 @@ The `channel` subpackage provides the following queries requests:
 |---------|------------|------------|
 | `VerifyRequest` | [channel_verify](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/payment-channel-methods/channel_verify) | ✅ |
 
-## ledger
+#### Usage
+
+To use the `channel` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/channel"
+```
+
+
+### ledger
 
 The `ledger` package contains methods to interact with XRPL ledgers. These methods allow you to:
 
@@ -90,7 +111,16 @@ The `ledger` subpackage provides the following queries requests:
 | `CurrentRequest` | [ledger_current](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/ledger-methods/ledger_current) | ✅ |
 | `DataRequest` | [ledger_data](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/ledger-methods/ledger_data) | ✅ |
 
-## transaction
+#### Usage
+
+To use the `ledger` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/ledger"
+```
+
+
+### transaction
 
 The `transaction` package contains methods to interact with XRPL transactions. These methods allow you to:
 
@@ -108,8 +138,15 @@ The `transaction` subpackage provides the following queries requests:
 | `EntryRequest` | [transaction_entry](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/transaction-methods/transaction_entry) | ✅ |
 | `TxRequest` | [tx](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/transaction-methods/tx) | ✅ |
 
+#### Usage
 
-## path, nft and oracle
+To use the `transaction` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/transaction"
+```
+
+### path, nft and oracle
 
 The `path`, `nft` and `oracle` packages contain methods to interact with XRPL paths, NFTs and oracles. These methods allow you to:
 
@@ -141,9 +178,29 @@ The `oracle` subpackage provides the following queries requests:
 |---------|------------|------------|
 | `GetAggregatePriceRequest` | [get_aggregate_price](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/oracle-methods/get_aggregate_price) | ✅ |
 
-## clio
+#### Usage
 
-The `clio` package contains methods to interact with the Clio API, not `rippled`. These methods allow you to:
+To use the `path` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/path"
+```
+
+To use the `oracle` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/oracle"
+```
+
+To use the `nft` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/nft"
+```
+
+### clio
+
+The `clio` package contains methods to interact with the Clio API, not [`rippled`](https://github.com/XRPLF/rippled). These methods allow you to:
 
 - Retrieve NFT history.
 - Retrieve NFts information.
@@ -158,9 +215,18 @@ The `clio` subpackage provides the following queries requests:
 | `NFTInfoRequest` | [nft_info](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/clio-methods/nft_info) | ✅ |
 | `NFTsByIssuerRequest` | [nfts_by_issuer](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/clio-methods/nfts_by_issuer) | ✅ |
 
-## server
+#### Usage
 
-The `server` package contains methods to interact with the `rippled` server. These methods allow you to:
+To use the `clio` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/clio"
+```
+
+
+### server
+
+The `server` package contains methods to interact with the [`rippled`](https://github.com/XRPLF/rippled) server. These methods allow you to:
 
 - Retrieve server information.
 - Get fee information.
@@ -179,8 +245,16 @@ The `server` subpackage provides the following queries requests:
 | `InfoRequest` | [server_info](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/server-info-methods/server_info) | ✅ |
 | `StateRequest` | [server_state](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/server-info-methods/server_state) | ✅ |
 
+#### Usage
 
-## utility
+To use the `server` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/server"
+```
+
+
+### utility
 
 The `utility` package contains methods to interact with the XRPL utility. These methods allow you to:
 
@@ -195,3 +269,11 @@ The `utility` subpackage provides the following queries requests:
 |---------|------------|------------|
 | `RandomRequest` | [random](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/utility-methods/random) | ✅ |
 | `PingRequest` | [ping](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/utility-methods/ping) | ✅ |
+
+#### Usage
+
+To use the `utility` package, you need to import it in your project:
+
+```go
+import "github.com/Peersyst/xrpl-go/xrpl/queries/utility"
+```

@@ -2,7 +2,7 @@
 
 ## Overview
 
-As the `queries` package contains the types of XRPL queries, this package contains all transaction types available in the XRPL. Contains all transaction structs to build and sign transactions with wallets and clients.
+As the [`queries`](/docs/xrpl/queries) package contains the types of XRPL queries, this package contains all transaction types available in the XRPL. Contains all transaction structs to build and sign transactions with wallets and clients.
 
 ## Transaction types
 

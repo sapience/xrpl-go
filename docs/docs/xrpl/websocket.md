@@ -4,10 +4,10 @@
 
 The `websocket` package provides a WebSocket client for interacting with the XRPL network via its WebSocket API. This client handles the communication with XRPL nodes, allowing you to:
 
-- Send requests to query the ledger state
-- Submit transactions to the network 
-- Receive responses and handle errors
-- Manage the connections configuration
+- Send requests to query the ledger state.
+- Submit transactions to the network.
+- Receive responses and handle errors.
+- Manage the connections configuration.
 
 ## Config
 
@@ -136,7 +136,7 @@ func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxRespon
 
 ## Queries
 
-The `websocket` package provides a `Query` struct that allows you to send client [queries](/docs/docs/packages/xrpl#queries) to the server.
+The `websocket` package provides query wrappers that allows you to send client [`queries`](/docs/xrpl/queries) to the server.
 
 ## Examples
 

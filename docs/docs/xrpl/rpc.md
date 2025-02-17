@@ -105,7 +105,7 @@ func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxRespon
 
 ## Queries
 
-`Client` also exposes methods to make queries to the XRPL network. These methods are wrappers of the queries requests exposed by the [`queries`](/xrpl/queries/) package.
+`Client` also exposes methods to make queries to the XRPL network. These methods are wrappers of the queries requests exposed by the [`queries`](/docs/xrpl/queries) package.
 
 ## Usage
 
