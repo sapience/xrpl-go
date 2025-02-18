@@ -8,6 +8,7 @@ import (
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
+	subscribe "github.com/Peersyst/xrpl-go/xrpl/queries/subscription"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -140,6 +141,19 @@ func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.Subm
 		Tx:       tx,
 		FailHard: failHard,
 	})
+}
+
+func (c *Client) Subscribe(req *subscribe.Request) (*subscribe.Response, error) {
+	res, err := c.Request(req)
+	if err != nil {
+		return nil, err
+	}
+	var lr subscribe.Response
+	err = res.GetResult(&lr)
+	if err != nil {
+		return nil, err
+	}
+	return &lr, nil
 }
 
 // Autofill fills in the missing fields in a transaction.

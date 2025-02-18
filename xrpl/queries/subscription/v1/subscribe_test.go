@@ -3,7 +3,7 @@ package subscribe
 import (
 	"testing"
 
-	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
+	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/v1/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )

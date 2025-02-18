@@ -19,6 +19,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
+	subscribe "github.com/Peersyst/xrpl-go/xrpl/queries/subscription"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
@@ -289,6 +290,19 @@ func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxRespon
 	}
 
 	return c.waitForTransaction(txHash, lastLedgerSequence)
+}
+
+func (c *Client) Subscribe(req *subscribe.Request) (*subscribe.Response, error) {
+	res, err := c.Request(req)
+	if err != nil {
+		return nil, err
+	}
+	var lr subscribe.Response
+	err = res.GetResult(&lr)
+	if err != nil {
+		return nil, err
+	}
+	return &lr, nil
 }
 
 func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*requests.TxResponse, error) {

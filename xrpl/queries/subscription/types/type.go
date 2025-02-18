@@ -1,4 +1,4 @@
-package stream
+package types
 
 type Type string
 
