@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"encoding/json"
 	"errors"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
@@ -220,70 +219,4 @@ func checkPartialPayment(tx *Payment) (bool, error) {
 
 	return true, nil
 
-}
-
-// UnmarshalJSON custom unmarshals a Payment from JSON.
-func (p *Payment) UnmarshalJSON(data []byte) error {
-	// Define a helper struct to match the JSON structure
-	type pHelper struct {
-		BaseTx
-		Amount         json.RawMessage
-		Destination    types.Address
-		DestinationTag *uint32         `json:",omitempty"`
-		InvoiceID      types.Hash256   `json:",omitempty"`
-		Paths          [][]PathStep    `json:",omitempty"`
-		SendMax        json.RawMessage `json:",omitempty"`
-		DeliverMin     json.RawMessage `json:",omitempty"`
-		DeliverMax     json.RawMessage `json:",omitempty"`
-	}
-
-	// Unmarshal the JSON data into the helper struct
-	var h pHelper
-	if err := json.Unmarshal(data, &h); err != nil {
-		return err
-	}
-
-	// Populate the Payment struct with the unmarshaled data
-	*p = Payment{
-		BaseTx:      h.BaseTx,
-		Destination: h.Destination,
-		InvoiceID:   h.InvoiceID,
-		Paths:       h.Paths,
-	}
-
-	if h.DestinationTag != nil {
-		p.DestinationTag = h.DestinationTag
-	}
-
-	// Unmarshal the nested CurrencyAmount fields
-	var amount, sendMax, deliverMin, deliverMax types.CurrencyAmount
-	var err error
-
-	amount, err = types.UnmarshalCurrencyAmount(h.Amount)
-	if err != nil {
-		return err
-	}
-
-	sendMax, err = types.UnmarshalCurrencyAmount(h.SendMax)
-	if err != nil {
-		return err
-	}
-
-	deliverMin, err = types.UnmarshalCurrencyAmount(h.DeliverMin)
-	if err != nil {
-		return err
-	}
-
-	deliverMax, err = types.UnmarshalCurrencyAmount(h.DeliverMax)
-	if err != nil {
-		return err
-	}
-
-	// Assign the unmarshaled CurrencyAmount fields to the Payment struct
-	p.Amount = amount
-	p.DeliverMin = deliverMin
-	p.DeliverMax = deliverMax
-	p.SendMax = sendMax
-
-	return nil
 }
