@@ -20,8 +20,6 @@ Updates some fields in AccountSet and Payment related transactions to a pointer 
 - WalletSize
 - TransferRate
 
-Fixes some unmarshaling for `Payment`, `CheckCreate`. Added custom `unmarshalJSON` function.
-
 Adds more tests for setting some `asf` flags in `AccountSet`.
 
 ## [v0.1.5]
