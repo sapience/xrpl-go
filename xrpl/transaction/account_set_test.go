@@ -1,12 +1,15 @@
 package transaction
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestAccountSetFlags(t *testing.T) {
+func TestAccountSetTfFlags(t *testing.T) {
 	tests := []struct {
 		name     string
 		setter   func(*AccountSet)
@@ -72,8 +75,10 @@ func TestAccountSetFlags(t *testing.T) {
 				s.SetRequireAuth()
 				s.SetDisallowXRP()
 				s.SetOptionalDestTag()
+				s.SetOptionalAuth()
+				s.SetAllowXRP()
 			},
-			expected: tfRequireDestTag | tfRequireAuth | tfDisallowXRP | tfOptionalDestTag,
+			expected: tfRequireDestTag | tfRequireAuth | tfDisallowXRP | tfOptionalDestTag | tfOptionalAuth | tfAllowXRP,
 		},
 	}
 
@@ -87,15 +92,264 @@ func TestAccountSetFlags(t *testing.T) {
 		})
 	}
 }
+
+func TestAccountSetAsfFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*AccountSet)
+		expected uint32
+	}{
+		{
+			name: "pass - SetAsfRequireDest",
+			setter: func(s *AccountSet) {
+				s.SetAsfRequireDest()
+			},
+			expected: asfRequireDest,
+		},
+		{
+			name: "pass - SetAsfRequireAuth",
+			setter: func(s *AccountSet) {
+				s.SetAsfRequireAuth()
+			},
+			expected: asfRequireAuth,
+		},
+		{
+			name: "pass - SetAsfDisallowXRP",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowXRP()
+			},
+			expected: asfDisallowXRP,
+		},
+		{
+			name: "pass - SetAsfDisableMaster",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisableMaster()
+			},
+			expected: asfDisableMaster,
+		},
+		{
+			name: "pass - SetAsfAccountTxnID",
+			setter: func(s *AccountSet) {
+				s.SetAsfAccountTxnID()
+			},
+			expected: asfAccountTxnID,
+		},
+		{
+			name: "pass - SetAsfNoFreeze",
+			setter: func(s *AccountSet) {
+				s.SetAsfNoFreeze()
+			},
+			expected: asfNoFreeze,
+		},
+		{
+			name: "pass - SetAsfGlobalFreeze",
+			setter: func(s *AccountSet) {
+				s.SetAsfGlobalFreeze()
+			},
+			expected: asfGlobalFreeze,
+		},
+		{
+			name: "pass - SetAsfDefaultRipple",
+			setter: func(s *AccountSet) {
+				s.SetAsfDefaultRipple()
+			},
+			expected: asfDefaultRipple,
+		},
+		{
+			name: "pass - SetAsfDepositAuth",
+			setter: func(s *AccountSet) {
+				s.SetAsfDepositAuth()
+			},
+			expected: asfDepositAuth,
+		},
+		{
+			name: "pass - SetAsfAuthorizedNFTokenMinter",
+			setter: func(s *AccountSet) {
+				s.SetAsfAuthorizedNFTokenMinter()
+			},
+			expected: asfAuthorizedNFTokenMinter,
+		},
+		{
+			name: "pass - SetAsfDisallowIncomingNFTokenOffer",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingNFTokenOffer()
+			},
+			expected: asfDisallowIncomingNFTokenOffer,
+		},
+		{
+			name: "pass - SetAsfDisallowIncomingCheck",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingCheck()
+			},
+			expected: asfDisallowIncomingCheck,
+		},
+		{
+			name: "pass - SetAsfDisallowIncomingPayChan",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingPayChan()
+			},
+			expected: asfDisallowIncomingPayChan,
+		},
+		{
+			name: "pass - SetAsfDisallowIncomingTrustLine",
+			setter: func(s *AccountSet) {
+				s.SetAsfDisallowIncomingTrustLine()
+			},
+			expected: asfDisallowIncomingTrustLine,
+		},
+		{
+			name: "pass - SetAsfAllowTrustLineClawback",
+			setter: func(s *AccountSet) {
+				s.SetAsfAllowTrustLineClawback()
+			},
+			expected: asfAllowTrustLineClawback,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &AccountSet{}
+			tt.setter(s)
+			if s.SetFlag != tt.expected {
+				t.Errorf("Expected Flags to be %d, got %d", tt.expected, s.Flags)
+			}
+		})
+	}
+}
+
+func TestAccountClearAsfFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		setter   func(*AccountSet)
+		expected uint32
+	}{
+		{
+			name: "pass - ClearAsfRequireDest",
+			setter: func(s *AccountSet) {
+				s.ClearAsfRequireDest()
+			},
+			expected: asfRequireDest,
+		},
+		{
+			name: "pass - ClearAsfRequireAuth",
+			setter: func(s *AccountSet) {
+				s.ClearAsfRequireAuth()
+			},
+			expected: asfRequireAuth,
+		},
+		{
+			name: "pass - ClearAsfDisallowXRP",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowXRP()
+			},
+			expected: asfDisallowXRP,
+		},
+		{
+			name: "pass - ClearAsfDisableMaster",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisableMaster()
+			},
+			expected: asfDisableMaster,
+		},
+		{
+			name: "pass - ClearAsfAccountTxnID",
+			setter: func(s *AccountSet) {
+				s.ClearAsfAccountTxnID()
+			},
+			expected: asfAccountTxnID,
+		},
+		{
+			name: "pass - asfNoFreeze",
+			setter: func(s *AccountSet) {
+				s.ClearAsfNoFreeze()
+			},
+			expected: asfNoFreeze,
+		},
+		{
+			name: "pass - asfGlobalFreeze",
+			setter: func(s *AccountSet) {
+				s.ClearAsfGlobalFreeze()
+			},
+			expected: asfGlobalFreeze,
+		},
+		{
+			name: "pass - ClearAsfDefaultRipple",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDefaultRipple()
+			},
+			expected: asfDefaultRipple,
+		},
+		{
+			name: "pass - ClearAsfDepositAuth",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDepositAuth()
+			},
+			expected: asfDepositAuth,
+		},
+		{
+			name: "pass - ClearAsfAuthorizedNFTokenMinter",
+			setter: func(s *AccountSet) {
+				s.ClearAsfAuthorizedNFTokenMinter()
+			},
+			expected: asfAuthorizedNFTokenMinter,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingNFTokenOffer",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingNFTokenOffer()
+			},
+			expected: asfDisallowIncomingNFTokenOffer,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingCheck",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingCheck()
+			},
+			expected: asfDisallowIncomingCheck,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingPayChan",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingPayChan()
+			},
+			expected: asfDisallowIncomingPayChan,
+		},
+		{
+			name: "pass - ClearAsfDisallowIncomingTrustLine",
+			setter: func(s *AccountSet) {
+				s.ClearAsfDisallowIncomingTrustLine()
+			},
+			expected: asfDisallowIncomingTrustLine,
+		},
+		{
+			name: "pass - ClearAsfAllowTrustLineClawback",
+			setter: func(s *AccountSet) {
+				s.ClearAsfAllowTrustLineClawback()
+			},
+			expected: asfAllowTrustLineClawback,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &AccountSet{}
+			tt.setter(s)
+			if s.ClearFlag != tt.expected {
+				t.Errorf("Expected Flags to be %d, got %d", tt.expected, s.Flags)
+			}
+		})
+	}
+}
+
 func TestAccountSet_Validate(t *testing.T) {
 	testCases := []struct {
 		name       string
-		accountSet AccountSet
+		accountSet *AccountSet
 		valid      bool
 	}{
 		{
 			name: "pass - Valid AccountSet",
-			accountSet: AccountSet{
+			accountSet: &AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
@@ -105,18 +359,18 @@ func TestAccountSet_Validate(t *testing.T) {
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
 				ClearFlag:    1,
-				Domain:       "A5B21758D2318FA2C",
-				EmailHash:    "1234567890abcdef",
-				MessageKey:   "messagekey",
 				SetFlag:      2,
-				TransferRate: 1000000001,
-				TickSize:     5,
+				Domain:       types.Domain("A5B21758D2318FA2C"),
+				EmailHash:    types.EmailHash("1234567890abcdef"),
+				MessageKey:   types.MessageKey("messageKey"),
+				TransferRate: types.TransferRate(1000000001),
+				TickSize:     types.TickSize(5),
 			},
 			valid: true,
 		},
 		{
 			name: "pass - Valid AccountSet without options, just the commons fields",
-			accountSet: AccountSet{
+			accountSet: &AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
@@ -130,7 +384,7 @@ func TestAccountSet_Validate(t *testing.T) {
 		},
 		{
 			name: "fail - Invalid AccountSet with high SetFlag",
-			accountSet: AccountSet{
+			accountSet: &AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
@@ -145,7 +399,7 @@ func TestAccountSet_Validate(t *testing.T) {
 		},
 		{
 			name: "fail - Invalid AccountSet with low TickSize",
-			accountSet: AccountSet{
+			accountSet: &AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
@@ -154,13 +408,13 @@ func TestAccountSet_Validate(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-				TickSize: 2, // too low
+				TickSize: types.TickSize(2),
 			},
 			valid: false,
 		},
 		{
 			name: "fail - Invalid AccountSet with high TickSize",
-			accountSet: AccountSet{
+			accountSet: &AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
@@ -169,13 +423,13 @@ func TestAccountSet_Validate(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-				TickSize: 16, // too high
+				TickSize: types.TickSize(16),
 			},
 			valid: false,
 		},
 		{
 			name: "pass - Valid AccountSet TickSize set to 0 to disable it",
-			accountSet: AccountSet{
+			accountSet: &AccountSet{
 				BaseTx: BaseTx{
 					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
 					TransactionType: AccountSetTx,
@@ -184,7 +438,7 @@ func TestAccountSet_Validate(t *testing.T) {
 					SigningPubKey:   "ghijk",
 					TxnSignature:    "A1B2C3D4E5F6",
 				},
-				TickSize: 0,
+				TickSize: types.TickSize(0),
 			},
 			valid: true,
 		},
@@ -201,6 +455,185 @@ func TestAccountSet_Validate(t *testing.T) {
 			}
 			if err == nil && !tc.valid {
 				t.Errorf("Validation should have failed for %s", tc.name)
+			}
+		})
+	}
+}
+
+func TestAccountSet_Flatten(t *testing.T) {
+	tests := []struct {
+		name       string
+		accountSet *AccountSet
+		expected   FlatTransaction
+	}{
+		{
+			name: "pass - Flatten with all fields",
+			accountSet: &AccountSet{
+				BaseTx: BaseTx{
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+					TransactionType: AccountSetTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				ClearFlag:     asfRequireDest,
+				Domain:        types.Domain("A5B21758D2318FA2C"),
+				EmailHash:     types.EmailHash("1234567890abcdef"),
+				MessageKey:    types.MessageKey("messagekey"),
+				NFTokenMinter: types.NFTokenMinter("nftokenminter"),
+				SetFlag:       asfRequireAuth,
+				TransferRate:  types.TransferRate(1000000001),
+				TickSize:      types.TickSize(5),
+				WalletLocator: types.WalletLocator("walletLocator"),
+				WalletSize:    types.WalletSize(10),
+			},
+			expected: FlatTransaction{
+				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+				"TransactionType": "AccountSet",
+				"Fee":             "1",
+				"Sequence":        uint32(1234),
+				"SigningPubKey":   "ghijk",
+				"TxnSignature":    "A1B2C3D4E5F6",
+				"ClearFlag":       asfRequireDest,
+				"Domain":          "A5B21758D2318FA2C",
+				"EmailHash":       "1234567890abcdef",
+				"MessageKey":      "messagekey",
+				"NFTokenMinter":   "nftokenminter",
+				"SetFlag":         asfRequireAuth,
+				"TransferRate":    uint32(1000000001),
+				"TickSize":        uint8(5),
+				"WalletLocator":   "walletLocator",
+				"WalletSize":      uint32(10),
+			},
+		},
+		{
+			name: "pass - Flatten with empty string or value set to 0 to remove/disable the fields",
+			accountSet: &AccountSet{
+				BaseTx: BaseTx{
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+					TransactionType: AccountSetTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+				Domain:        types.Domain(""),
+				EmailHash:     types.EmailHash(""),
+				TickSize:      types.TickSize(0),
+				TransferRate:  types.TransferRate(0),
+				NFTokenMinter: types.NFTokenMinter(""),
+				WalletLocator: types.WalletLocator(""),
+				WalletSize:    types.WalletSize(0),
+			},
+			expected: FlatTransaction{
+				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+				"TransactionType": "AccountSet",
+				"Fee":             "1",
+				"Sequence":        uint32(1234),
+				"SigningPubKey":   "ghijk",
+				"TxnSignature":    "A1B2C3D4E5F6",
+				"Domain":          "",
+				"EmailHash":       "",
+				"TickSize":        uint8(0),
+				"TransferRate":    uint32(0),
+				"NFTokenMinter":   "",
+				"WalletLocator":   "",
+				"WalletSize":      uint32(0),
+			},
+		},
+		{
+			name: "pass - Flatten with required strings only",
+			accountSet: &AccountSet{
+				BaseTx: BaseTx{
+					Account:         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+					TransactionType: AccountSetTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+					SigningPubKey:   "ghijk",
+					TxnSignature:    "A1B2C3D4E5F6",
+				},
+			},
+			expected: FlatTransaction{
+				"Account":         "r7dawf5hSG71faLnCrPiAQ5DkXfVxULPs",
+				"TransactionType": "AccountSet",
+				"Fee":             "1",
+				"Sequence":        uint32(1234),
+				"SigningPubKey":   "ghijk",
+				"TxnSignature":    "A1B2C3D4E5F6",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			flattened := tc.accountSet.Flatten()
+			require.Equal(t, tc.expected, flattened)
+		})
+	}
+}
+
+func TestAccountSet_TxType(t *testing.T) {
+	entry := &AccountSet{}
+	assert.Equal(t, AccountSetTx, entry.TxType())
+}
+
+func TestAccountSet_Unmarshal(t *testing.T) {
+	tests := []struct {
+		name                 string
+		jsonData             string
+		expectUnmarshalError bool
+	}{
+		{
+			name: "pass - full AccountSet",
+			jsonData: `{
+				"TransactionType": "AccountSet",
+				"Account": "rEXAMPLE123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"Fee": "10",
+				"Sequence": 1,
+				"Flags": 2147483648,
+				"LastLedgerSequence": 12345678,
+				"SetFlag": 5,
+				"ClearFlag": 6,
+				"Domain": "6578616D706C652E636F6D", 
+				"EmailHash": "98B4375E1D753E5A3F075C48A3C9AE0A",
+				"MessageKey": "020000000000000000000000000000000000000000000000000000000000000001",
+				"TransferRate": 1005000000,
+				"TickSize": 5,
+				"NFTokenMinter": "rNFTMINTERADDRESS123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+				"NetworkID": 1024,
+				"Memos": [
+					{
+						"Memo": {
+							"MemoType": "74657374",
+							"MemoData": "48656C6C6F2C20584D52"
+						}
+					}
+				],
+				"Signers": [
+					{
+					"Signer": {
+						"Account": "rSIGNER123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+						"SigningPubKey": "ED5F93AB1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF12345678",
+						"TxnSignature": "3045022100D7F67A81F343...B87D"
+					}
+					}
+				],
+				"SourceTag": 12345,
+				"SigningPubKey": "ED5F93AB1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF12345678",
+				"TxnSignature": "3045022100D7F67A81F343...B87D"
+			}`,
+			expectUnmarshalError: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var accountSet AccountSet
+			err := json.Unmarshal([]byte(tt.jsonData), &accountSet)
+			if (err != nil) != tt.expectUnmarshalError {
+				t.Errorf("Unmarshal() error = %v, expectUnmarshalError %v", err, tt.expectUnmarshalError)
+				return
 			}
 		})
 	}

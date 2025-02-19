@@ -32,7 +32,7 @@ type CheckCreate struct {
 	// The Check can only credit the destination with the same currency (from the same issuer, for non-XRP currencies). For non-XRP amounts, the nested field names MUST be lower-case.
 	SendMax types.CurrencyAmount
 	// (Optional) Arbitrary tag that identifies the reason for the Check, or a hosted recipient to pay.
-	DestinationTag uint32 `json:",omitempty"`
+	DestinationTag *uint32 `json:",omitempty"`
 	// (Optional) Time after which the Check is no longer valid, in seconds since the Ripple Epoch.
 	Expiration uint32 `json:",omitempty"`
 	// (Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this Check.
@@ -51,8 +51,8 @@ func (c *CheckCreate) Flatten() FlatTransaction {
 	flattened["TransactionType"] = c.TxType().String()
 	flattened["Destination"] = c.Destination.String()
 	flattened["SendMax"] = c.SendMax.Flatten()
-	if c.DestinationTag != 0 {
-		flattened["DestinationTag"] = c.DestinationTag
+	if c.DestinationTag != nil {
+		flattened["DestinationTag"] = *c.DestinationTag
 	}
 	if c.Expiration != 0 {
 		flattened["Expiration"] = c.Expiration
