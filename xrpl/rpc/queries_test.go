@@ -1364,7 +1364,7 @@ func TestClient_GetLedger(t *testing.T) {
 					CloseTimeResolution: 10,
 					Closed:              true,
 					LedgerHash:          "E6DB7365949BF9814D76BCC730B01818EB9136A89DB224F3F9F5C3E53B52551C",
-					LedgerIndex:         "71768313",
+					LedgerIndex:         common.LedgerIndex(71768313),
 					ParentCloseTime:     714214402,
 					ParentHash:          "B508A40BB4E88A778EFDD6B8DB1872C531D4E58B5EE5A4A9E7D7F5C5F3715D6F",
 					TransactionHash:     "FC6FFCB71B2527DDD630EE5409D38913B4D4C026AA6C3B14A3E9D4ED45CFE30D",
