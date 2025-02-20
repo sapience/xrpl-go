@@ -70,7 +70,7 @@ func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) {
 	}
 
 	cfg := &Config{
-		HTTPClient: &http.Client{Timeout: time.Duration(1) * time.Second}, // default timeout value - allow custom timme out?
+		HTTPClient: &http.Client{Timeout: time.Duration(100) * time.Second}, // default timeout value - allow custom timme out?
 		URL:        url,
 		Headers: map[string][]string{
 			"Content-Type": {"application/json"},
