@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,11 +19,13 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
 	subscribe "github.com/Peersyst/xrpl-go/xrpl/queries/subscription"
+	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
-	"github.com/gorilla/websocket"
+	wstypes "github.com/Peersyst/xrpl-go/xrpl/websocket/types"
+	ws "github.com/gorilla/websocket"
 
 	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
@@ -41,7 +42,18 @@ var (
 
 type Client struct {
 	cfg  ClientConfig
-	conn *websocket.Conn
+	conn *Connection
+
+	// Channels
+	errChan chan error
+	requestChan chan *ClientResponse
+	ledgerClosedChan chan *streamtypes.LedgerStream
+	validationChan chan *streamtypes.ValidationStream
+	transactionChan chan *streamtypes.TransactionStream
+	peerStatusChan chan *streamtypes.PeerStatusStream
+	orderBookChan chan *streamtypes.OrderBookStream
+	bookChangesChan chan *streamtypes.BookChangesStream
+	consensusChan chan *streamtypes.ConsensusStream
 
 	idCounter atomic.Uint32
 	NetworkID uint32
@@ -52,38 +64,30 @@ type Client struct {
 func NewClient(cfg ClientConfig) *Client {
 	return &Client{
 		cfg: cfg,
+		requestChan: make(chan *ClientResponse),
+		errChan: make(chan error),
 	}
 }
 
-// Connect opens a websocket connection to the server.
+// Connect opens a websocket connection to the server. It starts reading messages in a goroutine.
 func (c *Client) Connect() error {
-	conn, _, err := websocket.DefaultDialer.Dial(c.cfg.host, nil)
+	c.conn = NewConnection(c.cfg.host)
+	err := c.conn.Connect()
 	if err != nil {
 		return err
 	}
-	c.conn = conn
+	go c.readMessages()
 	return nil
 }
 
 // Disconnect closes the websocket connection.
-func (c *Client) Disconnect() {
-	if c.conn == nil {
-		return
-	}
-	if err := c.conn.Close(); err != nil {
-		fmt.Println("Error closing websocket connection: ", err)
-	}
-	c.conn = nil
+func (c *Client) Disconnect() error {
+	return c.conn.Disconnect()
 }
 
 // IsConnected returns true if the client is connected to the server.
 func (c *Client) IsConnected() bool {
-	return c.conn != nil
-}
-
-// Conn returns the websocket connection.
-func (c *Client) Conn() *websocket.Conn {
-	return c.conn
+	return c.conn.IsConnected()
 }
 
 // Autofill fills in the missing fields in a transaction.
@@ -189,19 +193,13 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 		return nil, ErrNotConnectedToServer
 	}
 
-	err = c.Conn().WriteMessage(websocket.TextMessage, msg)
+	err = c.conn.WriteMessage(msg)
 	if err != nil {
+		fmt.Println("Error writing message: ", err)
 		return nil, err
 	}
 
-	_, v, err := c.Conn().ReadMessage()
-	if err != nil {
-		return nil, err
-	}
-	jDec := json.NewDecoder(bytes.NewReader(json.RawMessage(v)))
-	jDec.UseNumber()
-	var res ClientResponse
-	err = jDec.Decode(&res)
+	res, err := c.awaitResponse(int(id))
 	if err != nil {
 		return nil, err
 	}
@@ -213,7 +211,7 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 		return nil, err
 	}
 
-	return &res, nil
+	return res, nil
 }
 
 // Submit sends a transaction to the server and returns the response.
@@ -304,6 +302,7 @@ func (c *Client) Subscribe(req *subscribe.Request) (*subscribe.Response, error) 
 	}
 	return &lr, nil
 }
+
 
 func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*requests.TxResponse, error) {
 	var txResponse *requests.TxResponse
@@ -585,4 +584,82 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error {
 	}
 
 	return nil
+}
+
+func (c *Client) awaitResponse(id int) (*ClientResponse, error) {
+	for {
+		select {
+		case res := <-c.requestChan:
+			if res.ID == id {
+				return res, nil
+			}
+		case <-time.After(c.cfg.timeout):
+			return nil, errors.New("request timed out after " + c.cfg.timeout.String())
+		}
+	}
+}
+
+func (c *Client) handleMessage(message []byte) {
+	var stream wstypes.Message
+	json.Unmarshal(message, &stream)
+	if stream.IsRequest() {
+		c.handleRequest(message)
+	} else if stream.IsStream() {
+		c.handleStream(stream.Type, message)
+	}
+}
+
+func (c *Client) handleRequest(message []byte) {
+	var res ClientResponse
+	err := json.Unmarshal(message, &res)
+	if err != nil {
+		fmt.Println("error decoding message: ", err)
+	}
+	c.requestChan <- &res
+}
+
+func (c *Client) handleStream(t streamtypes.Type, message []byte) {
+	switch t {
+	case streamtypes.LedgerStreamType:
+		var ledger streamtypes.LedgerStream
+		json.Unmarshal(message, &ledger)
+		c.ledgerClosedChan <- &ledger
+	case streamtypes.TransactionStreamType:
+		var transaction streamtypes.TransactionStream
+		json.Unmarshal(message, &transaction)
+		c.transactionChan <- &transaction
+	case streamtypes.ValidationStreamType:
+		var validation streamtypes.ValidationStream
+		json.Unmarshal(message, &validation)
+		c.validationChan <- &validation
+	case streamtypes.PeerStatusStreamType:
+		var peerStatus streamtypes.PeerStatusStream
+		json.Unmarshal(message, &peerStatus)
+		c.peerStatusChan <- &peerStatus
+	case streamtypes.ConsensusStreamType:
+		var consensus streamtypes.ConsensusStream
+		json.Unmarshal(message, &consensus)
+		c.consensusChan <- &consensus
+	default:
+		fmt.Println("unknown stream type: ", t)
+	}
+}
+
+func (c *Client) readMessages() {
+	for {
+		message, err := c.conn.ReadMessage()
+		if ws.IsCloseError(err) || ws.IsUnexpectedCloseError(err) {
+			err := c.conn.Connect()
+			if err != nil {
+				c.errChan <- err
+				break
+			}
+		} else if err != nil {
+			c.errChan <- err
+			break
+		} else {
+			// Send the message to the channel
+			c.handleMessage(message)
+		}
+	}
 }

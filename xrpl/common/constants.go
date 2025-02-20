@@ -10,7 +10,7 @@ const (
 	DefaultHost       = "localhost"
 	DefaultMaxRetries = 10
 	DefaultRetryDelay = 1 * time.Second
-
+	DefaultTimeout    = 10 * time.Second
 	DefaultFeeCushion float32 = 1.2
 	DefaultMaxFeeXRP  float32 = 2
 )

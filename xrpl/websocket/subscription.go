@@ -1,29 +1,130 @@
 package websocket
 
 import (
-	"log"
-
 	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
 )
 
-func (c *Client) SubscribeWS(msgChan chan []byte) error {
-	// Start a goroutine to read messages
+// Handle errors
+func (c *Client) OnError(
+	errHandler func (err error),
+) {
 	go func() {
-		defer close(msgChan)
-		for {
-			_, message, err := c.conn.ReadMessage()
-			if err != nil {
-				log.Println("Error reading message:", err)
-				return
-			}
-			// Send the message to the channel
-			msgChan <- message
+		defer close(c.errChan)
+		for err := range c.errChan {
+			errHandler(err)
 		}
 	}()
-	return nil
 }
 
+// Ledger streams
+
+// OnLedgerClosed handles "ledgerClosed" events.
+// It returns a stream of ledger streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnLedgerClosed(
-	func (ledger *streamtypes.LedgerStream),
+	handler func (ledger *streamtypes.LedgerStream),
 ) {
+	c.ledgerClosedChan = make(chan *streamtypes.LedgerStream)
+	go func() {
+		defer close(c.ledgerClosedChan)
+		for ledger := range c.ledgerClosedChan {
+			handler(ledger)
+		}
+	}()
+}
+
+// Validation streams
+
+// OnValidationReceived handles "validationReceived" events.
+// It returns a stream of validation streams. Creates a new channel and a goroutine to handle the stream.
+func (c *Client) OnValidationReceived(
+	handler func (validation *streamtypes.ValidationStream),
+) {
+	c.validationChan = make(chan *streamtypes.ValidationStream)
+	go func() {
+		defer close(c.validationChan)
+		for validation := range c.validationChan {
+			handler(validation)
+		}
+	}()
+}
+
+// Transaction streams
+
+// OnTransactions handles "transactions" events.
+// It returns a stream of transaction streams. Creates a new channel and a goroutine to handle the stream.
+func (c *Client) OnTransactions(
+	handler func (transactions *streamtypes.TransactionStream),
+) {
+	c.transactionChan = make(chan *streamtypes.TransactionStream)
+	go func() {
+		defer close(c.transactionChan)
+		for transaction := range c.transactionChan {
+			handler(transaction)
+		}
+	}()
+}
+
+// Peer status streams
+
+// OnPeerStatusChange handles "peerStatus" events.
+// It returns a stream of peer status streams. Creates a new channel and a goroutine to handle the stream.
+func (c *Client) OnPeerStatusChange(
+	handler func (peerStatus *streamtypes.PeerStatusStream),
+) {
+	c.peerStatusChan = make(chan *streamtypes.PeerStatusStream)
+	go func() {
+		defer close(c.peerStatusChan)
+		for peerStatus := range c.peerStatusChan {
+			handler(peerStatus)
+		}
+	}()
+}
+
+// Orderbook streams
+
+// OnOrderbook handles "orderbook" events.
+// It returns a stream of orderbook streams. Creates a new channel and a goroutine to handle the stream.
+func (c *Client) OnOrderbook(
+	handler func (orderbook *streamtypes.OrderBookStream),
+) {
+	c.orderBookChan = make(chan *streamtypes.OrderBookStream)
+	go func() {
+		defer close(c.orderBookChan)
+		for orderbook := range c.orderBookChan {
+			handler(orderbook)
+		}
+	}()
+}
+
+// Book changes streams
+
+// OnBookChanges handles "bookChanges" events.
+// It returns a stream of book changes streams. Creates a new channel and a goroutine to handle the stream.
+func (c *Client) OnBookChanges(
+	handler func (bookChanges *streamtypes.BookChangesStream),
+) {
+	c.bookChangesChan = make(chan *streamtypes.BookChangesStream)
+	go func() {
+		defer close(c.bookChangesChan)
+		for bookChanges := range c.bookChangesChan {
+			handler(bookChanges)
+		}
+	}()	
+}
+
+// Consensus streams
+
+// OnConsensusPhase handles "consensusPhase" events.
+// It returns a stream of consensus phase streams. Creates a new channel and a goroutine to handle the stream.
+func (c *Client) OnConsensusPhase(
+	handler func (consensusPhase *streamtypes.ConsensusStream),
+) {
+
+	c.consensusChan = make(chan *streamtypes.ConsensusStream)
+	go func() {
+		defer close(c.consensusChan)
+		for consensusPhase := range c.consensusChan {
+			handler(consensusPhase)
+		}
+	}()
 }
