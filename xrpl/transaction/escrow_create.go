@@ -45,7 +45,7 @@ type EscrowCreate struct {
 	// (Optional) Hex value representing a PREIMAGE-SHA-256 crypto-condition. The funds can only be delivered to the recipient if this condition is fulfilled. If the condition is not fulfilled before the expiration time specified in the CancelAfter field, the XRP can only revert to the sender.
 	Condition string `json:",omitempty"`
 	// (Optional) Arbitrary tag to further specify the destination for this escrowed payment, such as a hosted recipient at the destination address.
-	DestinationTag uint32 `json:",omitempty"`
+	DestinationTag *uint32 `json:",omitempty"`
 }
 
 // TxType returns the transaction type for this transaction (EscrowCreate).
@@ -73,8 +73,8 @@ func (e *EscrowCreate) Flatten() FlatTransaction {
 	if e.Condition != "" {
 		flattened["Condition"] = e.Condition
 	}
-	if e.DestinationTag != 0 {
-		flattened["DestinationTag"] = e.DestinationTag
+	if e.DestinationTag != nil {
+		flattened["DestinationTag"] = *e.DestinationTag
 	}
 
 	return flattened
