@@ -1,13 +1,13 @@
 package websocket
 
 import (
-	"encoding/json"
 	"errors"
 	"reflect"
 	"testing"
 
 	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
@@ -70,11 +70,11 @@ func TestClient_SendRequest(t *testing.T) {
 							"destination_account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 							"public_key":          "aBR7mdD75Ycs8DRhMgQ4EMUEmBArF8SEh1hfjrT2V9DQTLNbJVqw",
 							"public_key_hex":      "03CFD18E689434F032A4E84C63E2A3A6472D684EAF4FD52CA67742F3E24BAE81B2",
-							"settle_delay":        json.Number("60"),
+							"settle_delay":        float64(60),
 						},
 					},
 					"ledger_hash":  "1EDBBA3C793863366DF5B31C2174B6B5E6DF6DB89A7212B86838489148E2A581",
-					"ledger_index": json.Number("71766314"),
+					"ledger_index": common.LedgerIndex(71766314),
 					"validated":    true,
 				},
 			},
@@ -93,11 +93,11 @@ func TestClient_SendRequest(t *testing.T) {
 								"destination_account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 								"public_key":          "aBR7mdD75Ycs8DRhMgQ4EMUEmBArF8SEh1hfjrT2V9DQTLNbJVqw",
 								"public_key_hex":      "03CFD18E689434F032A4E84C63E2A3A6472D684EAF4FD52CA67742F3E24BAE81B2",
-								"settle_delay":        60,
+								"settle_delay":        float64(60),
 							},
 						},
 						"ledger_hash":  "1EDBBA3C793863366DF5B31C2174B6B5E6DF6DB89A7212B86838489148E2A581",
-						"ledger_index": 71766314,
+						"ledger_index": common.LedgerIndex(71766314),
 						"validated":    true,
 					},
 				},
@@ -120,11 +120,11 @@ func TestClient_SendRequest(t *testing.T) {
 							"destination_account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 							"public_key":          "aBR7mdD75Ycs8DRhMgQ4EMUEmBArF8SEh1hfjrT2V9DQTLNbJVqw",
 							"public_key_hex":      "03CFD18E689434F032A4E84C63E2A3A6472D684EAF4FD52CA67742F3E24BAE81B2",
-							"settle_delay":        json.Number("60"),
+							"settle_delay":        float64(60),
 						},
 					},
 					"ledger_hash":  "1EDBBA3C793863366DF5B31C2174B6B5E6DF6DB89A7212B86838489148E2A581",
-					"ledger_index": json.Number("71766314"),
+					"ledger_index": common.LedgerIndex(71766314),
 					"validated":    true,
 				},
 			},
@@ -143,11 +143,11 @@ func TestClient_SendRequest(t *testing.T) {
 								"destination_account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 								"public_key":          "aBR7mdD75Ycs8DRhMgQ4EMUEmBArF8SEh1hfjrT2V9DQTLNbJVqw",
 								"public_key_hex":      "03CFD18E689434F032A4E84C63E2A3A6472D684EAF4FD52CA67742F3E24BAE81B2",
-								"settle_delay":        60,
+								"settle_delay":        float64(60),
 							},
 						},
 						"ledger_hash":  "1EDBBA3C793863366DF5B31C2174B6B5E6DF6DB89A7212B86838489148E2A581",
-						"ledger_index": 71766314,
+						"ledger_index": common.LedgerIndex(71766314),
 						"validated":    true,
 					},
 				},
@@ -171,11 +171,11 @@ func TestClient_SendRequest(t *testing.T) {
 							"destination_account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
 							"public_key":          "aBR7mdD75Ycs8DRhMgQ4EMUEmBArF8SEh1hfjrT2V9DQTLNbJVqw",
 							"public_key_hex":      "03CFD18E689434F032A4E84C63E2A3A6472D684EAF4FD52CA67742F3E24BAE81B2",
-							"settle_delay":        json.Number("60"),
+							"settle_delay":        float64(60),
 						},
 					},
 					"ledger_hash":  "1EDBBA3C793863366DF5B31C2174B6B5E6DF6DB89A7212B86838489148E2A581",
-					"ledger_index": json.Number("71766314"),
+					"ledger_index": common.LedgerIndex(71766314),
 					"validated":    true,
 				},
 			},

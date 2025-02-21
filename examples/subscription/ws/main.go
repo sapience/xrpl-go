@@ -15,7 +15,7 @@ func main() {
 	fmt.Println("⏳ Connecting to testnet...")
 	client := websocket.NewClient(
 		websocket.NewClientConfig().
-			WithHost("wss://s.altnet.rippletest.net:51233").
+			WithHost("wss://s.devnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 	defer client.Disconnect()
@@ -53,7 +53,7 @@ func main() {
 		fmt.Println("Transactions received: ", transactions.Hash)
 	})
 
-	for {
+	for i := 0; i < 10; i++ {
 		res, err := client.GetAccountTransactions(&account.TransactionsRequest{
 			Account: "rnPWcg6oixrHX9RSPMYJmaXRb7csfECE5T",
 		})
@@ -66,4 +66,16 @@ func main() {
 
 		time.Sleep(5 * time.Second)
 	}
+
+	_, err = client.Unsubscribe(&subscribe.UnsubscribeRequest{
+		Streams: []string{"ledger", "transactions"},
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("Unsubscribed from streams: ledger, transactions")
+
+	time.Sleep(10 * time.Second)
 }
