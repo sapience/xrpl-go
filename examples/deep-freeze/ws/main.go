@@ -209,7 +209,7 @@ func main() {
 
 	submitAndWait(client, trustSet, issuer)
 
-	// -----------------------------------------------------
+	// ------------------- SHOULD FAIL ⬇️ ------------------
 
 	// Sending payment from Holder 1 to Holder 2 (which should fail), Holder 1 can't decrease its balance
 	fmt.Println("⏳ Sending payment from Holder 1 to Holder 2 (which should fail). Holder 1 can't decrease its balance...")
@@ -226,6 +226,8 @@ func main() {
 	}
 	submitAndWait(client, payment, holderWallet1)
 
+	// ------------------- SHOULD FAIL ⬇️ ------------------
+
 	// Sending payment from Holder 2 to Holder 1 (which should fail), Holder 1 can't increase its balance
 	fmt.Println("⏳ Sending payment from Holder 2 to Holder 1 (which should fail). Holder 1 can't increase its balance...")
 	payment = &transactions.Payment{
@@ -240,6 +242,25 @@ func main() {
 		},
 	}
 	submitAndWait(client, payment, holderWallet2)
+
+	// ------------------- SHOULD FAIL ⬇️ ------------------
+
+	// Creating OfferCreate transaction (which should fail), Holder 1 can't create an offer
+	fmt.Println("⏳ Creating OfferCreate transaction (which should fail). Holder 1 can't create an offer...")
+	offerCreate := &transactions.OfferCreate{
+		BaseTx: transactions.BaseTx{
+			Account: types.Address(holderWallet1.ClassicAddress),
+		},
+		TakerPays: types.IssuedCurrencyAmount{
+			Currency: currency.ConvertStringToHex(currencyCode),
+			Issuer:   types.Address(issuer.ClassicAddress),
+			Value:    "10",
+		},
+		TakerGets: types.XRPCurrencyAmount(10),
+	}
+	submitAndWait(client, offerCreate, holderWallet1)
+
+	// -----------------------------------------------------
 
 	// Unfreezing and Deep Unfreezing holder 1
 	fmt.Println("⏳ Unfreezing and Deep Unfreezing holder 1 trustline...")
@@ -257,6 +278,8 @@ func main() {
 	trustSet.SetClearDeepFreezeFlag()
 	submitAndWait(client, trustSet, issuer)
 
+	// -----------------------------------------------------
+
 	// Sending payment from Holder 1 to Holder 2 (which should succeed), Holder 1 can decrease its balance
 	fmt.Println("⏳ Sending payment from Holder 1 to Holder 2 (which should succeed). Holder 1 can decrease its balance...")
 	payment = &transactions.Payment{
@@ -271,6 +294,8 @@ func main() {
 		},
 	}
 	submitAndWait(client, payment, holderWallet1)
+
+	// -----------------------------------------------------
 
 	// Sending payment from Holder 2 to Holder 1 (which should succeed), Holder 1 can increase its balance
 	fmt.Println("⏳ Sending payment from Holder 2 to Holder 1 (which should succeed). Holder 1 can increase its balance...")

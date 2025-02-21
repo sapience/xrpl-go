@@ -82,6 +82,8 @@ func (*OfferCreate) TxType() TxType {
 func (o *OfferCreate) Flatten() FlatTransaction {
 	flattened := o.BaseTx.Flatten()
 
+	flattened["TransactionType"] = o.TxType().String()
+
 	if o.Expiration != 0 {
 		flattened["Expiration"] = o.Expiration
 	}
