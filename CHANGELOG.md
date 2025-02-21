@@ -17,20 +17,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Examples to DeepFreeze a trustline for the rpc and websocket clients in the `examples` directory.
 
-### Fix
+### Fixed
 
 #### xrpl
 
-Updates some fields in AccountSet and Payment related transactions to a pointer to allow 0 or "" values. For example:
+- Updates some fields in AccountSet and Payment related transactions to a pointer to allow 0 or "" values. For example:
 
-- DestinationTag
-- TickSize
-- Domain
-- WalletLocator
-- WalletSize
-- TransferRate
+  - `DestinationTag`
+  - `TickSize`
+  - `Domain`
+  - `WalletLocator`
+  - `WalletSize`
+  - `TransferRate`
 
-Adds more tests for setting some `asf` flags in `AccountSet`.
+- Adds more tests for setting some `asf` flags in `AccountSet`.
+- Fixed `Transaction` field in `account_tx` response.
 
 ## [v0.1.5]
 
