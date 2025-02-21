@@ -13,7 +13,7 @@ type LedgerStream struct {
 	// starting with the following ledger version.
 	FeeBase int `json:"fee_base"`
 	// (May be omitted) The reference transaction cost in "fee units". If the XRPFees
-	//amendment is enabled, this field is permanently omitted as it will no longer be relevant.
+	// amendment is enabled, this field is permanently omitted as it will no longer be relevant.
 	FeeRef int `json:"fee_ref"`
 	// The identifying hash of the ledger version that was closed.
 	LedgerHash common.LedgerHash `json:"ledger_hash"`

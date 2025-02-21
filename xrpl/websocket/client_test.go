@@ -36,9 +36,11 @@ func TestClient_Disconnect(t *testing.T) {
 func TestClient_IsConnected(t *testing.T) {
 	ws := NewClient(NewClientConfig().WithHost("wss://s.altnet.rippletest.net"))
 	require.False(t, ws.IsConnected())
-	ws.Connect()
+	err := ws.Connect()
+	require.NoError(t, err)
 	require.True(t, ws.IsConnected())
-	ws.Disconnect()
+	err = ws.Disconnect()
+	require.NoError(t, err)
 	require.False(t, ws.IsConnected())
 }
 
@@ -208,9 +210,7 @@ func TestClient_SendRequest(t *testing.T) {
 			})
 			defer s.Close()
 			url, _ := testutil.ConvertHTTPToWS(s.URL)
-			cl := &Client{cfg: ClientConfig{
-				host: url,
-			}}
+			cl := NewClient(NewClientConfig().WithHost(url))
 			if err := cl.Connect(); err != nil {
 				t.Errorf("Error connecting to server: %v", err)
 			}

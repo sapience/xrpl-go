@@ -14,7 +14,7 @@ var (
 // It provides a method to read messages from the connection.
 type Connection struct {
 	conn *websocket.Conn
-	url string
+	url  string
 }
 
 // NewConnection creates a new Connection.

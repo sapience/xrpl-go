@@ -51,7 +51,7 @@ func TestLedgerResponse(t *testing.T) {
 		"close_time_resolution": 10,
 		"closed": true,
 		"ledger_hash": "1723099E269C77C4BDE86C83FA6415D71CF20AA5CB4A94E5C388ED97123FB55B",
-		"ledger_index": "54300932",
+		"ledger_index": 54300932,
 		"parent_close_time": 638329240,
 		"parent_hash": "DF68B3BCABD31097634BABF0BDC87932D43D26E458BFEEFD36ADF2B3D94998C0",
 		"total_coins": "99991024049648900",

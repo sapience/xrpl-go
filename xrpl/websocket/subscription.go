@@ -6,7 +6,7 @@ import (
 
 // Handle errors
 func (c *Client) OnError(
-	errHandler func (err error),
+	errHandler func(err error),
 ) {
 	go func() {
 		defer close(c.errChan)
@@ -21,7 +21,7 @@ func (c *Client) OnError(
 // OnLedgerClosed handles "ledgerClosed" events.
 // It returns a stream of ledger streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnLedgerClosed(
-	handler func (ledger *streamtypes.LedgerStream),
+	handler func(ledger *streamtypes.LedgerStream),
 ) {
 	c.ledgerClosedChan = make(chan *streamtypes.LedgerStream)
 	go func() {
@@ -37,7 +37,7 @@ func (c *Client) OnLedgerClosed(
 // OnValidationReceived handles "validationReceived" events.
 // It returns a stream of validation streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnValidationReceived(
-	handler func (validation *streamtypes.ValidationStream),
+	handler func(validation *streamtypes.ValidationStream),
 ) {
 	c.validationChan = make(chan *streamtypes.ValidationStream)
 	go func() {
@@ -53,7 +53,7 @@ func (c *Client) OnValidationReceived(
 // OnTransactions handles "transactions" events.
 // It returns a stream of transaction streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnTransactions(
-	handler func (transactions *streamtypes.TransactionStream),
+	handler func(transactions *streamtypes.TransactionStream),
 ) {
 	c.transactionChan = make(chan *streamtypes.TransactionStream)
 	go func() {
@@ -69,7 +69,7 @@ func (c *Client) OnTransactions(
 // OnPeerStatusChange handles "peerStatus" events.
 // It returns a stream of peer status streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnPeerStatusChange(
-	handler func (peerStatus *streamtypes.PeerStatusStream),
+	handler func(peerStatus *streamtypes.PeerStatusStream),
 ) {
 	c.peerStatusChan = make(chan *streamtypes.PeerStatusStream)
 	go func() {
@@ -85,7 +85,7 @@ func (c *Client) OnPeerStatusChange(
 // OnOrderbook handles "orderbook" events.
 // It returns a stream of orderbook streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnOrderbook(
-	handler func (orderbook *streamtypes.OrderBookStream),
+	handler func(orderbook *streamtypes.OrderBookStream),
 ) {
 	c.orderBookChan = make(chan *streamtypes.OrderBookStream)
 	go func() {
@@ -101,7 +101,7 @@ func (c *Client) OnOrderbook(
 // OnBookChanges handles "bookChanges" events.
 // It returns a stream of book changes streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnBookChanges(
-	handler func (bookChanges *streamtypes.BookChangesStream),
+	handler func(bookChanges *streamtypes.BookChangesStream),
 ) {
 	c.bookChangesChan = make(chan *streamtypes.BookChangesStream)
 	go func() {
@@ -109,7 +109,7 @@ func (c *Client) OnBookChanges(
 		for bookChanges := range c.bookChangesChan {
 			handler(bookChanges)
 		}
-	}()	
+	}()
 }
 
 // Consensus streams
@@ -117,7 +117,7 @@ func (c *Client) OnBookChanges(
 // OnConsensusPhase handles "consensusPhase" events.
 // It returns a stream of consensus phase streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnConsensusPhase(
-	handler func (consensusPhase *streamtypes.ConsensusStream),
+	handler func(consensusPhase *streamtypes.ConsensusStream),
 ) {
 
 	c.consensusChan = make(chan *streamtypes.ConsensusStream)

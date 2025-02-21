@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	subscribe "github.com/Peersyst/xrpl-go/xrpl/queries/subscription"
+	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
@@ -30,26 +33,37 @@ func main() {
 	fmt.Println("✅ Connected to testnet")
 	fmt.Println()
 
-
-	res, err := client.Subscribe(&subscribe.Request{
-		Streams: []string{"ledger"},
+	_, err := client.Subscribe(&subscribe.Request{
+		Streams: []string{"ledger", "transactions"},
 	})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println(res)
+	client.OnError(func(err error) {
+		fmt.Println("Error: ", err)
+	})
 
-	msgChan := make(chan []byte)
+	client.OnLedgerClosed(func(ledger *streamtypes.LedgerStream) {
+		fmt.Println("Ledger closed: ", ledger.LedgerIndex)
+	})
 
-	err = client.SubscribeWS(msgChan)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	client.OnTransactions(func(transactions *streamtypes.TransactionStream) {
+		fmt.Println("Transactions received: ", transactions.Hash)
+	})
 
-	for msg := range msgChan {
-		fmt.Println(string(msg))
+	for {
+		res, err := client.GetAccountTransactions(&account.TransactionsRequest{
+			Account: "rnPWcg6oixrHX9RSPMYJmaXRb7csfECE5T",
+		})
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("Transactions: ", len(res.Transactions))
+
+		time.Sleep(5 * time.Second)
 	}
 }

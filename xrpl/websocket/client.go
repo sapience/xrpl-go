@@ -45,15 +45,15 @@ type Client struct {
 	conn *Connection
 
 	// Channels
-	errChan chan error
-	requestChan chan *ClientResponse
+	errChan          chan error
+	requestChan      chan *ClientResponse
 	ledgerClosedChan chan *streamtypes.LedgerStream
-	validationChan chan *streamtypes.ValidationStream
-	transactionChan chan *streamtypes.TransactionStream
-	peerStatusChan chan *streamtypes.PeerStatusStream
-	orderBookChan chan *streamtypes.OrderBookStream
-	bookChangesChan chan *streamtypes.BookChangesStream
-	consensusChan chan *streamtypes.ConsensusStream
+	validationChan   chan *streamtypes.ValidationStream
+	transactionChan  chan *streamtypes.TransactionStream
+	peerStatusChan   chan *streamtypes.PeerStatusStream
+	orderBookChan    chan *streamtypes.OrderBookStream
+	bookChangesChan  chan *streamtypes.BookChangesStream
+	consensusChan    chan *streamtypes.ConsensusStream
 
 	idCounter atomic.Uint32
 	NetworkID uint32
@@ -63,15 +63,15 @@ type Client struct {
 // This client will open and close a websocket connection for each request.
 func NewClient(cfg ClientConfig) *Client {
 	return &Client{
-		cfg: cfg,
+		cfg:         cfg,
 		requestChan: make(chan *ClientResponse),
-		errChan: make(chan error),
+		errChan:     make(chan error),
+		conn:        NewConnection(cfg.host),
 	}
 }
 
 // Connect opens a websocket connection to the server. It starts reading messages in a goroutine.
 func (c *Client) Connect() error {
-	c.conn = NewConnection(c.cfg.host)
 	err := c.conn.Connect()
 	if err != nil {
 		return err
@@ -302,7 +302,6 @@ func (c *Client) Subscribe(req *subscribe.Request) (*subscribe.Response, error) 
 	}
 	return &lr, nil
 }
-
 
 func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*requests.TxResponse, error) {
 	var txResponse *requests.TxResponse
@@ -601,7 +600,7 @@ func (c *Client) awaitResponse(id int) (*ClientResponse, error) {
 
 func (c *Client) handleMessage(message []byte) {
 	var stream wstypes.Message
-	json.Unmarshal(message, &stream)
+	c.unmarshalMessage(message, &stream)
 	if stream.IsRequest() {
 		c.handleRequest(message)
 	} else if stream.IsStream() {
@@ -611,34 +610,37 @@ func (c *Client) handleMessage(message []byte) {
 
 func (c *Client) handleRequest(message []byte) {
 	var res ClientResponse
-	err := json.Unmarshal(message, &res)
-	if err != nil {
-		fmt.Println("error decoding message: ", err)
-	}
+	c.unmarshalMessage(message, &res)
 	c.requestChan <- &res
+}
+
+func (c *Client) unmarshalMessage(message []byte, v any) {
+	if err := json.Unmarshal(message, v); err != nil {
+		c.errChan <- err
+	}
 }
 
 func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 	switch t {
 	case streamtypes.LedgerStreamType:
 		var ledger streamtypes.LedgerStream
-		json.Unmarshal(message, &ledger)
+		c.unmarshalMessage(message, &ledger)
 		c.ledgerClosedChan <- &ledger
 	case streamtypes.TransactionStreamType:
 		var transaction streamtypes.TransactionStream
-		json.Unmarshal(message, &transaction)
+		c.unmarshalMessage(message, &transaction)
 		c.transactionChan <- &transaction
 	case streamtypes.ValidationStreamType:
 		var validation streamtypes.ValidationStream
-		json.Unmarshal(message, &validation)
+		c.unmarshalMessage(message, &validation)
 		c.validationChan <- &validation
 	case streamtypes.PeerStatusStreamType:
 		var peerStatus streamtypes.PeerStatusStream
-		json.Unmarshal(message, &peerStatus)
+		c.unmarshalMessage(message, &peerStatus)
 		c.peerStatusChan <- &peerStatus
 	case streamtypes.ConsensusStreamType:
 		var consensus streamtypes.ConsensusStream
-		json.Unmarshal(message, &consensus)
+		c.unmarshalMessage(message, &consensus)
 		c.consensusChan <- &consensus
 	default:
 		fmt.Println("unknown stream type: ", t)
@@ -648,16 +650,17 @@ func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 func (c *Client) readMessages() {
 	for {
 		message, err := c.conn.ReadMessage()
-		if ws.IsCloseError(err) || ws.IsUnexpectedCloseError(err) {
-			err := c.conn.Connect()
-			if err != nil {
-				c.errChan <- err
-				break
+		switch {
+		case ws.IsCloseError(err) || ws.IsUnexpectedCloseError(err):
+			connErr := c.conn.Connect()
+			if connErr != nil {
+				c.errChan <- connErr
+				return // Break out of outer loop
 			}
-		} else if err != nil {
+		case err != nil:
 			c.errChan <- err
-			break
-		} else {
+			return // Break out of outer loop
+		default:
 			// Send the message to the channel
 			c.handleMessage(message)
 		}

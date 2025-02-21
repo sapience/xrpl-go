@@ -16,13 +16,13 @@ import (
 // certain events happen.
 type Request struct {
 	common.BaseRequest
-	Streams          []string        `json:"streams,omitempty"`
-	Accounts         []types.Address `json:"accounts,omitempty"`
-	AccountsProposed []types.Address `json:"accounts_proposed,omitempty"`
-	Books            []streamtypes.OrderBook     `json:"books,omitempty"`
-	URL              string          `json:"url,omitempty"`
-	URLUsername      string          `json:"url_username,omitempty"`
-	URLPassword      string          `json:"url_password,omitempty"`
+	Streams          []string                `json:"streams,omitempty"`
+	Accounts         []types.Address         `json:"accounts,omitempty"`
+	AccountsProposed []types.Address         `json:"accounts_proposed,omitempty"`
+	Books            []streamtypes.OrderBook `json:"books,omitempty"`
+	URL              string                  `json:"url,omitempty"`
+	URLUsername      string                  `json:"url_username,omitempty"`
+	URLPassword      string                  `json:"url_password,omitempty"`
 }
 
 func (*Request) Method() string {

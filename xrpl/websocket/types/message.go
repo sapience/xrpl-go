@@ -6,7 +6,7 @@ import (
 
 // Message is a struct that represents a message from the websocket.
 // It contains every field that can be found in a websocket message.
-type Message struct{
+type Message struct {
 	// Type field from all streams
 	Type types.Type `json:"type"`
 	// ID field from all websocket requests
