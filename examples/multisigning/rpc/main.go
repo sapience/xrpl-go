@@ -11,6 +11,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
@@ -122,7 +123,7 @@ func main() {
 		BaseTx: transaction.BaseTx{
 			Account: master.GetAddress(),
 		},
-		Domain: strings.ToUpper(hex.EncodeToString([]byte("example.com"))),
+		Domain: types.Domain(strings.ToUpper(hex.EncodeToString([]byte("example.com")))),
 	}
 
 	flatAs := as.Flatten()
