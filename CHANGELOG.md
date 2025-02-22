@@ -13,10 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Configurable time out for the RPC client. New default time of 5 seconds instead of 1 second.
 
-#### examples
-
-- Examples to DeepFreeze a trustline for the rpc and websocket clients in the `examples` directory.
-
 ### Fixed
 
 #### xrpl
