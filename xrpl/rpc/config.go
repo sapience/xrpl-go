@@ -31,7 +31,7 @@ type Config struct {
 	// Faucet config
 	faucetProvider common.FaucetProvider
 
-	timeOut time.Duration
+	timeout time.Duration
 }
 
 type ConfigOpt func(c *Config)
@@ -60,9 +60,9 @@ func WithFaucetProvider(fp common.FaucetProvider) ConfigOpt {
 	}
 }
 
-func WithTimeOut(timeOut time.Duration) ConfigOpt {
+func WithTimeout(timeout time.Duration) ConfigOpt {
 	return func(c *Config) {
-		c.timeOut = timeOut
+		c.timeout = timeout
 	}
 }
 
@@ -78,7 +78,7 @@ func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) {
 	}
 
 	cfg := &Config{
-		HTTPClient: &http.Client{Timeout: common.DefaultTimeOut},
+		HTTPClient: &http.Client{Timeout: common.DefaultTimeout},
 		URL:        url,
 		Headers: map[string][]string{
 			"Content-Type": {"application/json"},

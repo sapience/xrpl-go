@@ -79,9 +79,9 @@ func TestWithFaucetProvider(t *testing.T) {
 	require.Equal(t, fp, cfg.faucetProvider)
 }
 
-func TestWithTimeOut(t *testing.T) {
+func TestWithTimeout(t *testing.T) {
 	timeOut := 11 * time.Second // 11 seconds
-	cfg, _ := NewClientConfig("http://s1.ripple.com:51234", WithTimeOut(timeOut))
+	cfg, _ := NewClientConfig("http://s1.ripple.com:51234", WithTimeout(timeOut))
 
-	require.Equal(t, timeOut, cfg.timeOut)
+	require.Equal(t, timeOut, cfg.timeout)
 }

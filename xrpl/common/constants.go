@@ -15,5 +15,5 @@ const (
 	DefaultMaxFeeXRP  float32 = 2
 
 	// 5 seconds default timeout
-	DefaultTimeOut = 5 * time.Second
+	DefaultTimeout = 5 * time.Second
 )
