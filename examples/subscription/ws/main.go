@@ -53,7 +53,7 @@ func main() {
 		fmt.Println("Transactions received: ", transactions.Hash)
 	})
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 3; i++ {
 		res, err := client.GetAccountTransactions(&account.TransactionsRequest{
 			Account: "rnPWcg6oixrHX9RSPMYJmaXRb7csfECE5T",
 		})
