@@ -4,16 +4,14 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	ledgerqueries "github.com/Peersyst/xrpl-go/xrpl/queries/ledger"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 )
 
 func main() {
 	cfg, err := rpc.NewClientConfig(
 		"https://s.altnet.rippletest.net:51234/",
-		rpc.WithMaxFeeXRP(5.0),
-		rpc.WithFeeCushion(1.5),
 		rpc.WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 	if err != nil {
@@ -22,15 +20,12 @@ func main() {
 
 	client := rpc.NewClient(cfg)
 
-	txs, err := client.GetAccountTransactions(&account.TransactionsRequest{
-		Account:     "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH",
-		LedgerIndex: common.LedgerIndex(4976692),
+	ledger, err := client.GetLedger(&ledgerqueries.Request{
+		LedgerIndex: common.LedgerIndex(5115183),
 	})
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
-
-	fmt.Println("Number of transactions:", len(txs.Transactions))
-	fmt.Println(txs.Transactions[0].Tx)
+	fmt.Println(ledger.Ledger.LedgerHash)
+	fmt.Println(ledger.Ledger.LedgerIndex)
 }

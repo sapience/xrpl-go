@@ -33,22 +33,22 @@ func TestAccountTransactionsRequest(t *testing.T) {
 
 func TestAccountTransactionsResponse(t *testing.T) {
 	s := TransactionsResponse{
-		Account: "abc",
+		Account:        "abc",
 		LedgerIndexMin: 100,
 		LedgerIndexMax: 120,
-		Limit: 10,
-		Marker: "123",
+		Limit:          10,
+		Marker:         "123",
 		Transactions: []Transaction{
 			{
-				Hash: "def",
-				LedgerHash: "ghi",
-				LedgerIndex: 10,
+				Hash:         "def",
+				LedgerHash:   "ghi",
+				LedgerIndex:  10,
 				CloseTimeISO: "2021-01-01T00:00:00Z",
 				Tx: map[string]any{
 					"TransactionType": "Payment",
-					"Account": "abc",
-					"Destination": "def",
-					"Amount": "100",
+					"Account":         "abc",
+					"Destination":     "def",
+					"Amount":          "100",
 				},
 			},
 		},
@@ -84,4 +84,3 @@ func TestAccountTransactionsResponse(t *testing.T) {
 		t.Error(err)
 	}
 }
-
