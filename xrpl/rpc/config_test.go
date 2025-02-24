@@ -3,6 +3,7 @@ package rpc
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
@@ -76,4 +77,11 @@ func TestWithFaucetProvider(t *testing.T) {
 	cfg, _ := NewClientConfig("http://s1.ripple.com:51234", WithFaucetProvider(fp))
 
 	require.Equal(t, fp, cfg.faucetProvider)
+}
+
+func TestWithTimeout(t *testing.T) {
+	timeOut := 11 * time.Second // 11 seconds
+	cfg, _ := NewClientConfig("http://s1.ripple.com:51234", WithTimeout(timeOut))
+
+	require.Equal(t, timeOut, cfg.timeout)
 }

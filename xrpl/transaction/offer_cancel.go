@@ -37,6 +37,9 @@ func (*OfferCancel) TxType() TxType {
 // Flatten returns the flattened map of the OfferCancel transaction.
 func (o *OfferCancel) Flatten() FlatTransaction {
 	flattened := o.BaseTx.Flatten()
+
+	flattened["TransactionType"] = o.TxType().String()
+
 	flattened["OfferSequence"] = o.OfferSequence
 	return flattened
 }
