@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
@@ -15,6 +16,8 @@ var (
 type Connection struct {
 	conn *websocket.Conn
 	url  string
+
+	mu sync.Mutex
 }
 
 // NewConnection creates a new Connection.
@@ -26,6 +29,9 @@ func NewConnection(url string) *Connection {
 
 // Connect opens a websocket connection to the server.
 func (c *Connection) Connect() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	conn, _, err := websocket.DefaultDialer.Dial(c.url, nil)
 	if err != nil {
 		return err
@@ -37,6 +43,9 @@ func (c *Connection) Connect() error {
 // Disconnect closes the websocket connection and sets the connection to nil.
 // It returns an error if the connection is not connected.
 func (c *Connection) Disconnect() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if !c.IsConnected() {
 		return ErrNotConnected
 	}
@@ -57,6 +66,9 @@ func (c *Connection) IsConnected() bool {
 // It returns the message and an error if the message is not read.
 // This method is blocking, it will block until a message is red.
 func (c *Connection) ReadMessage() ([]byte, error) {
+	if !c.IsConnected() {
+		return nil, ErrNotConnected
+	}
 	_, message, err := c.conn.ReadMessage()
 	if err != nil {
 		return nil, err
