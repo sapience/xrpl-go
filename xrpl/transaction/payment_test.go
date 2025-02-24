@@ -3,9 +3,9 @@ package transaction
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPayment_TxType(t *testing.T) {
@@ -108,7 +108,7 @@ func TestPayment_Validate(t *testing.T) {
 					Value:    "1",
 				},
 				Destination:    "rDgHn3T2P7eNAaoHh43iRudhAUjAHmDgEP",
-				DestinationTag: 123,
+				DestinationTag: types.DestinationTag(123),
 			},
 			wantValid: true,
 			wantErr:   false,
@@ -430,7 +430,7 @@ func TestPayment_Flatten(t *testing.T) {
 	tests := []struct {
 		name     string
 		payment  *Payment
-		expected string
+		expected FlatTransaction
 	}{
 		{
 			name: "pass - flatten with all fields",
@@ -442,22 +442,22 @@ func TestPayment_Flatten(t *testing.T) {
 					Flags:           tfRippleNotDirect | tfPartialPayment,
 				},
 				Amount: types.IssuedCurrencyAmount{
-					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Currency: "USD",
+					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Value:    "1",
 				},
 				DeliverMax: types.IssuedCurrencyAmount{
-					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Currency: "USD",
+					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Value:    "2",
 				},
 				DeliverMin: types.IssuedCurrencyAmount{
-					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Currency: "USD",
+					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Value:    "0.5",
 				},
 				Destination:    "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
-				DestinationTag: 12345,
+				DestinationTag: types.DestinationTag(12345),
 				InvoiceID:      "ABC123",
 				Paths: [][]PathStep{
 					{
@@ -474,54 +474,54 @@ func TestPayment_Flatten(t *testing.T) {
 					},
 				},
 				SendMax: types.IssuedCurrencyAmount{
-					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Currency: "USD",
+					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Value:    "3",
 				},
 			},
-			expected: `{
-				"Account": "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
+			expected: FlatTransaction{
+				"Account":         "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
 				"TransactionType": "Payment",
-				"Fee": "1000",
-				"Flags": 196608,
-				"Amount": {
-					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+				"Fee":             "1000",
+				"Flags":           uint32(196608),
+				"Amount": map[string]interface{}{
 					"currency": "USD",
-					"value": "1"
+					"issuer":   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value":    "1",
 				},
-				"DeliverMax": {
-					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+				"DeliverMax": map[string]interface{}{
 					"currency": "USD",
-					"value": "2"
+					"issuer":   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value":    "2",
 				},
-				"DeliverMin": {
-					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+				"DeliverMin": map[string]interface{}{
 					"currency": "USD",
-					"value": "0.5"
+					"issuer":   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value":    "0.5",
 				},
-				"Destination": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
-				"DestinationTag": 12345,
-				"InvoiceID": "ABC123",
-				"Paths": [
-					[
-						{
-							"account": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+				"Destination":    "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+				"DestinationTag": uint32(12345),
+				"InvoiceID":      "ABC123",
+				"Paths": [][]interface{}{
+					{
+						map[string]interface{}{
+							"account":  "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 							"currency": "USD",
-							"issuer": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+							"issuer":   "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 						},
-						{
-							"account": "r4D6ptkGYmpNpUWTtc3MpKcdcEtsonrbVf",
+						map[string]interface{}{
+							"account":  "r4D6ptkGYmpNpUWTtc3MpKcdcEtsonrbVf",
 							"currency": "USD",
-							"issuer": "rJwrc4W71kVUNTJX77qGHySRJj7BxSgQqt"
-						}
-					]
-				],
-				"SendMax": {
-					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+							"issuer":   "rJwrc4W71kVUNTJX77qGHySRJj7BxSgQqt",
+						},
+					},
+				},
+				"SendMax": map[string]interface{}{
 					"currency": "USD",
-					"value": "3"
-				}
-			}`,
+					"issuer":   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value":    "3",
+				},
+			},
 		},
 		{
 			name: "pass - flatten with minimal fields",
@@ -532,32 +532,30 @@ func TestPayment_Flatten(t *testing.T) {
 					Fee:             types.XRPCurrencyAmount(1000),
 				},
 				Amount: types.IssuedCurrencyAmount{
-					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Currency: "USD",
+					Issuer:   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 					Value:    "1",
 				},
 				Destination: "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
 			},
-			expected: `{
-				"Account": "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
+			expected: FlatTransaction{
+				"Account":         "rJwjoukM94WwKwxM428V7b9npHjpkSvif",
 				"TransactionType": "Payment",
-				"Fee": "1000",
-				"Amount": {
-					"issuer": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn", 
-					"currency": "USD", 
-					"value": "1"
+				"Fee":             "1000",
+				"Amount": map[string]interface{}{
+					"currency": "USD",
+					"issuer":   "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+					"value":    "1",
 				},
-				"Destination": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn"
-			}`,
+				"Destination": "r3dFAtNXwRFCyBGz5BcWhMj9a4cm7qkzzn",
+			},
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := testutil.CompareFlattenAndExpected(tt.payment.Flatten(), []byte(tt.expected))
-			if err != nil {
-				t.Error(err)
-			}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			require.Equal(t, test.expected, test.payment.Flatten())
+
 		})
 	}
 }

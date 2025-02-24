@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.1.6]
+
+### Fixed
+
+#### xrpl
+
+- Updates some fields in AccountSet and Payment related transactions to a pointer to allow 0 or "" values. For example:
+  - `DestinationTag`
+  - `TickSize`
+  - `Domain`
+  - `WalletLocator`
+  - `WalletSize`
+  - `TransferRate`
+
+- Adds more tests for setting some `asf` flags in `AccountSet`.
+- Fixed `Transaction` field in `account_tx` response.
+
+## [v0.1.5]
+
+### Added
+
+#### xrpl
+
+Support for the XLS-77d (deep freeze)
+
 ## [v0.1.4]
 
 ### Added
