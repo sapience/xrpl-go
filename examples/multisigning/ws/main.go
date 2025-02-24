@@ -10,6 +10,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
@@ -81,7 +82,7 @@ func main() {
 		BaseTx: transaction.BaseTx{
 			Account: master.GetAddress(),
 		},
-		SignerQuorum: 2,
+		SignerQuorum: uint32(2),
 		SignerEntries: []ledger.SignerEntryWrapper{
 			{
 				SignerEntry: ledger.SignerEntry{
@@ -95,22 +96,32 @@ func main() {
 					SignerWeight: 1,
 				},
 			},
+			{
+				SignerEntry: ledger.SignerEntry{
+					Account:      "XVYRdEocC28DRx94ZFGP3qNJ1D5Ln7ecXFMd3vREB5Pesju",
+					SignerWeight: 1,
+				},
+			},
 		},
 	}
 
+	fmt.Println("⏳ Flattening transaction...")
 	flatSs := ss.Flatten()
 
+	fmt.Println("⏳ Autofilling transaction...")
 	if err := client.Autofill(&flatSs); err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	fmt.Println("⏳ Signing transaction...")
 	blob, _, err := master.Sign(flatSs)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	fmt.Println("⏳ Submitting transaction...")
 	res, err := client.SubmitAndWait(blob, false)
 	if err != nil {
 		fmt.Println(err)
@@ -127,7 +138,7 @@ func main() {
 		BaseTx: transaction.BaseTx{
 			Account: master.GetAddress(),
 		},
-		Domain: strings.ToUpper(hex.EncodeToString([]byte("example.com"))),
+		Domain: types.Domain(strings.ToUpper(hex.EncodeToString([]byte("example.com")))),
 	}
 
 	flatAs := as.Flatten()

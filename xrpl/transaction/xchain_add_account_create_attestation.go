@@ -152,19 +152,19 @@ func (x *XChainAddAccountCreateAttestation) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !addresscodec.IsValidClassicAddress(x.AttestationRewardAccount.String()) {
+	if !addresscodec.IsValidAddress(x.AttestationRewardAccount.String()) {
 		return false, ErrInvalidAttestationRewardAccount
 	}
 
-	if !addresscodec.IsValidClassicAddress(x.AttestationSignerAccount.String()) {
+	if !addresscodec.IsValidAddress(x.AttestationSignerAccount.String()) {
 		return false, ErrInvalidAttestationSignerAccount
 	}
 
-	if !addresscodec.IsValidClassicAddress(x.Destination.String()) {
+	if !addresscodec.IsValidAddress(x.Destination.String()) {
 		return false, ErrInvalidDestination
 	}
 
-	if !addresscodec.IsValidClassicAddress(x.OtherChainSource.String()) {
+	if !addresscodec.IsValidAddress(x.OtherChainSource.String()) {
 		return false, ErrInvalidOtherChainSource
 	}
 

@@ -11,6 +11,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
@@ -70,7 +71,7 @@ func main() {
 		BaseTx: transaction.BaseTx{
 			Account: master.GetAddress(),
 		},
-		SignerQuorum: 2,
+		SignerQuorum: uint32(2),
 		SignerEntries: []ledger.SignerEntryWrapper{
 			{
 				SignerEntry: ledger.SignerEntry{
@@ -81,6 +82,12 @@ func main() {
 			{
 				SignerEntry: ledger.SignerEntry{
 					Account:      w2.GetAddress(),
+					SignerWeight: 1,
+				},
+			},
+			{
+				SignerEntry: ledger.SignerEntry{
+					Account:      "XVYRdEocC28DRx94ZFGP3qNJ1D5Ln7ecXFMd3vREB5Pesju",
 					SignerWeight: 1,
 				},
 			},
@@ -116,7 +123,7 @@ func main() {
 		BaseTx: transaction.BaseTx{
 			Account: master.GetAddress(),
 		},
-		Domain: strings.ToUpper(hex.EncodeToString([]byte("example.com"))),
+		Domain: types.Domain(strings.ToUpper(hex.EncodeToString([]byte("example.com")))),
 	}
 
 	flatAs := as.Flatten()

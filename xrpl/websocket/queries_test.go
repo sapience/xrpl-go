@@ -14,12 +14,13 @@ import (
 	ledgertypes "github.com/Peersyst/xrpl-go/xrpl/queries/ledger/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/nft"
 	nfttypes "github.com/Peersyst/xrpl-go/xrpl/queries/nft/types"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/oracle"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/path"
 	pathtypes "github.com/Peersyst/xrpl-go/xrpl/queries/path/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
 	servertypes "github.com/Peersyst/xrpl-go/xrpl/queries/server/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/utility"
-	transaction "github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/testutil"
 	"github.com/gorilla/websocket"
@@ -565,6 +566,125 @@ func TestClient_GetAccountLines(t *testing.T) {
 
 			result, err := cl.GetAccountLines(&account.LinesRequest{
 				Account: "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn",
+			})
+
+			if tt.expectedErr != nil {
+				if err == nil || err.Error() != tt.expectedErr.Error() {
+					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
+
+			if !reflect.DeepEqual(tt.expected, result) {
+				t.Errorf("Expected %+v, but got %+v", tt.expected, result)
+			}
+
+			cl.Disconnect()
+		})
+	}
+}
+
+func TestClient_GetGatewayBalances(t *testing.T) {
+	tests := []struct {
+		name           string
+		serverMessages []map[string]any
+		expected       *account.GatewayBalancesResponse
+		expectedErr    error
+	}{
+		{
+			name: "Successful response",
+			serverMessages: []map[string]any{{
+				"id": 1,
+				"result": map[string]any{
+					"account": "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+					"assets": map[string][]map[string]string{
+						"r9F6wk8HkXrgYWoJ7fsv4VrUBVoqDVtzkH": {
+							{
+								"currency": "BTC",
+								"value":    "5444166510000000e-26",
+							},
+						},
+					},
+					"balances": map[string][]map[string]string{
+						"rKm4uWpg9tfwbVSeATv4KxDe6mpE9yPkgJ": {
+							{
+								"currency": "EUR",
+								"value":    "29826.1965999999",
+							},
+						},
+					},
+					"ledger_hash":  "61DDBF304AF6E8101576BF161D447CA8E4F0170DDFBEAFFD993DC9383D443388",
+					"ledger_index": 14483212,
+					"obligations": map[string]string{
+						"EUR": "5599.716599999999",
+						"USD": "12345.9",
+					},
+				},
+			}},
+			expected: &account.GatewayBalancesResponse{
+				Account: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+				Assets: map[string][]account.GatewayBalance{
+					"r9F6wk8HkXrgYWoJ7fsv4VrUBVoqDVtzkH": {
+						{
+							Currency: "BTC",
+							Value:    "5444166510000000e-26",
+						},
+					},
+				},
+				Balances: map[string][]account.GatewayBalance{
+					"rKm4uWpg9tfwbVSeATv4KxDe6mpE9yPkgJ": {
+						{
+							Currency: "EUR",
+							Value:    "29826.1965999999",
+						},
+					},
+				},
+				LedgerHash:  "61DDBF304AF6E8101576BF161D447CA8E4F0170DDFBEAFFD993DC9383D443388",
+				LedgerIndex: 14483212,
+				Obligations: map[string]string{
+					"EUR": "5599.716599999999",
+					"USD": "12345.9",
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name:           "Error response",
+			serverMessages: []map[string]any{{"error": "actNotFound"}},
+			expected:       nil,
+			expectedErr:    errors.New("incorrect id"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
+			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
+				for _, m := range tt.serverMessages {
+					err := c.WriteJSON(m)
+					if err != nil {
+						t.Errorf("error writing message: %v", err)
+					}
+				}
+			})
+			defer s.Close()
+
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
+					host: url,
+				},
+			}
+
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
+			result, err := cl.GetGatewayBalances(&account.GatewayBalancesRequest{
+				Account: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
 			})
 
 			if tt.expectedErr != nil {
@@ -2726,6 +2846,90 @@ func TestClient_GetServerState(t *testing.T) {
 			}
 
 			result, err := cl.GetServerState(&server.StateRequest{})
+
+			if tt.expectedErr != nil {
+				if err == nil || err.Error() != tt.expectedErr.Error() {
+					t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+			}
+
+			if !reflect.DeepEqual(tt.expected, result) {
+				t.Errorf("Expected %+v, but got %+v", tt.expected, result)
+			}
+
+			cl.Disconnect()
+		})
+	}
+}
+
+func TestClient_GetAggregatePrice(t *testing.T) {
+	tests := []struct {
+		name           string
+		serverMessages []map[string]any
+		expected       *oracle.GetAggregatePriceResponse
+		expectedErr    error
+	}{
+		{
+			name: "Valid aggregate price",
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"median": "123.45",
+						"time":   float64(1234567890),
+					},
+				},
+			},
+			expected: &oracle.GetAggregatePriceResponse{
+				Median: "123.45",
+				Time:   1234567890,
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "error response",
+			serverMessages: []map[string]any{
+				{
+					"id":     1,
+					"error":  "invalidParams",
+					"status": "error",
+					"type":   "response",
+				},
+			},
+			expected:    nil,
+			expectedErr: errors.New("invalidParams"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ws := &testutil.MockWebSocketServer{Msgs: tt.serverMessages}
+			s := ws.TestWebSocketServer(func(c *websocket.Conn) {
+				for _, m := range tt.serverMessages {
+					err := c.WriteJSON(m)
+					if err != nil {
+						t.Errorf("error writing message: %v", err)
+					}
+				}
+			})
+			defer s.Close()
+
+			url, _ := testutil.ConvertHTTPToWS(s.URL)
+			cl := &Client{
+				cfg: ClientConfig{
+					host: url,
+				},
+			}
+
+			if err := cl.Connect(); err != nil {
+				t.Errorf("Error connecting to server: %v", err)
+			}
+
+			result, err := cl.GetAggregatePrice(&oracle.GetAggregatePriceRequest{})
 
 			if tt.expectedErr != nil {
 				if err == nil || err.Error() != tt.expectedErr.Error() {

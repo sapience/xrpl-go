@@ -42,7 +42,7 @@ type PaymentChannelCreate struct {
 	// This value is immutable; the channel can be closed earlier than this time but cannot remain open after this time.
 	CancelAfter uint32 `json:",omitempty"`
 	// (Optional) Arbitrary tag to further specify the destination for this payment channel, such as a hosted recipient at the destination address.
-	DestinationTag uint32 `json:",omitempty"`
+	DestinationTag *uint32 `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (PaymentChannelCreate).
@@ -63,8 +63,8 @@ func (p *PaymentChannelCreate) Flatten() FlatTransaction {
 		flattened["CancelAfter"] = p.CancelAfter
 	}
 
-	if p.DestinationTag != 0 {
-		flattened["DestinationTag"] = p.DestinationTag
+	if p.DestinationTag != nil {
+		flattened["DestinationTag"] = *p.DestinationTag
 	}
 
 	return flattened
@@ -78,7 +78,7 @@ func (p *PaymentChannelCreate) Validate() (bool, error) {
 	}
 
 	// check valid xrpl address for Destination
-	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
+	if !addresscodec.IsValidAddress(p.Destination.String()) {
 		return false, ErrInvalidDestination
 	}
 

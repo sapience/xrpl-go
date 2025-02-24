@@ -40,6 +40,7 @@ const (
 	// Enable Deposit Authorization on this account.
 	asfDepositAuth uint32 = 9
 	// Allow another account to mint and burn tokens on behalf of this account.
+	// To remove an authorized minter, enable this flag and omit the NFTokenMinter field.
 	asfAuthorizedNFTokenMinter uint32 = 10
 	// asf 11 is reserved for Hooks amendment
 	// Disallow other accounts from creating incoming NFTOffers
@@ -84,29 +85,29 @@ type AccountSet struct {
 	ClearFlag uint32 `json:",omitempty"`
 	// The domain that owns this account, as a string of hex representing the.
 	// ASCII for the domain in lowercase.
-	Domain string `json:",omitempty"`
-	// Hash of an email address to be used for generating an avatar image.
-	EmailHash types.Hash128 `json:",omitempty"`
+	Domain *string `json:",omitempty"`
+	// An arbitrary 128-bit value. Conventionally, clients treat this as the md5 hash of an email address to use for displaying a Gravatar image.
+	EmailHash *types.Hash128 `json:",omitempty"`
 	// Public key for sending encrypted messages to this account.
-	MessageKey string `json:",omitempty"`
+	MessageKey *string `json:",omitempty"`
 	// Sets an alternate account that is allowed to mint NFTokens on this
 	// account's behalf using NFTokenMint's `Issuer` field.
-	NFTokenMinter string `json:",omitempty"`
+	NFTokenMinter *string `json:",omitempty"`
 	// Integer flag to enable for this account.
 	SetFlag uint32 `json:",omitempty"`
 	// The fee to charge when users transfer this account's issued currencies,
 	// represented as billionths of a unit. Cannot be more than 2000000000 or less
 	// than 1000000000, except for the special case 0 meaning no fee.
-	TransferRate uint32 `json:",omitempty"`
+	TransferRate *uint32 `json:",omitempty"`
 	// Tick size to use for offers involving a currency issued by this address.
 	// The exchange rates of those offers is rounded to this many significant
 	// digits. Valid values are 3 to 15 inclusive, or 0 to disable.
-	TickSize uint8 `json:",omitempty"`
+	TickSize *uint8 `json:",omitempty"`
 	// (Optional) An arbitrary 256-bit value. If specified, the value is stored as
 	// part of the account but has no inherent meaning or requirements.
-	WalletLocator types.Hash256 `json:",omitempty"`
+	WalletLocator *types.Hash256 `json:",omitempty"`
 	// (Optional) Not used. This field is valid in AccountSet transactions but does nothing.
-	WalletSize uint32 `json:",omitempty"`
+	WalletSize *uint32 `json:",omitempty"`
 }
 
 // TxType returns the type of the transaction (AccountSet).
@@ -123,36 +124,40 @@ func (s *AccountSet) Flatten() FlatTransaction {
 	if s.ClearFlag != 0 {
 		flattened["ClearFlag"] = s.ClearFlag
 	}
-	if s.Domain != "" {
-		flattened["Domain"] = s.Domain
+	if s.Domain != nil {
+		flattened["Domain"] = *s.Domain
 	}
-	if s.EmailHash != "" {
+	if s.EmailHash != nil {
 		flattened["EmailHash"] = s.EmailHash.String()
 	}
-	if s.MessageKey != "" {
-		flattened["MessageKey"] = s.MessageKey
+	if s.MessageKey != nil {
+		flattened["MessageKey"] = *s.MessageKey
 	}
-	if s.NFTokenMinter != "" {
-		flattened["NFTokenMinter"] = s.NFTokenMinter
+	if s.NFTokenMinter != nil {
+		flattened["NFTokenMinter"] = *s.NFTokenMinter
 	}
 	if s.SetFlag != 0 {
 		flattened["SetFlag"] = s.SetFlag
 	}
-	if s.TransferRate != 0 {
-		flattened["TransferRate"] = s.TransferRate
+	if s.TransferRate != nil {
+		flattened["TransferRate"] = *s.TransferRate
 	}
-	if s.TickSize != 0 {
-		flattened["TickSize"] = s.TickSize
+	if s.TickSize != nil {
+		flattened["TickSize"] = *s.TickSize
 	}
-	if s.WalletLocator != "" {
+	if s.WalletLocator != nil {
 		flattened["WalletLocator"] = s.WalletLocator.String()
 	}
-	if s.WalletSize != 0 {
-		flattened["WalletSize"] = s.WalletSize
+	if s.WalletSize != nil {
+		flattened["WalletSize"] = *s.WalletSize
 	}
 
 	return flattened
 }
+
+// -----------------------------------
+// -------------- FLAGS --------------
+// -----------------------------------
 
 // SetRequireDestTag sets the require destination tag flag.
 func (s *AccountSet) SetRequireDestTag() {
@@ -402,7 +407,7 @@ func (s *AccountSet) Validate() (bool, error) {
 	}
 
 	// check if TickSize is within the valid range
-	if s.TickSize != 0 && (s.TickSize < MinTickSize || s.TickSize > MaxTickSize) {
+	if s.TickSize != nil && *s.TickSize != 0 && (*s.TickSize < MinTickSize || *s.TickSize > MaxTickSize) {
 		return false, ErrAccountSetInvalidTickSize
 	}
 

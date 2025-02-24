@@ -52,7 +52,7 @@ type Payment struct {
 	Destination types.Address
 
 	// (Optional) Arbitrary tag that identifies the reason for the payment to the destination, or a hosted recipient to pay.
-	DestinationTag uint32 `json:",omitempty"`
+	DestinationTag *uint32 `json:",omitempty"`
 
 	// (Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this payment
 	InvoiceID types.Hash256 `json:",omitempty"`
@@ -99,8 +99,8 @@ func (p *Payment) Flatten() FlatTransaction {
 		flattened["Destination"] = p.Destination.String()
 	}
 
-	if p.DestinationTag != 0 {
-		flattened["DestinationTag"] = p.DestinationTag
+	if p.DestinationTag != nil {
+		flattened["DestinationTag"] = *p.DestinationTag
 	}
 
 	if p.InvoiceID != "" {
@@ -170,7 +170,7 @@ func (p *Payment) Validate() (bool, error) {
 	}
 
 	// Check if Destination is a valid xrpl address
-	if !addresscodec.IsValidClassicAddress(p.Destination.String()) {
+	if !addresscodec.IsValidAddress(p.Destination.String()) {
 		return false, ErrInvalidDestination
 	}
 

@@ -5,7 +5,112 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.0.0]
+## [v0.1.6]
+
+### Fix
+
+#### xrpl
+
+Updates some fields in AccountSet and Payment related transactions to a pointer to allow 0 or "" values. For example:
+
+- DestinationTag
+- TickSize
+- Domain
+- WalletLocator
+- WalletSize
+- TransferRate
+
+Adds more tests for setting some `asf` flags in `AccountSet`.
+
+## [v0.1.5]
+
+### Added
+
+#### xrpl
+
+Support for the XLS-77d (deep freeze)
+
+## [v0.1.4]
+
+### Added
+
+#### xrpl
+
+- Added `GatewayBalances` and `GetAggregatePrice` queries.
+
+### Fixed
+
+#### xrpl
+
+- Updated SignerQuorum in SignerListSet to be an interface{} with uint32 type assertion instead of a value (uint32).
+  - This allows distinguishing between an unset (nil) and an explicitly set value, including 0 to delete a signer list.
+  - Ensures SignerQuorum is only included in the Flatten() output when explicitly defined.
+  - Updates the `Validate` method to make sure `SignerEntries` is not set when `SignerQuorum` is set to 0
+
+## [v0.1.3]
+
+### Added
+
+- Added `APIVersion` field to the `Client` struct.
+- Added `RippledAPIV1` and `RippledAPIV2` constants.
+- Added missing `ctid` field on `TxRequest` v1 query.
+- Added missing `NoRippleCheck` query (v1 & v2 support).
+
+### Changed
+
+- RippledAPIV2 is set as default API version. Queries and transactions are now compatible with Rippled v2 by default. V1 is still supported. In order to use v1, you need to use the `v1` package of each query type.
+
+## [v0.1.2]
+
+### Fixed
+
+#### xrpl
+
+- The `InfoRequest` for the `account_info` method had an incorrect field `signer_list` (an `s` was missing). The correct field is now `signer_lists`.  
+  Link to the documentation [here](https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/account-methods/account_info#request-format).
+
+## [v0.1.1]
+
+### Added
+
+#### address-codec
+
+- New `ErrInvalidAddressFormat` error.
+
+### Fixed
+
+#### binary-codec
+
+- Fixed `AccountID` X-Address decoding/encoding support.
+
+#### xrpl
+
+- Replace `IsValidClassicAddress` with `IsValidAddress` on transactions `Validate` methods:
+  - `AccountDelete`
+  - `AMMBid`
+  - `DepositPreauth`
+  - `EscrowCancel`
+  - `EscrowFinish`
+  - `EscrowCancel`
+  - `NFTokenBurn`
+  - `NFTokenCreateOffer`
+  - `NFTokenMint`
+  - `NFTokenOffer`
+  - `Payment`
+  - `PaymentChannelCreate`
+  - `SetRegularKey`
+  - `SignerListSet`
+  - `BaseTx`
+  - `XChainBridge`
+  - `XChainAccountCreateCommit`
+  - `XChainAddAccountCreateAttestation`
+  - `XChainAddClaimAttestation`
+  - `XChainClaim`
+  - `XChainCreateClaimID`
+- Master address derivation on wallet `FromSeed` function.
+- `NetworkID` field on `BaseTx` type.
+
+## [v0.1.0]
 
 ### Added
 

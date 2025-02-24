@@ -2,14 +2,15 @@ package rpc
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/currency"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/channel"
+	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
+	channel "github.com/Peersyst/xrpl-go/xrpl/queries/channel"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/ledger"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/nft"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/path"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/utility"
+	ledger "github.com/Peersyst/xrpl-go/xrpl/queries/ledger"
+	nft "github.com/Peersyst/xrpl-go/xrpl/queries/nft"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/oracle"
+	path "github.com/Peersyst/xrpl-go/xrpl/queries/path"
+	server "github.com/Peersyst/xrpl-go/xrpl/queries/server"
+	utility "github.com/Peersyst/xrpl-go/xrpl/queries/utility"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -151,6 +152,22 @@ func (c *Client) GetAccountTransactions(req *account.TransactionsRequest) (*acco
 		return nil, err
 	}
 	var acr account.TransactionsResponse
+	err = res.GetResult(&acr)
+	if err != nil {
+		return nil, err
+	}
+	return &acr, nil
+}
+
+// GetGatewayBalances retrieves the gateway balances for an account.
+// It takes a GatewayBalancesRequest as input and returns a GatewayBalancesResponse,
+// along with any error encountered.
+func (c *Client) GetGatewayBalances(req *account.GatewayBalancesRequest) (*account.GatewayBalancesResponse, error) {
+	res, err := c.Request(req)
+	if err != nil {
+		return nil, err
+	}
+	var acr account.GatewayBalancesResponse
 	err = res.GetResult(&acr)
 	if err != nil {
 		return nil, err
@@ -481,6 +498,24 @@ func (c *Client) GetServerState(req *server.StateRequest) (*server.StateResponse
 		return nil, err
 	}
 	var lr server.StateResponse
+	err = res.GetResult(&lr)
+	if err != nil {
+		return nil, err
+	}
+	return &lr, nil
+}
+
+// Oracle queries
+
+// GetAggregatePrice retrieves the aggregate price of an asset.
+// It takes a GetAggregatePriceRequest as input and returns a GetAggregatePriceResponse,
+// along with any error encountered.
+func (c *Client) GetAggregatePrice(req *oracle.GetAggregatePriceRequest) (*oracle.GetAggregatePriceResponse, error) {
+	res, err := c.Request(req)
+	if err != nil {
+		return nil, err
+	}
+	var lr oracle.GetAggregatePriceResponse
 	err = res.GetResult(&lr)
 	if err != nil {
 		return nil, err

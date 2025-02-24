@@ -115,12 +115,12 @@ func (n *NFTokenCreateOffer) Validate() (bool, error) {
 	}
 
 	// check owner is a valid xrpl address
-	if n.Owner != "" && !addresscodec.IsValidClassicAddress(n.Owner.String()) {
+	if n.Owner != "" && !addresscodec.IsValidAddress(n.Owner.String()) {
 		return false, ErrInvalidOwner
 	}
 
 	// check destination is a valid xrpl address
-	if n.Destination != "" && !addresscodec.IsValidClassicAddress(n.Destination.String()) {
+	if n.Destination != "" && !addresscodec.IsValidAddress(n.Destination.String()) {
 		return false, ErrInvalidDestination
 	}
 

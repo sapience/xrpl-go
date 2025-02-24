@@ -96,7 +96,7 @@ func IsSigner(signerData SignerData) (bool, error) {
 		return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")
 	}
 
-	validAccount := strings.TrimSpace(signerData.Account.String()) != "" && addresscodec.IsValidClassicAddress(signerData.Account.String())
+	validAccount := strings.TrimSpace(signerData.Account.String()) != "" && addresscodec.IsValidAddress(signerData.Account.String())
 	if !validAccount {
 		return false, errors.New("signers: Account should be a string")
 	}
@@ -157,7 +157,7 @@ func IsIssuedCurrency(input types.CurrencyAmount) (bool, error) {
 		return false, ErrInvalidTokenCurrency
 	}
 
-	if !addresscodec.IsValidClassicAddress(issuedAmount.Issuer.String()) {
+	if !addresscodec.IsValidAddress(issuedAmount.Issuer.String()) {
 		return false, ErrInvalidIssuer
 	}
 
@@ -247,7 +247,7 @@ func IsAsset(asset ledger.Asset) (bool, error) {
 		return false, ErrInvalidAssetIssuer
 	}
 
-	if asset.Currency != "" && !addresscodec.IsValidClassicAddress(asset.Issuer.String()) {
+	if asset.Currency != "" && !addresscodec.IsValidAddress(asset.Issuer.String()) {
 		return false, ErrInvalidAssetIssuer
 	}
 
