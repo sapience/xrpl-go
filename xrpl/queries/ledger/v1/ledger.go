@@ -3,7 +3,7 @@ package v1
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	ledgertypes "github.com/Peersyst/xrpl-go/xrpl/queries/ledger/types"
+	ledgertypesv1 "github.com/Peersyst/xrpl-go/xrpl/queries/ledger/v1/types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/version"
 )
 
@@ -45,9 +45,9 @@ func (*Request) Validate() error {
 
 // The expected response from the ledger method.
 type Response struct {
-	Ledger      ledgertypes.BaseLedger  `json:"ledger"`
-	LedgerHash  string                  `json:"ledger_hash"`
-	LedgerIndex common.LedgerIndex      `json:"ledger_index"`
-	Validated   bool                    `json:"validated,omitempty"`
-	QueueData   []ledgertypes.QueueData `json:"queue_data,omitempty"`
+	Ledger      ledgertypesv1.BaseLedger  `json:"ledger"`
+	LedgerHash  string                    `json:"ledger_hash"`
+	LedgerIndex common.LedgerIndex        `json:"ledger_index"`
+	Validated   bool                      `json:"validated,omitempty"`
+	QueueData   []ledgertypesv1.QueueData `json:"queue_data,omitempty"`
 }
