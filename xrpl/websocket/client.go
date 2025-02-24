@@ -37,6 +37,7 @@ const (
 var (
 	ErrIncorrectID          = errors.New("incorrect id")
 	ErrNotConnectedToServer = errors.New("not connected to server")
+	ErrRequestTimedOut      = errors.New("request timed out")
 )
 
 type Client struct {
@@ -579,7 +580,7 @@ func (c *Client) awaitResponse(id int) (*ClientResponse, error) {
 				return res, nil
 			}
 		case <-time.After(c.cfg.timeout):
-			return nil, errors.New("request timed out after " + c.cfg.timeout.String())
+			return nil, ErrRequestTimedOut
 		}
 	}
 }
@@ -602,7 +603,9 @@ func (c *Client) handleRequest(message []byte) {
 
 func (c *Client) unmarshalMessage(message []byte, v any) {
 	if err := json.Unmarshal(message, v); err != nil {
-		fmt.Println("error unmarshalling message: ", err)
+		if c.errChan == nil {
+			c.errChan = make(chan error)
+		}
 		c.errChan <- err
 	}
 }
@@ -630,17 +633,26 @@ func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 		c.unmarshalMessage(message, &consensus)
 		c.consensusChan <- &consensus
 	default:
-		fmt.Println("unknown stream type: ", t)
+		if c.errChan == nil {
+			c.errChan = make(chan error)
+		}
+		c.errChan <- fmt.Errorf("unknown stream type: %v", t)
 	}
 }
 
 func (c *Client) readMessages() {
 	for {
+		if c.conn == nil {
+			return
+		}
 		message, err := c.conn.ReadMessage()
 		switch {
 		case ws.IsCloseError(err) || ws.IsUnexpectedCloseError(err):
 			connErr := c.conn.Connect()
 			if connErr != nil {
+				if c.errChan == nil {
+					c.errChan = make(chan error)
+				}
 				c.errChan <- connErr
 				return // Break out of outer loop
 			}
