@@ -1487,7 +1487,7 @@ func TestClient_GetLedger(t *testing.T) {
 				"id": 1,
 				"result": map[string]any{
 					"ledger": map[string]any{
-						"ledger_index":          "14380380",
+						"ledger_index":          14380380,
 						"total_coins":           "99999999999999997",
 						"parent_hash":           "ABC123",
 						"transaction_hash":      "DEF456",
@@ -1502,7 +1502,7 @@ func TestClient_GetLedger(t *testing.T) {
 			}},
 			expected: &ledgerqueries.Response{
 				Ledger: ledgertypes.BaseLedger{
-					LedgerIndex:         "14380380",
+					LedgerIndex:         14380380,
 					TotalCoins:          types.XRPCurrencyAmount(99999999999999997),
 					ParentHash:          "ABC123",
 					TransactionHash:     "DEF456",

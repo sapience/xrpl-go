@@ -4,13 +4,12 @@ import (
 	"fmt"
 
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	ledgerqueries "github.com/Peersyst/xrpl-go/xrpl/queries/ledger"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
 
 func main() {
-	fmt.Println("⏳ Connecting to testnet...")
 	client := websocket.NewClient(
 		websocket.NewClientConfig().
 			WithHost("wss://s.altnet.rippletest.net:51233").
@@ -18,28 +17,22 @@ func main() {
 	)
 	defer client.Disconnect()
 
+	fmt.Println("⏳ Connecting to server...")
 	if err := client.Connect(); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	if !client.IsConnected() {
-		fmt.Println("❌ Failed to connect to testnet")
-		return
-	}
-
-	fmt.Println("✅ Connected to testnet")
+	fmt.Println("✅ Connected to server")
 	fmt.Println()
 
-	txs, err := client.GetAccountTransactions(&account.TransactionsRequest{
-		Account:     "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH",
-		LedgerIndex: common.LedgerIndex(4976692),
+	ledger, err := client.GetLedger(&ledgerqueries.Request{
+		LedgerIndex: common.LedgerIndex(5115183),
 	})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	fmt.Println("Number of transactions:", len(txs.Transactions))
-	fmt.Println(txs.Transactions[0].Tx)
+	fmt.Println(ledger.Ledger.LedgerHash)
+	fmt.Println(ledger.Ledger.LedgerIndex)
 }
