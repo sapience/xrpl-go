@@ -55,6 +55,18 @@ test-ci:
 	@go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
 	@echo "Tests complete!"
 
+test-integration-devnet:
+	@echo "Running Go tests for integration package..."
+	@go clean -testcache
+	@INTEGRATION=devnet go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
+	@echo "Tests complete!"
+
+test-integration-testnet:
+	@echo "Running Go tests for integration package..."
+	@go clean -testcache
+	@INTEGRATION=testnet go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
+	@echo "Tests complete!"
+
 coverage-unit:
 	@echo "Generating unit test coverage report..."
 	@go test -coverprofile=coverage.out $(EXCLUDED_COVERAGE_PACKAGES)
