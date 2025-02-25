@@ -32,7 +32,7 @@ type MPTokenAuthorize struct {
     Account types.Address
 
 	// Indicates the ID of the MPT involved.
-	MPTokenIssuanceID uint
+	MPTokenIssuanceID uint16
 
 	// (Optional) Specifies the holder's address that the issuer wants to authorize. 
 	// Only used for authorization/allow-listing; must be empty if submitted by the holder.

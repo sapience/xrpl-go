@@ -861,6 +861,26 @@
       }
     ],
     [
+      "MPTokenIssuanceID",
+      {
+        "nth": 52,
+        "isVLEncoded": true,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt16"
+      }
+    ],
+    [
+      "MPTokenMetadata",
+      {
+        "nth": 53,
+        "isVLEncoded": true,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "Blob"
+      }
+    ],
+    [
       "IndexNext",
       {
         "nth": 1,
@@ -2974,6 +2994,11 @@
     "DIDDelete": 50,
     "OracleSet": 51,
     "OracleDelete": 52,
+    "MPTokenIssuanceCreate": 53,
+    "MPTokenIssuanceSet": 54,
+    "MPTokenIssuanceDestroy": 55,
+    "MPTokenAuthorize": 56,
+
     "EnableAmendment": 100,
     "SetFee": 101,
     "UNLModify": 102
