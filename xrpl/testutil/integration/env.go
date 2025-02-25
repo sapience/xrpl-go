@@ -8,23 +8,23 @@ import (
 type EnvKey string
 
 const (
-	LocalEnv EnvKey = "local"
+	LocalEnv   EnvKey = "local"
 	TestnetEnv EnvKey = "testnet"
-	DevnetEnv EnvKey = "devnet"
+	DevnetEnv  EnvKey = "devnet"
 )
 
 // IntegrationEnvs is the map of integration environments.
 var IntegrationEnvs = map[EnvKey]Env{
 	LocalEnv: {
-		Host: "wss://0.0.0.0:6006",
+		Host:           "wss://0.0.0.0:6006",
 		FaucetProvider: nil,
 	},
 	TestnetEnv: {
-		Host: "wss://s.altnet.rippletest.net:51233",
+		Host:           "wss://s.altnet.rippletest.net:51233",
 		FaucetProvider: faucet.NewTestnetFaucetProvider(),
 	},
 	DevnetEnv: {
-		Host: "wss://s.devnet.rippletest.net:51233",
+		Host:           "wss://s.devnet.rippletest.net:51233",
 		FaucetProvider: faucet.NewTestnetFaucetProvider(),
 	},
 }
@@ -32,6 +32,6 @@ var IntegrationEnvs = map[EnvKey]Env{
 // Env is the environment for the integration tests.
 // It contains the host and the faucet provider.
 type Env struct {
-	Host string
+	Host           string
 	FaucetProvider FaucetProvider
 }

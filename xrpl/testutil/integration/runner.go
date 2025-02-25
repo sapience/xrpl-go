@@ -12,10 +12,10 @@ import (
 )
 
 type Runner struct {
-	t *testing.T
+	t      *testing.T
 	config *RunnerConfig
 
-	client *websocket.Client
+	client  *websocket.Client
 	wallets []*wallet.Wallet
 }
 
@@ -23,7 +23,7 @@ type Runner struct {
 // A testing.T is required to use the require package.
 func NewRunner(t *testing.T, config *RunnerConfig) *Runner {
 	return &Runner{
-		t: t,
+		t:      t,
 		config: config,
 	}
 }
@@ -43,7 +43,10 @@ func (r *Runner) Setup() error {
 		if err != nil {
 			return err
 		}
-		r.client.FundWallet(&w)
+		err = r.client.FundWallet(&w)
+		if err != nil {
+			return err
+		}
 		r.wallets = append(r.wallets, &w)
 	}
 	return nil

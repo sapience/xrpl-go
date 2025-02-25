@@ -5,7 +5,7 @@ import "github.com/Peersyst/xrpl-go/xrpl/websocket"
 // RunnerConfig is the configuration for the integration test runner.
 // It contains the configuration for the websocket client and the number of wallets to create.
 type RunnerConfig struct {
-	WalletCount    int
+	WalletCount     int
 	WebsocketConfig websocket.ClientConfig
 }
 
@@ -23,7 +23,7 @@ func WithWallets(count int) Option {
 func NewRunnerConfig(wsConfig websocket.ClientConfig, opts ...Option) *RunnerConfig {
 	config := &RunnerConfig{
 		WebsocketConfig: wsConfig,
-		WalletCount:    0,
+		WalletCount:     0,
 	}
 
 	for _, opt := range opts {

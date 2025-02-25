@@ -8,7 +8,7 @@ import (
 
 const (
 	LocalGenesisAddress types.Address = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"
-	LocalGenesisSeed  string = "snoPBrXtMeMyMHUVTgbuqAfg1SUTb"
+	LocalGenesisSeed    string        = "snoPBrXtMeMyMHUVTgbuqAfg1SUTb"
 )
 
 // FundWallet funds a wallet with the client's faucet provider.
@@ -34,7 +34,7 @@ func (f *Runner) fundWalletWithGenesis(w *wallet.Wallet) error {
 		BaseTx: transaction.BaseTx{
 			Account: genesisAddress,
 		},
-		Amount: types.XRPCurrencyAmount(400000000),
+		Amount:      types.XRPCurrencyAmount(400000000),
 		Destination: w.GetAddress(),
 	}
 

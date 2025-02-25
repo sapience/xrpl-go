@@ -16,4 +16,3 @@ func GetEnv(t *testing.T) Env {
 
 	return IntegrationEnvs[EnvKey(os.Getenv("INTEGRATION"))]
 }
-
