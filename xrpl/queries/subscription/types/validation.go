@@ -52,7 +52,7 @@ type ValidationStream struct {
 	// The signature that the validator used to sign its vote for this ledger.
 	Signature string `json:"signature"`
 	// When this validation vote was signed, in seconds since the Ripple Epoch.
-	SigningTime uint64 `json:"singing_time"`
+	SigningTime uint64 `json:"signing_time"`
 	// The unique hash of the proposed ledger this validation applies to.
 	ValidatedHash string `json:"validated_hash"`
 	// The public key from the key-pair that the validator used to sign the message, in the XRP

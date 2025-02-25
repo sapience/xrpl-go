@@ -79,5 +79,8 @@ func (c *Connection) ReadMessage() ([]byte, error) {
 // WriteMessage writes a message to the connection.
 // It returns an error if the message is not written.
 func (c *Connection) WriteMessage(message []byte) error {
+	if !c.IsConnected() {
+		return ErrNotConnected
+	}
 	return c.conn.WriteMessage(websocket.TextMessage, message)
 }

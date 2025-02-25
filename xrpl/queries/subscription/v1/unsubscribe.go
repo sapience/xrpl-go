@@ -1,4 +1,4 @@
-package subscribe
+package v1
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/version"

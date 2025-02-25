@@ -43,7 +43,7 @@ func setupTestClient(t *testing.T, messages []map[string]any) (*Client, func()) 
 	cl := NewClient(NewClientConfig().
 		WithHost(url).
 		WithTimeout(1 * time.Second))
-	
+
 	if err := cl.Connect(); err != nil {
 		t.Fatalf("Error connecting to server: %v", err)
 	}
@@ -101,7 +101,7 @@ func TestClient_GetServerInfo(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -189,7 +189,7 @@ func TestClient_GetAccountInfo(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -282,7 +282,7 @@ func TestClient_GetAccountChannels(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -377,7 +377,7 @@ func TestClient_GetAccountObjects(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -448,7 +448,7 @@ func TestClient_GetXrpBalance(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expectedErr: ErrRequestTimedOut,
@@ -482,9 +482,9 @@ func TestClient_GetXrpBalance(t *testing.T) {
 				}
 			}
 
-		if tt.expected != result {
-			t.Errorf("Expected %s, but got %s", tt.expected, result)
-		}
+			if tt.expected != result {
+				t.Errorf("Expected %s, but got %s", tt.expected, result)
+			}
 		})
 	}
 }
@@ -530,7 +530,7 @@ func TestClient_GetAccountLines(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -643,7 +643,7 @@ func TestClient_GetGatewayBalances(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -711,7 +711,7 @@ func TestClient_GetLedgerIndex(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expectedErr: ErrRequestTimedOut,
@@ -800,7 +800,7 @@ func TestClient_GetAccountNFTs(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -875,7 +875,7 @@ func TestClient_GetAccountCurrencies(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -970,7 +970,7 @@ func TestClient_GetAccountOffers(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1067,7 +1067,7 @@ func TestClient_GetAccountTransactions(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1138,7 +1138,7 @@ func TestClient_GetChannelVerify(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1207,7 +1207,7 @@ func TestClient_GetClosedLedger(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1250,7 +1250,6 @@ func TestClient_GetClosedLedger(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetCurrentLedger(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -1275,7 +1274,7 @@ func TestClient_GetCurrentLedger(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1318,7 +1317,6 @@ func TestClient_GetCurrentLedger(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetLedgerData(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -1359,7 +1357,7 @@ func TestClient_GetLedgerData(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1401,7 +1399,6 @@ func TestClient_GetLedgerData(t *testing.T) {
 		})
 	}
 }
-
 
 func TestClient_GetLedger(t *testing.T) {
 	tests := []struct {
@@ -1449,7 +1446,7 @@ func TestClient_GetLedger(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1491,7 +1488,6 @@ func TestClient_GetLedger(t *testing.T) {
 		})
 	}
 }
-
 
 func TestClient_GetNFTBuyOffers(t *testing.T) {
 	tests := []struct {
@@ -1535,7 +1531,7 @@ func TestClient_GetNFTBuyOffers(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1577,7 +1573,6 @@ func TestClient_GetNFTBuyOffers(t *testing.T) {
 		})
 	}
 }
-
 
 func TestClient_GetNFTSellOffers(t *testing.T) {
 	tests := []struct {
@@ -1621,7 +1616,7 @@ func TestClient_GetNFTSellOffers(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1712,7 +1707,7 @@ func TestClient_GetBookOffers(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1755,7 +1750,6 @@ func TestClient_GetBookOffers(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetDepositAuthorized(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -1790,7 +1784,7 @@ func TestClient_GetDepositAuthorized(t *testing.T) {
 			name: "invalid id - timeout",
 			serverMessages: []map[string]any{
 				{
-					"id":    2,
+					"id": 2,
 				},
 			},
 			expected:    nil,
@@ -1832,7 +1826,6 @@ func TestClient_GetDepositAuthorized(t *testing.T) {
 		})
 	}
 }
-
 
 func TestClient_FindPathCreate(t *testing.T) {
 	tests := []struct {
@@ -1926,7 +1919,6 @@ func TestClient_FindPathCreate(t *testing.T) {
 	}
 }
 
-
 func TestClient_FindPathClose(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2007,7 +1999,6 @@ func TestClient_FindPathClose(t *testing.T) {
 		})
 	}
 }
-
 
 func TestClient_FindPathStatus(t *testing.T) {
 	tests := []struct {
@@ -2094,7 +2085,6 @@ func TestClient_FindPathStatus(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetRipplePathFind(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2172,7 +2162,6 @@ func TestClient_GetRipplePathFind(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetAllFeatures(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2249,7 +2238,6 @@ func TestClient_GetAllFeatures(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetFeature(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2320,7 +2308,6 @@ func TestClient_GetFeature(t *testing.T) {
 		})
 	}
 }
-
 
 func TestClient_GetFee(t *testing.T) {
 	tests := []struct {
@@ -2416,7 +2403,6 @@ func TestClient_GetFee(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetManifest(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2493,7 +2479,6 @@ func TestClient_GetManifest(t *testing.T) {
 		})
 	}
 }
-
 
 func TestClient_GetServerState(t *testing.T) {
 	tests := []struct {
@@ -2589,7 +2574,6 @@ func TestClient_GetServerState(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetAggregatePrice(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2653,7 +2637,6 @@ func TestClient_GetAggregatePrice(t *testing.T) {
 	}
 }
 
-
 func TestClient_Ping(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2714,7 +2697,6 @@ func TestClient_Ping(t *testing.T) {
 	}
 }
 
-
 func TestClient_GetRandom(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -2771,4 +2753,3 @@ func TestClient_GetRandom(t *testing.T) {
 		})
 	}
 }
-
