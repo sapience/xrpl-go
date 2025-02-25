@@ -36,6 +36,9 @@ func (c *Client) Unsubscribe(req *subscribe.UnsubscribeRequest) (*subscribe.Unsu
 }
 
 // Handle errors
+
+// OnError handles "error" events.
+// It returns a stream of error streams. Creates a new channel and a goroutine to handle the stream.
 func (c *Client) OnError(
 	errHandler func(err error),
 ) {
