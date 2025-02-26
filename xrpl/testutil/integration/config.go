@@ -4,6 +4,7 @@ import "github.com/Peersyst/xrpl-go/xrpl/websocket"
 
 const (
 	DefaultMaxRetries = 3
+	DefaultWalletCount = 1
 )
 
 var (
@@ -46,7 +47,7 @@ func WithMaxRetries(maxRetries int) Option {
 func NewRunnerConfig(opts ...Option) *RunnerConfig {
 	config := &RunnerConfig{
 		Client:      DefaultClient,
-		WalletCount: 0,
+		WalletCount: DefaultWalletCount,
 		MaxRetries:  DefaultMaxRetries,
 	}
 
