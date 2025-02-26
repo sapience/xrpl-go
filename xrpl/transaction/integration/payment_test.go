@@ -11,12 +11,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type PaymentTest struct {
+	Name          string
+	Payment       *transaction.Payment
+	ExpectedError string
+}
+
 func TestIntegrationPayment_Websocket(t *testing.T) {
 	env := integration.GetEnv(t)
 	client := websocket.NewClient(websocket.NewClientConfig().WithHost(env.Host).WithFaucetProvider(env.FaucetProvider))
 
-	runner := integration.NewRunner(t, &integration.RunnerConfig{
-		Client:      client,
+	runner := integration.NewRunner(t, client, &integration.RunnerConfig{
 		WalletCount: 2,
 	})
 
@@ -27,14 +32,10 @@ func TestIntegrationPayment_Websocket(t *testing.T) {
 	sender := runner.GetWallet(0)
 	receiver := runner.GetWallet(1)
 
-	tt := []struct {
-		name          string
-		payment       *transaction.Payment
-		expectedError string
-	}{
+	tt := []PaymentTest{
 		{
-			name: "pass - XRP to XRP",
-			payment: &transaction.Payment{
+			Name: "pass - XRP to XRP",
+			Payment: &transaction.Payment{
 				BaseTx: transaction.BaseTx{
 					Account: sender.GetAddress(),
 				},
@@ -43,24 +44,24 @@ func TestIntegrationPayment_Websocket(t *testing.T) {
 			},
 		},
 		{
-			name: "fail - missing Destination",
-			payment: &transaction.Payment{
+			Name: "fail - missing Destination",
+			Payment: &transaction.Payment{
 				BaseTx: transaction.BaseTx{
 					Account: sender.GetAddress(),
 				},
 				Amount: types.XRPCurrencyAmount(1),
 			},
-			expectedError: "invalidTransaction",
+			ExpectedError: "invalidTransaction",
 		},
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.name, func(t *testing.T) {
-			flatTx := tc.payment.Flatten()
+		t.Run(tc.Name, func(t *testing.T) {
+			flatTx := tc.Payment.Flatten()
 			_, err := runner.TestTransaction(&flatTx, sender)
-			if tc.expectedError != "" {
+			if tc.ExpectedError != "" {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expectedError)
+				require.Contains(t, err.Error(), tc.ExpectedError)
 			} else {
 				require.NoError(t, err)
 			}
@@ -74,8 +75,7 @@ func TestIntegrationPayment_RPCClient(t *testing.T) {
 	require.NoError(t, err)
 	client := rpc.NewClient(clientCfg)
 
-	runner := integration.NewRunner(t, integration.NewRunnerConfig(
-		integration.WithClient(client),
+	runner := integration.NewRunner(t, client, integration.NewRunnerConfig(
 		integration.WithWallets(2),
 	))
 
@@ -86,14 +86,10 @@ func TestIntegrationPayment_RPCClient(t *testing.T) {
 	sender := runner.GetWallet(0)
 	receiver := runner.GetWallet(1)
 
-	tt := []struct {
-		name          string
-		payment       *transaction.Payment
-		expectedError string
-	}{
+	tt := []PaymentTest{
 		{
-			name: "pass - XRP to XRP",
-			payment: &transaction.Payment{
+			Name: "pass - XRP to XRP",
+			Payment: &transaction.Payment{
 				BaseTx: transaction.BaseTx{
 					Account: sender.GetAddress(),
 				},
@@ -102,24 +98,24 @@ func TestIntegrationPayment_RPCClient(t *testing.T) {
 			},
 		},
 		{
-			name: "fail - missing Destination",
-			payment: &transaction.Payment{
+			Name: "fail - missing Destination",
+			Payment: &transaction.Payment{
 				BaseTx: transaction.BaseTx{
 					Account: sender.GetAddress(),
 				},
 				Amount: types.XRPCurrencyAmount(1),
 			},
-			expectedError: "invalidTransaction",
+			ExpectedError: "invalidTransaction",
 		},
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.name, func(t *testing.T) {
-			flatTx := tc.payment.Flatten()
+		t.Run(tc.Name, func(t *testing.T) {
+			flatTx := tc.Payment.Flatten()
 			_, err := runner.TestTransaction(&flatTx, sender)
-			if tc.expectedError != "" {
+			if tc.ExpectedError != "" {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expectedError)
+				require.Contains(t, err.Error(), tc.ExpectedError)
 			} else {
 				require.NoError(t, err)
 			}

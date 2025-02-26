@@ -20,10 +20,11 @@ type Runner struct {
 
 // NewRunner creates a new runner. It doesn't connect to the websocket or generate wallets until Setup is called.
 // A testing.T is required to use the require package.
-func NewRunner(t *testing.T, config *RunnerConfig) *Runner {
+func NewRunner(t *testing.T, client Client, config *RunnerConfig) *Runner {
 	return &Runner{
 		t:      t,
 		config: config,
+		client: client,
 	}
 }
 
@@ -31,8 +32,6 @@ func NewRunner(t *testing.T, config *RunnerConfig) *Runner {
 // It also connects to the websocket and starts the client.
 // For every wallet, it will create a new account and fund it with the faucet.
 func (r *Runner) Setup() error {
-	r.client = r.config.Client
-
 	if connectable, ok := r.client.(Connectable); ok {
 		err := connectable.Connect()
 		if err != nil {

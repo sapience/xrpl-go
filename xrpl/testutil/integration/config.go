@@ -1,14 +1,8 @@
 package integration
 
-import "github.com/Peersyst/xrpl-go/xrpl/websocket"
-
 const (
 	DefaultMaxRetries  = 3
 	DefaultWalletCount = 1
-)
-
-var (
-	DefaultClient Client = websocket.NewClient(websocket.NewClientConfig().WithHost(IntegrationEnvs[LocalnetEnv].Host))
 )
 
 // RunnerConfig is the configuration for the integration test runner.
@@ -21,13 +15,6 @@ type RunnerConfig struct {
 
 // Option is a function that modifies the RunnerConfig.
 type Option func(*RunnerConfig)
-
-// WithClient sets the client for the runner.
-func WithClient(client Client) Option {
-	return func(c *RunnerConfig) {
-		c.Client = client
-	}
-}
 
 // WithWallets sets the number of wallets to create.
 func WithWallets(count int) Option {
@@ -46,7 +33,6 @@ func WithMaxRetries(maxRetries int) Option {
 // NewRunnerConfig creates a new RunnerConfig with the given websocket configuration and options.
 func NewRunnerConfig(opts ...Option) *RunnerConfig {
 	config := &RunnerConfig{
-		Client:      DefaultClient,
 		WalletCount: DefaultWalletCount,
 		MaxRetries:  DefaultMaxRetries,
 	}
