@@ -3,7 +3,7 @@ package integration
 import "github.com/Peersyst/xrpl-go/xrpl/websocket"
 
 const (
-	DefaultMaxRetries = 3
+	DefaultMaxRetries  = 3
 	DefaultWalletCount = 1
 )
 
