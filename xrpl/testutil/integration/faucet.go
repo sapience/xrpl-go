@@ -14,9 +14,16 @@ const (
 // FundWallet funds a wallet with the client's faucet provider.
 // If the faucet provider is nil, it will fund the wallet with the local genesis wallet.
 func (f *Runner) FundWallet(wallet *wallet.Wallet) error {
-	err := f.client.FundWallet(wallet)
-	if err == nil {
-		return nil
+	attempts := 0
+	for {
+		err := f.client.FundWallet(wallet)
+		if err == nil {
+			return nil
+		}
+		if attempts >= f.config.MaxRetries {
+			break
+		}
+		attempts++
 	}
 
 	return f.fundWalletWithGenesis(wallet)

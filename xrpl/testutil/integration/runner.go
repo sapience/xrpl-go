@@ -7,7 +7,6 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
-	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,7 +14,7 @@ type Runner struct {
 	t      *testing.T
 	config *RunnerConfig
 
-	client  *websocket.Client
+	client  Client
 	wallets []*wallet.Wallet
 }
 
@@ -32,10 +31,13 @@ func NewRunner(t *testing.T, config *RunnerConfig) *Runner {
 // It also connects to the websocket and starts the client.
 // For every wallet, it will create a new account and fund it with the faucet.
 func (r *Runner) Setup() error {
-	r.client = websocket.NewClient(r.config.WebsocketConfig)
-	err := r.client.Connect()
-	if err != nil {
-		return err
+	r.client = r.config.Client
+
+	if connectable, ok := r.client.(Connectable); ok {
+		err := connectable.Connect()
+		if err != nil {
+			return err
+		}
 	}
 
 	for i := 0; i < r.config.WalletCount; i++ {
@@ -54,9 +56,11 @@ func (r *Runner) Setup() error {
 
 // Teardown closes the websocket client.
 func (r *Runner) Teardown() error {
-	err := r.client.Disconnect()
-	if err != nil {
-		return err
+	if connectable, ok := r.client.(Connectable); ok {
+		err := connectable.Disconnect()
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -105,7 +109,7 @@ func (r *Runner) GetWallets() []*wallet.Wallet {
 }
 
 // GetClient returns the websocket client.
-func (r *Runner) GetClient() *websocket.Client {
+func (r *Runner) GetClient() Client {
 	return r.client
 }
 

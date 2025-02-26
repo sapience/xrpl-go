@@ -8,9 +8,9 @@ import (
 type EnvKey string
 
 const (
-	LocalnetEnv   EnvKey = "localnet"
-	TestnetEnv EnvKey = "testnet"
-	DevnetEnv  EnvKey = "devnet"
+	LocalnetEnv EnvKey = "localnet"
+	TestnetEnv  EnvKey = "testnet"
+	DevnetEnv   EnvKey = "devnet"
 )
 
 // IntegrationEnvs is the map of integration environments.
