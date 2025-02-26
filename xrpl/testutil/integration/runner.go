@@ -65,17 +65,7 @@ func (r *Runner) Teardown() error {
 // TestTransaction submits a signed transaction and validates the result.
 // If validate is nil, the transaction is not validated.
 func (r *Runner) TestTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet) (*transactions.SubmitResponse, error) {
-	err := r.client.Autofill(flatTx)
-	if err != nil {
-		return nil, err
-	}
-
-	blob, hash, err := signer.Sign(*flatTx)
-	if err != nil {
-		return nil, err
-	}
-
-	tx, err := r.client.Submit(blob, true)
+	tx, hash, err := r.processTransaction(flatTx, signer)
 	if err != nil {
 		return nil, err
 	}
@@ -117,4 +107,30 @@ func (r *Runner) GetWallets() []*wallet.Wallet {
 // GetClient returns the websocket client.
 func (r *Runner) GetClient() *websocket.Client {
 	return r.client
+}
+
+func (r *Runner) processTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet) (*transactions.SubmitResponse, string, error) {
+	attempts := 0
+
+	for {
+		err := r.client.Autofill(flatTx)
+		if err != nil {
+			return nil, "", err
+		}
+
+		blob, hash, err := signer.Sign(*flatTx)
+		if err != nil {
+			return nil, hash, err
+		}
+
+		tx, err := r.client.Submit(blob, true)
+		if err != nil {
+			return nil, hash, err
+		}
+
+		if tx.EngineResult != "tefPAST_SEQ" || attempts >= r.config.MaxRetries {
+			return tx, hash, nil
+		}
+		attempts++
+	}
 }
