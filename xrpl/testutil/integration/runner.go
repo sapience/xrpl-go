@@ -67,14 +67,14 @@ func (r *Runner) Teardown() error {
 
 // TestTransaction submits a signed transaction and validates the result.
 // If validate is nil, the transaction is not validated.
-func (r *Runner) TestTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet) (*transactions.SubmitResponse, error) {
+func (r *Runner) TestTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet, expectedEngineResult string) (*transactions.SubmitResponse, error) {
 	tx, hash, err := r.processTransaction(flatTx, signer)
 	if err != nil {
 		return nil, err
 	}
 
 	require.NoError(r.t, err)
-	require.Equal(r.t, tx.EngineResult, "tesSUCCESS")
+	require.Equal(r.t, tx.EngineResult, expectedEngineResult)
 	require.Equal(r.t, hash, tx.Tx["hash"].(string))
 
 	return tx, nil
@@ -82,14 +82,14 @@ func (r *Runner) TestTransaction(flatTx *transaction.FlatTransaction, signer *wa
 
 // TestMultisigTransaction submits a multisigned transaction and validates the result.
 // If validate is nil, the transaction is not validated.
-func (r *Runner) TestMultisigTransaction(blob string) (*transactions.SubmitMultisignedResponse, error) {
+func (r *Runner) TestMultisigTransaction(blob string, expectedEngineResult string) (*transactions.SubmitMultisignedResponse, error) {
 	tx, err := r.client.SubmitMultisigned(blob, true)
 	if err != nil {
 		return nil, err
 	}
 
 	require.NoError(r.t, err)
-	require.Equal(r.t, tx.EngineResult, "tesSUCCESS")
+	require.Equal(r.t, tx.EngineResult, expectedEngineResult)
 
 	return tx, nil
 }

@@ -9,14 +9,26 @@ const (
 	IntegrationEnvVar = "INTEGRATION"
 )
 
-// GetEnv returns the integration environment.
+// GetWebsocketEnv returns the integration environment.
 // If the environment is not set, it skips the tests.
 // This function is intended to be used in tests that need to run against a specific environment.
 // Run it before creating the runner to retrieve the environment host and faucet provider.
-func GetEnv(t *testing.T) Env {
-	if _, ok := IntegrationEnvs[EnvKey(os.Getenv(IntegrationEnvVar))]; !ok {
+func GetWebsocketEnv(t *testing.T) Env {
+	if _, ok := IntegrationWebsocketEnvs[EnvKey(os.Getenv(IntegrationEnvVar))]; !ok {
 		t.Skip("skipping integration tests")
 	}
 
-	return IntegrationEnvs[EnvKey(os.Getenv(IntegrationEnvVar))]
+	return IntegrationWebsocketEnvs[EnvKey(os.Getenv(IntegrationEnvVar))]
+}
+
+// GetRPCEnv returns the integration environment.
+// If the environment is not set, it skips the tests.
+// This function is intended to be used in tests that need to run against a specific environment.
+// Run it before creating the runner to retrieve the environment host and faucet provider.
+func GetRPCEnv(t *testing.T) Env {
+	if _, ok := IntegrationRPCEnvs[EnvKey(os.Getenv(IntegrationEnvVar))]; !ok {
+		t.Skip("skipping integration tests")
+	}
+
+	return IntegrationRPCEnvs[EnvKey(os.Getenv(IntegrationEnvVar))]
 }

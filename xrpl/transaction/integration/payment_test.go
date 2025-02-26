@@ -18,7 +18,7 @@ type PaymentTest struct {
 }
 
 func TestIntegrationPayment_Websocket(t *testing.T) {
-	env := integration.GetEnv(t)
+	env := integration.GetWebsocketEnv(t)
 	client := websocket.NewClient(websocket.NewClientConfig().WithHost(env.Host).WithFaucetProvider(env.FaucetProvider))
 
 	runner := integration.NewRunner(t, client, &integration.RunnerConfig{
@@ -51,14 +51,14 @@ func TestIntegrationPayment_Websocket(t *testing.T) {
 				},
 				Amount: types.XRPCurrencyAmount(1),
 			},
-			ExpectedError: "invalidTransaction",
+			ExpectedError: ErrInvalidTransaction,
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			flatTx := tc.Payment.Flatten()
-			_, err := runner.TestTransaction(&flatTx, sender)
+			_, err := runner.TestTransaction(&flatTx, sender, "tesSUCCESS")
 			if tc.ExpectedError != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.ExpectedError)
@@ -70,7 +70,7 @@ func TestIntegrationPayment_Websocket(t *testing.T) {
 }
 
 func TestIntegrationPayment_RPCClient(t *testing.T) {
-	env := integration.GetEnv(t)
+	env := integration.GetRPCEnv(t)
 	clientCfg, err := rpc.NewClientConfig(env.Host, rpc.WithFaucetProvider(env.FaucetProvider))
 	require.NoError(t, err)
 	client := rpc.NewClient(clientCfg)
@@ -105,14 +105,14 @@ func TestIntegrationPayment_RPCClient(t *testing.T) {
 				},
 				Amount: types.XRPCurrencyAmount(1),
 			},
-			ExpectedError: "invalidTransaction",
+			ExpectedError: ErrInvalidTransaction,
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			flatTx := tc.Payment.Flatten()
-			_, err := runner.TestTransaction(&flatTx, sender)
+			_, err := runner.TestTransaction(&flatTx, sender, "tesSUCCESS")
 			if tc.ExpectedError != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.ExpectedError)
