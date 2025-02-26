@@ -8,14 +8,14 @@ import (
 type EnvKey string
 
 const (
-	LocalEnv   EnvKey = "local"
+	LocalnetEnv   EnvKey = "localnet"
 	TestnetEnv EnvKey = "testnet"
 	DevnetEnv  EnvKey = "devnet"
 )
 
 // IntegrationEnvs is the map of integration environments.
 var IntegrationEnvs = map[EnvKey]Env{
-	LocalEnv: {
+	LocalnetEnv: {
 		Host:           "wss://0.0.0.0:6006",
 		FaucetProvider: nil,
 	},
