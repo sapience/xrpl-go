@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### binary-codec
+
+- Added `MPToken` definitions. 
+- Adds `Hash192` type.
+
 #### xrpl
 
 - Adds `MPTokenAuthorize`, `MPTokenIssuanceCreate`, `MPTokenIssuanceDestroy`, `MPTokenIssuanceSet` transactions. It also adds the `types.Holder`, `types.AssetScale`, `types.MPTokenMetadata` and `types.TransferFee` types to represent the holder of the token, the asset scale, the metadata and the transfer fee of the token respectively.
