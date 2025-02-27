@@ -7,6 +7,18 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	ErrMPTokenIssuanceSetFlags = errors.New("mptoken issuance set: tfMPTLock and tfMPTUnlock flags cannot both be enabled")
+)
+
+// MPTokenIssuanceSet Flags
+const (
+	// If set, indicates that all MPT balances for this asset should be locked.
+	tfMPTLock uint32 = 0x00000001
+	// If set, indicates that all MPT balances for this asset should be unlocked.
+	tfMPTUnlock uint32 = 0x00000002
+)
+
 // The MPTokenIssuanceSet transaction is used to remove an MPTokenIssuance object from the directory node in which it is being held, effectively removing the token from the ledger ("Seting" it).
 // If this operation succeeds, the corresponding MPTokenIssuance is removed and the owner’s reserve requirement is reduced by one. This operation must fail if there are any holders of the MPT in question.
 //
@@ -14,38 +26,22 @@ import (
 //
 // ```json
 //
-//   {
-//       "TransactionType": "MPTokenIssuanceSet",
-//       "Fee": "10",
-//       "MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000"
-//  }
+//	 {
+//	     "TransactionType": "MPTokenIssuanceSet",
+//	     "Fee": "10",
+//	     "MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000"
+//	}
 //
 // ```
-
-// MPTokenIssuanceSet Flags
-const (
-	// If set, indicates that all MPT balances for this asset should be locked.
-	tfMPTLock uint32 = 1
-
-	// If set, indicates that all MPT balances for this asset should be unlocked.
-	tfMPTUnlock uint32 = 2
-)
-
 // MPTokenIssuanceSet represents a transaction to Set a new MPTokenIssuance object.
 // This is the only opportunity an issuer has to specify immutable token fields.
 type MPTokenIssuanceSet struct {
 	BaseTx
-	
-    // The MPTokenIssuance identifier.
-	MPTokenIssuanceID uint16
-
+	// The MPTokenIssuance identifier.
+	MPTokenIssuanceID string
 	// (Optional) XRPL Address of an individual token holder balance to lock/unlock. If omitted, this transaction applies to all any accounts holding MPTs.
-	Holder types.Address
-
-
+	Holder *types.Address
 }
-
-
 
 // TxType returns the type of the transaction (MPTokenIssuanceSet).
 func (*MPTokenIssuanceSet) TxType() TxType {
@@ -60,10 +56,10 @@ func (m *MPTokenIssuanceSet) Flatten() FlatTransaction {
 
 	flattened["MPTokenIssuanceID"] = m.MPTokenIssuanceID
 
-	if m.Holder != "" {
+	if m.Holder != nil {
 		flattened["Holder"] = m.Holder.String()
 	}
-	
+
 	return flattened
 }
 
@@ -79,25 +75,24 @@ func (m *MPTokenIssuanceSet) SetMPTUnlockFlag() {
 	m.Flags |= tfMPTUnlock
 }
 
-
 // Validate validates the MPTokenIssuanceSet transaction ensuring all fields are correct.
 func (m *MPTokenIssuanceSet) Validate() (bool, error) {
 	ok, err := m.BaseTx.Validate()
 	if err != nil || !ok {
 		return false, err
 	}
-	
 
-	if m.Holder != "" && !addresscodec.IsValidAddress(m.Holder.String()) {
+	// If a Holder is specified, validate it as a proper XRPL address.
+	if m.Holder != nil && !addresscodec.IsValidAddress(m.Holder.String()) {
 		return false, ErrInvalidAccount
 	}
 
-		// Check flag conflict: tfMPTLock and tfMPTUnlock cannot both be enabled
+	// Check flag conflict: tfMPTLock and tfMPTUnlock cannot both be enabled
 	isLock := IsFlagEnabled(m.Flags, tfMPTLock)
 	isUnlock := IsFlagEnabled(m.Flags, tfMPTUnlock)
 
 	if isLock && isUnlock {
-		return false, errors.New("MPTokenIssuanceSet: tfMPTLock and tfMPTUnlock flags cannot both be enabled")
+		return false, ErrMPTokenIssuanceSetFlags
 	}
 
 	return true, nil

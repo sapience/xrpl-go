@@ -1,5 +1,11 @@
 package transaction
 
+import "errors"
+
+var (
+	ErrInvalidMPTokenIssuanceID = errors.New("mptoken issuance destroy: invalid MPTokenIssuanceID")
+)
+
 // The MPTokenIssuanceDestroy transaction is used to remove an MPTokenIssuance object from the directory node in which it is being held, effectively removing the token from the ledger ("destroying" it).
 // If this operation succeeds, the corresponding MPTokenIssuance is removed and the owner’s reserve requirement is reduced by one. This operation must fail if there are any holders of the MPT in question.
 //
@@ -7,21 +13,19 @@ package transaction
 //
 // ```json
 //
-//   {
-//       "TransactionType": "MPTokenIssuanceDestroy",
-//       "Fee": "10",
-//       "MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000"
-//  }
+//	 {
+//	     "TransactionType": "MPTokenIssuanceDestroy",
+//	     "Fee": "10",
+//	     "MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000"
+//	}
 //
 // ```
-
 // MPTokenIssuanceDestroy represents a transaction to Destroy a new MPTokenIssuance object.
 // This is the only opportunity an issuer has to specify immutable token fields.
 type MPTokenIssuanceDestroy struct {
 	BaseTx
-	
-    // Identifies the MPTokenIssuance object to be removed by the transaction.
-	MPTokenIssuanceID uint16
+	// Identifies the MPTokenIssuance object to be removed by the transaction.
+	MPTokenIssuanceID string
 }
 
 // TxType returns the type of the transaction (MPTokenIssuanceDestroy).
@@ -36,16 +40,19 @@ func (m *MPTokenIssuanceDestroy) Flatten() FlatTransaction {
 	flattened["TransactionType"] = "MPTokenIssuanceDestroy"
 
 	flattened["MPTokenIssuanceID"] = m.MPTokenIssuanceID
-	
+
 	return flattened
 }
-
 
 // Validate validates the MPTokenIssuanceDestroy transaction ensuring all fields are correct.
 func (m *MPTokenIssuanceDestroy) Validate() (bool, error) {
 	ok, err := m.BaseTx.Validate()
 	if err != nil || !ok {
 		return false, err
+	}
+
+	if m.MPTokenIssuanceID == "" {
+		return false, ErrInvalidMPTokenIssuanceID
 	}
 
 	return true, nil
