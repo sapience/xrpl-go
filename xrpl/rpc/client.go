@@ -7,6 +7,7 @@ import (
 	"time"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -210,6 +211,12 @@ func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners u
 	return nil
 }
 
+// FaucetProvider returns the faucet provider for the client.
+func (c *Client) FaucetProvider() common.FaucetProvider {
+	return c.cfg.faucetProvider
+}
+
+// FundWallet funds a wallet with the client's faucet provider.
 func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	if wallet.ClassicAddress == "" {
 		return ErrCannotFundWalletWithoutClassicAddress
