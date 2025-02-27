@@ -13,4 +13,7 @@ const (
 
 	DefaultFeeCushion float32 = 1.2
 	DefaultMaxFeeXRP  float32 = 2
+
+	// 5 seconds default timeout
+	DefaultTimeout = 5 * time.Second
 )
