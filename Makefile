@@ -6,6 +6,8 @@ EXCLUDED_COVERAGE_PACKAGES = $(shell go list ./... | grep -v /faucet | grep -v /
 PARALLEL_TESTS = 4
 TEST_TIMEOUT = 5m
 
+RIPPLED_IMAGE = rippleci/rippled:2.3.0
+
 ################################################################################
 ############################### LINTING ########################################
 ################################################################################
@@ -57,12 +59,12 @@ test-ci:
 
 run-localnet-linux/arm64:
 	@echo "Running localnet..."
-	@docker run -p 6006:6006 --rm -it -d --platform linux/arm64 --name rippled_standalone --volume $(PWD)/.ci-config:/etc/opt/ripple/ --entrypoint bash rippleci/rippled:2.3.0 -c 'rippled -a'
+	@docker run -p 6006:6006 --rm -it -d --platform linux/arm64 --name rippled_standalone --volume $(PWD)/.ci-config:/etc/opt/ripple/ --entrypoint bash $(RIPPLED_IMAGE) -c 'rippled -a'
 	@echo "Localnet running!"
 
 run-localnet-linux/amd64:
 	@echo "Running localnet..."
-	@docker run -p 6006:6006 --rm -it -d --platform linux/amd64 --name rippled_standalone --volume $(PWD)/.ci-config:/etc/opt/ripple/ --entrypoint bash rippleci/rippled:2.3.0 -c 'rippled -a'
+	@docker run -p 6006:6006 --rm -it -d --platform linux/amd64 --name rippled_standalone --volume $(PWD)/.ci-config:/etc/opt/ripple/ --entrypoint bash $(RIPPLED_IMAGE) -c 'rippled -a'
 	@echo "Localnet running!"
 
 test-integration-localnet:
