@@ -23,8 +23,8 @@ func main() {
 	client := rpc.NewClient(cfg)
 
 	txs, err := client.GetAccountTransactions(&account.TransactionsRequest{
-		Account: "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH",
-		LedgerIndex: common.LedgerIndex(4976692) ,
+		Account:     "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH",
+		LedgerIndex: common.LedgerIndex(4976692),
 	})
 	if err != nil {
 		fmt.Println(err)
