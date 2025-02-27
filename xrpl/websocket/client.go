@@ -90,6 +90,10 @@ func (c *Client) IsConnected() bool {
 	return c.conn.IsConnected()
 }
 
+func (c *Client) FaucetProvider() commonconstants.FaucetProvider {
+	return c.cfg.faucetProvider
+}
+
 // Autofill fills in the missing fields in a transaction.
 func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 	if err := c.setValidTransactionAddresses(tx); err != nil {

@@ -44,7 +44,7 @@ func (r *Runner) Setup() error {
 		if err != nil {
 			return err
 		}
-		err = r.client.FundWallet(&w)
+		err = r.FundWallet(&w)
 		if err != nil {
 			return err
 		}

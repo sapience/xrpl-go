@@ -1,9 +1,15 @@
 package integration
 
 import (
+	"errors"
+
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
+)
+
+var (
+	ErrFailedToFundWallet = errors.New("failed to fund wallet")
 )
 
 const (
@@ -15,6 +21,11 @@ const (
 // If the faucet provider is nil, it will fund the wallet with the local genesis wallet.
 func (f *Runner) FundWallet(wallet *wallet.Wallet) error {
 	attempts := 0
+
+	if f.client.FaucetProvider() == nil {
+		return f.fundWalletWithGenesis(wallet)
+	}
+
 	for {
 		err := f.client.FundWallet(wallet)
 		if err == nil {
@@ -26,7 +37,7 @@ func (f *Runner) FundWallet(wallet *wallet.Wallet) error {
 		attempts++
 	}
 
-	return f.fundWalletWithGenesis(wallet)
+	return ErrFailedToFundWallet
 }
 
 // fundWalletWithGenesis funds a wallet with the local genesis wallet.
