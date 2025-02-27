@@ -199,7 +199,6 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 
 	err = c.conn.WriteMessage(msg)
 	if err != nil {
-		fmt.Println("Error writing message: ", err)
 		return nil, err
 	}
 
@@ -619,23 +618,34 @@ func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 	case streamtypes.LedgerStreamType:
 		var ledger streamtypes.LedgerStream
 		c.unmarshalMessage(message, &ledger)
-		c.ledgerClosedChan <- &ledger
+
+		if c.ledgerClosedChan != nil {
+			c.ledgerClosedChan <- &ledger
+		}
 	case streamtypes.TransactionStreamType:
 		var transaction streamtypes.TransactionStream
 		c.unmarshalMessage(message, &transaction)
-		c.transactionChan <- &transaction
+		if c.transactionChan != nil {
+			c.transactionChan <- &transaction
+		}
 	case streamtypes.ValidationStreamType:
 		var validation streamtypes.ValidationStream
 		c.unmarshalMessage(message, &validation)
-		c.validationChan <- &validation
+		if c.validationChan != nil {
+			c.validationChan <- &validation
+		}
 	case streamtypes.PeerStatusStreamType:
 		var peerStatus streamtypes.PeerStatusStream
 		c.unmarshalMessage(message, &peerStatus)
-		c.peerStatusChan <- &peerStatus
+		if c.peerStatusChan != nil {
+			c.peerStatusChan <- &peerStatus
+		}
 	case streamtypes.ConsensusStreamType:
 		var consensus streamtypes.ConsensusStream
 		c.unmarshalMessage(message, &consensus)
-		c.consensusChan <- &consensus
+		if c.consensusChan != nil {
+			c.consensusChan <- &consensus
+		}
 	default:
 		if c.errChan == nil {
 			c.errChan = make(chan error)
@@ -645,6 +655,9 @@ func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 }
 
 func (c *Client) readMessages() {
+	retryCount := 0
+	maxRetries := c.cfg.maxReconnects
+
 	for {
 		if c.conn == nil {
 			return
@@ -652,20 +665,30 @@ func (c *Client) readMessages() {
 		message, err := c.conn.ReadMessage()
 		switch {
 		case ws.IsCloseError(err) || ws.IsUnexpectedCloseError(err):
+			if retryCount >= maxRetries {
+				if c.errChan == nil {
+					c.errChan = make(chan error)
+				}
+				c.errChan <- fmt.Errorf("max reconnection attempts (%d) reached", maxRetries)
+				return
+			}
+			retryCount++
 			connErr := c.conn.Connect()
 			if connErr != nil {
 				if c.errChan == nil {
 					c.errChan = make(chan error)
 				}
 				c.errChan <- connErr
-				return // Break out of outer loop
+				return
 			}
 		case err != nil:
 			c.errChan <- err
-			return // Break out of outer loop
+			return
 		default:
 			// Send the message to the channel
 			c.handleMessage(message)
+			// Reset retry count on successful message
+			retryCount = 0
 		}
 	}
 }

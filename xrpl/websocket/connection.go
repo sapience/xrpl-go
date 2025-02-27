@@ -13,6 +13,7 @@ var (
 
 // Connection is a wrapper around a websocket connection.
 // It provides a method to read messages from the connection.
+// All methods are safe for concurrent use.
 type Connection struct {
 	conn *websocket.Conn
 	url  string
@@ -64,7 +65,7 @@ func (c *Connection) IsConnected() bool {
 
 // ReadMessage reads a message from the connection.
 // It returns the message and an error if the message is not read.
-// This method is blocking, it will block until a message is red.
+// This method is blocking, it will block until a message is read.
 func (c *Connection) ReadMessage() ([]byte, error) {
 	if !c.IsConnected() {
 		return nil, ErrNotConnected

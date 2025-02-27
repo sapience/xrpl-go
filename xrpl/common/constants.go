@@ -9,6 +9,7 @@ const (
 	// Config constants
 	DefaultHost               = "localhost"
 	DefaultMaxRetries         = 10
+	DefaultMaxReconnects      = 3
 	DefaultRetryDelay         = 1 * time.Second
 	DefaultFeeCushion float32 = 1.2
 	DefaultMaxFeeXRP  float32 = 2
