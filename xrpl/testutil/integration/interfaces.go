@@ -14,7 +14,6 @@ type FaucetProvider interface {
 type Client interface {
 	FaucetProvider() common.FaucetProvider
 
-
 	FundWallet(wallet *wallet.Wallet) error
 	Autofill(tx *transaction.FlatTransaction) error
 	Submit(blob string, validate bool) (*transactions.SubmitResponse, error)
