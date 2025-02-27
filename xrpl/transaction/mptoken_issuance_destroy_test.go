@@ -12,7 +12,6 @@ func TestMPTokenIssuanceDestroy_TxType(t *testing.T) {
 	require.Equal(t, MPTokenIssuanceDestroyTx, tx.TxType())
 }
 
-
 func TestMPTokenIssuanceDestroy_Flatten(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -30,7 +29,7 @@ func TestMPTokenIssuanceDestroy_Flatten(t *testing.T) {
 			},
 			expected: FlatTransaction{
 				"Account":           "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-				"Fee":              "12",
+				"Fee":               "12",
 				"TransactionType":   "MPTokenIssuanceDestroy",
 				"MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
 			},
@@ -55,9 +54,9 @@ func TestMPTokenIssuanceDestroy_Validate(t *testing.T) {
 			name: "pass - valid transaction",
 			tx: &MPTokenIssuanceDestroy{
 				BaseTx: BaseTx{
-					Account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: MPTokenIssuanceDestroyTx,
-					Fee:     types.XRPCurrencyAmount(12),
+					Fee:             types.XRPCurrencyAmount(12),
 				},
 				MPTokenIssuanceID: "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
 			},

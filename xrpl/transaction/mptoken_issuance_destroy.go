@@ -6,10 +6,11 @@ var (
 	ErrInvalidMPTokenIssuanceID = errors.New("mptoken issuance destroy: invalid MPTokenIssuanceID")
 )
 
-// The MPTokenIssuanceDestroy transaction is used to remove an MPTokenIssuance object from the directory node in which it is being held, effectively removing the token from the ledger ("destroying" it).
-// If this operation succeeds, the corresponding MPTokenIssuance is removed and the owner’s reserve requirement is reduced by one. This operation must fail if there are any holders of the MPT in question.
+// The MPTokenIssuanceDestroy transaction is used to remove an MPTokenIssuance object from the directory node
+// in which it is being held, effectively removing the token from the ledger ("destroying" it).
 //
-// Example:
+// If this operation succeeds, the corresponding MPTokenIssuance is removed and the owner’s reserve requirement is reduced by one.
+// This operation must fail if there are any holders of the MPT in question.
 //
 // ```json
 //
@@ -20,8 +21,6 @@ var (
 //	}
 //
 // ```
-// MPTokenIssuanceDestroy represents a transaction to Destroy a new MPTokenIssuance object.
-// This is the only opportunity an issuer has to specify immutable token fields.
 type MPTokenIssuanceDestroy struct {
 	BaseTx
 	// Identifies the MPTokenIssuance object to be removed by the transaction.

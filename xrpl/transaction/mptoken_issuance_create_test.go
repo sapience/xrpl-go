@@ -41,8 +41,8 @@ func TestMPTokenIssuanceCreate_Flatten(t *testing.T) {
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
 					TransactionType: MPTokenIssuanceCreateTx,
 				},
-				AssetScale:       types.AssetScale(2),
-				TransferFee:      types.TransferFee(314),
+				AssetScale:      types.AssetScale(2),
+				TransferFee:     types.TransferFee(314),
 				MaximumAmount:   &amount,
 				MPTokenMetadata: types.MPTokenMetadata("FOO"),
 			},
@@ -81,9 +81,10 @@ func TestMPTokenIssuanceCreate_Validate(t *testing.T) {
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
 					TransactionType: MPTokenIssuanceCreateTx,
+					Flags:           tfMPTCanTransfer,
 				},
-				AssetScale:       types.AssetScale(2),
-				TransferFee:      types.TransferFee(314),
+				AssetScale:      types.AssetScale(2),
+				TransferFee:     types.TransferFee(314),
 				MaximumAmount:   &amount,
 				MPTokenMetadata: types.MPTokenMetadata("464f4f"),
 			},
@@ -114,6 +115,20 @@ func TestMPTokenIssuanceCreate_Validate(t *testing.T) {
 			wantValid:  false,
 			wantErr:    true,
 			errMessage: ErrInvalidAccount,
+		},
+		{
+			name: "fail - invalid flags",
+			tx: &MPTokenIssuanceCreate{
+				BaseTx: BaseTx{
+					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
+					TransactionType: MPTokenIssuanceCreateTx,
+				},
+				MPTokenMetadata: types.MPTokenMetadata("464f4f"),
+				TransferFee:     types.TransferFee(314),
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrTransferFeeRequiresCanTransfer,
 		},
 	}
 
@@ -201,4 +216,3 @@ func TestMPTokenIssuanceCreate_Flags(t *testing.T) {
 	expectedFlags := tfMPTCanLock | tfMPTRequireAuth | tfMPTCanEscrow | tfMPTCanTrade | tfMPTCanTransfer | tfMPTCanClawback
 	require.Equal(t, uint32(expectedFlags), tx.Flags)
 }
-

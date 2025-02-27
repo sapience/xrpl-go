@@ -12,7 +12,6 @@ func TestMPTokenIssuanceSet_TxType(t *testing.T) {
 	require.Equal(t, MPTokenIssuanceSetTx, tx.TxType())
 }
 
-
 func TestMPTokenIssuanceSet_Flatten(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -27,14 +26,14 @@ func TestMPTokenIssuanceSet_Flatten(t *testing.T) {
 					Flags:   1,
 				},
 				MPTokenIssuanceID: "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
-				Holder:           types.Holder("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
+				Holder:            types.Holder("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
 			},
 			expected: FlatTransaction{
 				"TransactionType":   "MPTokenIssuanceSet",
-				"Account":          "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-				"Flags":            uint32(1),
+				"Account":           "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Flags":             uint32(1),
 				"MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
-				"Holder":           "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Holder":            "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 			},
 		},
 		{
@@ -48,8 +47,8 @@ func TestMPTokenIssuanceSet_Flatten(t *testing.T) {
 			},
 			expected: FlatTransaction{
 				"TransactionType":   "MPTokenIssuanceSet",
-				"Account":          "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-				"Flags":            uint32(1),
+				"Account":           "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Flags":             uint32(1),
 				"MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
 			},
 		},
@@ -78,7 +77,7 @@ func TestMPTokenIssuanceSet_Validate(t *testing.T) {
 					TransactionType: MPTokenIssuanceSetTx,
 				},
 				MPTokenIssuanceID: "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
-				Holder:           types.Holder("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
+				Holder:            types.Holder("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"),
 			},
 			wantOk:  true,
 			wantErr: nil,
@@ -91,7 +90,7 @@ func TestMPTokenIssuanceSet_Validate(t *testing.T) {
 					TransactionType: MPTokenIssuanceSetTx,
 				},
 				MPTokenIssuanceID: "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
-				Holder:           types.Holder("invalid"),
+				Holder:            types.Holder("invalid"),
 			},
 			wantOk:  false,
 			wantErr: ErrInvalidAccount,
@@ -134,7 +133,7 @@ func TestMPTokenIssuanceSet_Flags(t *testing.T) {
 			want: tfMPTLock,
 		},
 		{
-			name: "pass - set MPTUnlock flag", 
+			name: "pass - set MPTUnlock flag",
 			setFlags: func(tx *MPTokenIssuanceSet) {
 				tx.SetMPTUnlockFlag()
 			},
@@ -158,5 +157,3 @@ func TestMPTokenIssuanceSet_Flags(t *testing.T) {
 		})
 	}
 }
-
-

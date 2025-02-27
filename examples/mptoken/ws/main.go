@@ -69,7 +69,7 @@ func main() {
 	}
 	fmt.Println("💸 Customer wallet funded!")
 	fmt.Println()
-	
+
 	amount := types.XRPCurrencyAmount(10000)
 
 	fmt.Println("⏳ Issuing MPToken...")
@@ -94,7 +94,7 @@ func main() {
 	}
 
 	txBlob, _, err := issuerWallet.Sign(flattenedTx)
-	if err != nil {	
+	if err != nil {
 		fmt.Println("❌ Error signing issuance transaction:", err)
 		return
 	}

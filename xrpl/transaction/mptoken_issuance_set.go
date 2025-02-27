@@ -19,22 +19,19 @@ const (
 	tfMPTUnlock uint32 = 0x00000002
 )
 
-// The MPTokenIssuanceSet transaction is used to remove an MPTokenIssuance object from the directory node in which it is being held, effectively removing the token from the ledger ("Seting" it).
-// If this operation succeeds, the corresponding MPTokenIssuance is removed and the owner’s reserve requirement is reduced by one. This operation must fail if there are any holders of the MPT in question.
-//
-// Example:
+// The MPTokenIssuanceSet transaction is used to globally lock/unlock a MPTokenIssuance,
+// or lock/unlock an individual's MPToken.
 //
 // ```json
 //
-//	 {
-//	     "TransactionType": "MPTokenIssuanceSet",
-//	     "Fee": "10",
-//	     "MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000"
+//	{
+//	      "TransactionType": "MPTokenIssuanceSet",
+//	      "Fee": "10",
+//	      "MPTokenIssuanceID": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
+//	      "Flags": 1
 //	}
 //
 // ```
-// MPTokenIssuanceSet represents a transaction to Set a new MPTokenIssuance object.
-// This is the only opportunity an issuer has to specify immutable token fields.
 type MPTokenIssuanceSet struct {
 	BaseTx
 	// The MPTokenIssuance identifier.

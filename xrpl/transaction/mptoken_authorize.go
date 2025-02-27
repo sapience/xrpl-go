@@ -27,7 +27,7 @@ var (
 type MPTokenAuthorize struct {
 	BaseTx
 	// Indicates the ID of the MPT involved.
-	MPTokenIssuanceID uint16
+	MPTokenIssuanceID string
 	// (Optional) Specifies the holder's address that the issuer wants to authorize.
 	// Only used for authorization/allow-listing; must be empty if submitted by the holder.
 	Holder *types.Address `json:",omitempty"`

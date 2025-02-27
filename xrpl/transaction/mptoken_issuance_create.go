@@ -155,7 +155,7 @@ func (m *MPTokenIssuanceCreate) Validate() (bool, error) {
 		if *m.TransferFee > MaxTransferFee {
 			return false, ErrInvalidTransferFee
 		}
-		if IsFlagEnabled(m.Flags, tfMPTCanTransfer) {
+		if !IsFlagEnabled(m.Flags, tfMPTCanTransfer) {
 			return false, ErrTransferFeeRequiresCanTransfer
 		}
 	}
