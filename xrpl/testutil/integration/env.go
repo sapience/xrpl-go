@@ -16,7 +16,7 @@ const (
 // IntegrationWebsocketEnvs is the map of integration environments.
 var IntegrationWebsocketEnvs = map[EnvKey]Env{
 	LocalnetEnv: {
-		Host:           "wss://0.0.0.0:6006",
+		Host:           "ws://0.0.0.0:6006",
 		FaucetProvider: nil,
 	},
 	TestnetEnv: {
@@ -25,7 +25,7 @@ var IntegrationWebsocketEnvs = map[EnvKey]Env{
 	},
 	DevnetEnv: {
 		Host:           "wss://s.devnet.rippletest.net:51233",
-		FaucetProvider: faucet.NewTestnetFaucetProvider(),
+		FaucetProvider: faucet.NewDevnetFaucetProvider(),
 	},
 }
 
@@ -40,7 +40,7 @@ var IntegrationRPCEnvs = map[EnvKey]Env{
 	},
 	DevnetEnv: {
 		Host:           "https://s.devnet.rippletest.net:51234",
-		FaucetProvider: faucet.NewTestnetFaucetProvider(),
+		FaucetProvider: faucet.NewDevnetFaucetProvider(),
 	},
 }
 
