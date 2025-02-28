@@ -8,7 +8,7 @@ sidebar_position: 5
 
 The keypairs package provides a set of functions for generating and managing cryptographic keypairs. It includes functionality for creating new keypairs, deriving public keys from private keys, and verifying signatures.
 
-This package is used internally by the `xrpl` package to expose a [`Wallet`](/docs/xrpl/wallet) interface for easier wallet management. Nevertheless, it can be used independently from the `xrpl` package for cryptographic operations.
+This package is used internally by the `xrpl` package to expose a [`Wallet`](/docs/xrpl/wallet) interface for easier wallet management. Nevertheless, it can be used independently of the `xrpl` package for cryptographic operations.
 
 ## Key components
 
@@ -73,7 +73,7 @@ They can be split into two groups:
 func GenerateSeed(entropy string, alg interfaces.KeypairCryptoAlg, r interfaces.Randomizer) (string, error)
 ```
 
-Generate a seed that can be used to generate keypairs. You can specify the entropy, of the seed or let the function generate a random one (by passing an empty string as entropy and providing a randomizer) and use one of the supported algorithms the provided algorithm to generate the seed. The result is a base58-encoded seed, which starts with the character `s`. 
+Generate a seed that can be used to generate keypairs. You can specify the entropy of the seed or let the function generate a random one (by passing an empty string as entropy and providing a randomizer) and use one of the supported algorithms to generate the seed. The result is a base58-encoded seed, which starts with the character `s`. 
 
 :::info
 
@@ -96,7 +96,7 @@ Derives a keypair (private and public keys) from a seed. If the `validator` para
 func DeriveClassicAddress(pubKey string) (string, error)
 ```
 
-After deriving a keypair, you can derive the classic address from the public key. The result is a base58 encoded address, which starts with the character `r`. If you're interested in X-Address derivation, [`address-codec`](/docs/address-codec) package contains functions to encode and decode X-Addresses from and to classic addresses.
+After deriving a keypair, you can derive the classic address from the public key. The result is a base58 encoded address, which starts with the character `r`. If you're interested in X-Address derivation, the [`address-codec`](/docs/address-codec) package contains functions to encode and decode X-Addresses from and to classic addresses.
 
 #### DeriveNodeAddress
 
