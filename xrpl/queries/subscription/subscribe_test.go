@@ -3,6 +3,7 @@ package subscribe
 import (
 	"testing"
 
+	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
@@ -12,7 +13,7 @@ func TestSubscribeRequest(t *testing.T) {
 		Streams:          []string{"abc", "def"},
 		Accounts:         []types.Address{"ghi", "jkl"},
 		AccountsProposed: []types.Address{"bcd", "efg"},
-		Books: []OrderBook{
+		Books: []streamtypes.OrderBook{
 			{
 				TakerGets: types.IssuedCurrencyAmount{
 					Currency: "EUR",

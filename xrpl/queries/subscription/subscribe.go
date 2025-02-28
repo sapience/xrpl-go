@@ -3,6 +3,8 @@ package subscribe
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
+	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/version"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -13,13 +15,14 @@ import (
 // The subscribe method requests periodic notifications from the server when
 // certain events happen.
 type Request struct {
-	Streams          []string        `json:"streams,omitempty"`
-	Accounts         []types.Address `json:"accounts,omitempty"`
-	AccountsProposed []types.Address `json:"accounts_proposed,omitempty"`
-	Books            []OrderBook     `json:"books,omitempty"`
-	URL              string          `json:"url,omitempty"`
-	URLUsername      string          `json:"url_username,omitempty"`
-	URLPassword      string          `json:"url_password,omitempty"`
+	common.BaseRequest
+	Streams          []string                `json:"streams,omitempty"`
+	Accounts         []types.Address         `json:"accounts,omitempty"`
+	AccountsProposed []types.Address         `json:"accounts_proposed,omitempty"`
+	Books            []streamtypes.OrderBook `json:"books,omitempty"`
+	URL              string                  `json:"url,omitempty"`
+	URLUsername      string                  `json:"url_username,omitempty"`
+	URLPassword      string                  `json:"url_password,omitempty"`
 }
 
 func (*Request) Method() string {
@@ -31,12 +34,8 @@ func (*Request) Validate() error {
 	return nil
 }
 
-type OrderBook struct {
-	TakerGets types.IssuedCurrencyAmount `json:"taker_gets"`
-	TakerPays types.IssuedCurrencyAmount `json:"taker_pays"`
-	Taker     types.Address              `json:"taker"`
-	Snapshot  bool                       `json:"snapshot,omitempty"`
-	Both      bool                       `json:"both,omitempty"`
+func (*Request) APIVersion() int {
+	return version.RippledAPIV2
 }
 
 // ############################################################################

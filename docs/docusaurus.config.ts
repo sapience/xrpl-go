@@ -10,7 +10,7 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://xrpl-go.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -64,14 +64,24 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        docsRouteBasePath: '/docs',
+      },
+    ],
+  ],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/logo.png',
     navbar: {
-      title: 'XRPL Go',
+      title: 'XRPL GO',
       logo: {
-        alt: 'XRPL Go Logo',
-        src: 'img/xrpl-logo.png',
+        alt: 'XRPL GO Logo',
+        src: 'img/xrpl-go-logo.png',
       },
       items: [
         {
@@ -94,8 +104,28 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Docs',
+              label: 'Getting Started',
               to: '/docs/intro',
+            },
+            {
+              label: 'Installation',
+              to: '/docs/installation',
+            },
+            {
+              label: 'binary-codec',
+              to: '/docs/binary-codec',
+            },
+            {
+              label: 'address-codec',
+              to: '/docs/address-codec',
+            },
+            {
+              label: 'keypairs',
+              to: '/docs/keypairs',
+            },
+            {
+              label: 'xrpl',
+              to: '/docs/xrpl/currency',
             },
           ],
         },
@@ -106,10 +136,18 @@ const config: Config = {
               label: 'GitHub',
               href: 'https://github.com/Peersyst/xrpl-go',
             },
+            {
+              label: 'Reference',
+              href: 'https://pkg.go.dev/github.com/Peersyst/xrpl-go',
+            },
           ],
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} XRPL Go.`,
+    },
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: true,
     },
     prism: {
       theme: prismThemes.github,
