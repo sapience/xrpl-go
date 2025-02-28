@@ -102,7 +102,7 @@ The `Client` type exposes the following methods to interact with the XRPL networ
 
 ### Request
 
-The `Request` method is used to send a request to the server and returns the response. This method is mostly used to send client [`queries`](/docs/docs/packages/xrpl#queries) to the server.
+The `Request` method is used to send a request to the server and returns the response. This method is mostly used to send client [`queries`](/docs/xrpl/queries) to the server.
 
 ```go
 func (c *Client) Request(reqParams XRPLRequest) (*ClientResponse, error)
