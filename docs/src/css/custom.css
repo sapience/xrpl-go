@@ -28,3 +28,57 @@
   --ifm-color-primary-lightest: #AC5CFB;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+main {
+  background-image: 
+    url('/img/bg-top.png'),
+    url('/img/bg-bottom.png');
+  background-position: 
+    top left, 
+    bottom right;
+  background-repeat: 
+    no-repeat, 
+    no-repeat;
+  background-size: 
+    200px, 
+    200px;
+}
+
+.footer {
+  background-color: transparent;
+  border-top: 1px solid rgb(68, 73, 80);
+}
+
+@media screen and (max-width: 996px) {
+  main {
+    background-image: none;
+  }
+}
+
+.hero-section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.hero-logo {
+  max-width: 300px;
+  margin-bottom: 2rem;
+}
+
+.hero-title {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.hero-description {
+  font-size: 1.5rem;
+  max-width: 800px;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}

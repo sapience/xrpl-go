@@ -50,7 +50,7 @@ func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error)
 func (w *Wallet) Multisign(tx map[string]interface{}) (string, string, error)
 ```
 
-The `Sign` method signs a [flat transaction](Afegir link) and returns the signed transaction blob and the signature.
+The `Sign` method signs a flat transaction and returns the signed transaction blob and the signature.
 
 On the other hand, the `Multisign` method multisigns a flat transaction by adding the wallet's signature to the transaction and returning the resulting transaction blob and the blob hash. Learn more about how multisigns work in the [official documentation](https://xrpl.org/docs/concepts/accounts/multi-signing).
 
