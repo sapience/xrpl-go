@@ -59,6 +59,12 @@ func main() {
 
 ## Next steps
 
-Now that you have the `xrpl-go` package downloaded and imported in your project, you can start interacting with the XRP Ledger.
+Now that you have the `xrpl-go` package downloaded and imported in your project, you can start interacting with the XRP Ledger. 
 
-To learn more about the `xrpl-go` packages, you can find the documentation for each package in the [packages](/docs/category/packages) category.
+To learn more about the `xrpl-go` packages, you can find the documentation for each package:
+
+- [binary-codec](/docs/binary-codec)
+- [address-codec](/docs/address-codec)
+- [keypairs](/docs/keypairs)
+- [xrpl](/docs/xrpl/currency)
+

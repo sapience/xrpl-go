@@ -8,9 +8,11 @@ import (
 
 type ClientConfig struct {
 	// Connection config
-	host       string
-	maxRetries int
-	retryDelay time.Duration
+	host          string
+	maxRetries    int
+	maxReconnects int
+	retryDelay    time.Duration
+	timeout       time.Duration
 
 	// Fee config
 	feeCushion float32
@@ -22,11 +24,13 @@ type ClientConfig struct {
 
 func NewClientConfig() *ClientConfig {
 	return &ClientConfig{
-		host:       common.DefaultHost,
-		feeCushion: common.DefaultFeeCushion,
-		maxFeeXRP:  common.DefaultMaxFeeXRP,
-		maxRetries: common.DefaultMaxRetries,
-		retryDelay: common.DefaultRetryDelay,
+		host:          common.DefaultHost,
+		feeCushion:    common.DefaultFeeCushion,
+		maxFeeXRP:     common.DefaultMaxFeeXRP,
+		maxRetries:    common.DefaultMaxRetries,
+		maxReconnects: common.DefaultMaxReconnects,
+		retryDelay:    common.DefaultRetryDelay,
+		timeout:       common.DefaultTimeout,
 	}
 }
 
@@ -65,9 +69,23 @@ func (wc ClientConfig) WithMaxRetries(maxRetries int) ClientConfig {
 	return wc
 }
 
+// WithMaxReconnects sets the maximum number of reconnects for a transaction.
+// Default: 3
+func (wc ClientConfig) WithMaxReconnects(maxReconnects int) ClientConfig {
+	wc.maxReconnects = maxReconnects
+	return wc
+}
+
 // WithRetryDelay sets the delay between retries for a transaction.
 // Default: 1 second
 func (wc ClientConfig) WithRetryDelay(retryDelay time.Duration) ClientConfig {
 	wc.retryDelay = retryDelay
+	return wc
+}
+
+// WithTimeout sets the timeout for a request.
+// Default: 10 seconds
+func (wc ClientConfig) WithTimeout(timeout time.Duration) ClientConfig {
+	wc.timeout = timeout
 	return wc
 }
