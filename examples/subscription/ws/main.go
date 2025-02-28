@@ -15,7 +15,7 @@ func main() {
 	fmt.Println("⏳ Connecting to testnet...")
 	client := websocket.NewClient(
 		websocket.NewClientConfig().
-			WithHost("wss://s.devnet.rippletest.net:51233").
+			WithHost("wss://s.altnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewTestnetFaucetProvider()),
 	)
 	defer client.Disconnect()
