@@ -68,6 +68,130 @@ func TestCredentialCreate_Validate(t *testing.T) {
 			},
 			expected: true,
 		},
+		{
+			name: "pass - valid CredentialCreate with required fields only",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: "6D795F63726564656E7469616C",
+			},
+			expected: true,
+		},
+		{
+			name: "pass - valid CredentialCreate without URI",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				Expiration:     123456,
+			},
+			expected: true,
+		},
+		{
+			name: "pass - valid CredentialCreate without URI",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				Expiration:     123456,
+			},
+			expected: true,
+		},
+		{
+			name: "fail - CredentialCreate with an invalid Subject",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "invalid_address",
+				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				Expiration:     123456,
+			},
+			expected: false,
+		},
+		{
+			name: "pass - CredentialCreate with an Expiration of 0 (won't be pass to the flatten transaction)",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				Expiration:     0,
+			},
+			expected: true,
+		},
+		{
+			name: "fail - CredentialCreate with an invalid CredentialType (empty)",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType(""),
+			},
+			expected: false,
+		},
+		{
+			name: "fail - CredentialCreate with an invalid CredentialType (not hex)",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType("not hexadecimal value"),
+			},
+			expected: false,
+		},
+		{
+			name: "fail - CredentialCreate with an invalid BaseTx",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "invalid",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+			},
+			expected: false,
+		},
 	}
 
 	for _, tt := range tests {
