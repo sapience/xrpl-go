@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -189,6 +190,40 @@ func TestCredentialCreate_Validate(t *testing.T) {
 				},
 				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
 				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+			},
+			expected: false,
+		},
+		{
+			name: "fail - CredentialCreate with a URI that is too short",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: "6D795F63726564656E7469616C",
+				Expiration:     123456,
+				URI:            "0",
+			},
+			expected: false,
+		},
+		{
+			name: "fail - CredentialCreate with a URI that is too long",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: "6D795F63726564656E7469616C",
+				Expiration:     123456,
+				URI:            strings.Repeat("0", 513),
 			},
 			expected: false,
 		},

@@ -9,12 +9,14 @@ import (
 )
 
 var (
-	ErrInvalidCredentialType = errors.New("credential create: invalid credential type, must be an hexadecimal between 1 and 64 bytes")
-	ErrInvalidSubject        = errors.New("credential create: invalid xrpl address for Subject")
+	ErrInvalidSubject = errors.New("credential create: invalid xrpl address for Subject")
 )
 
-// Maximum of 256 bytes for the URI field
-const MaxURILength = 256
+// Minimum length of a credential type is 1 byte (1 byte = 2 hex characters).
+const MinURILength = 2
+
+// Maximum of 256 bytes for the URI field (1 byte = 2 hex characters)
+const MaxURILength = 512
 
 // A CredentialCreate transaction creates a credential in the ledger.
 // The issuer of the credential uses this transaction to provisionally issue a credential.
@@ -73,8 +75,13 @@ func (c *CredentialCreate) Validate() (bool, error) {
 		return false, ErrInvalidSubject
 	}
 
-	if c.CredentialType == "" || !typecheck.IsHex(c.CredentialType.String()) || len(c.CredentialType) > MaxURILength {
+	// TODO check the min
+	if c.CredentialType == "" || !typecheck.IsHex(c.CredentialType.String()) || len(c.CredentialType) > MaxCredentialTypeLength {
 		return false, ErrInvalidCredentialType
+	}
+
+	if c.URI != "" && (len(c.URI) < MinURILength || len(c.URI) > MaxURILength) {
+		return false, ErrInvalidCredentialURI
 	}
 
 	return true, nil
