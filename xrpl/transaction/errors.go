@@ -12,7 +12,7 @@ var (
 	// ErrInvalidCheckID is returned when the CheckID is not a valid 64-character hexadecimal string.
 	ErrInvalidCheckID = errors.New("invalid CheckID, must be a valid 64-character hexadecimal string")
 	// ErrInvalidCredentialType is returned when the CredentialType is not a valid hexadecimal string between 1 and 64 bytes.
-	ErrInvalidCredentialType = errors.New("invalid credential type, must be an hexadecimal between 1 and 64 bytes")
+	ErrInvalidCredentialType = errors.New("invalid credential type, must be a hexadecimal string between 1 and 64 bytes")
 	// ErrInvalidCredentialURI is returned when the URI field does not meet the maximum length of 256 bytes.
 	ErrInvalidCredentialURI = errors.New("credential create: invalid URI, must have a maximum length of 256 bytes")
 	// ErrInvalidDestination is returned when the Destination field does not meet XRPL address standards.
