@@ -1,15 +1,9 @@
 package transaction
 
 import (
-	"errors"
-
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-)
-
-var (
-	ErrInvalidSubject = errors.New("credential create: invalid xrpl address for Subject")
 )
 
 // Minimum length of a credential type is 1 byte (1 byte = 2 hex characters).

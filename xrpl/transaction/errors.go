@@ -25,4 +25,6 @@ var (
 	ErrInvalidHexPublicKey = errors.New("invalid PublicKey, must be a valid hexadecimal string")
 	// ErrInvalidTransactionType is returned when the TransactionType field is invalid or missing.
 	ErrInvalidTransactionType = errors.New("invalid or missing TransactionType")
+	// ErrInvalidSubject is returned when the Subject field is an invalid xrpl address.
+	ErrInvalidSubject = errors.New("invalid xrpl address for Subject")
 )
