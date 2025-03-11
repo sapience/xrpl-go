@@ -47,7 +47,7 @@ func (*Request) Validate() error {
 type Response struct {
 	Ledger      ledgertypesv1.BaseLedger  `json:"ledger"`
 	LedgerHash  string                    `json:"ledger_hash"`
-	LedgerIndex common.LedgerIndex        `json:"ledger_index"`
+	LedgerIndex string                    `json:"ledger_index"`
 	Validated   bool                      `json:"validated,omitempty"`
 	QueueData   []ledgertypesv1.QueueData `json:"queue_data,omitempty"`
 }
