@@ -2,6 +2,7 @@ package transaction
 
 type TxType string
 
+// nolint // otherwise issues with the Credential transaction types
 const (
 	AccountSetTx                        TxType = "AccountSet"
 	AccountDeleteTx                     TxType = "AccountDelete"
