@@ -6,6 +6,8 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+// A CredentialDelete transaction removes a credential from the ledger, effectively revoking it.
+// Users may also want to delete an unwanted credential to reduce their reserve requirement.
 type CredentialDelete struct {
 	BaseTx
 
@@ -19,10 +21,12 @@ type CredentialDelete struct {
 	Issuer types.Address `json:",omitempty"`
 }
 
+// TxType returns the type of the CredentialDelete transaction.
 func (*CredentialDelete) TxType() TxType {
 	return CredentialDeleteTx
 }
 
+// Flatten returns a flattened version of the CredentialDelete transaction.
 func (c *CredentialDelete) Flatten() FlatTransaction {
 	flattened := c.BaseTx.Flatten()
 
@@ -40,6 +44,7 @@ func (c *CredentialDelete) Flatten() FlatTransaction {
 	return flattened
 }
 
+// Validate validates the CredentialDelete transaction.
 func (c *CredentialDelete) Validate() (bool, error) {
 	// validate the base transaction
 	_, err := c.BaseTx.Validate()
