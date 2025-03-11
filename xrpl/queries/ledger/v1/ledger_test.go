@@ -39,7 +39,7 @@ func TestLedgerResponse(t *testing.T) {
 			TransactionHash:     "50B3A8FE2C5620E43AA57564209AEDFEA3E868CFA2F6E4AB4B9E55A7A62AAF7B",
 		},
 		LedgerHash:  "1723099E269C77C4BDE86C83FA6415D71CF20AA5CB4A94E5C388ED97123FB55B",
-		LedgerIndex: "54300932",
+		LedgerIndex: 54300932,
 		Validated:   true,
 	}
 	j := `{
@@ -58,7 +58,7 @@ func TestLedgerResponse(t *testing.T) {
 		"transaction_hash": "50B3A8FE2C5620E43AA57564209AEDFEA3E868CFA2F6E4AB4B9E55A7A62AAF7B"
 	},
 	"ledger_hash": "1723099E269C77C4BDE86C83FA6415D71CF20AA5CB4A94E5C388ED97123FB55B",
-	"ledger_index": "54300932",
+	"ledger_index": 54300932,
 	"validated": true
 }`
 	if err := testutil.SerializeAndDeserialize(t, s, j); err != nil {
