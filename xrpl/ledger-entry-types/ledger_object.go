@@ -13,6 +13,7 @@ const (
 	AMMEntry                             EntryType = "AMM"
 	BridgeEntry                          EntryType = "Bridge"
 	CheckEntry                           EntryType = "Check"
+	CredentialEntry                      EntryType = "Credential"
 	DepositPreauthObjEntry               EntryType = "DepositPreauth"
 	DIDEntry                             EntryType = "DID"
 	DirectoryNodeEntry                   EntryType = "DirectoryNode"
