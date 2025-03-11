@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -75,8 +75,7 @@ func (c *CredentialCreate) Validate() (bool, error) {
 		return false, ErrInvalidSubject
 	}
 
-	// TODO check the min
-	if c.CredentialType == "" || !typecheck.IsHex(c.CredentialType.String()) || len(c.CredentialType) > MaxCredentialTypeLength {
+	if !common.IsValidCredentialType(c.CredentialType) {
 		return false, ErrInvalidCredentialType
 	}
 

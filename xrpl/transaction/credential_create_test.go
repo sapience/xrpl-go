@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -175,6 +176,36 @@ func TestCredentialCreate_Validate(t *testing.T) {
 				},
 				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
 				CredentialType: types.CredentialType("not hexadecimal value"),
+			},
+			expected: false,
+		},
+		{
+			name: "fail - CredentialCreate with an invalid CredentialType (too long)",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType(strings.Repeat("0", common.MaxCredentialTypeLength+1)),
+			},
+			expected: false,
+		},
+		{
+			name: "fail - CredentialCreate with an invalid CredentialType (too short)",
+			input: &CredentialCreate{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: "AMMWithdraw",
+					Fee:             types.XRPCurrencyAmount(10),
+					Flags:           1048576,
+					Sequence:        10,
+				},
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				CredentialType: types.CredentialType(strings.Repeat("0", common.MinCredentialTypeLength-1)),
 			},
 			expected: false,
 		},
