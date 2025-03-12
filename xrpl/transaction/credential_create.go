@@ -5,11 +5,13 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-// Minimum length of a credential type is 1 byte (1 byte = 2 hex characters).
-const MinURILength = 2
+const (
+	// Minimum length of a credential type is 1 byte (1 byte = 2 hex characters).
+	MinURILength = 2
 
-// Maximum of 256 bytes for the URI field (1 byte = 2 hex characters)
-const MaxURILength = 512
+	// Maximum of 256 bytes for the URI field (1 byte = 2 hex characters)
+	MaxURILength = 512
+)
 
 // A CredentialCreate transaction creates a credential in the ledger.
 // The issuer of the credential uses this transaction to provisionally issue a credential.
