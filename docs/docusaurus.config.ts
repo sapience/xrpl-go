@@ -100,14 +100,6 @@ const config: Config = {
               to: '/docs/installation',
             },
             {
-              label: 'binary-codec',
-              to: '/docs/binary-codec',
-            },
-            {
-              label: 'address-codec',
-              to: '/docs/address-codec',
-            },
-            {
               label: 'keypairs',
               to: '/docs/keypairs',
             },
