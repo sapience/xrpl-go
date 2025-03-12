@@ -55,6 +55,8 @@ func EmptyLedgerObject(t string) (Object, error) {
 		return &Bridge{}, nil
 	case CheckEntry:
 		return &Check{}, nil
+	case CredentialEntry:
+		return &Credential{}, nil
 	case DepositPreauthObjEntry:
 		return &DepositPreauthObj{}, nil
 	case DIDEntry:
@@ -114,6 +116,8 @@ func UnmarshalLedgerObject(data []byte) (Object, error) {
 		o = &Bridge{}
 	case CheckEntry:
 		o = &Check{}
+	case CredentialEntry:
+		o = &Credential{}
 	case DepositPreauthObjEntry:
 		o = &DepositPreauthObj{}
 	case DIDEntry:
