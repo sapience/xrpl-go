@@ -34,6 +34,8 @@ type CredentialCreate struct {
 	CredentialType types.CredentialType
 
 	// Time after which this credential expires, in seconds since the Ripple Epoch.
+	// The Ripple Epoch is January 1, 2000 (00:00 UTC), represented as Unix time 946684800.
+	// https://xrpl.org/docs/references/protocol/data-types/basic-data-types#specifying-time
 	Expiration uint32 `json:",omitempty"`
 
 	// Arbitrary additional data about the credential, such as the URL where users can look up an associated Verifiable Credential document. If present, the minimum length is 1 byte and the maximum is 256 bytes.
