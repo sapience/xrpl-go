@@ -1,7 +1,10 @@
 package types
 
 import (
+	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCredentialType_String(t *testing.T) {
@@ -32,6 +35,47 @@ func TestCredentialType_String(t *testing.T) {
 			if got := tt.input.String(); got != tt.expected {
 				t.Errorf("CredentialType.String(), got: %v but we want: %v", got, tt.expected)
 			}
+		})
+	}
+}
+
+func TestCredentialType_IsValid(t *testing.T) {
+	tests := []struct {
+		name     string
+		credType CredentialType
+		expected bool
+	}{
+		{
+			name:     "empty string",
+			credType: "",
+			expected: false,
+		},
+		{
+			name:     "valid hex string",
+			credType: "6D795F63726564656E7469616C",
+			expected: true,
+		},
+		{
+			name:     "invalid hex string",
+			credType: "invalid",
+			expected: false,
+		},
+		{
+			name:     "short hex string",
+			credType: CredentialType(strings.Repeat("0", MinCredentialTypeLength-1)),
+			expected: false,
+		},
+		{
+			name:     "long hex string",
+			credType: CredentialType(strings.Repeat("0", MaxCredentialTypeLength+1)),
+			expected: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			result := test.credType.IsValid()
+			assert.Equal(t, test.expected, result)
 		})
 	}
 }

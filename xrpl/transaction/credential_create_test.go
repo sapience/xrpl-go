@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -190,7 +189,7 @@ func TestCredentialCreate_Validate(t *testing.T) {
 					Sequence:        10,
 				},
 				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
-				CredentialType: types.CredentialType(strings.Repeat("0", common.MaxCredentialTypeLength+1)),
+				CredentialType: types.CredentialType(strings.Repeat("0", types.MaxCredentialTypeLength+1)),
 			},
 			expected: false,
 		},
@@ -205,7 +204,7 @@ func TestCredentialCreate_Validate(t *testing.T) {
 					Sequence:        10,
 				},
 				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
-				CredentialType: types.CredentialType(strings.Repeat("0", common.MinCredentialTypeLength-1)),
+				CredentialType: types.CredentialType(strings.Repeat("0", types.MinCredentialTypeLength-1)),
 			},
 			expected: false,
 		},

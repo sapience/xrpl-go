@@ -2,7 +2,6 @@ package transaction
 
 import (
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
-	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
@@ -69,7 +68,7 @@ func (c *CredentialCreate) Validate() (bool, error) {
 		return false, ErrInvalidSubject
 	}
 
-	if !common.IsValidCredentialType(c.CredentialType) {
+	if !c.CredentialType.IsValid() {
 		return false, ErrInvalidCredentialType
 	}
 
