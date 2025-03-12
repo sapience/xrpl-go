@@ -46,27 +46,27 @@ func TestCredentialType_IsValid(t *testing.T) {
 		expected bool
 	}{
 		{
-			name:     "empty string",
+			name:     "fail - empty string",
 			credType: "",
 			expected: false,
 		},
 		{
-			name:     "valid hex string",
+			name:     "pass - valid hex string",
 			credType: "6D795F63726564656E7469616C",
 			expected: true,
 		},
 		{
-			name:     "invalid hex string",
+			name:     "fail - invalid hex string",
 			credType: "invalid",
 			expected: false,
 		},
 		{
-			name:     "short hex string",
+			name:     "fail - short hex string",
 			credType: CredentialType(strings.Repeat("0", MinCredentialTypeLength-1)),
 			expected: false,
 		},
 		{
-			name:     "long hex string",
+			name:     "fail - long hex string",
 			credType: CredentialType(strings.Repeat("0", MaxCredentialTypeLength+1)),
 			expected: false,
 		},
