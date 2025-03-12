@@ -5,18 +5,18 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCredential_EntryType(t *testing.T) {
 	credential := &Credential{}
-	assert.Equal(t, credential.EntryType(), CredentialEntry)
+	require.Equal(t, credential.EntryType(), CredentialEntry)
 }
 
 func TestCredential_SetLsfAccepted(t *testing.T) {
 	credential := &Credential{}
 	credential.SetLsfAccepted()
-	assert.Equal(t, credential.Flags, lsfAccepted)
+	require.Equal(t, credential.Flags, lsfAccepted)
 }
 
 func TestCredential_Flatten(t *testing.T) {
