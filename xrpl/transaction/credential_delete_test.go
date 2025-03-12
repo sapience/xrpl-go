@@ -4,40 +4,51 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCredentialDelete_TxType(t *testing.T) {
 	tx := &CredentialDelete{}
-	assert.Equal(t, CredentialDeleteTx, tx.TxType())
+	require.Equal(t, CredentialDeleteTx, tx.TxType())
 }
 
 func TestCredentialDelete_Flatten(t *testing.T) {
-	tx := &CredentialDelete{
-		BaseTx: BaseTx{
-			Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-			TransactionType: CredentialDeleteTx,
-			Fee:             types.XRPCurrencyAmount(10),
-			Sequence:        10,
+	tests := []struct {
+		name     string
+		input    *CredentialDelete
+		expected FlatTransaction
+	}{
+		{
+			name: "pass - valid CredentialDelete",
+			input: &CredentialDelete{
+				BaseTx: BaseTx{
+					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+					TransactionType: CredentialDeleteTx,
+					Fee:             types.XRPCurrencyAmount(10),
+					Sequence:        10,
+				},
+				CredentialType: "6D795F63726564656E7469616C",
+				Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				Issuer:         "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+			},
+			expected: FlatTransaction{
+				"Account":         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
+				"TransactionType": "CredentialDelete",
+				"Fee":             "10",
+				"Sequence":        uint32(10),
+				"CredentialType":  "6D795F63726564656E7469616C",
+				"Subject":         "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+				"Issuer":          "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+			},
 		},
-		CredentialType: "6D795F63726564656E7469616C",
-		Subject:        "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
-		Issuer:         "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
 	}
 
-	flattened := tx.Flatten()
-
-	expected := FlatTransaction{
-		"Account":         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
-		"TransactionType": "CredentialDelete",
-		"Fee":             "10",
-		"Sequence":        uint32(10),
-		"CredentialType":  "6D795F63726564656E7469616C",
-		"Subject":         "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
-		"Issuer":          "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			flattened := test.input.Flatten()
+			require.Equal(t, test.expected, flattened)
+		})
 	}
-
-	assert.Equal(t, expected, flattened)
 }
 
 func TestCredentialDelete_Validate(t *testing.T) {
@@ -53,7 +64,6 @@ func TestCredentialDelete_Validate(t *testing.T) {
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
 					TransactionType: CredentialDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           1048576,
 					Sequence:        10,
 				},
 				CredentialType: "6D795F63726564656E7469616C",
@@ -69,7 +79,6 @@ func TestCredentialDelete_Validate(t *testing.T) {
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
 					TransactionType: CredentialDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           1048576,
 					Sequence:        10,
 				},
 				CredentialType: "invalid",
@@ -83,11 +92,11 @@ func TestCredentialDelete_Validate(t *testing.T) {
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
 					TransactionType: CredentialDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           1048576,
 					Sequence:        10,
 				},
 				CredentialType: "6D795F63726564656E7469616C",
 				Subject:        "invalid",
+				Issuer:         "rJZdUoJnJb5q8tHb9cYfYh5vZg9G6z2v1d",
 			},
 			expected: false,
 		},
@@ -98,7 +107,6 @@ func TestCredentialDelete_Validate(t *testing.T) {
 					Account:         "rJVUeRqDFNs2xqA7ncVE6ZoAhPUoaJJSQm",
 					TransactionType: CredentialDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           1048576,
 					Sequence:        10,
 				},
 				CredentialType: "6D795F63726564656E7469616C",
@@ -114,7 +122,6 @@ func TestCredentialDelete_Validate(t *testing.T) {
 					Account:         "invalid",
 					TransactionType: CredentialDeleteTx,
 					Fee:             types.XRPCurrencyAmount(10),
-					Flags:           1048576,
 					Sequence:        10,
 				},
 				CredentialType: "6D795F63726564656E7469616C",
@@ -128,12 +135,11 @@ func TestCredentialDelete_Validate(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			valid, err := test.input.Validate()
+			require.Equal(t, test.expected, valid)
 			if test.expected {
-				assert.NoError(t, err)
-				assert.True(t, valid)
+				require.NoError(t, err)
 			} else {
-				assert.Error(t, err)
-				assert.False(t, valid)
+				require.Error(t, err)
 			}
 		})
 	}
