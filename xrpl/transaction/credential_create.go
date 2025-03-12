@@ -1,8 +1,15 @@
 package transaction
 
 import (
+	"errors"
+
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+	// ErrInvalidCredentialURI is returned when the URI field does not meet the maximum allowed hex-encoded length of 512 characters (256 bytes).
+	ErrInvalidCredentialURI = errors.New("credential create: invalid URI, must have a maximum hex string length of 512 characters (256 bytes)")
 )
 
 const (

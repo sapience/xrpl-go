@@ -10,7 +10,7 @@ import (
 type CredentialDelete struct {
 	BaseTx
 
-	// Arbitrary data defining the type of credential to delete. The minimum length is 1 byte and the maximum length is 256 bytes.
+	// Arbitrary data defining the type of credential this entry represents. The minimum length is 1 byte and the maximum length is 64 bytes.
 	CredentialType types.CredentialType
 
 	// The subject of the credential to delete. If omitted, use the Account (sender of the transaction) as the subject of the credential.
