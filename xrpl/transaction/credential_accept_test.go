@@ -1,44 +1,52 @@
 package transaction
 
 import (
-	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCredentialAccept_TxType(t *testing.T) {
 	tx := &CredentialAccept{}
-	assert.Equal(t, CredentialAcceptTx, tx.TxType())
+	require.Equal(t, CredentialAcceptTx, tx.TxType())
 }
 
 func TestCredentialAccept_Flatten(t *testing.T) {
-	s := CredentialAccept{
-		BaseTx: BaseTx{
-			Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-			TransactionType: CredentialAcceptTx,
-			Fee:             types.XRPCurrencyAmount(1),
-			Sequence:        1234,
+	tests := []struct {
+		name     string
+		input    *CredentialAccept
+		expected FlatTransaction
+	}{
+		{
+			name: "pass - valid CredentialAccept",
+			input: &CredentialAccept{
+				BaseTx: BaseTx{
+					Account:         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+					TransactionType: CredentialAcceptTx,
+					Fee:             types.XRPCurrencyAmount(1),
+					Sequence:        1234,
+				},
+				Issuer:         "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
+				CredentialType: "6D795F63726564656E7469616C", // "my_credential" in hex
+			},
+			expected: FlatTransaction{
+				"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+				"TransactionType": "CredentialAccept",
+				"Fee":             "1",
+				"Sequence":        uint32(1234),
+				"Issuer":          "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
+				"CredentialType":  "6D795F63726564656E7469616C",
+			},
 		},
-		Issuer:         "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
-		CredentialType: "6D795F63726564656E7469616C", // "my_credential" in hex
 	}
 
-	flattened := s.Flatten()
-
-	expected := FlatTransaction{
-		"Account":         "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-		"TransactionType": "CredentialAccept",
-		"Fee":             "1",
-		"Sequence":        uint32(1234),
-		"Issuer":          "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
-		"CredentialType":  "6D795F63726564656E7469616C",
-	}
-
-	if !reflect.DeepEqual(flattened, expected) {
-		t.Errorf("Flatten result differs from expected: %v, %v", flattened, expected)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			flattened := tt.input.Flatten()
+			require.Equal(t, tt.expected, flattened, "Flatten result differs from expected")
+		})
 	}
 }
 
@@ -158,11 +166,11 @@ func TestCredentialAccept_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.input.Validate()
-			if valid != tt.expected {
-				t.Errorf("Expected validation result to be %v, got %v", tt.expected, valid)
-			}
-			if (err != nil) != !tt.expected {
-				t.Errorf("Expected error presence to be %v, got %v", !tt.expected, err != nil)
+			require.Equal(t, tt.expected, valid, "Validation result mismatch")
+			if tt.expected {
+				require.NoError(t, err, "Expected no error for valid case")
+			} else {
+				require.Error(t, err, "Expected error for invalid case")
 			}
 		})
 	}
