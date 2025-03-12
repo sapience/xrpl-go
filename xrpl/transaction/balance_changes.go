@@ -10,6 +10,14 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
+var (
+	errLowLimitIssuerNotFound  = errors.New("low limit issuer not found")
+	errHighLimitIssuerNotFound = errors.New("high limit issuer not found")
+	errBalanceCurrencyNotFound = errors.New("balance currency not found")
+	errInvalidBalanceValue     = errors.New("invalid balance value")
+	errBalanceNotFound         = errors.New("balance not found")
+)
+
 type Balance struct {
 	Value    string `json:"amount"`
 	Currency string `json:"currency"`
@@ -171,15 +179,15 @@ func getTrustlineQuantity(node *NormalizedNode) ([]BalanceChange, error) {
 
 	lowLimitIssuer, ok := fields["LowLimit"].(map[string]interface{})["issuer"]
 	if !ok {
-		return nil, errors.New("low limit issuer not found")
+		return nil, errLowLimitIssuerNotFound
 	}
 	highLimitIssuer, ok := fields["HighLimit"].(map[string]interface{})["issuer"]
 	if !ok {
-		return nil, errors.New("high limit issuer not found")
+		return nil, errHighLimitIssuerNotFound
 	}
 	balanceCurrency, ok := fields["Balance"].(map[string]interface{})["currency"]
 	if !ok {
-		return nil, errors.New("balance currency not found")
+		return nil, errBalanceCurrencyNotFound
 	}
 
 	result := BalanceChange{
@@ -193,7 +201,7 @@ func getTrustlineQuantity(node *NormalizedNode) ([]BalanceChange, error) {
 
 	bigFloatValue, ok := new(big.Float).SetString(value)
 	if !ok {
-		return nil, errors.New("invalid balance value")
+		return nil, errInvalidBalanceValue
 	}
 	negatedValue := new(big.Float).Neg(bigFloatValue)
 
@@ -216,7 +224,8 @@ func computeBalanceChange(node *NormalizedNode) (string, error) {
 
 	var value *big.Float
 	var ok bool
-	if okNewBalance {
+	switch {
+	case okNewBalance:
 		balanceValue, err := getValue(newBalance)
 		if err != nil {
 			return "", err
@@ -224,9 +233,9 @@ func computeBalanceChange(node *NormalizedNode) (string, error) {
 
 		value, ok = new(big.Float).SetString(balanceValue)
 		if !ok {
-			return "", errors.New("invalid balance value")
+			return "", errInvalidBalanceValue
 		}
-	} else if okPreviousBalance && okFinalBalance {
+	case okPreviousBalance && okFinalBalance:
 		balanceValue, err := getValue(previousBalance)
 		if err != nil {
 			return "", err
@@ -234,7 +243,7 @@ func computeBalanceChange(node *NormalizedNode) (string, error) {
 
 		previousBalanceBigDecimal, ok := new(big.Float).SetString(balanceValue)
 		if !ok {
-			return "", errors.New("invalid balance value")
+			return "", errInvalidBalanceValue
 		}
 		balanceValue, err = getValue(finalBalance)
 		if err != nil {
@@ -243,10 +252,12 @@ func computeBalanceChange(node *NormalizedNode) (string, error) {
 
 		finalBalanceBigInt, ok := new(big.Float).SetString(balanceValue)
 		if !ok {
-			return "", errors.New("invalid balance value")
+			return "", errInvalidBalanceValue
 		}
 
 		value = finalBalanceBigInt.Sub(finalBalanceBigInt, previousBalanceBigDecimal)
+	default:
+		return "", errBalanceNotFound
 	}
 
 	return value.String(), nil
@@ -258,7 +269,7 @@ func getValue(balance interface{}) (string, error) {
 	} else if balanceMap, ok := balance.(map[string]interface{}); ok {
 		return balanceMap["value"].(string), nil
 	}
-	return "", errors.New("invalid balance value")
+	return "", errInvalidBalanceValue
 }
 
 func groupByAccount(balanceChanges []BalanceChange) []AccountBalanceChanges {
