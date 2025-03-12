@@ -17,7 +17,7 @@ type CredentialCreateTest struct {
 	ExpectedError    string
 }
 
-func TestIntegrationCredentialCreate_Websocket(t *testing.T) {
+func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 	env := integration.GetWebsocketEnv(t)
 	client := websocket.NewClient(websocket.NewClientConfig().WithHost(env.Host).WithFaucetProvider(env.FaucetProvider))
 
@@ -27,7 +27,6 @@ func TestIntegrationCredentialCreate_Websocket(t *testing.T) {
 
 	err := runner.Setup()
 	require.NoError(t, err)
-	defer runner.Teardown()
 
 	sender := runner.GetWallet(0)
 
@@ -66,4 +65,7 @@ func TestIntegrationCredentialCreate_Websocket(t *testing.T) {
 			}
 		})
 	}
+
+	err = runner.Teardown()
+	require.NoError(t, err)
 }
