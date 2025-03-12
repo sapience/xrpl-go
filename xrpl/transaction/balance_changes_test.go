@@ -375,7 +375,7 @@ func TestGetBalanceChanges(t *testing.T) {
 								},
 								"LowNode": "0000000000000000",
 							},
-							LedgerEntryType: "RippleState",
+							LedgerEntryType: ledger.RippleStateEntry,
 							LedgerIndex:     "2F323020B4288ACD4066CC64C89DAD2E4D5DFC2D44571942A51C005BF79D6E25",
 							PreviousFields: map[string]interface{}{
 								"Balance": map[string]interface{}{
@@ -410,7 +410,7 @@ func TestGetBalanceChanges(t *testing.T) {
 								},
 								"LowNode": "0000000000000000",
 							},
-							LedgerEntryType: "RippleState",
+							LedgerEntryType: ledger.RippleStateEntry,
 							LedgerIndex:     "AAE13AF5192EFBFD49A8EEE5869595563FEB73228C0B38FED9CC3D20EE74F399",
 							PreviousFields: map[string]interface{}{
 								"Balance": map[string]interface{}{
@@ -432,7 +432,7 @@ func TestGetBalanceChanges(t *testing.T) {
 								"OwnerCount": 1,
 								"Sequence":   38,
 							},
-							LedgerEntryType: "AccountRoot",
+							LedgerEntryType: ledger.AccountRootEntry,
 							LedgerIndex:     "E9A39B0BA8703D5FFD05D9EAD01EE6C0E7A15CF33C2C6B7269107BD2BD535818",
 							PreviousFields: map[string]interface{}{
 								"Balance":  "239567992",
