@@ -450,7 +450,7 @@ func TestGetBalanceChanges(t *testing.T) {
 					Balances: []Balance{
 						{
 							Value:    "-0.01",
-							Currency: "USD", 
+							Currency: "USD",
 							Issuer:   "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
 						},
 						{

@@ -11,11 +11,12 @@ import (
 )
 
 var (
-	errLowLimitIssuerNotFound  = errors.New("low limit issuer not found")
-	errHighLimitIssuerNotFound = errors.New("high limit issuer not found")
-	errBalanceCurrencyNotFound = errors.New("balance currency not found")
-	errInvalidBalanceValue     = errors.New("invalid balance value")
-	errBalanceNotFound         = errors.New("balance not found")
+	errLowLimitIssuerNotFound        = errors.New("low limit issuer not found")
+	errHighLimitIssuerNotFound       = errors.New("high limit issuer not found")
+	errBalanceCurrencyNotFound       = errors.New("balance currency not found")
+	errInvalidBalanceValue           = errors.New("invalid balance value")
+	errBalanceNotFound               = errors.New("balance not found")
+	errAccountNotFoundForXRPQuantity = errors.New("account not found for XRP quantity")
 )
 
 type Balance struct {
@@ -120,9 +121,13 @@ func GetBalanceChanges(meta *TxObjMeta) ([]AccountBalanceChanges, error) {
 }
 
 func normalizeNodes(nodes []AffectedNode) []*NormalizedNode {
-	normalizedNodes := make([]*NormalizedNode, len(nodes))
-	for i, node := range nodes {
-		normalizedNodes[i] = NewNormalizedNode(node)
+	var normalizedNodes []*NormalizedNode
+	for _, node := range nodes {
+		n := NewNormalizedNode(node)
+		if n == nil {
+			continue
+		}
+		normalizedNodes = append(normalizedNodes, n)
 	}
 	return normalizedNodes
 }
@@ -133,6 +138,8 @@ func getXRPQuantity(node *NormalizedNode) (*BalanceChange, error) {
 		account = finalFieldsAccount.(string)
 	} else if newFieldsAccount, ok := node.NewFields["Account"]; ok {
 		account = newFieldsAccount.(string)
+	} else {
+		return nil, errAccountNotFoundForXRPQuantity
 	}
 
 	value, err := computeBalanceChange(node)
@@ -177,15 +184,27 @@ func getTrustlineQuantity(node *NormalizedNode) ([]BalanceChange, error) {
 		fields = node.FinalFields
 	}
 
-	lowLimitIssuer, ok := fields["LowLimit"].(map[string]interface{})["issuer"]
+	lowLimitMap, ok := fields["LowLimit"].(map[string]interface{})
 	if !ok {
 		return nil, errLowLimitIssuerNotFound
 	}
-	highLimitIssuer, ok := fields["HighLimit"].(map[string]interface{})["issuer"]
+	lowLimitIssuer, ok := lowLimitMap["issuer"]
+	if !ok {
+		return nil, errLowLimitIssuerNotFound
+	}
+	highLimitMap, ok := fields["HighLimit"].(map[string]interface{})
 	if !ok {
 		return nil, errHighLimitIssuerNotFound
 	}
-	balanceCurrency, ok := fields["Balance"].(map[string]interface{})["currency"]
+	highLimitIssuer, ok := highLimitMap["issuer"]
+	if !ok {
+		return nil, errHighLimitIssuerNotFound
+	}
+	balanceMap, ok := fields["Balance"].(map[string]interface{})
+	if !ok {
+		return nil, errBalanceCurrencyNotFound
+	}
+	balanceCurrency, ok := balanceMap["currency"]
 	if !ok {
 		return nil, errBalanceCurrencyNotFound
 	}
