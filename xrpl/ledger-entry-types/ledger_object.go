@@ -151,6 +151,7 @@ func UnmarshalLedgerObject(data []byte) (Object, error) {
 	case XChainOwnedClaimIDEntry:
 		o = &XChainOwnedClaimID{}
 	case XChainOwnedCreateAccountClaimIDEntry:
+		o = &XChainOwnedCreateAccountClaimID{}
 	default:
 		return nil, fmt.Errorf("unsupported ledger object of type %s", h.LedgerEntryType)
 	}
