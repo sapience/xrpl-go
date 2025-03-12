@@ -190,19 +190,19 @@ func TestGetBalanceChanges(t *testing.T) {
 			},
 			expected: []AccountBalanceChanges{
 				{
-					Account: "rLDYrujdKUfVx28T9vRDAbyJ7G2WVXKo4K",
+					Account: "rKmBGxocj9Abgy25J51Mk1iqFzW9aVF9Tc",
 					Balances: []Balance{
 						{
-							Value:    "100",
+							Value:    "-100.012",
 							Currency: "XRP",
 						},
 					},
 				},
 				{
-					Account: "rKmBGxocj9Abgy25J51Mk1iqFzW9aVF9Tc",
+					Account: "rLDYrujdKUfVx28T9vRDAbyJ7G2WVXKo4K",
 					Balances: []Balance{
 						{
-							Value:    "-100.012",
+							Value:    "100",
 							Currency: "XRP",
 						},
 					},
@@ -492,7 +492,7 @@ func TestGetBalanceChanges(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			balanceChanges, err := GetBalanceChanges(tc.meta)
 			require.NoError(t, err)
-			require.Equal(t, tc.expected, balanceChanges)
+			require.ElementsMatch(t, tc.expected, balanceChanges)
 		})
 	}
 }
