@@ -27,7 +27,7 @@ type CredentialCreate struct {
 	// Base transaction fields
 	BaseTx
 
-	// The subject of the credential.
+	// The subject of the credential (the address that will receive the credential).
 	Subject types.Address
 
 	// Arbitrary data defining the type of credential this entry represents. The minimum length is 1 byte and the maximum length is 64 bytes.
