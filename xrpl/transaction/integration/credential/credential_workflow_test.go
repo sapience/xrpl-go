@@ -59,9 +59,9 @@ func TestIntegrationCredentialWorkflowWebsocket(t *testing.T) {
 		URI:            hex.EncodeToString([]byte("https://example.com")),
 	}
 
-	flatTx := createTx.Flatten()
+	createFlatTx := createTx.Flatten()
 
-	_, err = runner.TestTransaction(&flatTx, sender, results.TesSUCCESS.String())
+	_, err = runner.TestTransaction(&createFlatTx, sender, results.TesSUCCESS.String())
 	require.NoError(t, err)
 
 	// 2. Create a CredentialAccept transaction
@@ -75,9 +75,9 @@ func TestIntegrationCredentialWorkflowWebsocket(t *testing.T) {
 		Issuer:         types.Address(sender.GetAddress()),
 	}
 
-	flatTx = acceptTx.Flatten()
+	acceptFlatTx := acceptTx.Flatten()
 
-	_, err = runner.TestTransaction(&flatTx, receiver, results.TesSUCCESS.String())
+	_, err = runner.TestTransaction(&acceptFlatTx, receiver, results.TesSUCCESS.String())
 	require.NoError(t, err)
 
 	// 3. Delete the Credential
@@ -91,9 +91,9 @@ func TestIntegrationCredentialWorkflowWebsocket(t *testing.T) {
 		Subject:        types.Address(receiver.GetAddress()),
 	}
 
-	flatTx = deleteTx.Flatten()
+	deleteFlatTx := deleteTx.Flatten()
 
-	_, err = runner.TestTransaction(&flatTx, sender, results.TesSUCCESS.String())
+	_, err = runner.TestTransaction(&deleteFlatTx, sender, results.TesSUCCESS.String())
 	require.NoError(t, err)
 
 	// Teardown the test environment

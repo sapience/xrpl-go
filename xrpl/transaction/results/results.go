@@ -19,7 +19,8 @@ const (
 	// ------------------------------------------------------------------------------------------------
 
 	// The transaction tried to create an object (such as an Offer or a Check) whose provided Expiration time has already passed.
-	TecEXPIRED TxResult = "tecEXPIRED"
+	TecEXPIRED   TxResult = "tecEXPIRED"
+	TecDUPLICATE TxResult = "tecDUPLICATE"
 
 	// ------------------------------------------------------------------------------------------------
 	// tem codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tem-codes

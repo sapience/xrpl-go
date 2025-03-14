@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/testutil/integration"
 	rippleTime "github.com/Peersyst/xrpl-go/xrpl/time"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	e2eIntegration "github.com/Peersyst/xrpl-go/xrpl/transaction/integration"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/results"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
@@ -55,8 +55,10 @@ func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 	// Define credential types in hex format:
 	// - "6D795F63726564656E7469616C" = "my_credential" in ASCII
 	// - "6D795F63726564656E7469616C32" = "my_credential2" in ASCII
+	// - "6D795F63726564656E7469616C33" = "my_credential3" in ASCII
 	credentialType := types.CredentialType("6D795F63726564656E7469616C")
 	credentialType2 := types.CredentialType("6D795F63726564656E7469616C32")
+	credentialType3 := types.CredentialType("6D795F63726564656E7469616C33")
 
 	tt := []CredentialCreateTest{
 		{
@@ -94,10 +96,22 @@ func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 					Account:         sender.GetAddress(),
 					TransactionType: transaction.CredentialCreateTx,
 				},
-				CredentialType: credentialType2,
+				CredentialType: credentialType3,
 			},
-			ExpectedResultCode: results.TefPAST_SEQ,
-			ExpectedError:      addresscodec.ErrInvalidAddressFormat.Error(),
+			ExpectedResultCode: results.TesSUCCESS, // not relevant as rippled will throw "invalidTransaction" immediately upon the transaction submission
+			ExpectedError:      e2eIntegration.ErrInvalidTransaction,
+		},
+		{
+			Name: "fail - Duplicate CredentialCreate",
+			CredentialCreate: &transaction.CredentialCreate{
+				BaseTx: transaction.BaseTx{
+					Account:         sender.GetAddress(),
+					TransactionType: transaction.CredentialCreateTx,
+				},
+				Subject:        types.Address(receiver.GetAddress()),
+				CredentialType: credentialType,
+			},
+			ExpectedResultCode: results.TecDUPLICATE,
 		},
 	}
 
