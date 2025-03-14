@@ -24,6 +24,9 @@ const (
 
 	// ------------------------------------------------------------------------------------------------
 	// tem codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tem-codes
+	//
+	// These codes indicate that the transaction was malformed, and cannot succeed according to the XRP Ledger protocol.
+	// They have numerical values in the range -299 to -200. The exact code for any given error is subject to change, so don't rely on it.
 	// ------------------------------------------------------------------------------------------------
 
 	// The transaction is otherwise invalid. For example, the transaction ID may not be the right format, the signature may not be formed properly, or something else went wrong in understanding the transaction.
