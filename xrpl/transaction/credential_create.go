@@ -53,8 +53,13 @@ func (c *CredentialCreate) Flatten() FlatTransaction {
 
 	flattened["TransactionType"] = c.TxType().String()
 
-	flattened["Subject"] = c.Subject.String()
-	flattened["CredentialType"] = c.CredentialType.String()
+	if c.Subject != "" {
+		flattened["Subject"] = c.Subject.String()
+	}
+
+	if c.CredentialType != "" {
+		flattened["CredentialType"] = c.CredentialType.String()
+	}
 
 	if c.Expiration != 0 {
 		flattened["Expiration"] = c.Expiration

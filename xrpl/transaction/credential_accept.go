@@ -29,8 +29,14 @@ func (c *CredentialAccept) Flatten() FlatTransaction {
 	flattened := c.BaseTx.Flatten()
 
 	flattened["TransactionType"] = c.TxType().String()
-	flattened["Issuer"] = c.Issuer.String()
-	flattened["CredentialType"] = c.CredentialType.String()
+
+	if c.Issuer != "" {
+		flattened["Issuer"] = c.Issuer.String()
+	}
+
+	if c.CredentialType != "" {
+		flattened["CredentialType"] = c.CredentialType.String()
+	}
 
 	return flattened
 }

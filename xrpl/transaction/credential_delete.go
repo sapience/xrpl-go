@@ -30,7 +30,10 @@ func (c *CredentialDelete) Flatten() FlatTransaction {
 	flattened := c.BaseTx.Flatten()
 
 	flattened["TransactionType"] = c.TxType().String()
-	flattened["CredentialType"] = c.CredentialType.String()
+
+	if c.CredentialType != "" {
+		flattened["CredentialType"] = c.CredentialType.String()
+	}
 
 	if c.Subject != "" {
 		flattened["Subject"] = c.Subject.String()
