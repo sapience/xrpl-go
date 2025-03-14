@@ -22,8 +22,22 @@ func TestTxResult_String(t *testing.T) {
 			txResult: TecEXPIRED,
 			expected: "tecEXPIRED",
 		},
+		{
+			name:     "TecDUPLICATE",
+			txResult: TecDUPLICATE,
+			expected: "tecDUPLICATE",
+		},
+		{
+			name:     "TemINVALID",
+			txResult: TemINVALID,
+			expected: "temINVALID",
+		},
+		{
+			name:     "TefPAST_SEQ",
+			txResult: TefPAST_SEQ,
+			expected: "tefPAST_SEQ",
+		},
 	}
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			result := test.txResult.String()
