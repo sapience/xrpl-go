@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIntegrationCredentialCreationAndAcceptanceWebsocket(t *testing.T) {
+func TestIntegrationCredentialWorkflowWebsocket(t *testing.T) {
 	// Get the test environment configuration for websocket connection
 	env := integration.GetWebsocketEnv(t)
 
