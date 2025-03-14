@@ -5,25 +5,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Peersyst/xrpl-go/examples/helpers"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
-	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	rippleTime "github.com/Peersyst/xrpl-go/xrpl/time"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
-	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 )
-
-type SubmittableTransaction interface {
-	TxType() transaction.TxType
-	Flatten() transaction.FlatTransaction // Ensures all transactions can be flattened
-}
 
 func main() {
 
 	fmt.Println("⏳ Setting up client...")
 
-	client := getClient()
+	client := helpers.GetDevnetWebsocketClient()
 	fmt.Println("Connecting to server...")
 	if err := client.Connect(); err != nil {
 		fmt.Println(err)
@@ -93,7 +87,7 @@ func main() {
 		URI:            hex.EncodeToString([]byte("https://example.com")),
 	}
 
-	submitAndWait(client, txn, issuer)
+	helpers.SubmitAndWait(client, txn, issuer)
 
 	// -----------------------------------------------------
 
@@ -108,7 +102,7 @@ func main() {
 		Issuer:         types.Address(issuer.ClassicAddress),
 	}
 
-	submitAndWait(client, acceptTxn, subjectWallet)
+	helpers.SubmitAndWait(client, acceptTxn, subjectWallet)
 
 	// -----------------------------------------------------
 
@@ -124,50 +118,5 @@ func main() {
 		Subject:        types.Address(subjectWallet.ClassicAddress),
 	}
 
-	submitAndWait(client, deleteTxn, issuer)
-}
-
-// getRpcClient returns a new rpc client
-func getClient() *websocket.Client {
-	client := websocket.NewClient(
-		websocket.NewClientConfig().
-			WithHost("wss://s.devnet.rippletest.net:51233").
-			WithFaucetProvider(faucet.NewDevnetFaucetProvider()),
-	)
-
-	return client
-}
-
-// submitAndWait submits a transaction and waits for it to be included in a validated ledger
-func submitAndWait(client *websocket.Client, txn SubmittableTransaction, wallet wallet.Wallet) {
-	fmt.Printf("⏳ Submitting %s transaction...\n", txn.TxType())
-
-	flattenedTx := txn.Flatten()
-
-	err := client.Autofill(&flattenedTx)
-	if err != nil {
-		fmt.Printf("❌ Error autofilling %s transaction: %s\n", txn.TxType(), err)
-		fmt.Println()
-		return
-	}
-
-	fmt.Println("flattenedTx", flattenedTx)
-
-	txBlob, _, err := wallet.Sign(flattenedTx)
-	if err != nil {
-		fmt.Printf("❌ Error signing %s transaction: %s\n", txn.TxType(), err)
-		fmt.Println()
-		return
-	}
-
-	response, err := client.SubmitAndWait(txBlob, false)
-	if err != nil {
-		fmt.Printf("❌ Error submitting %s transaction: %s\n", txn.TxType(), err)
-		fmt.Println()
-		return
-	}
-
-	fmt.Printf("✅ %s transaction submitted\n", txn.TxType())
-	fmt.Printf("🌐 Hash: %s\n", response.Hash.String())
-	fmt.Println()
+	helpers.SubmitAndWait(client, deleteTxn, issuer)
 }

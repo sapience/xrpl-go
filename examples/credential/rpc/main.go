@@ -9,15 +9,9 @@ import (
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	rippleTime "github.com/Peersyst/xrpl-go/xrpl/time"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
-	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
-
-type SubmittableTransaction interface {
-	TxType() transactions.TxType
-	Flatten() transactions.FlatTransaction // Ensures all transactions can be flattened
-}
 
 func main() {
 	// As of February 2025, Credential is only available on Devnet.

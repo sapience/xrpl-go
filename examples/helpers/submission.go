@@ -3,18 +3,24 @@ package helpers
 import (
 	"fmt"
 
-	"github.com/Peersyst/xrpl-go/xrpl/rpc"
+	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
 type SubmittableTransaction interface {
 	TxType() transactions.TxType
-	Flatten() transactions.FlatTransaction // Ensures all transactions can be flattened
+	Flatten() transactions.FlatTransaction
+}
+
+// Client interface that both RPC and WebSocket clients must implement
+type TransactionClient interface {
+	Autofill(tx *transactions.FlatTransaction) error
+	SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error)
 }
 
 // SubmitAndWait submits a transaction and waits for it to be included in a validated ledger
-func SubmitAndWait(client *rpc.Client, txn SubmittableTransaction, wallet wallet.Wallet) {
+func SubmitAndWait(client TransactionClient, txn SubmittableTransaction, wallet wallet.Wallet) {
 	fmt.Println()
 	fmt.Printf("⏳ Submitting %s transaction...\n", txn.TxType())
 
