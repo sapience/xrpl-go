@@ -36,6 +36,7 @@ const (
 	// ------------------------------------------------------------------------------------------------
 
 	// The sequence number of the transaction is lower than the current sequence number of the account sending the transaction.
+	//revive:disable-next-line:var-naming
 	TefPAST_SEQ TxResult = "tefPAST_SEQ"
 )
 
