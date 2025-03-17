@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated `AffectedNode` type fields to be a pointer to allow nil values.
 
+### Fixed
+
+#### xrpl
+
+- Fixed `BaseLedger` field in `ledger` response (v1 and v2). BaseLedger.Transactions is now an array of interfaces instead of a slice of `FlatTransaction` due to `Expand` field in the request.
+
 ## [v0.1.7]
 
 ### Added
