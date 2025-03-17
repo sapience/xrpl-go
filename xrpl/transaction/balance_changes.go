@@ -25,7 +25,7 @@ type Balance struct {
 	Issuer   string `json:"issuer,omitempty"`
 }
 
-type BalanceChange struct {
+type balanceChange struct {
 	Account types.Address `json:"account"`
 	Balance `json:"balance"`
 }
@@ -35,14 +35,7 @@ type AccountBalanceChanges struct {
 	Balances []Balance     `json:"balances"`
 }
 
-type Fields struct {
-	Account   types.Address
-	Balance   types.CurrencyAmount
-	LowLimit  types.IssuedCurrencyAmount
-	HighLimit types.IssuedCurrencyAmount
-}
-
-type NormalizedNode struct {
+type normalizedNode struct {
 	NodeType          string
 	LedgerEntryType   ledger.EntryType
 	LedgerIndex       string
@@ -53,10 +46,10 @@ type NormalizedNode struct {
 	PreviousTxnLgrSeq uint64
 }
 
-func NewNormalizedNode(node AffectedNode) *NormalizedNode {
+func newNormalizedNode(node AffectedNode) *normalizedNode {
 	switch {
 	case node.CreatedNode != nil:
-		return &NormalizedNode{
+		return &normalizedNode{
 			NodeType:          "CreatedNode",
 			LedgerEntryType:   node.CreatedNode.LedgerEntryType,
 			LedgerIndex:       node.CreatedNode.LedgerIndex,
@@ -67,7 +60,7 @@ func NewNormalizedNode(node AffectedNode) *NormalizedNode {
 			PreviousTxnLgrSeq: 0,
 		}
 	case node.ModifiedNode != nil:
-		return &NormalizedNode{
+		return &normalizedNode{
 			NodeType:          "ModifiedNode",
 			LedgerEntryType:   node.ModifiedNode.LedgerEntryType,
 			LedgerIndex:       node.ModifiedNode.LedgerIndex,
@@ -78,7 +71,7 @@ func NewNormalizedNode(node AffectedNode) *NormalizedNode {
 			PreviousTxnLgrSeq: node.ModifiedNode.PreviousTxnLgrSeq,
 		}
 	case node.DeletedNode != nil:
-		return &NormalizedNode{
+		return &normalizedNode{
 			NodeType:        "DeletedNode",
 			LedgerEntryType: node.DeletedNode.LedgerEntryType,
 			LedgerIndex:     node.DeletedNode.LedgerIndex,
@@ -92,7 +85,7 @@ func NewNormalizedNode(node AffectedNode) *NormalizedNode {
 func GetBalanceChanges(meta *TxObjMeta) ([]AccountBalanceChanges, error) {
 	nodes := normalizeNodes(meta.AffectedNodes)
 
-	balanceChanges := make([]BalanceChange, 0, len(nodes))
+	balanceChanges := make([]balanceChange, 0, len(nodes))
 
 	for _, node := range nodes {
 		switch node.LedgerEntryType {
@@ -120,10 +113,10 @@ func GetBalanceChanges(meta *TxObjMeta) ([]AccountBalanceChanges, error) {
 	return groupByAccount(balanceChanges), nil
 }
 
-func normalizeNodes(nodes []AffectedNode) []*NormalizedNode {
-	var normalizedNodes []*NormalizedNode
+func normalizeNodes(nodes []AffectedNode) []*normalizedNode {
+	var normalizedNodes []*normalizedNode
 	for _, node := range nodes {
-		n := NewNormalizedNode(node)
+		n := newNormalizedNode(node)
 		if n == nil {
 			continue
 		}
@@ -132,7 +125,7 @@ func normalizeNodes(nodes []AffectedNode) []*NormalizedNode {
 	return normalizedNodes
 }
 
-func getXRPQuantity(node *NormalizedNode) (*BalanceChange, error) {
+func getXRPQuantity(node *normalizedNode) (*balanceChange, error) {
 	var account string
 	if finalFieldsAccount, ok := node.FinalFields["Account"]; ok {
 		account = finalFieldsAccount.(string)
@@ -162,7 +155,7 @@ func getXRPQuantity(node *NormalizedNode) (*BalanceChange, error) {
 		xrpAmount = strings.Join([]string{"-", xrpAmount}, "")
 	}
 
-	return &BalanceChange{
+	return &balanceChange{
 		Account: types.Address(account),
 		Balance: Balance{
 			Currency: "XRP",
@@ -171,7 +164,7 @@ func getXRPQuantity(node *NormalizedNode) (*BalanceChange, error) {
 	}, nil
 }
 
-func getTrustlineQuantity(node *NormalizedNode) ([]BalanceChange, error) {
+func getTrustlineQuantity(node *normalizedNode) ([]balanceChange, error) {
 	value, err := computeBalanceChange(node)
 	if err != nil {
 		return nil, err
@@ -209,7 +202,7 @@ func getTrustlineQuantity(node *NormalizedNode) ([]BalanceChange, error) {
 		return nil, errBalanceCurrencyNotFound
 	}
 
-	result := BalanceChange{
+	result := balanceChange{
 		Account: types.Address(lowLimitIssuer.(string)),
 		Balance: Balance{
 			Issuer:   highLimitIssuer.(string),
@@ -224,7 +217,7 @@ func getTrustlineQuantity(node *NormalizedNode) ([]BalanceChange, error) {
 	}
 	negatedValue := new(big.Float).Neg(bigFloatValue)
 
-	flippedResult := BalanceChange{
+	flippedResult := balanceChange{
 		Account: types.Address(result.Balance.Issuer),
 		Balance: Balance{
 			Issuer:   result.Account.String(),
@@ -233,10 +226,10 @@ func getTrustlineQuantity(node *NormalizedNode) ([]BalanceChange, error) {
 		},
 	}
 
-	return []BalanceChange{result, flippedResult}, nil
+	return []balanceChange{result, flippedResult}, nil
 }
 
-func computeBalanceChange(node *NormalizedNode) (string, error) {
+func computeBalanceChange(node *normalizedNode) (string, error) {
 	newBalance, okNewBalance := node.NewFields["Balance"]
 	previousBalance, okPreviousBalance := node.PreviousFields["Balance"]
 	finalBalance, okFinalBalance := node.FinalFields["Balance"]
@@ -291,8 +284,8 @@ func getValue(balance interface{}) (string, error) {
 	return "", errInvalidBalanceValue
 }
 
-func groupByAccount(balanceChanges []BalanceChange) []AccountBalanceChanges {
-	accountBalances := make(map[string][]BalanceChange)
+func groupByAccount(balanceChanges []balanceChange) []AccountBalanceChanges {
+	accountBalances := make(map[string][]balanceChange)
 
 	// Group balance changes by account address
 	for _, change := range balanceChanges {
