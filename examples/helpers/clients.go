@@ -1,4 +1,4 @@
-package helpers
+package clients
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
