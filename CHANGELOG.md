@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### xrpl
+
+- Added `BalanceChanges` to the `Transaction` type.
+
+### Changed
+
+#### xrpl
+
+- Updated `AffectedNode` type fields to be a pointer to allow nil values.
+
 ### Fixed
 
 #### xrpl
