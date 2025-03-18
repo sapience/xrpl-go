@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Peersyst/xrpl-go/examples/helpers"
+	"github.com/Peersyst/xrpl-go/examples/clients"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	rippleTime "github.com/Peersyst/xrpl-go/xrpl/time"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -15,7 +15,7 @@ import (
 
 func main() {
 	// As of February 2025, Credential is only available on Devnet.
-	client := helpers.GetDevnetRpcClient()
+	client := clients.GetDevnetRpcClient()
 
 	// Configure wallets
 
@@ -74,7 +74,7 @@ func main() {
 		URI:            hex.EncodeToString([]byte("https://example.com")),
 	}
 
-	helpers.SubmitAndWait(client, txn, issuer)
+	clients.SubmitAndWait(client, txn, issuer)
 
 	// -----------------------------------------------------
 
@@ -89,7 +89,7 @@ func main() {
 		Issuer:         types.Address(issuer.ClassicAddress),
 	}
 
-	helpers.SubmitAndWait(client, acceptTxn, subjectWallet)
+	clients.SubmitAndWait(client, acceptTxn, subjectWallet)
 
 	// -----------------------------------------------------
 
@@ -105,5 +105,5 @@ func main() {
 		Subject:        types.Address(subjectWallet.ClassicAddress),
 	}
 
-	helpers.SubmitAndWait(client, deleteTxn, issuer)
+	clients.SubmitAndWait(client, deleteTxn, issuer)
 }
