@@ -9,7 +9,6 @@ import (
 	rippleTime "github.com/Peersyst/xrpl-go/xrpl/time"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	e2eIntegration "github.com/Peersyst/xrpl-go/xrpl/transaction/integration"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction/results"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
 	"github.com/stretchr/testify/require"
@@ -18,7 +17,7 @@ import (
 type CredentialCreateTest struct {
 	Name               string
 	CredentialCreate   *transaction.CredentialCreate
-	ExpectedResultCode results.TxResult
+	ExpectedResultCode transaction.TxResult
 	ExpectedError      string
 }
 
@@ -74,7 +73,7 @@ func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 				Expiration:     uint32(futureTime),
 				URI:            hex.EncodeToString([]byte("https://example.com")),
 			},
-			ExpectedResultCode: results.TesSUCCESS,
+			ExpectedResultCode: transaction.TesSUCCESS,
 		},
 		{
 			Name: "fail - Expiration is in the past	",
@@ -87,7 +86,7 @@ func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 				CredentialType: credentialType2,
 				Expiration:     uint32(pastTime),
 			},
-			ExpectedResultCode: results.TecEXPIRED,
+			ExpectedResultCode: transaction.TecEXPIRED,
 		},
 		{
 			Name: "fail - Subject is missing",
@@ -98,7 +97,7 @@ func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 				},
 				CredentialType: credentialType3,
 			},
-			ExpectedResultCode: results.TesSUCCESS, // not relevant as rippled will throw "invalidTransaction" immediately upon the transaction submission
+			ExpectedResultCode: transaction.TesSUCCESS, // not relevant as rippled will throw "invalidTransaction" immediately upon the transaction submission
 			ExpectedError:      e2eIntegration.ErrInvalidTransaction,
 		},
 		{
@@ -111,7 +110,7 @@ func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 				Subject:        types.Address(receiver.GetAddress()),
 				CredentialType: credentialType,
 			},
-			ExpectedResultCode: results.TecDUPLICATE,
+			ExpectedResultCode: transaction.TecDUPLICATE,
 		},
 	}
 

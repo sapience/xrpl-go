@@ -1,4 +1,4 @@
-package results
+package transaction
 
 // TxResult represents the result code of a transaction
 type TxResult string
