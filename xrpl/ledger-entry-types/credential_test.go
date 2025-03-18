@@ -20,21 +20,27 @@ func TestCredential_SetLsfAccepted(t *testing.T) {
 }
 
 func TestCredential_Flatten(t *testing.T) {
-	credential := &Credential{
-		Index:             types.Hash256("A738A1E6E8505E1FC77BBB9FEF84FF9A9C609F2739E0F9573CDD6367100A0AA9"),
-		LedgerEntryType:   CredentialEntry,
-		Flags:             lsfAccepted,
-		CredentialType:    types.CredentialType("6D795F63726564656E7469616C"),
-		Subject:           types.Address("rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8"),
-		Issuer:            types.Address("ra5nK24KXen9AHvsdFTKHSANinZseWnPcX"),
-		IssuerNode:        "0000000000000000",
-		PreviousTxnID:     types.Hash256("8089451B193AAD110ACED3D62BE79BB523658545E6EE8B7BB0BE573FED9BCBFB"),
-		PreviousTxnLgrSeq: 234644,
-		SubjectNode:       "0000000000000000",
-		URI:               "987654321",
-	}
-
-	json := `{
+	tests := []struct {
+		name       string
+		credential *Credential
+		expected   string
+	}{
+		{
+			name: "pass - valid Credential",
+			credential: &Credential{
+				Index:             types.Hash256("A738A1E6E8505E1FC77BBB9FEF84FF9A9C609F2739E0F9573CDD6367100A0AA9"),
+				LedgerEntryType:   CredentialEntry,
+				Flags:             lsfAccepted,
+				CredentialType:    types.CredentialType("6D795F63726564656E7469616C"),
+				Subject:           types.Address("rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8"),
+				Issuer:            types.Address("ra5nK24KXen9AHvsdFTKHSANinZseWnPcX"),
+				IssuerNode:        "0000000000000000",
+				PreviousTxnID:     types.Hash256("8089451B193AAD110ACED3D62BE79BB523658545E6EE8B7BB0BE573FED9BCBFB"),
+				PreviousTxnLgrSeq: 234644,
+				SubjectNode:       "0000000000000000",
+				URI:               "987654321",
+			},
+			expected: `{
 	"index": "A738A1E6E8505E1FC77BBB9FEF84FF9A9C609F2739E0F9573CDD6367100A0AA9",
 	"LedgerEntryType": "Credential",
 	"Flags": 65536,
@@ -46,9 +52,15 @@ func TestCredential_Flatten(t *testing.T) {
 	"Subject": "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
 	"SubjectNode": "0000000000000000",
 	"URI": "987654321"
-}`
+}`,
+		},
+	}
 
-	if err := testutil.SerializeAndDeserialize(t, credential, json); err != nil {
-		t.Error(err)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if err := testutil.SerializeAndDeserialize(t, test.credential, test.expected); err != nil {
+				t.Error(err)
+			}
+		})
 	}
 }
