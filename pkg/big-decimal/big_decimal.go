@@ -35,7 +35,7 @@ func (bd *BigDecimal) GetScaledValue() string {
 	// Use SetPrec to maintain full precision
 	unscaled := new(big.Float).SetPrec(512) // Use high precision to avoid scientific notation
 	unscaled, _ = unscaled.SetString(bd.UnscaledValue)
-	
+
 	scalingFactor := new(big.Float).SetPrec(512).SetFloat64(1)
 	for i := 0; i < abs(bd.Scale); i++ {
 		scalingFactor.Mul(scalingFactor, big.NewFloat(10))
