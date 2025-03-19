@@ -12,6 +12,7 @@ import (
 const (
 	AllowedCharacters = "0123456789.-eE"
 	BigDecRegEx       = "-?(?:[0|1-9]\\d*)(?:\\.\\d+)?(?:[eE][+\\-]?\\d+)?"
+	Precision         = 128
 )
 
 var (
@@ -33,19 +34,19 @@ func (bd *BigDecimal) GetScaledValue() string {
 	}
 
 	// Use SetPrec to maintain full precision
-	unscaled := new(big.Float).SetPrec(512) // Use high precision to avoid scientific notation
+	unscaled := new(big.Float).SetPrec(Precision) // Use high precision to avoid scientific notation
 	unscaled, _ = unscaled.SetString(bd.UnscaledValue)
 
-	scalingFactor := new(big.Float).SetPrec(512).SetFloat64(1)
+	scalingFactor := new(big.Float).SetPrec(Precision).SetFloat64(1)
 	for i := 0; i < abs(bd.Scale); i++ {
 		scalingFactor.Mul(scalingFactor, big.NewFloat(10))
 	}
 
 	var scaledValue *big.Float
 	if bd.Scale >= 0 {
-		scaledValue = new(big.Float).SetPrec(512).Mul(unscaled, scalingFactor)
+		scaledValue = new(big.Float).SetPrec(Precision).Mul(unscaled, scalingFactor)
 	} else {
-		scaledValue = new(big.Float).SetPrec(512).Quo(unscaled, scalingFactor)
+		scaledValue = new(big.Float).SetPrec(Precision).Quo(unscaled, scalingFactor)
 	}
 
 	if bd.Sign == 1 {
