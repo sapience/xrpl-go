@@ -62,6 +62,16 @@ func TestGetScaledValue(t *testing.T) {
 			},
 			expected: "-23.005",
 		},
+		{
+			description: "large value",
+			bd: &BigDecimal{
+				Scale:         7,
+				UnscaledValue: "999999999999999",
+				Precision:     16,
+				Sign:          0,
+			},
+			expected: "9999999999999990000000",
+		},
 	}
 
 	for _, tc := range tt {

@@ -28,24 +28,32 @@ type BigDecimal struct {
 }
 
 func (bd *BigDecimal) GetScaledValue() string {
-	unscaled, _ := new(big.Float).SetString(bd.UnscaledValue)
+	if bd.UnscaledValue == "" {
+		return "0"
+	}
 
-	scalingFactor := new(big.Float).SetFloat64(1)
+	// Use SetPrec to maintain full precision
+	unscaled := new(big.Float).SetPrec(512) // Use high precision to avoid scientific notation
+	unscaled, _ = unscaled.SetString(bd.UnscaledValue)
+	
+	scalingFactor := new(big.Float).SetPrec(512).SetFloat64(1)
 	for i := 0; i < abs(bd.Scale); i++ {
 		scalingFactor.Mul(scalingFactor, big.NewFloat(10))
 	}
 
 	var scaledValue *big.Float
 	if bd.Scale >= 0 {
-		scaledValue = new(big.Float).Mul(unscaled, scalingFactor)
+		scaledValue = new(big.Float).SetPrec(512).Mul(unscaled, scalingFactor)
 	} else {
-		scaledValue = new(big.Float).Quo(unscaled, scalingFactor)
+		scaledValue = new(big.Float).SetPrec(512).Quo(unscaled, scalingFactor)
 	}
 
 	if bd.Sign == 1 {
 		scaledValue.Neg(scaledValue)
 	}
-	return strings.TrimSuffix(strings.TrimRight(scaledValue.Text('f', bd.Scale), "0"), ".")
+
+	// Force format without scientific notation
+	return strings.TrimSuffix(strings.TrimRight(scaledValue.Text('f', abs(bd.Scale)), "0"), ".")
 }
 
 func abs(x int) int {
@@ -134,6 +142,8 @@ func valNoDecimalNoE(_ int, prefix, decP string) (sc int, uv string) {
 func valNoDecimalHasE(scale int, prefix, _ string) (sc int, uv string) {
 	uv = strings.Trim(prefix, "0")
 	sc = scale + len(strings.TrimLeft(prefix, "0")) - len(uv)
+	fmt.Println("uv", uv)
+	fmt.Println("sc", sc)
 	return
 
 }
