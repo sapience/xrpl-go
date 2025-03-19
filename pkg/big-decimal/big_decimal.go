@@ -143,8 +143,6 @@ func valNoDecimalNoE(_ int, prefix, decP string) (sc int, uv string) {
 func valNoDecimalHasE(scale int, prefix, _ string) (sc int, uv string) {
 	uv = strings.Trim(prefix, "0")
 	sc = scale + len(strings.TrimLeft(prefix, "0")) - len(uv)
-	fmt.Println("uv", uv)
-	fmt.Println("sc", sc)
 	return
 
 }
