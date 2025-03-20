@@ -3,6 +3,7 @@ package transaction
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -109,7 +110,7 @@ func TestDepositPreauth_Validate(t *testing.T) {
 			expectedErr: ErrDepositPreauthInvalidUnauthorize,
 		},
 		{
-			name: "fail - must set either authorize or unauthorize",
+			name: "fail - must set only one field",
 			tx: &DepositPreauth{
 				BaseTx: BaseTx{
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
@@ -117,7 +118,7 @@ func TestDepositPreauth_Validate(t *testing.T) {
 				},
 			},
 			expected:    false,
-			expectedErr: ErrDepositPreauthMustSetEitherAuthorizeOrUnauthorize,
+			expectedErr: ErrDepositPreauthMustSetOnlyOneField,
 		},
 		{
 			name: "pass - authorize",
@@ -145,14 +146,132 @@ func TestDepositPreauth_Validate(t *testing.T) {
 
 	for _, testcase := range testcases {
 		t.Run(testcase.name, func(t *testing.T) {
-			ok, err := testcase.tx.Validate()
+			valid, err := testcase.tx.Validate()
+			require.Equal(t, testcase.expected, valid)
 			if testcase.expectedErr != nil {
 				require.Error(t, err)
 				require.Equal(t, testcase.expectedErr, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, testcase.expected, ok)
 			}
+		})
+	}
+}
+
+func TestDepositPreauth_IsOnlyOneFieldSet(t *testing.T) {
+	testcases := []struct {
+		name     string
+		dp       *DepositPreauth
+		expected bool
+	}{
+		{
+			name: "pass - only Authorize set",
+			dp: &DepositPreauth{
+				Authorize: "rAuthorize",
+			},
+			expected: true,
+		},
+		{
+			name: "pass - only AuthorizeCredentials set",
+			dp: &DepositPreauth{
+				AuthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "pass - only Unauthorize set",
+			dp: &DepositPreauth{
+				Unauthorize: "rUnauthorize",
+			},
+			expected: true,
+		},
+		{
+			name: "pass - only UnauthorizeCredentials set",
+			dp: &DepositPreauth{
+				UnauthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name:     "fail - no fields set",
+			dp:       &DepositPreauth{},
+			expected: false,
+		},
+		{
+			name: "fail - Authorize and AuthorizeCredentials set",
+			dp: &DepositPreauth{
+				Authorize: "rAuthorize",
+				AuthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "fail - Authorize and Unauthorize set",
+			dp: &DepositPreauth{
+				Authorize:   "rAuthorize",
+				Unauthorize: "rUnauthorize",
+			},
+			expected: false,
+		},
+		{
+			name: "fail - AuthorizeCredentials and UnauthorizeCredentials set",
+			dp: &DepositPreauth{
+				AuthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+				UnauthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "fail - all fields set",
+			dp: &DepositPreauth{
+				Authorize: "rAuthorize",
+				AuthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+				Unauthorize: "rUnauthorize",
+				UnauthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+			},
+			expected: false,
+		},
+	}
+
+	for _, testcase := range testcases {
+		t.Run(testcase.name, func(t *testing.T) {
+			result := testcase.dp.IsOnlyOneFieldSet()
+			require.Equal(t, testcase.expected, result)
 		})
 	}
 }

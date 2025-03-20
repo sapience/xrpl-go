@@ -8,12 +8,13 @@ import (
 )
 
 var (
-	ErrDepositPreauthInvalidAuthorize                     = errors.New("deposit preauth: invalid Authorize")
-	ErrDepositPreauthInvalidUnauthorize                   = errors.New("deposit preauth: invalid Unauthorize")
-	ErrDepositPreauthCannotSetBothAuthorizeAndUnauthorize = errors.New("deposit preauth: cannot set both Authorize and Unauthorize")
-	ErrDepositPreauthMustSetEitherAuthorizeOrUnauthorize  = errors.New("deposit preauth: must set either Authorize or Unauthorize")
-	ErrDepositPreauthAuthorizeCannotBeSender              = errors.New("deposit preauth: Authorize cannot be the same as the sender's account")
-	ErrDepositPreauthUnauthorizeCannotBeSender            = errors.New("deposit preauth: Unauthorize cannot be the same as the sender's account")
+	ErrDepositPreauthInvalidAuthorize              = errors.New("deposit preauth: invalid Authorize")
+	ErrDepositPreauthInvalidUnauthorize            = errors.New("deposit preauth: invalid Unauthorize")
+	ErrDepositPreauthInvalidAuthorizeCredentials   = errors.New("deposit preauth: invalid AuthorizeCredentials")
+	ErrDepositPreauthInvalidUnauthorizeCredentials = errors.New("deposit preauth: invalid UnauthorizeCredentials")
+	ErrDepositPreauthMustSetOnlyOneField           = errors.New("deposit preauth: must set only one field (Authorize or AuthorizeCredentials or Unauthorize or UnauthorizeCredentials)")
+	ErrDepositPreauthAuthorizeCannotBeSender       = errors.New("deposit preauth: Authorize cannot be the same as the sender's account")
+	ErrDepositPreauthUnauthorizeCannotBeSender     = errors.New("deposit preauth: Unauthorize cannot be the same as the sender's account")
 )
 
 // Added by the DepositPreauth amendment.
@@ -38,8 +39,12 @@ type DepositPreauth struct {
 	BaseTx
 	// (Optional) The XRP Ledger address of the sender to preauthorize.
 	Authorize types.Address `json:",omitempty"`
+	// A set of credentials to authorize.
+	AuthorizeCredentials []types.AuthorizeCredentials `json:",omitempty"`
 	// (Optional) The XRP Ledger address of a sender whose preauthorization should be revoked.
 	Unauthorize types.Address `json:",omitempty"`
+	// A set of credentials whose preauthorization should be revoked.
+	UnauthorizeCredentials []types.AuthorizeCredentials `json:",omitempty"`
 }
 
 // TxType implements the TxType method for the DepositPreauth struct.
@@ -61,6 +66,22 @@ func (s *DepositPreauth) Flatten() FlatTransaction {
 		flattened["Unauthorize"] = s.Unauthorize.String()
 	}
 
+	if len(s.AuthorizeCredentials) > 0 {
+		flattenedAuthorizeCredentials := make([]interface{}, len(s.AuthorizeCredentials))
+		for i, credential := range s.AuthorizeCredentials {
+			flattenedAuthorizeCredentials[i] = credential.Flatten()
+		}
+		flattened["AuthorizeCredentials"] = flattenedAuthorizeCredentials
+	}
+
+	if len(s.UnauthorizeCredentials) > 0 {
+		flattenedUnauthorizeCredentials := make([]interface{}, len(s.UnauthorizeCredentials))
+		for i, credential := range s.UnauthorizeCredentials {
+			flattenedUnauthorizeCredentials[i] = credential.Flatten()
+		}
+		flattened["UnauthorizeCredentials"] = flattenedUnauthorizeCredentials
+	}
+
 	return flattened
 }
 
@@ -71,12 +92,9 @@ func (s *DepositPreauth) Validate() (bool, error) {
 		return false, err
 	}
 
-	if s.Authorize != "" && s.Unauthorize != "" {
-		return false, ErrDepositPreauthCannotSetBothAuthorizeAndUnauthorize
-	}
-
-	if s.Authorize == "" && s.Unauthorize == "" {
-		return false, ErrDepositPreauthMustSetEitherAuthorizeOrUnauthorize
+	// check that one of the four fields (Authorize, AuthorizeCredentials, Unauthorize, UnauthorizeCredentials) only is set
+	if !s.IsOnlyOneFieldSet() {
+		return false, ErrDepositPreauthMustSetOnlyOneField
 	}
 
 	if s.Authorize != "" && s.Authorize.String() == s.Account.String() {
@@ -95,5 +113,41 @@ func (s *DepositPreauth) Validate() (bool, error) {
 		return false, ErrDepositPreauthInvalidUnauthorize
 	}
 
+	if len(s.AuthorizeCredentials) > 0 {
+		for _, credential := range s.AuthorizeCredentials {
+			if !credential.IsValid() {
+				return false, ErrDepositPreauthInvalidAuthorizeCredentials
+			}
+		}
+	}
+
+	if len(s.UnauthorizeCredentials) > 0 {
+		for _, credential := range s.UnauthorizeCredentials {
+			if !credential.IsValid() {
+				return false, ErrDepositPreauthInvalidUnauthorizeCredentials
+			}
+		}
+	}
+
 	return true, nil
+}
+
+// IsOnlyOneFieldSet returns true if only one field is set in the DepositPreauth struct.
+func (d *DepositPreauth) IsOnlyOneFieldSet() bool {
+	var count int
+
+	if d.Authorize != "" {
+		count++
+	}
+	if len(d.AuthorizeCredentials) > 0 {
+		count++
+	}
+	if d.Unauthorize != "" {
+		count++
+	}
+	if len(d.UnauthorizeCredentials) > 0 {
+		count++
+	}
+
+	return count == 1
 }
