@@ -53,30 +53,30 @@ func (*DepositPreauth) TxType() TxType {
 }
 
 // Flatten implements the Flatten method for the DepositPreauth struct.
-func (s *DepositPreauth) Flatten() FlatTransaction {
-	flattened := s.BaseTx.Flatten()
+func (d *DepositPreauth) Flatten() FlatTransaction {
+	flattened := d.BaseTx.Flatten()
 
 	flattened["TransactionType"] = DepositPreauthTx.String()
 
-	if s.Authorize != "" {
-		flattened["Authorize"] = s.Authorize.String()
+	if d.Authorize != "" {
+		flattened["Authorize"] = d.Authorize.String()
 	}
 
-	if s.Unauthorize != "" {
-		flattened["Unauthorize"] = s.Unauthorize.String()
+	if d.Unauthorize != "" {
+		flattened["Unauthorize"] = d.Unauthorize.String()
 	}
 
-	if len(s.AuthorizeCredentials) > 0 {
-		flattenedAuthorizeCredentials := make([]interface{}, len(s.AuthorizeCredentials))
-		for i, credential := range s.AuthorizeCredentials {
+	if len(d.AuthorizeCredentials) > 0 {
+		flattenedAuthorizeCredentials := make([]interface{}, len(d.AuthorizeCredentials))
+		for i, credential := range d.AuthorizeCredentials {
 			flattenedAuthorizeCredentials[i] = credential.Flatten()
 		}
 		flattened["AuthorizeCredentials"] = flattenedAuthorizeCredentials
 	}
 
-	if len(s.UnauthorizeCredentials) > 0 {
-		flattenedUnauthorizeCredentials := make([]interface{}, len(s.UnauthorizeCredentials))
-		for i, credential := range s.UnauthorizeCredentials {
+	if len(d.UnauthorizeCredentials) > 0 {
+		flattenedUnauthorizeCredentials := make([]interface{}, len(d.UnauthorizeCredentials))
+		for i, credential := range d.UnauthorizeCredentials {
 			flattenedUnauthorizeCredentials[i] = credential.Flatten()
 		}
 		flattened["UnauthorizeCredentials"] = flattenedUnauthorizeCredentials
@@ -86,43 +86,43 @@ func (s *DepositPreauth) Flatten() FlatTransaction {
 }
 
 // Validate implements the Validate method for the DepositPreauth struct.
-func (s *DepositPreauth) Validate() (bool, error) {
-	_, err := s.BaseTx.Validate()
+func (d *DepositPreauth) Validate() (bool, error) {
+	_, err := d.BaseTx.Validate()
 	if err != nil {
 		return false, err
 	}
 
 	// check that one of the four fields (Authorize, AuthorizeCredentials, Unauthorize, UnauthorizeCredentials) only is set
-	if !s.IsOnlyOneFieldSet() {
+	if !d.IsOnlyOneFieldSet() {
 		return false, ErrDepositPreauthMustSetOnlyOneField
 	}
 
-	if s.Authorize != "" && s.Authorize.String() == s.Account.String() {
+	if d.Authorize != "" && d.Authorize.String() == d.Account.String() {
 		return false, ErrDepositPreauthAuthorizeCannotBeSender
 	}
 
-	if s.Unauthorize != "" && s.Unauthorize.String() == s.Account.String() {
+	if d.Unauthorize != "" && d.Unauthorize.String() == d.Account.String() {
 		return false, ErrDepositPreauthUnauthorizeCannotBeSender
 	}
 
-	if s.Authorize != "" && !addresscodec.IsValidAddress(s.Authorize.String()) {
+	if d.Authorize != "" && !addresscodec.IsValidAddress(d.Authorize.String()) {
 		return false, ErrDepositPreauthInvalidAuthorize
 	}
 
-	if s.Unauthorize != "" && !addresscodec.IsValidAddress(s.Unauthorize.String()) {
+	if d.Unauthorize != "" && !addresscodec.IsValidAddress(d.Unauthorize.String()) {
 		return false, ErrDepositPreauthInvalidUnauthorize
 	}
 
-	if len(s.AuthorizeCredentials) > 0 {
-		for _, credential := range s.AuthorizeCredentials {
+	if len(d.AuthorizeCredentials) > 0 {
+		for _, credential := range d.AuthorizeCredentials {
 			if !credential.IsValid() {
 				return false, ErrDepositPreauthInvalidAuthorizeCredentials
 			}
 		}
 	}
 
-	if len(s.UnauthorizeCredentials) > 0 {
-		for _, credential := range s.UnauthorizeCredentials {
+	if len(d.UnauthorizeCredentials) > 0 {
+		for _, credential := range d.UnauthorizeCredentials {
 			if !credential.IsValid() {
 				return false, ErrDepositPreauthInvalidUnauthorizeCredentials
 			}
