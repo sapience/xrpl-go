@@ -58,8 +58,49 @@ func TestDepositPreauth_Flatten(t *testing.T) {
 				"Unauthorize":     "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
 			},
 		},
+		{
+			name: "pass - authorize credentials",
+			tx: &DepositPreauth{
+				BaseTx: BaseTx{
+					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				},
+				AuthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+			},
+			expected: FlatTransaction{
+				"Account":         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"TransactionType": "DepositPreauth",
+				"AuthorizeCredentials": []interface{}{
+					map[string]interface{}{"Issuer": "rIssuer", "CredentialType": "6D795F63726564656E7469616C"},
+				},
+			},
+		},
+		{
+			name: "pass - unauthorize credentials",
+			tx: &DepositPreauth{
+				BaseTx: BaseTx{
+					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				},
+				UnauthorizeCredentials: []types.AuthorizeCredentials{
+					{
+						Issuer:         "rIssuer",
+						CredentialType: "6D795F63726564656E7469616C",
+					},
+				},
+			},
+			expected: FlatTransaction{
+				"Account":         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+				"TransactionType": "DepositPreauth",
+				"UnauthorizeCredentials": []interface{}{
+					map[string]interface{}{"Issuer": "rIssuer", "CredentialType": "6D795F63726564656E7469616C"},
+				},
+			},
+		},
 	}
-
 	for _, testcase := range testcases {
 		t.Run(testcase.name, func(t *testing.T) {
 			require.Equal(t, testcase.expected, testcase.tx.Flatten())
