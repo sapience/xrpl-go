@@ -46,6 +46,10 @@ func (s *AccountDelete) Flatten() FlatTransaction {
 	flatTx := s.BaseTx.Flatten()
 	flatTx["TransactionType"] = s.TxType().String()
 
+	if len(s.CredentialIDs) > 0 {
+		flatTx["CredentialIDs"] = s.CredentialIDs.Flatten()
+	}
+
 	if s.Destination != "" {
 		flatTx["Destination"] = s.Destination.String()
 	}
@@ -61,6 +65,10 @@ func (s *AccountDelete) Validate() (bool, error) {
 	_, err := s.BaseTx.Validate()
 	if err != nil {
 		return false, err
+	}
+
+	if s.CredentialIDs != nil && !s.CredentialIDs.IsValid() {
+		return false, ErrInvalidCredentialIDs
 	}
 
 	if !addresscodec.IsValidAddress(s.Destination.String()) {
