@@ -4,6 +4,10 @@ import (
 	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
 )
 
+type AuthorizeCredentialsWrapper struct {
+	Credential AuthorizeCredentials
+}
+
 type AuthorizeCredentials struct {
 	// The issuer of the credential.
 	Issuer Address
@@ -17,11 +21,24 @@ func (a *AuthorizeCredentials) IsValid() bool {
 }
 
 // Flatten returns a map of the authorize credentials.
+func (a *AuthorizeCredentialsWrapper) Flatten() map[string]interface{} {
+	flattened := make(map[string]interface{})
+
+	flattened["Credential"] = a.Credential.Flatten()
+
+	return flattened
+}
+
+// Flatten returns a map of the authorize credentials.
 func (a *AuthorizeCredentials) Flatten() map[string]interface{} {
 	flattened := make(map[string]interface{})
 
-	flattened["Issuer"] = a.Issuer.String()
-	flattened["CredentialType"] = a.CredentialType.String()
+	if a.Issuer != "" {
+		flattened["Issuer"] = a.Issuer.String()
+	}
+	if a.CredentialType != "" {
+		flattened["CredentialType"] = a.CredentialType.String()
+	}
 
 	return flattened
 }

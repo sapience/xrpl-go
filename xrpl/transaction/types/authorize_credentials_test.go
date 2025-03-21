@@ -49,18 +49,22 @@ func TestAuthorizeCredentials_IsValid(t *testing.T) {
 func TestAuthorizeCredentials_Flatten(t *testing.T) {
 	tests := []struct {
 		name       string
-		credential AuthorizeCredentials
+		credential AuthorizeCredentialsWrapper
 		expected   map[string]interface{}
 	}{
 		{
 			name: "pass - valid authorize credentials",
-			credential: AuthorizeCredentials{
-				Issuer:         "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
-				CredentialType: "6D795F63726564656E7469616C",
+			credential: AuthorizeCredentialsWrapper{
+				Credential: AuthorizeCredentials{
+					Issuer:         "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
+					CredentialType: "6D795F63726564656E7469616C",
+				},
 			},
 			expected: map[string]interface{}{
-				"Issuer":         "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
-				"CredentialType": "6D795F63726564656E7469616C",
+				"Credential": map[string]interface{}{
+					"Issuer":         "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
+					"CredentialType": "6D795F63726564656E7469616C",
+				},
 			},
 		},
 	}
