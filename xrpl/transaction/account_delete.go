@@ -24,6 +24,10 @@ import (
 // ```
 type AccountDelete struct {
 	BaseTx
+	// Set of Credentials to authorize a deposit made by this transaction.
+	// Each member of the array must be the ledger entry ID of a Credential entry in the ledger.
+	// For details see https://xrpl.org/docs/references/protocol/transactions/types/payment#credential-ids
+	CredentialIDs types.CredentialIDs `json:",omitempty"`
 	// The address of an account to receive any leftover XRP after deleting the sending account.
 	// Must be a funded account in the ledger, and must not be the sending account.
 	Destination types.Address

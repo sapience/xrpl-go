@@ -68,6 +68,10 @@ type PaymentChannelClaim struct {
 	BaseTx
 	// The unique ID of the channel, as a 64-character hexadecimal string.
 	Channel types.Hash256
+	// Set of Credentials to authorize a deposit made by this transaction.
+	// Each member of the array must be the ledger entry ID of a Credential entry in the ledger.
+	// For details see https://xrpl.org/docs/references/protocol/transactions/types/payment#credential-ids
+	CredentialIDs types.CredentialIDs `json:",omitempty"`
 	// (Optional) Total amount of XRP, in drops, delivered by this channel after processing this claim. Required to deliver XRP.
 	// Must be more than the total amount delivered by the channel so far, but not greater than the Amount of the signed claim. Must be provided except when closing the channel.
 	Balance types.XRPCurrencyAmount `json:",omitempty"`

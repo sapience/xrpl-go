@@ -30,6 +30,10 @@ var (
 // ````
 type EscrowFinish struct {
 	BaseTx
+	// Set of Credentials to authorize a deposit made by this transaction.
+	// Each member of the array must be the ledger entry ID of a Credential entry in the ledger.
+	// For details see https://xrpl.org/docs/references/protocol/transactions/types/payment#credential-ids
+	CredentialIDs types.CredentialIDs `json:",omitempty"`
 	// Address of the source account that funded the held payment.
 	Owner types.Address
 	// Transaction sequence of EscrowCreate transaction that created the held payment to finish.

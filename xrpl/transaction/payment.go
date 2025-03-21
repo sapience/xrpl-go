@@ -37,6 +37,11 @@ type Payment struct {
 	// If the tfPartialPayment flag is set, deliver up to this amount instead.
 	Amount types.CurrencyAmount
 
+	// Set of Credentials to authorize a deposit made by this transaction.
+	// Each member of the array must be the ledger entry ID of a Credential entry in the ledger.
+	// For details see https://xrpl.org/docs/references/protocol/transactions/types/payment#credential-ids
+	CredentialIDs types.CredentialIDs `json:",omitempty"`
+
 	// API v2: Only available in API v2.
 	// The maximum amount of currency to deliver.
 	// For non-XRP amounts, the nested field names MUST be lower-case.
