@@ -71,6 +71,10 @@ func (e *EscrowFinish) Flatten() FlatTransaction {
 		flattened["Fulfillment"] = e.Fulfillment
 	}
 
+	if len(e.CredentialIDs) > 0 {
+		flattened["CredentialIDs"] = e.CredentialIDs.Flatten()
+	}
+
 	return flattened
 }
 
@@ -87,6 +91,10 @@ func (e *EscrowFinish) Validate() (bool, error) {
 
 	if e.OfferSequence == 0 {
 		return false, ErrEscrowFinishMissingOfferSequence
+	}
+
+	if e.CredentialIDs != nil && !e.CredentialIDs.IsValid() {
+		return false, ErrInvalidCredentialIDs
 	}
 
 	return true, nil
