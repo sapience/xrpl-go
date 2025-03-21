@@ -12,6 +12,7 @@ import (
 const (
 	AllowedCharacters = "0123456789.-eE"
 	BigDecRegEx       = "-?(?:[0|1-9]\\d*)(?:\\.\\d+)?(?:[eE][+\\-]?\\d+)?"
+	Precision         = 128
 )
 
 var (
@@ -28,24 +29,32 @@ type BigDecimal struct {
 }
 
 func (bd *BigDecimal) GetScaledValue() string {
-	unscaled, _ := new(big.Float).SetString(bd.UnscaledValue)
+	if bd.UnscaledValue == "" {
+		return "0"
+	}
 
-	scalingFactor := new(big.Float).SetFloat64(1)
+	// Use SetPrec to maintain full precision
+	unscaled := new(big.Float).SetPrec(Precision) // Use high precision to avoid scientific notation
+	unscaled, _ = unscaled.SetString(bd.UnscaledValue)
+
+	scalingFactor := new(big.Float).SetPrec(Precision).SetFloat64(1)
 	for i := 0; i < abs(bd.Scale); i++ {
 		scalingFactor.Mul(scalingFactor, big.NewFloat(10))
 	}
 
 	var scaledValue *big.Float
 	if bd.Scale >= 0 {
-		scaledValue = new(big.Float).Mul(unscaled, scalingFactor)
+		scaledValue = new(big.Float).SetPrec(Precision).Mul(unscaled, scalingFactor)
 	} else {
-		scaledValue = new(big.Float).Quo(unscaled, scalingFactor)
+		scaledValue = new(big.Float).SetPrec(Precision).Quo(unscaled, scalingFactor)
 	}
 
 	if bd.Sign == 1 {
 		scaledValue.Neg(scaledValue)
 	}
-	return strings.TrimSuffix(strings.TrimRight(scaledValue.Text('f', bd.Scale), "0"), ".")
+
+	// Force format without scientific notation
+	return strings.TrimSuffix(strings.TrimRight(scaledValue.Text('f', abs(bd.Scale)), "0"), ".")
 }
 
 func abs(x int) int {
