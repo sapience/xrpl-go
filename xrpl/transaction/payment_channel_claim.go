@@ -113,6 +113,9 @@ func (p *PaymentChannelClaim) Flatten() FlatTransaction {
 	if p.PublicKey != "" {
 		flattened["PublicKey"] = p.PublicKey
 	}
+	if len(p.CredentialIDs) > 0 {
+		flattened["CredentialIDs"] = p.CredentialIDs.Flatten()
+	}
 	return flattened
 }
 
@@ -159,6 +162,10 @@ func (p *PaymentChannelClaim) Validate() (bool, error) {
 
 	if p.PublicKey != "" && !typecheck.IsHex(p.PublicKey) {
 		return false, ErrInvalidHexPublicKey
+	}
+
+	if p.CredentialIDs != nil && !p.CredentialIDs.IsValid() {
+		return false, ErrInvalidCredentialIDs
 	}
 
 	return true, nil
