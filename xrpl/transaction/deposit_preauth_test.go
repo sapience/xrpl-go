@@ -197,6 +197,68 @@ func TestDepositPreauth_Validate(t *testing.T) {
 			},
 			expected: true,
 		},
+		{
+			name: "fail - invalid AuthorizeCredentials	",
+			tx: &DepositPreauth{
+				BaseTx: BaseTx{
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					TransactionType: DepositPreauthTx,
+				},
+				AuthorizeCredentials: []types.AuthorizeCredentialsWrapper{
+					{
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "invalid",
+							CredentialType: types.CredentialType("48656C6C6F"), // hello
+						},
+					},
+				},
+			},
+			expected:    false,
+			expectedErr: ErrDepositPreauthInvalidAuthorizeCredentials,
+		},
+		{
+			name: "fail - invalid UnauthorizeCredentials",
+			tx: &DepositPreauth{
+				BaseTx: BaseTx{
+					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+					TransactionType: DepositPreauthTx,
+				},
+				UnauthorizeCredentials: []types.AuthorizeCredentialsWrapper{
+					{
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+							CredentialType: types.CredentialType("invalid"),
+						},
+					},
+				},
+			},
+			expected:    false,
+			expectedErr: ErrDepositPreauthInvalidUnauthorizeCredentials,
+		},
+		{
+			name: "fail - Authorize is the same as Account",
+			tx: &DepositPreauth{
+				BaseTx: BaseTx{
+					Account:         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+					TransactionType: DepositPreauthTx,
+				},
+				Authorize: "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+			},
+			expected:    false,
+			expectedErr: ErrDepositPreauthAuthorizeCannotBeSender,
+		},
+		{
+			name: "fail - Unauthorize is the same as Account",
+			tx: &DepositPreauth{
+				BaseTx: BaseTx{
+					Account:         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+					TransactionType: DepositPreauthTx,
+				},
+				Unauthorize: "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+			},
+			expected:    false,
+			expectedErr: ErrDepositPreauthUnauthorizeCannotBeSender,
+		},
 	}
 
 	for _, testcase := range testcases {
