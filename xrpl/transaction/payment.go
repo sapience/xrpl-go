@@ -92,6 +92,10 @@ func (p *Payment) Flatten() FlatTransaction {
 		flattened["Amount"] = p.Amount.Flatten()
 	}
 
+	if len(p.CredentialIDs) > 0 {
+		flattened["CredentialIDs"] = p.CredentialIDs.Flatten()
+	}
+
 	if p.DeliverMax != nil {
 		flattened["DeliverMax"] = p.DeliverMax.Flatten()
 	}
@@ -199,6 +203,11 @@ func (p *Payment) Validate() (bool, error) {
 	// Check if the field DeliverMin is valid
 	if ok, err := IsAmount(p.DeliverMin, "DeliverMin", false); !ok {
 		return false, err
+	}
+
+	// Check if the field CredentialIDs is valid
+	if p.CredentialIDs != nil && !p.CredentialIDs.IsValid() {
+		return false, ErrInvalidCredentialIDs
 	}
 
 	// Check partial payment fields
