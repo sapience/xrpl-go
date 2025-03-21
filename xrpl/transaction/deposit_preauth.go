@@ -40,11 +40,11 @@ type DepositPreauth struct {
 	// (Optional) The XRP Ledger address of the sender to preauthorize.
 	Authorize types.Address `json:",omitempty"`
 	// A set of credentials to authorize.
-	AuthorizeCredentials []types.AuthorizeCredentials `json:",omitempty"`
+	AuthorizeCredentials []types.AuthorizeCredentialsWrapper `json:",omitempty"`
 	// (Optional) The XRP Ledger address of a sender whose preauthorization should be revoked.
 	Unauthorize types.Address `json:",omitempty"`
 	// A set of credentials whose preauthorization should be revoked.
-	UnauthorizeCredentials []types.AuthorizeCredentials `json:",omitempty"`
+	UnauthorizeCredentials []types.AuthorizeCredentialsWrapper `json:",omitempty"`
 }
 
 // TxType implements the TxType method for the DepositPreauth struct.
@@ -67,17 +67,23 @@ func (d *DepositPreauth) Flatten() FlatTransaction {
 	}
 
 	if len(d.AuthorizeCredentials) > 0 {
-		flattenedAuthorizeCredentials := make([]interface{}, len(d.AuthorizeCredentials))
-		for i, credential := range d.AuthorizeCredentials {
-			flattenedAuthorizeCredentials[i] = credential.Flatten()
+		flattenedAuthorizeCredentials := make([]any, 0, len(d.AuthorizeCredentials))
+		for _, credential := range d.AuthorizeCredentials {
+			flattenedAuthorizeCredential := credential.Flatten()
+			if flattenedAuthorizeCredential != nil {
+				flattenedAuthorizeCredentials = append(flattenedAuthorizeCredentials, flattenedAuthorizeCredential)
+			}
 		}
 		flattened["AuthorizeCredentials"] = flattenedAuthorizeCredentials
 	}
 
 	if len(d.UnauthorizeCredentials) > 0 {
-		flattenedUnauthorizeCredentials := make([]interface{}, len(d.UnauthorizeCredentials))
-		for i, credential := range d.UnauthorizeCredentials {
-			flattenedUnauthorizeCredentials[i] = credential.Flatten()
+		flattenedUnauthorizeCredentials := make([]any, 0, len(d.UnauthorizeCredentials))
+		for _, credential := range d.UnauthorizeCredentials {
+			flattenedUnauthorizeCredential := credential.Flatten()
+			if flattenedUnauthorizeCredential != nil {
+				flattenedUnauthorizeCredentials = append(flattenedUnauthorizeCredentials, flattenedUnauthorizeCredential)
+			}
 		}
 		flattened["UnauthorizeCredentials"] = flattenedUnauthorizeCredentials
 	}
@@ -115,7 +121,7 @@ func (d *DepositPreauth) Validate() (bool, error) {
 
 	if len(d.AuthorizeCredentials) > 0 {
 		for _, credential := range d.AuthorizeCredentials {
-			if !credential.IsValid() {
+			if !credential.Credential.IsValid() {
 				return false, ErrDepositPreauthInvalidAuthorizeCredentials
 			}
 		}
@@ -123,7 +129,7 @@ func (d *DepositPreauth) Validate() (bool, error) {
 
 	if len(d.UnauthorizeCredentials) > 0 {
 		for _, credential := range d.UnauthorizeCredentials {
-			if !credential.IsValid() {
+			if !credential.Credential.IsValid() {
 				return false, ErrDepositPreauthInvalidUnauthorizeCredentials
 			}
 		}

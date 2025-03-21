@@ -64,18 +64,25 @@ func TestDepositPreauth_Flatten(t *testing.T) {
 				BaseTx: BaseTx{
 					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				},
-				AuthorizeCredentials: []types.AuthorizeCredentials{
+				AuthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 			},
 			expected: FlatTransaction{
 				"Account":         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				"TransactionType": "DepositPreauth",
-				"AuthorizeCredentials": []interface{}{
-					map[string]interface{}{"Issuer": "rIssuer", "CredentialType": "6D795F63726564656E7469616C"},
+				"AuthorizeCredentials": []any{
+					map[string]any{
+						"Credential": map[string]any{
+							"Issuer":         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+							"CredentialType": "6D795F63726564656E7469616C",
+						},
+					},
 				},
 			},
 		},
@@ -85,18 +92,25 @@ func TestDepositPreauth_Flatten(t *testing.T) {
 				BaseTx: BaseTx{
 					Account: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				},
-				UnauthorizeCredentials: []types.AuthorizeCredentials{
+				UnauthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 			},
 			expected: FlatTransaction{
 				"Account":         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 				"TransactionType": "DepositPreauth",
-				"UnauthorizeCredentials": []interface{}{
-					map[string]interface{}{"Issuer": "rIssuer", "CredentialType": "6D795F63726564656E7469616C"},
+				"UnauthorizeCredentials": []any{
+					map[string]any{
+						"Credential": map[string]any{
+							"Issuer":         "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+							"CredentialType": "6D795F63726564656E7469616C",
+						},
+					},
 				},
 			},
 		},
@@ -215,10 +229,12 @@ func TestDepositPreauth_IsOnlyOneFieldSet(t *testing.T) {
 		{
 			name: "pass - only AuthorizeCredentials set",
 			dp: &DepositPreauth{
-				AuthorizeCredentials: []types.AuthorizeCredentials{
+				AuthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 			},
@@ -234,10 +250,12 @@ func TestDepositPreauth_IsOnlyOneFieldSet(t *testing.T) {
 		{
 			name: "pass - only UnauthorizeCredentials set",
 			dp: &DepositPreauth{
-				UnauthorizeCredentials: []types.AuthorizeCredentials{
+				UnauthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 			},
@@ -251,11 +269,13 @@ func TestDepositPreauth_IsOnlyOneFieldSet(t *testing.T) {
 		{
 			name: "fail - Authorize and AuthorizeCredentials set",
 			dp: &DepositPreauth{
-				Authorize: "rAuthorize",
-				AuthorizeCredentials: []types.AuthorizeCredentials{
+				Authorize: "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+				AuthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 			},
@@ -264,24 +284,28 @@ func TestDepositPreauth_IsOnlyOneFieldSet(t *testing.T) {
 		{
 			name: "fail - Authorize and Unauthorize set",
 			dp: &DepositPreauth{
-				Authorize:   "rAuthorize",
-				Unauthorize: "rUnauthorize",
+				Authorize:   "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
+				Unauthorize: "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
 			},
 			expected: false,
 		},
 		{
 			name: "fail - AuthorizeCredentials and UnauthorizeCredentials set",
 			dp: &DepositPreauth{
-				AuthorizeCredentials: []types.AuthorizeCredentials{
+				AuthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
-				UnauthorizeCredentials: []types.AuthorizeCredentials{
+				UnauthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 			},
@@ -291,17 +315,21 @@ func TestDepositPreauth_IsOnlyOneFieldSet(t *testing.T) {
 			name: "fail - all fields set",
 			dp: &DepositPreauth{
 				Authorize: "rAuthorize",
-				AuthorizeCredentials: []types.AuthorizeCredentials{
+				AuthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 				Unauthorize: "rUnauthorize",
-				UnauthorizeCredentials: []types.AuthorizeCredentials{
+				UnauthorizeCredentials: []types.AuthorizeCredentialsWrapper{
 					{
-						Issuer:         "rIssuer",
-						CredentialType: "6D795F63726564656E7469616C",
+						Credential: types.AuthorizeCredentials{
+							Issuer:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
+							CredentialType: "6D795F63726564656E7469616C",
+						},
 					},
 				},
 			},
