@@ -6,7 +6,6 @@ type TxResult string
 //revive:disable:var-naming
 // #nosec G101
 
-
 const (
 	// tec codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tec-codes
 
@@ -107,7 +106,7 @@ const (
 
 	// Offer type mismatch in NFTokenAcceptOffer transaction.
 	TecNFTOKEN_OFFER_TYPE_MISMATCH TxResult = "tecNFTOKEN_OFFER_TYPE_MISMATCH"
-	
+
 	// The transaction tried to remove the only available method of authorizing transactions. (Prior to rippled 0.30.0, this was called tecMASTER_DISABLED.)
 	TecNO_ALTERNATIVE_KEY TxResult = "tecNO_ALTERNATIVE_KEY"
 
@@ -176,7 +175,6 @@ const (
 
 	// Offer creation failed due to lack of the TakerGets currency.
 	TecUNFUNDED_OFFER TxResult = "tecUNFUNDED_OFFER"
-
 
 	// ------------------------------------------------------------------------------------------------
 	// tef codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tef-codes
@@ -250,11 +248,9 @@ const (
 	// AccountTxnID does not match the account's previous transaction.
 	TefWRONG_PRIOR TxResult = "tefWRONG_PRIOR"
 
-
-
 	// ------------------------------------------------------------------------------------------------
-	// tel codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tel-codes	
-	// These codes indicate an error in the local server processing the transaction; it is possible that another server with a different configuration or load level could process the transaction successfully. 
+	// tel codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tel-codes
+	// These codes indicate an error in the local server processing the transaction; it is possible that another server with a different configuration or load level could process the transaction successfully.
 	// They have numerical values in the range -399 to -300. The exact code for any given error is subject to change, so don't rely on it.
 	// ------------------------------------------------------------------------------------------------
 
@@ -305,8 +301,6 @@ const (
 
 	// Transaction specifies incorrect NetworkID value for the current network.
 	TelWRONG_NETWORK TxResult = "telWRONG_NETWORK"
-
-
 
 	// ------------------------------------------------------------------------------------------------
 	// tem codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tem-codes
@@ -426,9 +420,6 @@ const (
 	// Transaction requires disabled logic or amendment.
 	TemDISABLED TxResult = "temDISABLED"
 
-
-	
-
 	// ------------------------------------------------------------------------------------------------
 	// ter codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/ter-codes
 	//
@@ -478,8 +469,6 @@ const (
 	// Transaction submitted but not yet applied.
 	TerSUBMITTED TxResult = "terSUBMITTED"
 
-
-
 	// ------------------------------------------------------------------------------------------------
 	// Success results - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tes-success
 	// ------------------------------------------------------------------------------------------------
@@ -487,7 +476,6 @@ const (
 	// The transaction was applied and forwarded to other servers.
 	// If this appears in a validated ledger, then the transaction's success is final.
 	TesSUCCESS TxResult = "tesSUCCESS"
-
 )
 
 // String returns the string representation of the result
