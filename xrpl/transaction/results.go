@@ -3,6 +3,10 @@ package transaction
 // TxResult represents the result code of a transaction
 type TxResult string
 
+//revive:disable:var-naming
+// #nosec G101
+
+
 const (
 	// tec codes ⬇️ - https://xrpl.org/docs/references/protocol/transactions/transaction-results/tec-codes
 
