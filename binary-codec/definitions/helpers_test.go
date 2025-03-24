@@ -3,6 +3,7 @@ package definitions
 import (
 	"testing"
 
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/stretchr/testify/require"
 )
 
@@ -462,7 +463,7 @@ func TestGetTransactionResultNameByTransactionResultTypeCode(t *testing.T) {
 		{
 			description:   "correct TransactionResultName",
 			input:         100,
-			expected:      "tecCLAIM",
+			expected:      transaction.TecCLAIM.String(),
 			expectedError: nil,
 		},
 		{
@@ -499,7 +500,7 @@ func TestGetTransactionResultTypeCodeByTransactionResultName(t *testing.T) {
 	}{
 		{
 			description:   "correct TransactionResultTypeCode",
-			input:         "tecCLAIM",
+			input:         transaction.TecCLAIM.String(),
 			expected:      100,
 			expectedError: nil,
 		},
