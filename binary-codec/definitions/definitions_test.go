@@ -3,7 +3,6 @@ package definitions
 import (
 	"testing"
 
-	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/stretchr/testify/require"
 )
 
@@ -12,7 +11,7 @@ func TestLoadDefinitions(t *testing.T) {
 	require.Equal(t, int32(-1), definitions.Types["Done"])
 	require.Equal(t, int32(4), definitions.Types["Hash128"])
 	require.Equal(t, int32(-3), definitions.LedgerEntryTypes["Any"])
-	require.Equal(t, int32(-399), definitions.TransactionResults[transaction.TelLOCAL_ERROR.String()])
+	require.Equal(t, int32(-399), definitions.TransactionResults["telLOCAL_ERROR"])
 	require.Equal(t, int32(1), definitions.TransactionTypes["EscrowCreate"])
 	require.Equal(t, &FieldInfo{Nth: 0, IsVLEncoded: false, IsSerialized: false, IsSigningField: false, Type: "Unknown"}, definitions.Fields["Generic"].FieldInfo)
 	require.Equal(t, &FieldInfo{Nth: 28, IsVLEncoded: false, IsSerialized: true, IsSigningField: true, Type: "Hash256"}, definitions.Fields["NFTokenBuyOffer"].FieldInfo)
