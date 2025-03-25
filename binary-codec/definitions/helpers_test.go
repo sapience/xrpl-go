@@ -462,7 +462,7 @@ func TestGetTransactionResultNameByTransactionResultTypeCode(t *testing.T) {
 		{
 			description:   "correct TransactionResultName",
 			input:         100,
-			expected:       "tecCLAIM",
+			expected:      "tecCLAIM",
 			expectedError: nil,
 		},
 		{
@@ -499,7 +499,7 @@ func TestGetTransactionResultTypeCodeByTransactionResultName(t *testing.T) {
 	}{
 		{
 			description:   "correct TransactionResultTypeCode",
-			input:          "tecCLAIM",
+			input:         "tecCLAIM",
 			expected:      100,
 			expectedError: nil,
 		},
