@@ -12,7 +12,6 @@ func TestTxResult_String(t *testing.T) {
 		txResult TxResult
 		expected string
 	}{
-
 		// Tec Codes
 		{
             name:     "TecAMM_ACCOUNT",
