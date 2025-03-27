@@ -131,7 +131,7 @@ func (r *Runner) processTransaction(flatTx *transaction.FlatTransaction, signer 
 			return nil, hash, err
 		}
 
-		if tx.EngineResult != "tefPAST_SEQ" || attempts >= r.config.MaxRetries {
+		if tx.EngineResult != transaction.TefPAST_SEQ.String() || attempts >= r.config.MaxRetries {
 			return tx, hash, nil
 		}
 		attempts++

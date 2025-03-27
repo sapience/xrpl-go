@@ -7,7 +7,7 @@ RUN go mod download
 COPY . .
 
 FROM install AS lint
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.8
 RUN make lint
 
 FROM lint AS test
