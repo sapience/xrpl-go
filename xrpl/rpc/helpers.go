@@ -21,12 +21,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
-	submit "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
-
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	jsoniter "github.com/json-iterator/go"
 
-	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
+	xrplCommons "github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 // CreateRequest formats the parameters and method name ready for sending request
@@ -244,7 +242,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Uint32() + commonconstants.LedgerOffset
+	(*tx)["LastLedgerSequence"] = index.Uint32() + xrplCommons.LedgerOffset
 	return err
 }
 
@@ -390,7 +388,7 @@ func getSignedTx(client *Client, txInput interface{}, autofill bool, wallet *wal
 		// Otherwise, we cannot sign a string transaction.
 		return "", fmt.Errorf("provided string transaction is not signed")
 
-	case submit.SubmittableTransaction:
+	case xrplCommons.SubmittableTransaction:
 		// Flatten the transaction.
 		flatTx := tx.Flatten()
 

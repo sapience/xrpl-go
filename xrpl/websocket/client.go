@@ -220,22 +220,15 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 // Submit sends a transaction to the server and returns the response.
 // This function is used to send transactions to the server.
 // It returns the response from the server.
-func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
-	tx, err := binarycodec.Decode(txBlob)
+func (c *Client) Submit(txInput interface{}, opts *commonconstants.SubmitOptions) (*requests.SubmitResponse, error) {
+	txBlob, err := getSignedTx(c, txInput, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
 	}
 
-	_, okTxSig := tx["TxSignature"].(string)
-	_, okPubKey := tx["SigningPubKey"].(string)
-
-	if !okTxSig && !okPubKey {
-		return nil, errors.New("transaction must have a TxSignature or SigningPubKey set")
-	}
-
 	return c.submitRequest(&requests.SubmitRequest{
 		TxBlob:   txBlob,
-		FailHard: failHard,
+		FailHard: opts.FailHard,
 	})
 }
 
@@ -268,21 +261,32 @@ func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.Subm
 // SubmitAndWait sends a transaction to the server and waits for it to be included in a ledger.
 // This function is used to send transactions to the server and wait for them to be included in a ledger.
 // It returns the transaction response from the server.
-func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
+func (c *Client) SubmitAndWait(txInput interface{}, opts *commonconstants.SubmitOptions) (*requests.TxResponse, error) {
+	// Retrieve a fully signed transaction blob.
+	txBlob, err := getSignedTx(c, txInput, opts.Autofill, opts.Wallet)
+	if err != nil {
+		return nil, err
+	}
+
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return nil, err
 	}
 
-	lastLedgerSequence := tx["LastLedgerSequence"].(uint32)
+	lastLedgerSequence, ok := tx["LastLedgerSequence"].(uint32)
+	if !ok {
+		return nil, errors.New("missing LastLedgerSequence in transaction")
+	}
 
-	txResponse, err := c.Submit(txBlob, failHard)
+	txResponse, err := c.Submit(txBlob, opts)
 	if err != nil {
 		return nil, err
 	}
 
 	if txResponse.EngineResult != "tesSUCCESS" {
-		return nil, errors.New("transaction failed to submit with engine result: " + txResponse.EngineResult)
+		return nil, &ClientError{
+			ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult,
+		}
 	}
 
 	txHash, err := hash.SignTxBlob(txBlob)

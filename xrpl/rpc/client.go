@@ -11,7 +11,6 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
-	submit "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
@@ -104,7 +103,7 @@ func (c *Client) Request(reqParams XRPLRequest) (XRPLResponse, error) {
 	return &jr, nil
 }
 
-func (c *Client) Submit(txInput interface{}, opts *submit.SubmitOptions) (*requests.SubmitResponse, error) {
+func (c *Client) Submit(txInput interface{}, opts *common.SubmitOptions) (*requests.SubmitResponse, error) {
 	txBlob, err := getSignedTx(c, txInput, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
@@ -229,7 +228,7 @@ func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 // SubmitAndWait sends a transaction to the server and waits for it to be included in a ledger.
 // This function is used to send transactions to the server and wait for them to be included in a ledger.
 // It returns the transaction response from the server.
-func (c *Client) SubmitAndWait(txInput interface{}, opts *submit.SubmitOptions) (*requests.TxResponse, error) {
+func (c *Client) SubmitAndWait(txInput interface{}, opts *common.SubmitOptions) (*requests.TxResponse, error) {
 	// Retrieve a fully signed transaction blob.
 	txBlob, err := getSignedTx(c, txInput, opts.Autofill, opts.Wallet)
 	if err != nil {
