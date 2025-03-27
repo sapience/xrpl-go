@@ -12,7 +12,7 @@ import (
 const (
 	AllowedCharacters = "0123456789.-eE"
 	BigDecRegEx       = "-?(?:[0|1-9]\\d*)(?:\\.\\d+)?(?:[eE][+\\-]?\\d+)?"
-	Precision         = 128
+	Precision         = 512
 )
 
 var (
