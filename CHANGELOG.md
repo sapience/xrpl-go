@@ -7,11 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [Unreleased]
 
+### Added
+
+#### xrpl
+
+- Added tec/tef/tel/tem/ter TxResult codes.
+- Replaced string declaration with constant/object references.
+
 ## Fixed
 
 ### big-decimal
 
 - Fixed `BigDecimal` precision.
+
+## [v0.1.9]
+
+### Added
+
+#### xrpl
+
+- Added support for all the Credential transaction types:
+  - CredentialCreate
+  - CredentialAccept
+  - CredentialDelete
+
+### Fixed
+
+#### big-decimal
+
+- Amounts transcoding fix for large values.
 
 ## [v0.1.8]
 
@@ -26,20 +50,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### xrpl
 
 - Updated `AffectedNode` type fields to be a pointer to allow nil values.
-
-### Added
-
-#### xrpl
-
-- Added support for all the Credential transaction types:
-  - CredentialCreate
-  - CredentialAccept
-  - CredentialDelete
-
-### Fixed
-
-#### xrpl
-
 - Fixed `BaseLedger` field in `ledger` response (v1 and v2). BaseLedger.Transactions is now an array of interfaces instead of a slice of `FlatTransaction` due to `Expand` field in the request.
 
 ## [v0.1.7]
