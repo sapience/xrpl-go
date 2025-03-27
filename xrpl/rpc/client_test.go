@@ -11,6 +11,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc/testutil"
+	submit "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -340,7 +341,15 @@ func TestClient_Submit(t *testing.T) {
 
 			jsonRpcClient := NewClient(cfg)
 
-			response, err := jsonRpcClient.Submit(tt.txBlob, false)
+					// Use our new Submit signature by wrapping options.
+			opts := &submit.SubmitOptions{
+				FailHard: false,
+				// In this test we're not using autofill or wallet signing because we supply a pre-signed tx blob.
+				Autofill: false,
+				Wallet:   nil,
+			}
+
+			response, err := jsonRpcClient.Submit(tt.txBlob, opts)
 
 			if tt.expectError != nil {
 				assert.Error(t, err)

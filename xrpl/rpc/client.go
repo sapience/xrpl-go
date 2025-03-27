@@ -3,6 +3,7 @@ package rpc
 import (
 	"bytes"
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
@@ -10,8 +11,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
+	submit "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
@@ -101,22 +104,15 @@ func (c *Client) Request(reqParams XRPLRequest) (XRPLResponse, error) {
 	return &jr, nil
 }
 
-func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
-	tx, err := binarycodec.Decode(txBlob)
+func (c *Client) Submit(txInput interface{}, opts *submit.SubmitOptions) (*requests.SubmitResponse, error) {
+	txBlob, err := getSignedTx(c, txInput, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
 	}
 
-	_, okTxSig := tx["TxSignature"].(string)
-	_, okPubKey := tx["SigningPubKey"].(string)
-
-	if !okTxSig && !okPubKey {
-		return nil, ErrMissingTxSignatureOrSigningPubKey
-	}
-
 	return c.submitRequest(&requests.SubmitRequest{
 		TxBlob:   txBlob,
-		FailHard: failHard,
+		FailHard: opts.FailHard,
 	})
 }
 
@@ -233,21 +229,32 @@ func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 // SubmitAndWait sends a transaction to the server and waits for it to be included in a ledger.
 // This function is used to send transactions to the server and wait for them to be included in a ledger.
 // It returns the transaction response from the server.
-func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
+func (c *Client) SubmitAndWait(txInput interface{}, opts *submit.SubmitOptions) (*requests.TxResponse, error) {
+	// Retrieve a fully signed transaction blob.
+	txBlob, err := getSignedTx(c, txInput, opts.Autofill, opts.Wallet)
+	if err != nil {
+		return nil, err
+	}
+
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return nil, err
 	}
 
-	lastLedgerSequence := tx["LastLedgerSequence"].(uint32)
+	lastLedgerSequence, ok := tx["LastLedgerSequence"].(uint32)
+	if !ok {
+		return nil, errors.New("missing LastLedgerSequence in transaction")
+	}
 
-	txResponse, err := c.Submit(txBlob, failHard)
+	txResponse, err := c.Submit(txBlob, opts)
 	if err != nil {
 		return nil, err
 	}
 
 	if txResponse.EngineResult != "tesSUCCESS" {
-		return nil, &ClientError{ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult}
+		return nil, &ClientError{
+			ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult,
+		}
 	}
 
 	txHash, err := hash.SignTxBlob(txBlob)
