@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Fixed
 
+### binary-codec
+
+- Added native `uint8` type support for `Uint8` type.
+
 ### big-decimal
 
 - Fixed `BigDecimal` precision.
