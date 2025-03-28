@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
-	"github.com/Peersyst/xrpl-go/xrpl/common"
+	transaction "github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
@@ -12,35 +12,14 @@ import (
 // It accepts either a pre-encoded transaction (string)
 // or a SubmittableTransaction that will be autofilled and signed.
 // It ensures the returned blob contains a signature.
-func getSignedTx(client *Client, txInput interface{}, autofill bool, wallet *wallet.Wallet) (string, error) {
-	switch tx := txInput.(type) {
-	case string:
-		// Assume it's already an encoded transaction.
-		decoded, err := binarycodec.Decode(tx)
-		if err != nil {
-			return "", err
-		}
-		// Check for signature in either field.
-		_, hasSig := decoded["TxSignature"].(string)
-		// _, hasTxnSig := decoded["TxnSignature"].(string)
-		_, hasPubKey := decoded["SigningPubKey"].(string)
-		if hasSig ||  hasPubKey {
-			return tx, nil
-		}
-		// Otherwise, we cannot sign a string transaction.
-		return "", fmt.Errorf("provided string transaction is not signed")
-
-	case common.SubmittableTransaction:
-		// Flatten the transaction.
-		flatTx := tx.Flatten()
-
-			// Check if the transaction is already signed.
-		_, hasSig := flatTx["TxSignature"].(string)
-		// _, hasTxnSig := flatTx["TxnSignature"].(string)
-		_, hasPubKey := flatTx["SigningPubKey"].(string)
+func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
+		// Check if the transaction is already signed.
+		_, hasSig := tx["TxSignature"].(string)
+		// _, hasTxnSig := tx["TxnSignature"].(string)
+		_, hasPubKey := tx["SigningPubKey"].(string)
 		if hasSig ||  hasPubKey {
 			// Encode and return.
-			blob, err := binarycodec.Encode(flatTx)
+			blob, err := binarycodec.Encode(tx)
 			if err != nil {
 				return "", err
 			}
@@ -49,7 +28,7 @@ func getSignedTx(client *Client, txInput interface{}, autofill bool, wallet *wal
 
 		// Autofill if required.
 		if autofill {
-			if err := client.Autofill(&flatTx); err != nil {
+			if err := client.Autofill(&tx); err != nil {
 				return "", err
 			}
 		}
@@ -60,7 +39,7 @@ func getSignedTx(client *Client, txInput interface{}, autofill bool, wallet *wal
 		}
 
 		// Sign the transaction.
-		txBlob, _, err := wallet.Sign(flatTx)
+		txBlob, _, err := wallet.Sign(tx)
 		if err != nil {
 			return "", err
 		}
@@ -71,15 +50,9 @@ func getSignedTx(client *Client, txInput interface{}, autofill bool, wallet *wal
 			return "", err
 		}
 		_, hasSig = decoded["TxSignature"].(string)
-		// _, hasTxnSig = decoded["TxnSignature"].(string)
 		_, hasPubKey = decoded["SigningPubKey"].(string)
 		if !hasSig  && !hasPubKey {
 			return "", ErrMissingTxSignatureOrSigningPubKey
 		}
 		return txBlob, nil
-
-
-	default:
-		return "", fmt.Errorf("invalid transaction type; expected string or SubmittableTransaction")
-	}
 }

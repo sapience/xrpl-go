@@ -16,7 +16,7 @@ type Client interface {
 
 	FundWallet(wallet *wallet.Wallet) error
 	Autofill(tx *transaction.FlatTransaction) error
-	Submit(txInput interface{}, opts *common.SubmitOptions) (*transactions.SubmitResponse, error)
+	SubmitTxBlob(txBlob string, failHard bool) (*transactions.SubmitResponse, error)
 	SubmitMultisigned(blob string, validate bool) (*transactions.SubmitMultisignedResponse, error)
 }
 
