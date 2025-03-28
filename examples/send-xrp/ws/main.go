@@ -79,7 +79,6 @@ func main() {
 
 	flattenedTx := p.Flatten()
 
-
 	fmt.Println("⏳ Using SubmitTxBlobAndWait, expecting to succeed ...")
 
 	if err := client.Autofill(&flattenedTx); err != nil {
@@ -103,13 +102,12 @@ func main() {
 	fmt.Printf("🌐 Hash: %s\n", res.Hash)
 	fmt.Printf("🌐 Validated: %t\n", res.Validated)
 
-
 	fmt.Println("⏳ Using SubmitTxAndWait with wallet, expecting success ...")
 	flattenedTx2 := p.Flatten()
 	resp, err := client.SubmitTxAndWait(flattenedTx2, &common.SubmitOptions{
-				Autofill: true,
-				Wallet:   &w,
-			})
+		Autofill: true,
+		Wallet:   &w,
+	})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -119,13 +117,12 @@ func main() {
 	fmt.Printf("🌐 Hash: %s\n", resp.Hash)
 	fmt.Printf("🌐 Validated: %t\n", resp.Validated)
 
-
 	fmt.Println("⏳ Using SubmitTxAndWait without wallet, expecting failure ...")
 	flattenedTx3 := p.Flatten()
 	resp1, err := client.SubmitTxAndWait(flattenedTx3, &common.SubmitOptions{
-				Autofill: true,
-				Wallet:  nil,
-			})
+		Autofill: true,
+		Wallet:   nil,
+	})
 	if err != nil {
 		fmt.Printf("❌ Expected error triggered: %v\n", err)
 	} else {

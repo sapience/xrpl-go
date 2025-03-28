@@ -79,7 +79,6 @@ func (c *Client) IsConnected() bool
 func (c *Client) Conn() *websocket.Conn
 ```
 
-
 So, for example, if you want to connect to the `devnet` ledger, you can do it this way:
 
 ```go
@@ -122,16 +121,16 @@ func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners u
 The `Submit` method is used to submit a transaction to the XRPL network. It returns a `TxResponse` struct containing the transaction result for the blob submitted. `txBlob` must be signed. There's also a `SubmitMultisigned` method that works the same way but for multisigned transactions.
 
 ```go
-func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse, error)
+func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error)
 func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.SubmitMultisignedResponse, error)
 ```
 
 ### SubmitAndWait
 
-The `SubmitAndWait` method is used to submit a transaction to the XRPL network and wait for it to be included in a ledger. It returns a `TxResponse` struct containing the transaction result for the blob submitted. 
+The `SubmitAndWait` method is used to submit a transaction to the XRPL network and wait for it to be included in a ledger. It returns a `TxResponse` struct containing the transaction result for the blob submitted.
 
 ```go
-func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error)
+func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.TxResponse, error)
 ```
 
 ## Queries
@@ -232,7 +231,7 @@ func main() {
 	}
 
 	// Submit the transaction to the network and wait for it to be included in a ledge
-	res, err := client.SubmitAndWait(txBlob, false)
+	res, err := client.SubmitTxBlobAndWait(txBlob, false)
 	if err != nil {
 		fmt.Println(err)
 		return
