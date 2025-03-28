@@ -38,6 +38,7 @@ const (
 	PaymentChannelClaimTx               TxType = "PaymentChannelClaim"
 	PaymentChannelCreateTx              TxType = "PaymentChannelCreate"
 	PaymentChannelFundTx                TxType = "PaymentChannelFund"
+	PermissionedDomainSetTx             TxType = "PermissionedDomainSet"
 	SetRegularKeyTx                     TxType = "SetRegularKey"
 	SignerListSetTx                     TxType = "SignerListSet"
 	TrustSetTx                          TxType = "TrustSet"
