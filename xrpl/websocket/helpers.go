@@ -8,10 +8,10 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
-// getSignedTx returns a signed transaction blob.
-// It accepts either a pre-encoded transaction (string)
-// or a SubmittableTransaction that will be autofilled and signed.
-// It ensures the returned blob contains a signature.
+// getSignedTx returns a fully signed transaction blob. It checks whether the
+// transaction already contains a signature or public key and, if not, optionally
+// autofills missing fields and signs the transaction using the provided wallet.
+// It verifies the resulting blob includes a signature, returning an error if absent.
 func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
 		// Check if the transaction is already signed.
 		_, hasSig := tx["TxSignature"].(string)
@@ -38,13 +38,11 @@ func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, 
 			return "", fmt.Errorf("wallet must be provided when submitting an unsigned transaction")
 		}
 
-		// Sign the transaction.
 		txBlob, _, err := wallet.Sign(tx)
 		if err != nil {
 			return "", err
 		}
 
-		// Validate that the signed blob contains a signature.
 		decoded, err := binarycodec.Decode(txBlob)
 		if err != nil {
 			return "", err

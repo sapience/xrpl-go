@@ -217,9 +217,10 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 	return res, nil
 }
 
-// Submit sends a transaction to the server and returns the response.
-// This function is used to send transactions to the server.
-// It returns the response from the server.
+// SubmitTxBlob sends a pre-signed transaction blob to the server.
+// It decodes the blob to confirm that it contains either a signature
+// or a signing public key, and then submits it using a submission request.
+// The failHard flag determines how strictly errors are handled.
 func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
@@ -239,6 +240,10 @@ func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.SubmitRes
 	})
 }
 
+// SubmitTx signs the transaction (if needed) by using getSignedTx,
+// and then submits it to the server via a submission request.
+// It uses the provided submit options to decide whether to autofill missing
+// fields and whether to enforce a failHard mode during submission.
 func (c *Client) SubmitTx(tx transaction.FlatTransaction, opts *xrplCommon.SubmitOptions) (*requests.SubmitResponse, error) {
 	txBlob, err := getSignedTx(c, tx, opts.Autofill, opts.Wallet)
 	if err != nil {
@@ -277,9 +282,10 @@ func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.Subm
 	})
 }
 
-// SubmitAndWait sends a transaction to the server and waits for it to be included in a ledger.
-// This function is used to send transactions to the server and wait for them to be included in a ledger.
-// It returns the transaction response from the server.
+// SubmitTxBlobAndWait sends a pre-signed transaction blob to the server,
+// decodes it to retrieve the required LastLedgerSequence, submits the blob,
+// and then waits until the transaction is confirmed in a ledger. It returns
+// the transaction response if the submission is successful.
 func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
@@ -305,8 +311,11 @@ func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.Tx
 	return c.waitForTransaction(txHash, lastLedgerSequence)
 }
 
+// SubmitTxAndWait prepares a transaction by ensuring it is fully signed (using
+// getSignedTx), submits it to the server, and waits for ledger confirmation.
+// It validates that the transaction's EngineResult is successful before returning
+// the transaction response.
 func (c *Client) SubmitTxAndWait(tx transaction.FlatTransaction, opts *xrplCommon.SubmitOptions) (*requests.TxResponse, error) {
-	// Retrieve a fully signed transaction blob.
 	txBlob, err := getSignedTx(c, tx, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
