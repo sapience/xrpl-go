@@ -32,8 +32,8 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 					{
 						// Using a sample issuer and credential type.
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
@@ -65,8 +65,8 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rIssuer2",
 							CredentialType: types.CredentialType("abcd"),
@@ -74,8 +74,8 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 					},
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rIssuer3",
 							CredentialType: types.CredentialType("ef01"),
@@ -134,8 +134,8 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
@@ -156,8 +156,8 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
@@ -192,8 +192,8 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
@@ -201,8 +201,8 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 					},
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
@@ -224,8 +224,8 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "",
 							CredentialType: types.CredentialType("1234"),
@@ -247,8 +247,8 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
 						Credential: struct {
-							Issuer         types.Address        `json:"Issuer"`
-							CredentialType types.CredentialType `json:"CredentialType"`
+							Issuer         types.Address
+							CredentialType types.CredentialType
 						}{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("invalid"),

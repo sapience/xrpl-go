@@ -65,8 +65,13 @@ func TestIntegrationPermissionedDomainSetAndDelete_Websocket(t *testing.T) {
 		},
 		AcceptedCredentials: []types.AuthorizeCredential{
 			{
-				Issuer:         wallet.GetAddress(),
-				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				Credential: struct {
+					Issuer         types.Address
+					CredentialType types.CredentialType
+				}{
+					Issuer:         wallet.GetAddress(),
+					CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				},
 			},
 		},
 	}
@@ -110,8 +115,13 @@ func TestIntegrationPermissionedDomainSetAndDelete_RPCClient(t *testing.T) {
 		},
 		AcceptedCredentials: []types.AuthorizeCredential{
 			{
-				Issuer:         wallet.GetAddress(),
-				CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				Credential: struct {
+					Issuer         types.Address
+					CredentialType types.CredentialType
+				}{
+					Issuer:         wallet.GetAddress(),
+					CredentialType: types.CredentialType("6D795F63726564656E7469616C"),
+				},
 			},
 		},
 	}

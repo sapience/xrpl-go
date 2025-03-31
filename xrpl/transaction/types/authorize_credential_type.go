@@ -19,9 +19,9 @@ var (
 // AuthorizeCredential represents an accepted credential for PermissionedDomainSet transactions.
 type AuthorizeCredential struct {
 	Credential struct {
-		Issuer         Address        `json:"Issuer"`
-		CredentialType CredentialType `json:"CredentialType"`
-	} `json:"Credential"`
+		Issuer         Address
+		CredentialType CredentialType
+	}
 }
 
 // Validate checks if the AuthorizeCredential is valid.
