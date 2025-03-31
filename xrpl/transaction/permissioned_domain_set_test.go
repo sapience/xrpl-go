@@ -213,7 +213,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 			},
 			wantValid:   false,
 			wantErr:     true,
-			expectedErr: ErrInvalidCredentialType,
+			expectedErr: types.ErrInvalidCredentialType,
 		},
 	}
 
