@@ -51,7 +51,7 @@ func (p *PermissionedDomainSet) Validate() (bool, error) {
 	}
 
 	// Use the custom credentials validation function.
-	if err := types.ValidateCredentialsList(p.AcceptedCredentials, p.TxType().String(), MaxAcceptedCredentials); err != nil {
+	if err := types.ValidateCredentialsList(p.AcceptedCredentials, MaxAcceptedCredentials); err != nil {
 		return false, err
 	}
 

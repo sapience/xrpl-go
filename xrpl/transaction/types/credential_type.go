@@ -80,7 +80,7 @@ func (a AuthorizeCredential) Flatten() map[string]interface{} {
 // - The length is between 1 and maxCredentials.
 // - Each credential is valid.
 // - There are no duplicate credentials.
-func ValidateCredentialsList(credentials []AuthorizeCredential, transactionType string, maxCredentials int) error {
+func ValidateCredentialsList(credentials []AuthorizeCredential, maxCredentials int) error {
 
 	if len(credentials) == 0 {
 		return ErrEmptyCredentials
