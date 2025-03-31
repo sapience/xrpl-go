@@ -25,23 +25,23 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 			name: "pass - without DomainID",
 			tx: &PermissionedDomainSet{
 				BaseTx: BaseTx{
-					Account:         "rTEST",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rIssuer1",
+						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 						CredentialType: types.CredentialType("1234"),
 					},
 				},
 			},
 			expected: `{
-				"Account": "rTEST",
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				"TransactionType": "PermissionedDomainSet",
 				"AcceptedCredentials": [
 					{
 						"Credential": {
-							"Issuer": "rIssuer1",
+							"Issuer": "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							"CredentialType": "1234"
 						}
 					}
@@ -52,7 +52,7 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 			name: "pass - with DomainID and multiple credentials",
 			tx: &PermissionedDomainSet{
 				BaseTx: BaseTx{
-					Account:         "rTEST",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
 				DomainID: "domain123",
@@ -68,7 +68,7 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 				},
 			},
 			expected: `{
-				"Account": "rTEST",
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 				"TransactionType": "PermissionedDomainSet",
 				"DomainID": "domain123",
 				"AcceptedCredentials": [
@@ -112,12 +112,12 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 			name: "pass - valid transaction",
 			tx: &PermissionedDomainSet{
 				BaseTx: BaseTx{
-					Account:         "rTEST",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rIssuer1",
+						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 						CredentialType: types.CredentialType("1234"),
 					},
 				},
@@ -134,7 +134,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rIssuer1",
+						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 						CredentialType: types.CredentialType("1234"),
 					},
 				},
@@ -147,7 +147,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 			name: "fail - empty credentials list",
 			tx: &PermissionedDomainSet{
 				BaseTx: BaseTx{
-					Account:         "rTEST",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{},
@@ -160,16 +160,16 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 			name: "fail - duplicate credentials",
 			tx: &PermissionedDomainSet{
 				BaseTx: BaseTx{
-					Account:         "rTEST",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rIssuer1",
+						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 						CredentialType: types.CredentialType("1234"),
 					},
 					{
-						Issuer:         "rIssuer1",
+						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 						CredentialType: types.CredentialType("1234"),
 					},
 				},
@@ -182,7 +182,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 			name: "fail - invalid credential (empty issuer)",
 			tx: &PermissionedDomainSet{
 				BaseTx: BaseTx{
-					Account:         "rTEST",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
@@ -200,12 +200,12 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 			name: "fail - invalid credential type",
 			tx: &PermissionedDomainSet{
 				BaseTx: BaseTx{
-					Account:         "rTEST",
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer: "rIssuer1",
+						Issuer: "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 						// Assuming "zzzz" is not a valid hex string.
 						CredentialType: types.CredentialType("zzzz"),
 					},

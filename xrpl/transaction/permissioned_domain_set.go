@@ -1,7 +1,16 @@
 package transaction
 
 import (
+	"errors"
+
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
+
+var (
+	// Credential-specific errors
+	ErrEmptyCredentials       = errors.New("credentials list cannot be empty")
+	ErrInvalidCredentialCount = errors.New("accepted credentials list must contain at least one and no more than the maximum allowed number of items")
+	ErrDuplicateCredentials   = errors.New("credentials list cannot contain duplicate elements")
 )
 
 // Maximum number of accepted credentials.
@@ -24,7 +33,7 @@ func (p *PermissionedDomainSet) TxType() TxType {
 }
 
 // Flatten returns a flattened map representation of the PermissionedDomainSet transaction.
-func (p *PermissionedDomainSet) Flatten() map[string]interface{} {
+func (p *PermissionedDomainSet) Flatten() FlatTransaction {
 	flattened := p.BaseTx.Flatten()
 	flattened["TransactionType"] = p.TxType().String()
 
@@ -35,8 +44,17 @@ func (p *PermissionedDomainSet) Flatten() map[string]interface{} {
 	if len(p.AcceptedCredentials) > 0 {
 		credentials := make([]interface{}, len(p.AcceptedCredentials))
 		for i, cred := range p.AcceptedCredentials {
-			entry := make(map[string]interface{})
-			entry["Credential"] = cred.Flatten()
+			// Inline flattening for each credential.
+			credMap := make(map[string]interface{})
+			if cred.Issuer != "" {
+				credMap["Issuer"] = cred.Issuer
+			}
+			if cred.CredentialType != "" {
+				credMap["CredentialType"] = cred.CredentialType.String()
+			}
+			entry := map[string]interface{}{
+				"Credential": credMap,
+			}
 			credentials[i] = entry
 		}
 		flattened["AcceptedCredentials"] = credentials
@@ -50,9 +68,32 @@ func (p *PermissionedDomainSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	// Use the custom credentials validation function.
-	if err := types.ValidateCredentialsList(p.AcceptedCredentials, p.TxType().String(), MaxAcceptedCredentials); err != nil {
-		return false, err
+	// Check that the credentials list is not empty.
+	if len(p.AcceptedCredentials) == 0 {
+		return false, ErrEmptyCredentials
+	}
+	// Check that the number of credentials does not exceed the maximum allowed.
+	if len(p.AcceptedCredentials) > MaxAcceptedCredentials {
+		return false, ErrInvalidCredentialCount
+	}
+
+	// Validate each credential and check for duplicates.
+	seen := make(map[string]bool)
+	for _, cred := range p.AcceptedCredentials {
+		// Create a unique key based on Issuer and CredentialType.
+		key := cred.Issuer + cred.CredentialType.String()
+		if seen[key] {
+			return false, ErrDuplicateCredentials
+		}
+		seen[key] = true
+
+		// Inline validation for each credential.
+		if cred.Issuer == "" {
+			return false, ErrInvalidIssuer
+		}
+		if !cred.CredentialType.IsValid() {
+			return false, ErrInvalidCredentialType
+		}
 	}
 
 	return true, nil
