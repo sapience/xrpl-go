@@ -365,46 +365,45 @@ func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*
 	return txResponse, nil
 }
 
-
 // getSignedTx returns a fully signed transaction blob. It checks whether the
 // transaction already contains a signature or public key and, if not, optionally
 // autofills missing fields and signs the transaction using the provided wallet.
 // It verifies the resulting blob includes a signature, returning an error if absent.
 func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
-		_, hasSig := tx["TxSignature"].(string)
-		_, hasPubKey := tx["SigningPubKey"].(string)
-		if hasSig ||  hasPubKey {
+	_, hasSig := tx["TxSignature"].(string)
+	_, hasPubKey := tx["SigningPubKey"].(string)
+	if hasSig || hasPubKey {
 
-			blob, err := binarycodec.Encode(tx)
-			if err != nil {
-				return "", err
-			}
-			return blob, nil
-		}
-
-		if autofill {
-			if err := client.Autofill(&tx); err != nil {
-				return "", err
-			}
-		}
-
-		if wallet == nil {
-			return "", fmt.Errorf("wallet must be provided when submitting an unsigned transaction")
-		}
-
-		txBlob, _, err := wallet.Sign(tx)
+		blob, err := binarycodec.Encode(tx)
 		if err != nil {
 			return "", err
 		}
+		return blob, nil
+	}
 
-		decoded, err := binarycodec.Decode(txBlob)
-		if err != nil {
+	if autofill {
+		if err := client.Autofill(&tx); err != nil {
 			return "", err
 		}
-		_, hasSig = decoded["TxSignature"].(string)
-		_, hasPubKey = decoded["SigningPubKey"].(string)
-		if !hasSig  && !hasPubKey {
-			return "", ErrMissingTxSignatureOrSigningPubKey
-		}
-		return txBlob, nil
+	}
+
+	if wallet == nil {
+		return "", fmt.Errorf("wallet must be provided when submitting an unsigned transaction")
+	}
+
+	txBlob, _, err := wallet.Sign(tx)
+	if err != nil {
+		return "", err
+	}
+
+	decoded, err := binarycodec.Decode(txBlob)
+	if err != nil {
+		return "", err
+	}
+	_, hasSig = decoded["TxSignature"].(string)
+	_, hasPubKey = decoded["SigningPubKey"].(string)
+	if !hasSig && !hasPubKey {
+		return "", ErrMissingTxSignatureOrSigningPubKey
+	}
+	return txBlob, nil
 }

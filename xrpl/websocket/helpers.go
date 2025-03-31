@@ -13,44 +13,38 @@ import (
 // autofills missing fields and signs the transaction using the provided wallet.
 // It verifies the resulting blob includes a signature, returning an error if absent.
 func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
-		// Check if the transaction is already signed.
-		_, hasSig := tx["TxSignature"].(string)
-		// _, hasTxnSig := tx["TxnSignature"].(string)
-		_, hasPubKey := tx["SigningPubKey"].(string)
-		if hasSig ||  hasPubKey {
-			// Encode and return.
-			blob, err := binarycodec.Encode(tx)
-			if err != nil {
-				return "", err
-			}
-			return blob, nil
-		}
+	_, hasSig := tx["TxSignature"].(string)
+	_, hasPubKey := tx["SigningPubKey"].(string)
+	if hasSig || hasPubKey {
 
-		// Autofill if required.
-		if autofill {
-			if err := client.Autofill(&tx); err != nil {
-				return "", err
-			}
-		}
-
-		// Ensure a wallet is provided for signing.
-		if wallet == nil {
-			return "", fmt.Errorf("wallet must be provided when submitting an unsigned transaction")
-		}
-
-		txBlob, _, err := wallet.Sign(tx)
+		blob, err := binarycodec.Encode(tx)
 		if err != nil {
 			return "", err
 		}
-
-		decoded, err := binarycodec.Decode(txBlob)
-		if err != nil {
+		return blob, nil
+	}
+	if autofill {
+		if err := client.Autofill(&tx); err != nil {
 			return "", err
 		}
-		_, hasSig = decoded["TxSignature"].(string)
-		_, hasPubKey = decoded["SigningPubKey"].(string)
-		if !hasSig  && !hasPubKey {
-			return "", ErrMissingTxSignatureOrSigningPubKey
-		}
-		return txBlob, nil
+	}
+	if wallet == nil {
+		return "", fmt.Errorf("wallet must be provided when submitting an unsigned transaction")
+	}
+
+	txBlob, _, err := wallet.Sign(tx)
+	if err != nil {
+		return "", err
+	}
+
+	decoded, err := binarycodec.Decode(txBlob)
+	if err != nil {
+		return "", err
+	}
+	_, hasSig = decoded["TxSignature"].(string)
+	_, hasPubKey = decoded["SigningPubKey"].(string)
+	if !hasSig && !hasPubKey {
+		return "", ErrMissingTxSignatureOrSigningPubKey
+	}
+	return txBlob, nil
 }

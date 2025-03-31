@@ -4,7 +4,7 @@ import "errors"
 
 // Static errors
 var (
-	ErrMissingTxSignatureOrSigningPubKey     = errors.New("transaction must have a TxSignature or SigningPubKey set")
+	ErrMissingTxSignatureOrSigningPubKey = errors.New("transaction must have a TxSignature or SigningPubKey set")
 )
 
 // Dynamic errors
