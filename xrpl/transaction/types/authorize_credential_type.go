@@ -17,11 +17,13 @@ var (
 )
 
 // AuthorizeCredential represents an accepted credential for PermissionedDomainSet transactions.
+type Credential struct {
+	Issuer         Address
+	CredentialType CredentialType
+}
+
 type AuthorizeCredential struct {
-	Credential struct {
-		Issuer         Address
-		CredentialType CredentialType
-	}
+	Credential Credential
 }
 
 // Validate checks if the AuthorizeCredential is valid.

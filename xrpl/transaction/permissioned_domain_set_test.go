@@ -64,19 +64,13 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 				DomainID: "domain123",
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rIssuer2",
 							CredentialType: types.CredentialType("abcd"),
 						},
 					},
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rIssuer3",
 							CredentialType: types.CredentialType("ef01"),
 						},
@@ -133,10 +127,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
 						},
@@ -155,10 +146,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
 						},
@@ -191,19 +179,13 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
 						},
 					},
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
 						},
@@ -223,10 +205,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "",
 							CredentialType: types.CredentialType("1234"),
 						},
@@ -246,10 +225,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("invalid"),
 						},
