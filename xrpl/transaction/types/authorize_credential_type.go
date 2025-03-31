@@ -38,13 +38,13 @@ func (a AuthorizeCredential) Validate() error {
 }
 
 // Flatten returns a flattened map representation of the AuthorizeCredential.
-func (ac AuthorizeCredential) Flatten() map[string]interface{} {
+func (a AuthorizeCredential) Flatten() map[string]interface{} {
 	m := make(map[string]interface{})
-	if ac.Credential.Issuer.String() != "" {
-		m["Issuer"] = ac.Credential.Issuer.String()
+	if a.Credential.Issuer.String() != "" {
+		m["Issuer"] = a.Credential.Issuer.String()
 	}
-	if ac.Credential.CredentialType != "" {
-		m["CredentialType"] = ac.Credential.CredentialType.String()
+	if a.Credential.CredentialType != "" {
+		m["CredentialType"] = a.Credential.CredentialType.String()
 	}
 	return m
 }
