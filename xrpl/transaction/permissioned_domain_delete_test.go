@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPermissionedDomainDelete_TxType(t *testing.T) {
 	tx := &PermissionedDomainDelete{}
-	assert.Equal(t, PermissionedDomainDeleteTx, tx.TxType())
+	require.Equal(t, PermissionedDomainDeleteTx, tx.TxType())
 }
 
 func TestPermissionedDomainDelete_Flatten(t *testing.T) {
@@ -85,10 +85,10 @@ func TestPermissionedDomainDelete_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.tx.Validate()
 			if tt.expectedErr != nil && err != nil {
-				assert.Equal(t, tt.expectedErr.Error(), err.Error())
+				require.Equal(t, tt.expectedErr.Error(), err.Error())
 			}
-			assert.Equal(t, tt.wantValid, valid)
-			assert.Equal(t, tt.wantErr, err != nil)
+			require.Equal(t, tt.wantValid, valid)
+			require.Equal(t, tt.wantErr, err != nil)
 		})
 	}
 }

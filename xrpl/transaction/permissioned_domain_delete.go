@@ -38,7 +38,7 @@ func (p *PermissionedDomainDelete) Validate() (bool, error) {
 	}
 	// Ensure DomainID is provided.
 	if p.DomainID == "" {
-		return false, errors.New("missing required field: DomainID")
+		return false, ErrMissingDomainID
 	}
 	return true, nil
 }
