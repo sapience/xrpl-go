@@ -25,7 +25,6 @@ const (
 
 type CredentialType string
 
-// String returns the string representation of a CredentialType.
 func (c *CredentialType) String() string {
 	return string(*c)
 }
@@ -34,47 +33,45 @@ func (c *CredentialType) String() string {
 // - Not empty
 // - Valid hex string
 // - Length between MinCredentialTypeLength and MaxCredentialTypeLength
-func (c *CredentialType) IsValid() bool {
-	if c.String() == "" {
+func (c CredentialType) IsValid() bool {
+	hexStr := c.String()
+	if hexStr == "" {
 		return false
 	}
-
-	credTypeStr := c.String()
-	if !typecheck.IsHex(credTypeStr) {
+	if !typecheck.IsHex(hexStr) {
 		return false
 	}
-
-	length := len(credTypeStr)
+	length := len(hexStr)
 	return length >= MinCredentialTypeLength && length <= MaxCredentialTypeLength
 }
 
 // AuthorizeCredential represents an accepted credential for PermissionedDomainSet transactions.
 type AuthorizeCredential struct {
-	Issuer         string         `json:"Issuer"`
+	Issuer         Address
 	CredentialType CredentialType `json:"CredentialType"`
 }
 
 // Validate checks if the AuthorizeCredential is valid.
-func (ac *AuthorizeCredential) Validate() error {
-	if ac.Issuer == "" {
+func (a AuthorizeCredential) Validate() error {
+	if a.Issuer.String() == "" {
 		return ErrInvalidCredentialIssuer
 	}
-	if !ac.CredentialType.IsValid() {
+	if !a.CredentialType.IsValid() {
 		return ErrInvalidCredentialType
 	}
 	return nil
 }
 
 // Flatten returns a flattened map representation of the AuthorizeCredential.
-func (ac *AuthorizeCredential) Flatten() interface{} {
-	json := make(map[string]interface{})
-	if ac.Issuer != "" {
-		json["Issuer"] = ac.Issuer
+func (a AuthorizeCredential) Flatten() map[string]interface{} {
+	m := make(map[string]interface{})
+	if a.Issuer.String() != "" {
+		m["Issuer"] = a.Issuer.String()
 	}
-	if ac.CredentialType != "" {
-		json["CredentialType"] = ac.CredentialType.String()
+	if a.CredentialType != "" {
+		m["CredentialType"] = a.CredentialType.String()
 	}
-	return json
+	return m
 }
 
 // validateCredentialsList validates a list of AuthorizeCredential objects.
@@ -95,7 +92,7 @@ func ValidateCredentialsList(credentials []AuthorizeCredential, transactionType 
 
 	seen := make(map[string]bool)
 	for _, cred := range credentials {
-		key := cred.Issuer + cred.CredentialType.String()
+		key := cred.Issuer.String() + cred.CredentialType.String()
 		if seen[key] {
 			return ErrDuplicateCredentials
 		}

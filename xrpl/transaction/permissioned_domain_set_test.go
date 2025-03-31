@@ -194,7 +194,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 			},
 			wantValid:   false,
 			wantErr:     true,
-			expectedErr: ErrInvalidIssuer,
+			expectedErr: types.ErrInvalidCredentialIssuer,
 		},
 		{
 			name: "fail - invalid credential type",

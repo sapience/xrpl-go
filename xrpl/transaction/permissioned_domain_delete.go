@@ -22,7 +22,7 @@ func (p *PermissionedDomainDelete) TxType() TxType {
 }
 
 // Flatten returns a flattened map representation of the PermissionedDomainDelete transaction.
-func (p *PermissionedDomainDelete) Flatten() map[string]interface{} {
+func (p *PermissionedDomainDelete) Flatten() FlatTransaction {
 	flattened := p.BaseTx.Flatten()
 	flattened["TransactionType"] = p.TxType().String()
 	flattened["DomainID"] = p.DomainID

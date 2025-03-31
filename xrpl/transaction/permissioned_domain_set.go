@@ -12,7 +12,7 @@ type PermissionedDomainSet struct {
 	BaseTx
 	// DomainID is the ledger entry ID of an existing permissioned domain to modify.
 	// When omitted, it creates a new permissioned domain.
-	DomainID string `json:"DomainID,omitempty"`
+	DomainID string `json:",omitempty"`
 	// AcceptedCredentials is a list of credentials that grant access to the domain.
 	// An empty array indicates deletion of the field.
 	AcceptedCredentials []types.AuthorizeCredential
@@ -24,7 +24,7 @@ func (p *PermissionedDomainSet) TxType() TxType {
 }
 
 // Flatten returns a flattened map representation of the PermissionedDomainSet transaction.
-func (p *PermissionedDomainSet) Flatten() map[string]interface{} {
+func (p *PermissionedDomainSet) Flatten() FlatTransaction {
 	flattened := p.BaseTx.Flatten()
 	flattened["TransactionType"] = p.TxType().String()
 
