@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added tec/tef/tel/tem/ter TxResult codes.
 - Replaced string declaration with constant/object references.
+- Added support for all the Permissioned Domain transaction types:
+  - PermissionedDomainSet
+  - PermissionedDomainDelete
 
 ## Fixed
 
