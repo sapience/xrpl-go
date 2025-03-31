@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [Unreleased]
 
+### Changed
+
+- Split the Submit & SubmitAndWait into two functions, SubmitTx-AndWait and SubmitTxBlob-AndWait.
+- SubmitTx-AndWait handles SubmitableTransaction input. SubmitTxBlob-AndWait remains the same as old Submit-AndWait function.
+
 ### Added
 
 #### xrpl
