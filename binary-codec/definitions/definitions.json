@@ -54,6 +54,7 @@
     "Offer": 111,
     "Oracle": 128,
     "PayChannel": 120,
+    "PermissionedDomain": 130,
     "RippleState": 114,
     "SignerList": 83,
     "Ticket": 84,
@@ -1438,6 +1439,16 @@
         "isVLEncoded": false,
         "isSerialized": true,
         "isSigningField": true,
+        "type": "Hash256"
+      }
+    ],
+    [
+      "DomainID",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 34,
         "type": "Hash256"
       }
     ],
@@ -3046,6 +3057,7 @@
     "PaymentChannelClaim": 15,
     "PaymentChannelCreate": 13,
     "PaymentChannelFund": 14,
+    "PermissionedDomainSet": 62,
     "SetFee": 101,
     "SetHook": 22,
     "SetRegularKey": 5,
