@@ -4,9 +4,6 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-// Maximum number of accepted credentials.
-const MaxAcceptedCredentials int = 10
-
 // PermissionedDomainSet represents a PermissionedDomainSet transaction.
 type PermissionedDomainSet struct {
 	BaseTx
@@ -35,8 +32,9 @@ func (p *PermissionedDomainSet) Flatten() FlatTransaction {
 	if len(p.AcceptedCredentials) > 0 {
 		credentials := make([]interface{}, len(p.AcceptedCredentials))
 		for i, cred := range p.AcceptedCredentials {
-			entry := make(map[string]interface{})
-			entry["Credential"] = cred.Flatten()
+			entry := map[string]interface{}{
+				"Credential": cred.Flatten(),
+			}
 			credentials[i] = entry
 		}
 		flattened["AcceptedCredentials"] = credentials
@@ -50,8 +48,8 @@ func (p *PermissionedDomainSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	// Use the custom credentials validation function.
-	if err := types.ValidateCredentialsList(p.AcceptedCredentials, MaxAcceptedCredentials); err != nil {
+	// Convert the slice to an AuthorizeCredentialList and call its Validate method.
+	if err := types.AuthorizeCredentialList(p.AcceptedCredentials).Validate(); err != nil {
 		return false, err
 	}
 

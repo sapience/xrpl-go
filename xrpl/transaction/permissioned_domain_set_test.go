@@ -5,13 +5,13 @@ import (
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestPermissionedDomainSet_TxType ensures the transaction type is set correctly.
 func TestPermissionedDomainSet_TxType(t *testing.T) {
 	tx := &PermissionedDomainSet{}
-	assert.Equal(t, PermissionedDomainSetTx, tx.TxType())
+	require.Equal(t, PermissionedDomainSetTx, tx.TxType())
 }
 
 // TestPermissionedDomainSet_Flatten verifies the flattened output of the transaction.
@@ -30,8 +30,14 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
-						CredentialType: types.CredentialType("1234"),
+						// Using a sample issuer and credential type.
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
+							CredentialType: types.CredentialType("1234"),
+						},
 					},
 				},
 			},
@@ -58,12 +64,22 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 				DomainID: "domain123",
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rIssuer2",
-						CredentialType: types.CredentialType("abcd"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rIssuer2",
+							CredentialType: types.CredentialType("abcd"),
+						},
 					},
 					{
-						Issuer:         "rIssuer3",
-						CredentialType: types.CredentialType("ef01"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rIssuer3",
+							CredentialType: types.CredentialType("ef01"),
+						},
 					},
 				},
 			},
@@ -117,8 +133,13 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
-						CredentialType: types.CredentialType("1234"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
+							CredentialType: types.CredentialType("1234"),
+						},
 					},
 				},
 			},
@@ -134,8 +155,13 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
-						CredentialType: types.CredentialType("1234"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
+							CredentialType: types.CredentialType("1234"),
+						},
 					},
 				},
 			},
@@ -165,12 +191,22 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
-						CredentialType: types.CredentialType("1234"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
+							CredentialType: types.CredentialType("1234"),
+						},
 					},
 					{
-						Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
-						CredentialType: types.CredentialType("1234"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
+							CredentialType: types.CredentialType("1234"),
+						},
 					},
 				},
 			},
@@ -187,8 +223,13 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer:         "",
-						CredentialType: types.CredentialType("1234"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "",
+							CredentialType: types.CredentialType("1234"),
+						},
 					},
 				},
 			},
@@ -205,9 +246,13 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 				},
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
-						Issuer: "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
-						// Assuming "zzzz" is not a valid hex string.
-						CredentialType: types.CredentialType("zzzz"),
+						Credential: struct {
+							Issuer         types.Address        `json:"Issuer"`
+							CredentialType types.CredentialType `json:"CredentialType"`
+						}{
+							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
+							CredentialType: types.CredentialType("invalid"),
+						},
 					},
 				},
 			},
@@ -220,12 +265,12 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			valid, err := tt.tx.Validate()
-			assert.Equal(t, tt.wantValid, valid)
+			require.Equal(t, tt.wantValid, valid)
 			if err != nil && tt.expectedErr != nil {
 				// Compare error messages for equality.
-				assert.Equal(t, tt.expectedErr.Error(), err.Error())
+				require.Equal(t, tt.expectedErr.Error(), err.Error())
 			}
-			assert.Equal(t, tt.wantErr, err != nil)
+			require.Equal(t, tt.wantErr, err != nil)
 		})
 	}
 }
