@@ -3057,6 +3057,7 @@
     "PaymentChannelClaim": 15,
     "PaymentChannelCreate": 13,
     "PaymentChannelFund": 14,
+    "PermissionedDomainDelete": 63,
     "PermissionedDomainSet": 62,
     "SetFee": 101,
     "SetHook": 22,
