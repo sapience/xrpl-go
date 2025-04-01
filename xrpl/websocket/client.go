@@ -26,7 +26,7 @@ import (
 	wstypes "github.com/Peersyst/xrpl-go/xrpl/websocket/types"
 	ws "github.com/gorilla/websocket"
 
-	xrplCommon "github.com/Peersyst/xrpl-go/xrpl/common"
+	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 const (
@@ -90,7 +90,7 @@ func (c *Client) IsConnected() bool {
 	return c.conn.IsConnected()
 }
 
-func (c *Client) FaucetProvider() xrplCommon.FaucetProvider {
+func (c *Client) FaucetProvider() commonconstants.FaucetProvider {
 	return c.cfg.faucetProvider
 }
 
@@ -240,11 +240,10 @@ func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.SubmitRes
 	})
 }
 
-// SubmitTx signs the transaction (if needed) by using getSignedTx,
-// and then submits it to the server via a submission request.
-// It uses the provided submit options to decide whether to autofill missing
-// fields and whether to enforce a failHard mode during submission.
-func (c *Client) SubmitTx(tx transaction.FlatTransaction, opts *xrplCommon.SubmitOptions) (*requests.SubmitResponse, error) {
+// SubmitTx signs the transaction (if necessary) and submits it to the server
+// via a submission request. It applies the provided submit options to decide whether
+// to autofill missing fields and enforce failHard mode during submission.
+func (c *Client) SubmitTx(tx transaction.FlatTransaction, opts *wstypes.SubmitOptions) (*requests.SubmitResponse, error) {
 	txBlob, err := getSignedTx(c, tx, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
@@ -292,8 +291,12 @@ func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.Tx
 		return nil, err
 	}
 
-	lastLedgerSequence := tx["LastLedgerSequence"].(uint32)
+	lastLedgerSequence, ok := tx["LastLedgerSequence"].(uint32)
+	if !ok {
 
+		return nil, ErrMissingLastLedgerSequenceInTransaction
+
+	}
 	txResponse, err := c.SubmitTxBlob(txBlob, failHard)
 	if err != nil {
 		return nil, err
@@ -311,43 +314,20 @@ func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.Tx
 	return c.waitForTransaction(txHash, lastLedgerSequence)
 }
 
-// SubmitTxAndWait prepares a transaction by ensuring it is fully signed (using
-// getSignedTx), submits it to the server, and waits for ledger confirmation.
+// SubmitTxAndWait prepares a transaction by ensuring it is fully signed,
+// submits it to the server, and waits for ledger confirmation.
 // It validates that the transaction's EngineResult is successful before returning
 // the transaction response.
-func (c *Client) SubmitTxAndWait(tx transaction.FlatTransaction, opts *xrplCommon.SubmitOptions) (*requests.TxResponse, error) {
+func (c *Client) SubmitTxAndWait(tx transaction.FlatTransaction, opts *wstypes.SubmitOptions) (*requests.TxResponse, error) {
+	// Get the signed transaction blob.
 	txBlob, err := getSignedTx(c, tx, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
 	}
 
-	decodedTx, err := binarycodec.Decode(txBlob)
-	if err != nil {
-		return nil, err
-	}
-
-	lastLedgerSequence, ok := decodedTx["LastLedgerSequence"].(uint32)
-	if !ok {
-		return nil, errors.New("missing LastLedgerSequence in transaction")
-	}
-
-	txResponse, err := c.SubmitTx(tx, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	if txResponse.EngineResult != "tesSUCCESS" {
-		return nil, &ClientError{
-			ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult,
-		}
-	}
-
-	txHash, err := hash.SignTxBlob(txBlob)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.waitForTransaction(txHash, lastLedgerSequence)
+	// Delegate to SubmitTxBlobAndWait to handle submission, engine result check,
+	// ledger sequence validation, and waiting for confirmation.
+	return c.SubmitTxBlobAndWait(txBlob, opts.FailHard)
 }
 
 func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*requests.TxResponse, error) {
@@ -581,7 +561,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Uint32() + xrplCommon.LedgerOffset
+	(*tx)["LastLedgerSequence"] = index.Uint32() + commonconstants.LedgerOffset
 	return err
 }
 
@@ -748,4 +728,39 @@ func (c *Client) readMessages() {
 			retryCount = 0
 		}
 	}
+}
+
+// getSignedTx ensures the transaction is fully signed and returns the transaction blob.
+// If the transaction is already signed, it encodes and returns it. Otherwise, it autofills (if enabled)
+// and signs the transaction using the provided wallet.
+func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
+	// Check if the transaction is already signed: both fields must be non-empty.
+	sig, sigOk := tx["TxSignature"].(string)
+	pubKey, pubKeyOk := tx["SigningPubKey"].(string)
+	if sigOk && sig != "" && pubKeyOk && pubKey != "" {
+		blob, err := binarycodec.Encode(tx)
+		if err != nil {
+			return "", err
+		}
+		return blob, nil
+	}
+
+	// If not signed, ensure a wallet is provided.
+	if wallet == nil {
+		return "", ErrMissingWallet
+	}
+
+	// Optionally autofill the transaction.
+	if autofill {
+		if err := client.Autofill(&tx); err != nil {
+			return "", err
+		}
+	}
+
+	// Sign the transaction.
+	txBlob, _, err := wallet.Sign(tx)
+	if err != nil {
+		return "", err
+	}
+	return txBlob, nil
 }
