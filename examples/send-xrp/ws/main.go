@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/currency"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
+	wstypes "github.com/Peersyst/xrpl-go/xrpl/websocket/types"
 )
 
 const (
@@ -104,7 +104,7 @@ func main() {
 
 	fmt.Println("⏳ Using SubmitTxAndWait with wallet, expecting success ...")
 	flattenedTx2 := p.Flatten()
-	resp, err := client.SubmitTxAndWait(flattenedTx2, &common.SubmitOptions{
+	resp, err := client.SubmitTxAndWait(flattenedTx2, &wstypes.SubmitOptions{
 		Autofill: true,
 		Wallet:   &w,
 	})
@@ -119,9 +119,8 @@ func main() {
 
 	fmt.Println("⏳ Using SubmitTxAndWait without wallet, expecting failure ...")
 	flattenedTx3 := p.Flatten()
-	resp1, err := client.SubmitTxAndWait(flattenedTx3, &common.SubmitOptions{
+	resp1, err := client.SubmitTxAndWait(flattenedTx3, &wstypes.SubmitOptions{
 		Autofill: true,
-		Wallet:   nil,
 	})
 	if err != nil {
 		fmt.Printf("❌ Expected error triggered: %v\n", err)

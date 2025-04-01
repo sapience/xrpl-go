@@ -19,7 +19,7 @@ type TransactionClient interface {
 	SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.TxResponse, error)
 }
 
-// SubmitAndWait submits a transaction and waits for it to be included in a validated ledger
+// SubmitTxBlobAndWait submits a transaction and waits for it to be included in a validated ledger
 func SubmitTxBlobAndWait(client TransactionClient, txn SubmittableTransaction, wallet wallet.Wallet) {
 	fmt.Println()
 	fmt.Printf("⏳ Submitting %s transaction...\n", txn.TxType())
