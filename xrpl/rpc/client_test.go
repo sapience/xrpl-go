@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	xrplCommon "github.com/Peersyst/xrpl-go/xrpl/common"
 	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc/testutil"
+	rpctypes "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -362,7 +362,7 @@ func TestClient_SubmitTxBlob(t *testing.T) {
 			name         string
 			mockResponse string
 			tx           map[string]interface{} // transaction.FlatTransaction is a map[string]interface{}
-			opts         *xrplCommon.SubmitOptions
+			opts         *rpctypes.SubmitOptions
 			expectError  error
 			expectResult *requests.SubmitResponse
 		}{
@@ -379,9 +379,8 @@ func TestClient_SubmitTxBlob(t *testing.T) {
 					"type": "response"
 				}`,
 				tx: txInput,
-				opts: &xrplCommon.SubmitOptions{
+				opts: &rpctypes.SubmitOptions{
 					Autofill: false,
-					Wallet:   nil,
 					FailHard: false,
 				},
 				expectError: nil,

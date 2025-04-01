@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/currency"
 	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -21,10 +20,9 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 
-	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	jsoniter "github.com/json-iterator/go"
 
-	xrplCommons "github.com/Peersyst/xrpl-go/xrpl/common"
+	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
 
 // CreateRequest formats the parameters and method name ready for sending request
@@ -242,7 +240,7 @@ func (c *Client) setLastLedgerSequence(tx *transaction.FlatTransaction) error {
 		return err
 	}
 
-	(*tx)["LastLedgerSequence"] = index.Uint32() + xrplCommons.LedgerOffset
+	(*tx)["LastLedgerSequence"] = index.Uint32() + commonconstants.LedgerOffset
 	return err
 }
 
@@ -363,47 +361,4 @@ func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*
 	}
 
 	return txResponse, nil
-}
-
-// getSignedTx returns a fully signed transaction blob. It checks whether the
-// transaction already contains a signature or public key and, if not, optionally
-// autofills missing fields and signs the transaction using the provided wallet.
-// It verifies the resulting blob includes a signature, returning an error if absent.
-func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
-	_, hasSig := tx["TxSignature"].(string)
-	_, hasPubKey := tx["SigningPubKey"].(string)
-	if hasSig || hasPubKey {
-
-		blob, err := binarycodec.Encode(tx)
-		if err != nil {
-			return "", err
-		}
-		return blob, nil
-	}
-
-	if autofill {
-		if err := client.Autofill(&tx); err != nil {
-			return "", err
-		}
-	}
-
-	if wallet == nil {
-		return "", fmt.Errorf("wallet must be provided when submitting an unsigned transaction")
-	}
-
-	txBlob, _, err := wallet.Sign(tx)
-	if err != nil {
-		return "", err
-	}
-
-	decoded, err := binarycodec.Decode(txBlob)
-	if err != nil {
-		return "", err
-	}
-	_, hasSig = decoded["TxSignature"].(string)
-	_, hasPubKey = decoded["SigningPubKey"].(string)
-	if !hasSig && !hasPubKey {
-		return "", ErrMissingTxSignatureOrSigningPubKey
-	}
-	return txBlob, nil
 }
