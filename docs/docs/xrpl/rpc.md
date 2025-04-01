@@ -95,9 +95,9 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error
 func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners uint64) error
 ```
 
-### SubmitAndWait
+### SubmitTxBlobAndWait
 
-The `SubmitAndWait` method is used to submit a transaction to the XRPL network and wait for it to be included in a ledger. It returns a `TxResponse` struct containing the transaction result for the blob submitted.
+The `SubmitTxBlobAndWait` method is used to submit a transaction to the XRPL network and wait for it to be included in a ledger. It returns a `TxResponse` struct containing the transaction result for the blob submitted.
 
 ```go
 func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.TxResponse, error)
