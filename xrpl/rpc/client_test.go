@@ -367,28 +367,24 @@ func TestClient_SubmitTxBlob(t *testing.T) {
 			expectResult *requests.SubmitResponse
 		}{
 			{
-				name: "success",
+				name: "fail - missing wallet",
 				mockResponse: `{
-					"result": {
-						"engine_result": "tesSUCCESS",
-						"engine_result_code": 0,
-						"engine_result_message": "The transaction was applied.",
-						"tx_blob": "dummyBlob"
-					},
-					"status": "success",
-					"type": "response"
-				}`,
+			"result": {
+				"engine_result": "tesSUCCESS",
+				"engine_result_code": 0,
+				"engine_result_message": "The transaction was applied.",
+				"tx_blob": "dummyBlob"
+			},
+			"status": "success",
+			"type": "response"
+		}`,
 				tx: txInput,
 				opts: &rpctypes.SubmitOptions{
 					Autofill: false,
 					FailHard: false,
 				},
-				expectError: nil,
-				expectResult: &requests.SubmitResponse{
-					EngineResult:        "tesSUCCESS",
-					EngineResultCode:    0,
-					EngineResultMessage: "The transaction was applied.",
-				},
+				expectError:  ErrMissingWallet,
+				expectResult: nil,
 			},
 		}
 
