@@ -198,7 +198,7 @@ func TestDepositPreauth_Validate(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "fail - invalid AuthorizeCredentials	",
+			name: "fail - invalid AuthorizeCredentials",
 			tx: &DepositPreauth{
 				BaseTx: BaseTx{
 					Account:         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",

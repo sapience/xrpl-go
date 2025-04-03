@@ -18,7 +18,7 @@ func TestCredentialIDs_IsValid(t *testing.T) {
 			expected:      false,
 		},
 		{
-			name:          "pass -valid",
+			name:          "pass - valid",
 			credentialIDs: CredentialIDs{"0000000000000000000000000000000000000000000000000000000000000000"},
 			expected:      true,
 		},
@@ -55,7 +55,7 @@ func TestCredentialIDs_Flatten(t *testing.T) {
 		expected      []string
 	}{
 		{
-			name:          "pass -empty",
+			name:          "pass - empty",
 			credentialIDs: CredentialIDs{},
 			expected:      []string{},
 		},
