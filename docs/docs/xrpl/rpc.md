@@ -7,7 +7,7 @@ The `rpc` package provides the RPC client for interacting with the XRPL network 
 - Send requests to query the ledger state.
 - Submit transactions to the network.
 - Receive responses and handle errors.
-- Manage the connections configuration. 
+- Manage the connections configuration.
 
 ## Client
 
@@ -82,7 +82,7 @@ func (c *Client) Request(reqParams XRPLRequest) (XRPLResponse, error)
 The `Submit` method is used to submit a transaction to the XRPL network. It returns a `TxResponse` struct containing the transaction result for the blob submitted. `txBlob` must be signed. There's also a `SubmitMultisigned` method that works the same way but for multisigned transactions.
 
 ```go
-func (c *Client) Submit(txBlob string, failHard bool) (*requests.TxResponse, error)
+func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.TxResponse, error)
 func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.SubmitMultisignedResponse, error)
 ```
 
@@ -95,12 +95,12 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error
 func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners uint64) error
 ```
 
-### SubmitAndWait
+### SubmitTxBlobAndWait
 
-The `SubmitAndWait` method is used to submit a transaction to the XRPL network and wait for it to be included in a ledger. It returns a `TxResponse` struct containing the transaction result for the blob submitted. 
+The `SubmitTxBlobAndWait` method is used to submit a transaction to the XRPL network and wait for it to be included in a ledger. It returns a `TxResponse` struct containing the transaction result for the blob submitted.
 
 ```go
-func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error)
+func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.TxResponse, error)
 ```
 
 ## Queries
@@ -204,7 +204,7 @@ func main() {
 	}
 
 	// Submit the transaction to the network and wait for it to be included in a ledger
-	res, err := client.SubmitAndWait(txBlob, false)
+	res, err := client.SubmitTxBlobAndWait(txBlob, false)
 	if err != nil {
 		fmt.Println(err)
 		return
