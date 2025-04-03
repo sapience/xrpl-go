@@ -9,7 +9,7 @@ import (
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
-	rippleTime "github.com/Peersyst/xrpl-go/xrpl/time"
+	rippletime "github.com/Peersyst/xrpl-go/xrpl/time"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
@@ -71,7 +71,7 @@ func main() {
 	// Creating the CredentialCreate transaction
 	fmt.Println("⏳ Creating the CredentialCreate transaction...")
 
-	expiration, err := rippleTime.IsoTimeToRippleTime(time.Now().Add(time.Hour * 24).Format(time.RFC3339))
+	expiration, err := rippletime.IsoTimeToRippleTime(time.Now().Add(time.Hour * 24).Format(time.RFC3339))
 	if err != nil {
 		fmt.Printf("❌ Error converting expiration to ripple time: %s\n", err)
 		return
