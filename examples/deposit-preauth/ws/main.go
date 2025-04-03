@@ -160,7 +160,19 @@ func main() {
 		return
 	}
 
-	credentialID := objectsResponse.AccountObjects[0]["index"].(string)
+	// Check if we have any credential objects
+	if len(objectsResponse.AccountObjects) == 0 {
+		fmt.Println("❌ No credential objects found")
+		return
+	}
+
+	// Extract the credential ID
+	credentialID, ok := objectsResponse.AccountObjects[0]["index"].(string)
+	if !ok {
+		fmt.Println("❌ Could not extract credential ID from response")
+		return
+	}
+
 	fmt.Printf("✅ Credential ID: %s\n", credentialID)
 	fmt.Println()
 
