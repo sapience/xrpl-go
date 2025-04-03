@@ -54,7 +54,7 @@ func (c *CredentialAccept) Validate() (bool, error) {
 	}
 
 	if !c.CredentialType.IsValid() {
-		return false, ErrInvalidCredentialType
+		return false, types.ErrInvalidCredentialType
 	}
 
 	return true, nil

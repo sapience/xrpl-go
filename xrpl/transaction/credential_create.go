@@ -85,7 +85,7 @@ func (c *CredentialCreate) Validate() (bool, error) {
 	}
 
 	if !c.CredentialType.IsValid() {
-		return false, ErrInvalidCredentialType
+		return false, types.ErrInvalidCredentialType
 	}
 
 	if c.URI != "" && (len(c.URI) < MinURILength || len(c.URI) > MaxURILength) {

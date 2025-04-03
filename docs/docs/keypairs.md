@@ -96,7 +96,7 @@ Derives a keypair (private and public keys) from a seed. If the `validator` para
 func DeriveClassicAddress(pubKey string) (string, error)
 ```
 
-After deriving a keypair, you can derive the classic address from the public key. The result is a base58 encoded address, which starts with the character `r`. If you're interested in X-Address derivation, the [`address-codec`](/docs/address-codec) package contains functions to encode and decode X-Addresses from and to classic addresses.
+After deriving a keypair, you can derive the classic address from the public key. The result is a base58 encoded address, which starts with the character `r`. If you're interested in X-Address derivation, the `address-codec` package contains functions to encode and decode X-Addresses from and to classic addresses.
 
 #### DeriveNodeAddress
 

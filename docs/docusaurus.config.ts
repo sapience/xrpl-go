@@ -10,10 +10,10 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://xrpl-go.github.io',
+  url: 'https://peersyst.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/xrpl-go',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -98,14 +98,6 @@ const config: Config = {
             {
               label: 'Installation',
               to: '/docs/installation',
-            },
-            {
-              label: 'binary-codec',
-              to: '/docs/binary-codec',
-            },
-            {
-              label: 'address-codec',
-              to: '/docs/address-codec',
             },
             {
               label: 'keypairs',
