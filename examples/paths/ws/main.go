@@ -110,7 +110,7 @@ func main() {
 		return
 	}
 
-	txRes, err := client.SubmitAndWait(blob, false)
+	txRes, err := client.SubmitTxBlobAndWait(blob, false)
 	if err != nil {
 		fmt.Println(err)
 		return

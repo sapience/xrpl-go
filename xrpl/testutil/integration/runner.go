@@ -126,12 +126,12 @@ func (r *Runner) processTransaction(flatTx *transaction.FlatTransaction, signer 
 			return nil, hash, err
 		}
 
-		tx, err := r.client.Submit(blob, true)
+		tx, err := r.client.SubmitTxBlob(blob, true)
 		if err != nil {
 			return nil, hash, err
 		}
 
-		if tx.EngineResult != "tefPAST_SEQ" || attempts >= r.config.MaxRetries {
+		if tx.EngineResult != transaction.TefPAST_SEQ.String() || attempts >= r.config.MaxRetries {
 			return tx, hash, nil
 		}
 		attempts++

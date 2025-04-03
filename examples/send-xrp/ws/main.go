@@ -10,6 +10,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket"
+	wstypes "github.com/Peersyst/xrpl-go/xrpl/websocket/types"
 )
 
 const (
@@ -89,7 +90,7 @@ func main() {
 		return
 	}
 
-	res, err := client.SubmitAndWait(txBlob, false)
+	res, err := client.SubmitTxBlobAndWait(txBlob, false)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -98,4 +99,22 @@ func main() {
 	fmt.Println("✅ Payment submitted")
 	fmt.Printf("🌐 Hash: %s\n", res.Hash)
 	fmt.Printf("🌐 Validated: %t\n", res.Validated)
+
+	fmt.Println()
+	fmt.Println("⏳ Using SubmitTxAndWait with wallet")
+	fmt.Println()
+
+	flattenedTx2 := p.Flatten()
+	resp, err := client.SubmitTxAndWait(flattenedTx2, &wstypes.SubmitOptions{
+		Autofill: true,
+		Wallet:   &w,
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("✅ Payment submitted via SubmitTxAndWait")
+	fmt.Printf("🌐 Hash: %s\n", resp.Hash)
+	fmt.Printf("🌐 Validated: %t\n", resp.Validated)
 }

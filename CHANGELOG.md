@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [Unreleased]
+
+## Breaking changes
+
+### xrpl
+
+- `Submit` client method is renamed to `SubmitTxBlob` in both clients.
+- `SubmitAndWait` client method is renamed to `SubmitTxBlobAndWait` in both clients.
+
+## Changed
+
+### xrpl
+
+- Added `SubmitTx` and `SubmitTxAndWait` client methods to both clients.
+
+## Added
+
+### xrpl
+
+- Added support for the Credential fields in the following transaction types:
+  - Payment
+  - DepositPreauth
+  - AccountDelete
+  - PaymentChannelClaim
+  - EscrowFinish
+- Added the `credential` ledger entry for the `account_objects` request.
+- Added tec/tef/tel/tem/ter TxResult codes.
+- Replaced string declaration with constant/object references.
+
+## Fixed
+
+### binary-codec
+
+- Added native `uint8` type support for `Uint8` type.
+
+### big-decimal
+
+- Fixed `BigDecimal` precision.
+
+## [v0.1.9]
+
+### Added
+
+#### xrpl
+
+- Added support for all the Credential transaction types:
+  - CredentialCreate
+  - CredentialAccept
+  - CredentialDelete
+
+### Fixed
+
+#### big-decimal
+
+- Amounts transcoding fix for large values.
+
 ## [v0.1.8]
 
 ### Added
@@ -18,20 +74,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### xrpl
 
 - Updated `AffectedNode` type fields to be a pointer to allow nil values.
-
-### Added
-
-#### xrpl
-
-- Added support for all the Credential transaction types:
-  - CredentialCreate
-  - CredentialAccept
-  - CredentialDelete
-
-### Fixed
-
-#### xrpl
-
 - Fixed `BaseLedger` field in `ledger` response (v1 and v2). BaseLedger.Transactions is now an array of interfaces instead of a slice of `FlatTransaction` due to `Expand` field in the request.
 
 ## [v0.1.7]
@@ -192,7 +234,7 @@ Support for the XLS-77d (deep freeze)
 - New `Multisign` wallet method.
 - Ripple time conversion utility functions.
 - Added query methods for websocket and rpc clients.
-- New `SubmitMultisigned`, `AutofillMultisigned` and `SubmitAndWait` methods for both clients.
+- New `SubmitMultisigned`, `AutofillMultisigned` and `SubmitTxBlobAndWait` methods for both clients.
 - Added `Autofill` method for rpc client.
 - New `MaxRetries` and `RetryDelay` config options for both clients.
 
