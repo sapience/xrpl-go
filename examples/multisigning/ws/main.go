@@ -122,7 +122,7 @@ func main() {
 	}
 
 	fmt.Println("⏳ Submitting transaction...")
-	res, err := client.SubmitAndWait(blob, false)
+	res, err := client.SubmitTxBlobAndWait(blob, false)
 	if err != nil {
 		fmt.Println(err)
 		return

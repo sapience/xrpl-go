@@ -109,7 +109,7 @@ func main() {
 		return
 	}
 
-	response, err := client.SubmitAndWait(txBlob, true)
+	response, err := client.SubmitTxBlobAndWait(txBlob, true)
 	if err != nil {
 		fmt.Println(err)
 		return
