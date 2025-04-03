@@ -2,6 +2,7 @@ import type {ReactNode} from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import {LinkButton} from '../components/LinkButton';
+import config from '@site/docusaurus.config';
 
 export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
@@ -12,7 +13,7 @@ export default function Home(): ReactNode {
       <main>
         <section className="hero-section">
           <img 
-            src="/img/xrpl-go-logo.png"
+            src={`${config.baseUrl}/img/xrpl-go-logo.png`}
             alt="XRPL GO Logo"
             className="hero-logo"
           />
@@ -24,7 +25,7 @@ export default function Home(): ReactNode {
             Built with performance and developer experience in mind, XRPL Go provides 
             all the tools needed to build robust applications on the XRPL ecosystem.
           </p>
-          <LinkButton href="/docs/intro">
+          <LinkButton href={`${config.baseUrl}/docs/intro`}>
             Getting Started
           </LinkButton>
         </section>
