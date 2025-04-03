@@ -31,10 +31,7 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 				AcceptedCredentials: []types.AuthorizeCredential{
 					{
 						// Using a sample issuer and credential type.
-						Credential: struct {
-							Issuer         types.Address
-							CredentialType types.CredentialType
-						}{
+						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
 						},
@@ -43,7 +40,6 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 			},
 			expected: `{
 				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-				"TransactionType": "PermissionedDomainSet",
 				"AcceptedCredentials": [
 					{
 						"Credential": {
@@ -51,7 +47,8 @@ func TestPermissionedDomainSet_Flatten(t *testing.T) {
 							"CredentialType": "1234"
 						}
 					}
-				]
+				],
+				"TransactionType": "PermissionedDomainSet"
 			}`,
 		},
 		{
@@ -164,7 +161,7 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
-				AcceptedCredentials: []types.AuthorizeCredential{},
+				AcceptedCredentials: types.AuthorizeCredentialList{},
 			},
 			wantValid:   false,
 			wantErr:     true,
@@ -177,14 +174,14 @@ func TestPermissionedDomainSet_Validate(t *testing.T) {
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 					TransactionType: PermissionedDomainSetTx,
 				},
-				AcceptedCredentials: []types.AuthorizeCredential{
-					{
+				AcceptedCredentials: types.AuthorizeCredentialList{
+					types.AuthorizeCredential{
 						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),
 						},
 					},
-					{
+					types.AuthorizeCredential{
 						Credential: types.Credential{
 							Issuer:         "rPDXxSZcuVL3ZWoyU82bcde3zwvmShkRyF",
 							CredentialType: types.CredentialType("1234"),

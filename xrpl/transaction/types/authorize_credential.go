@@ -9,7 +9,7 @@ const MaxAcceptedCredentials int = 10
 
 var (
 	// Credential-specific errors
-	
+
 	ErrInvalidCredentialType   = errors.New("invalid credential type, must be a hexadecimal string between 1 and 64 bytes")
 	ErrInvalidCredentialIssuer = errors.New("credential type: missing field Issuer")
 )

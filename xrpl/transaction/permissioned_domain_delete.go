@@ -9,10 +9,23 @@ var (
 	ErrMissingDomainID = errors.New("missing required field: DomainID")
 )
 
-// PermissionedDomainDelete represents a PermissionedDomainDelete transaction.
+// Delete a permissioned domain that you own.
+// (Requires the PermissionedDomains amendment)
+//
+// ```json
+//
+//	{
+//	  "TransactionType": "PermissionedDomainDelete",
+//	  "Account": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+//	  "Fee": "10",
+//	  "Sequence": 392,
+//	  "DomainID": "77D6234D074E505024D39C04C3F262997B773719AB29ACFA83119E4210328776"
+//	}
+//
+// ```
 type PermissionedDomainDelete struct {
 	BaseTx
-	// DomainID is the ledger entry ID of the Permissioned Domain entry to delete.
+	// The ledger entry ID of the Permissioned Domain entry to delete.
 	DomainID string
 }
 

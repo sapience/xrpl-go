@@ -4,7 +4,27 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
-// PermissionedDomainSet represents a PermissionedDomainSet transaction.
+// Create a permissioned domain, or modify one that you own.
+// (Requires the PermissionedDomains amendment)
+//
+// ```json
+//
+//	{
+//	  "TransactionType": "PermissionedDomainSet",
+//	  "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+//	  "Fee": "10",
+//	  "Sequence": 390,
+//	  "AcceptedCredentials": [
+//	    {
+//	        "Credential": {
+//	            "Issuer": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+//	            "CredentialType": "6D795F63726564656E7469616C"
+//	        }
+//	    }
+//	  ]
+//	}
+//
+// ```
 type PermissionedDomainSet struct {
 	BaseTx
 	// DomainID is the ledger entry ID of an existing permissioned domain to modify.
@@ -12,7 +32,7 @@ type PermissionedDomainSet struct {
 	DomainID string `json:",omitempty"`
 	// AcceptedCredentials is a list of credentials that grant access to the domain.
 	// An empty array indicates deletion of the field.
-	AcceptedCredentials []types.AuthorizeCredential
+	AcceptedCredentials types.AuthorizeCredentialList
 }
 
 // TxType returns the type of the transaction.
@@ -29,16 +49,7 @@ func (p *PermissionedDomainSet) Flatten() FlatTransaction {
 		flattened["DomainID"] = p.DomainID
 	}
 
-	if len(p.AcceptedCredentials) > 0 {
-		credentials := make([]interface{}, len(p.AcceptedCredentials))
-		for i, cred := range p.AcceptedCredentials {
-			entry := map[string]interface{}{
-				"Credential": cred.Flatten(),
-			}
-			credentials[i] = entry
-		}
-		flattened["AcceptedCredentials"] = credentials
-	}
+	flattened["AcceptedCredentials"] = p.AcceptedCredentials.Flatten()
 
 	return flattened
 }
@@ -48,8 +59,7 @@ func (p *PermissionedDomainSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	// Convert the slice to an AuthorizeCredentialList and call its Validate method.
-	if err := types.AuthorizeCredentialList(p.AcceptedCredentials).Validate(); err != nil {
+	if err := p.AcceptedCredentials.Validate(); err != nil {
 		return false, err
 	}
 

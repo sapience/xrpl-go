@@ -14,21 +14,35 @@ func TestPermissionedDomainDelete_TxType(t *testing.T) {
 }
 
 func TestPermissionedDomainDelete_Flatten(t *testing.T) {
-	tx := &PermissionedDomainDelete{
-		BaseTx: BaseTx{
-			Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-			TransactionType: PermissionedDomainDeleteTx,
+	tests := []struct {
+		name     string
+		tx       *PermissionedDomainDelete
+		expected string
+	}{
+		{
+			name: "valid transaction",
+			tx: &PermissionedDomainDelete{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: PermissionedDomainDeleteTx,
+				},
+				DomainID: "domain123",
+			},
+			expected: `{
+				"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"TransactionType": "PermissionedDomainDelete", 
+				"DomainID": "domain123"
+			}`,
 		},
-		DomainID: "domain123",
 	}
-	expected := `{
-		"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-		"TransactionType": "PermissionedDomainDelete",
-		"DomainID": "domain123"
-	}`
-	err := testutil.CompareFlattenAndExpected(tx.Flatten(), []byte(expected))
-	if err != nil {
-		t.Error(err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := testutil.CompareFlattenAndExpected(tt.tx.Flatten(), []byte(tt.expected))
+			if err != nil {
+				t.Error(err)
+			}
+		})
 	}
 }
 

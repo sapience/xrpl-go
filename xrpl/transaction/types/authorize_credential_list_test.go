@@ -6,10 +6,10 @@ import (
 
 func TestAuthorizeCredentialList_Validate(t *testing.T) {
 	tests := []struct {
-		name string
-		ac   AuthorizeCredentialList
-		wantValid bool
-		wantErr bool
+		name        string
+		ac          AuthorizeCredentialList
+		wantValid   bool
+		wantErr     bool
 		expectedErr error
 	}{
 		{
@@ -22,15 +22,15 @@ func TestAuthorizeCredentialList_Validate(t *testing.T) {
 					},
 				},
 			},
-			wantValid: true,
-			wantErr: false,
+			wantValid:   true,
+			wantErr:     false,
 			expectedErr: nil,
 		},
 		{
-			name: "fail - empty credential list",
-			ac: AuthorizeCredentialList{},
-			wantValid: false,
-			wantErr: true,
+			name:        "fail - empty credential list",
+			ac:          AuthorizeCredentialList{},
+			wantValid:   false,
+			wantErr:     true,
 			expectedErr: ErrEmptyCredentials,
 		},
 		{
@@ -43,10 +43,30 @@ func TestAuthorizeCredentialList_Validate(t *testing.T) {
 					},
 				},
 			},
-			wantValid: false,
-			wantErr: true,
+			wantValid:   false,
+			wantErr:     true,
 			expectedErr: ErrInvalidCredentialType,
-		},	
+		},
+		{
+			name: "fail - duplicated credential",
+			ac: AuthorizeCredentialList{
+				AuthorizeCredential{
+					Credential: Credential{
+						Issuer:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+						CredentialType: CredentialType("1234"),
+					},
+				},
+				AuthorizeCredential{
+					Credential: Credential{
+						Issuer:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+						CredentialType: CredentialType("1234"),
+					},
+				},
+			},
+			wantValid:   false,
+			wantErr:     true,
+			expectedErr: ErrDuplicateCredentials,
+		},
 	}
 
 	for _, tt := range tests {
@@ -63,8 +83,8 @@ func TestAuthorizeCredentialList_Validate(t *testing.T) {
 
 func TestAuthorizeCredentialList_Flatten(t *testing.T) {
 	tests := []struct {
-		name string
-		ac   AuthorizeCredentialList
+		name     string
+		ac       AuthorizeCredentialList
 		expected string
 	}{
 		{
@@ -77,7 +97,6 @@ func TestAuthorizeCredentialList_Flatten(t *testing.T) {
 					},
 				},
 			},
-			
 		},
 	}
 

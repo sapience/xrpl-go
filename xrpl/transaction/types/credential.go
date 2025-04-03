@@ -2,8 +2,8 @@ package types
 
 type Credential struct {
 	// The issuer of the credential.
-	Issuer         Address
-	// A hex-encoded value to identify the type of credential from the issuer. 
+	Issuer Address
+	// A hex-encoded value to identify the type of credential from the issuer.
 	CredentialType CredentialType
 }
 

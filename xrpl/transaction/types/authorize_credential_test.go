@@ -41,9 +41,9 @@ func TestAuthorizeCredential_Flatten(t *testing.T) {
 
 func TestAuthorizeCredential_Validate(t *testing.T) {
 	tests := []struct {
-		name     string
-		ac       AuthorizeCredential
-		expected bool
+		name          string
+		ac            AuthorizeCredential
+		expected      bool
 		expectedError error
 	}{
 		{
@@ -60,11 +60,11 @@ func TestAuthorizeCredential_Validate(t *testing.T) {
 			name: "fail - invalid credential",
 			ac: AuthorizeCredential{
 				Credential: Credential{
-					Issuer: "",
+					Issuer:         "",
 					CredentialType: CredentialType("1234"),
 				},
 			},
-			expected: false,
+			expected:      false,
 			expectedError: ErrInvalidCredentialIssuer,
 		},
 	}

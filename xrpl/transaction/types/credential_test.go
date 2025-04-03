@@ -14,23 +14,23 @@ func TestCredential_Flatten(t *testing.T) {
 		{
 			name: "pass - empty credential",
 			input: Credential{
-				CredentialType:  CredentialType(""),
-				Issuer: "",
+				CredentialType: CredentialType(""),
+				Issuer:         "",
 			},
 			expected: map[string]string{
-				"Issuer":  "",
+				"Issuer":         "",
 				"CredentialType": "",
 			},
 		},
 		{
 			name: "pass - valid credential",
 			input: Credential{
-				CredentialType:  CredentialType("0123"),
-				Issuer: "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+				CredentialType: CredentialType("0123"),
+				Issuer:         "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
 			},
 			expected: map[string]string{
-				"Issuer": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
-				"CredentialType":  "0123",
+				"Issuer":         "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+				"CredentialType": "0123",
 			},
 		},
 	}

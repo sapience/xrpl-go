@@ -3,9 +3,9 @@ package types
 import "errors"
 
 var (
-	ErrEmptyCredentials        = errors.New("credentials list cannot be empty")
-	ErrInvalidCredentialCount  = errors.New("accepted credentials list must contain at least one and no more than the maximum allowed number of items")
-	ErrDuplicateCredentials    = errors.New("credentials list cannot contain duplicate elements")
+	ErrEmptyCredentials       = errors.New("credentials list cannot be empty")
+	ErrInvalidCredentialCount = errors.New("accepted credentials list must contain at least one and no more than the maximum allowed number of items")
+	ErrDuplicateCredentials   = errors.New("credentials list cannot contain duplicate elements")
 )
 
 type AuthorizeCredentialList []AuthorizeCredential
