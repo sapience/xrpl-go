@@ -5,7 +5,6 @@ import (
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
-	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/stretchr/testify/require"
@@ -139,7 +138,7 @@ func (r *Runner) processTransaction(flatTx *transaction.FlatTransaction, signer 
 	}
 }
 
-func (r *Runner) ProcessTransactionAndWait(flatTx *transaction.FlatTransaction, signer *wallet.Wallet) (*requests.TxResponse, string, error) {
+func (r *Runner) ProcessTransactionAndWait(flatTx *transaction.FlatTransaction, signer *wallet.Wallet) (*transactions.TxResponse, string, error) {
 	attempts := 0
 
 	for {
