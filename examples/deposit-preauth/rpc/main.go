@@ -64,7 +64,7 @@ func main() {
 	}
 	accountSetTx.SetAsfDepositAuth()
 
-	clients.SubmitAndWait(client, accountSetTx, issuer)
+	clients.SubmitTxBlobAndWait(client, accountSetTx, issuer)
 
 	// -----------------------------------------------------
 
@@ -89,7 +89,7 @@ func main() {
 		URI:            hex.EncodeToString([]byte("https://example.com")),
 	}
 
-	clients.SubmitAndWait(client, credentialCreateTx, issuer)
+	clients.SubmitTxBlobAndWait(client, credentialCreateTx, issuer)
 
 	// -----------------------------------------------------
 
@@ -105,7 +105,7 @@ func main() {
 		Issuer:         types.Address(issuer.ClassicAddress),
 	}
 
-	clients.SubmitAndWait(client, credentialAcceptTx, holderWallet1)
+	clients.SubmitTxBlobAndWait(client, credentialAcceptTx, holderWallet1)
 
 	// -----------------------------------------------------
 
@@ -127,7 +127,7 @@ func main() {
 		},
 	}
 
-	clients.SubmitAndWait(client, depositPreauthTx, issuer)
+	clients.SubmitTxBlobAndWait(client, depositPreauthTx, issuer)
 
 	// -----------------------------------------------------
 
@@ -177,7 +177,7 @@ func main() {
 		CredentialIDs: types.CredentialIDs{credentialID},
 	}
 
-	clients.SubmitAndWait(client, sendTx, holderWallet1)
+	clients.SubmitTxBlobAndWait(client, sendTx, holderWallet1)
 
 	// -----------------------------------------------------
 
@@ -199,7 +199,7 @@ func main() {
 		},
 	}
 
-	clients.SubmitAndWait(client, unauthorizeTx, issuer)
+	clients.SubmitTxBlobAndWait(client, unauthorizeTx, issuer)
 
 	// -----------------------------------------------------
 
@@ -216,5 +216,5 @@ func main() {
 		CredentialIDs: types.CredentialIDs{credentialID},
 	}
 
-	clients.SubmitAndWait(client, sendTx2, holderWallet1)
+	clients.SubmitTxBlobAndWait(client, sendTx2, holderWallet1)
 }
