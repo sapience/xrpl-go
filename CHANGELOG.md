@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [Unreleased]
 
+## Breaking changes
+
+### xrpl
+
+- `Submit` client method is renamed to `SubmitTxBlob` in both clients.
+- `SubmitAndWait` client method is renamed to `SubmitTxBlobAndWait` in both clients.
+
 ## Changed
 
 ### xrpl
 
-- Split the Submit & SubmitTxBlobAndWait into two functions, SubmitTx-AndWait and SubmitTxBlob-AndWait.
-- SubmitTx-AndWait handles SubmitableTransaction input. SubmitTxBlob-AndWait remains the same as old Submit-AndWait function.
+- Added `SubmitTx` and `SubmitTxAndWait` client methods to both clients.
 
 ## Added
 

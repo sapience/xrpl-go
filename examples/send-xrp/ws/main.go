@@ -79,8 +79,6 @@ func main() {
 
 	flattenedTx := p.Flatten()
 
-	fmt.Println("⏳ Using SubmitTxBlobAndWait, expecting to succeed ...")
-
 	if err := client.Autofill(&flattenedTx); err != nil {
 		fmt.Println(err)
 		return
@@ -102,7 +100,10 @@ func main() {
 	fmt.Printf("🌐 Hash: %s\n", res.Hash)
 	fmt.Printf("🌐 Validated: %t\n", res.Validated)
 
-	fmt.Println("⏳ Using SubmitTxAndWait with wallet, expecting success ...")
+	fmt.Println()
+	fmt.Println("⏳ Using SubmitTxAndWait with wallet")
+	fmt.Println()
+
 	flattenedTx2 := p.Flatten()
 	resp, err := client.SubmitTxAndWait(flattenedTx2, &wstypes.SubmitOptions{
 		Autofill: true,
@@ -116,18 +117,4 @@ func main() {
 	fmt.Println("✅ Payment submitted via SubmitTxAndWait")
 	fmt.Printf("🌐 Hash: %s\n", resp.Hash)
 	fmt.Printf("🌐 Validated: %t\n", resp.Validated)
-
-	fmt.Println("⏳ Using SubmitTxAndWait without wallet, expecting failure ...")
-	flattenedTx3 := p.Flatten()
-	resp1, err := client.SubmitTxAndWait(flattenedTx3, &wstypes.SubmitOptions{
-		Autofill: true,
-	})
-	if err != nil {
-		fmt.Printf("❌ Expected error triggered: %v\n", err)
-	} else {
-		fmt.Println("⚠️ Unexpected success:")
-		fmt.Printf("🌐 Hash: %s\n", resp1.Hash)
-		fmt.Printf("🌐 Validated: %t\n", resp1.Validated)
-	}
-
 }
