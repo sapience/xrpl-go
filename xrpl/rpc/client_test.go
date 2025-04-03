@@ -280,17 +280,16 @@ func TestClient_Request(t *testing.T) {
 
 func TestClient_SubmitTxBlob(t *testing.T) {
 	// We'll run two sets of subtests: one for SubmitTxBlob and one for SubmitTx.
-	t.Run("SubmitTxBlob", func(t *testing.T) {
-		tests := []struct {
-			name         string
-			mockResponse string
-			txBlob       string
-			expectError  error
-			expectResult *requests.SubmitResponse
-		}{
-			{
-				name: "success",
-				mockResponse: `{
+	tests := []struct {
+		name         string
+		mockResponse string
+		txBlob       string
+		expectError  error
+		expectResult *requests.SubmitResponse
+	}{
+		{
+			name: "success",
+			mockResponse: `{
 					"result": {
 						"engine_result": "tesSUCCESS",
 						"engine_result_code": 0,
@@ -300,118 +299,128 @@ func TestClient_SubmitTxBlob(t *testing.T) {
 					"status": "success",
 					"type": "response"
 				}`,
-				txBlob:      "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754",
-				expectError: nil,
-				expectResult: &requests.SubmitResponse{
-					EngineResult:        "tesSUCCESS",
-					EngineResultCode:    0,
-					EngineResultMessage: "The transaction was applied.",
-				},
+			txBlob:      "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754",
+			expectError: nil,
+			expectResult: &requests.SubmitResponse{
+				EngineResult:        "tesSUCCESS",
+				EngineResultCode:    0,
+				EngineResultMessage: "The transaction was applied.",
 			},
-			{
-				name:        "missing signature",
-				txBlob:      "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A70",
-				expectError: errors.New("parser out of bounds"),
+		},
+		{
+			name:        "missing signature",
+			txBlob:      "1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A70",
+			expectError: errors.New("parser out of bounds"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Setup the mock HTTP client.
+			mc := &testutil.JSONRPCMockClient{}
+			if tt.mockResponse != "" {
+				mc.DoFunc = testutil.MockResponse(tt.mockResponse, 200, mc)
+			}
+
+			cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
+			assert.NoError(t, err)
+
+			jsonRpcClient := NewClient(cfg)
+
+			response, err := jsonRpcClient.SubmitTxBlob(tt.txBlob, false)
+			if tt.expectError != nil {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectError.Error(), err.Error())
+				return
+			}
+
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expectResult.EngineResult, response.EngineResult)
+			assert.Equal(t, tt.expectResult.EngineResultCode, response.EngineResultCode)
+			assert.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
+		})
+	}
+}
+
+func TestClient_SubmitTx(t *testing.T) {
+
+	tests := []struct {
+		name         string
+		mockResponse string
+		tx           map[string]interface{}
+		opts         *rpctypes.SubmitOptions
+		expectError  error
+		expectResult *requests.SubmitResponse
+	}{
+		{
+			name: "pass - tx already signed",
+			mockResponse: `{
+		"result": {
+			"engine_result": "tesSUCCESS",
+			"engine_result_code": 0,
+			"engine_result_message": "The transaction was applied.",
+			"tx_blob": "dummyBlob"
+		},
+		"status": "success",
+		"type": "response"
+	}`,
+			tx: map[string]interface{}{
+				"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Destination":     "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+				"Fee":             "10",
+				"TransactionType": "Payment",
+				"SigningPubKey":   "03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB",
+				"TxnSignature":    "3045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE",
+				"Sequence":        uint32(359),
 			},
-		}
-
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				// Setup the mock HTTP client.
-				mc := &testutil.JSONRPCMockClient{}
-				if tt.mockResponse != "" {
-					mc.DoFunc = testutil.MockResponse(tt.mockResponse, 200, mc)
-				}
-
-				cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
-				assert.NoError(t, err)
-
-				jsonRpcClient := NewClient(cfg)
-
-				response, err := jsonRpcClient.SubmitTxBlob(tt.txBlob, false)
-				if tt.expectError != nil {
-					assert.Error(t, err)
-					assert.Equal(t, tt.expectError.Error(), err.Error())
-					return
-				}
-
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expectResult.EngineResult, response.EngineResult)
-				assert.Equal(t, tt.expectResult.EngineResultCode, response.EngineResultCode)
-				assert.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
-			})
-		}
-	})
-
-	t.Run("SubmitTx", func(t *testing.T) {
-		// For SubmitTx, the input is a transaction.FlatTransaction.
-		// Here we use the "tx_json" from a known successful transaction.
-		txInput := map[string]interface{}{
-			"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-			"Destination":     "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-			"Fee":             "10",
-			"TransactionType": "Payment",
-			// Let's assume the transaction is already signed.
-			"SigningPubKey": "03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB",
-			"TxnSignature":  "3045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE",
-			// Optionally, include Sequence, LastLedgerSequence, etc.
-			"Sequence": uint32(359),
-		}
-
-		tests := []struct {
-			name         string
-			mockResponse string
-			tx           map[string]interface{} // transaction.FlatTransaction is a map[string]interface{}
-			opts         *rpctypes.SubmitOptions
-			expectError  error
-			expectResult *requests.SubmitResponse
-		}{
-			{
-				name: "fail - missing wallet",
-				mockResponse: `{
-			"result": {
-				"engine_result": "tesSUCCESS",
-				"engine_result_code": 0,
-				"engine_result_message": "The transaction was applied.",
-				"tx_blob": "dummyBlob"
+			opts: &rpctypes.SubmitOptions{
+				Autofill: false,
+				FailHard: false,
 			},
-			"status": "success",
-			"type": "response"
-		}`,
-				tx: txInput,
-				opts: &rpctypes.SubmitOptions{
-					Autofill: false,
-					FailHard: false,
-				},
-				expectError:  ErrMissingWallet,
-				expectResult: nil,
+			expectError: nil,
+			expectResult: &requests.SubmitResponse{
+				EngineResult:        "tesSUCCESS",
+				EngineResultCode:    0,
+				EngineResultMessage: "The transaction was applied.",
 			},
-		}
+		},
+		{
+			name: "fail - no wallet provided for unsigned tx",
+			tx: map[string]interface{}{
+				"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"Destination":     "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+				"Fee":             "10",
+				"TransactionType": "Payment",
+				"Sequence":        uint32(359),
+			},
+			opts:        &rpctypes.SubmitOptions{},
+			expectError: ErrMissingWallet,
+		},
+	}
 
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				mc := &testutil.JSONRPCMockClient{}
-				if tt.mockResponse != "" {
-					mc.DoFunc = testutil.MockResponse(tt.mockResponse, 200, mc)
-				}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mc := &testutil.JSONRPCMockClient{}
+			if tt.mockResponse != "" {
+				mc.DoFunc = testutil.MockResponse(tt.mockResponse, 200, mc)
+			}
 
-				cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
-				assert.NoError(t, err)
-				jsonRpcClient := NewClient(cfg)
+			cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
+			assert.NoError(t, err)
+			jsonRpcClient := NewClient(cfg)
 
-				response, err := jsonRpcClient.SubmitTx(tt.tx, tt.opts)
-				if tt.expectError != nil {
-					assert.Error(t, err)
-					assert.Equal(t, tt.expectError.Error(), err.Error())
-					return
-				}
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expectResult.EngineResult, response.EngineResult)
-				assert.Equal(t, tt.expectResult.EngineResultCode, response.EngineResultCode)
-				assert.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
-			})
-		}
-	})
+			response, err := jsonRpcClient.SubmitTx(tt.tx, tt.opts)
+			if tt.expectError != nil {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectError.Error(), err.Error())
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expectResult.EngineResult, response.EngineResult)
+			assert.Equal(t, tt.expectResult.EngineResultCode, response.EngineResultCode)
+			assert.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
+		})
+	}
 }
 
 func TestClient_SubmitMultisigned(t *testing.T) {

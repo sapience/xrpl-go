@@ -244,7 +244,7 @@ func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.SubmitRes
 // via a submission request. It applies the provided submit options to decide whether
 // to autofill missing fields and enforce failHard mode during submission.
 func (c *Client) SubmitTx(tx transaction.FlatTransaction, opts *wstypes.SubmitOptions) (*requests.SubmitResponse, error) {
-	txBlob, err := getSignedTx(c, tx, opts.Autofill, opts.Wallet)
+	txBlob, err := c.getSignedTx(tx, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
 	}
@@ -320,7 +320,7 @@ func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.Tx
 // the transaction response.
 func (c *Client) SubmitTxAndWait(tx transaction.FlatTransaction, opts *wstypes.SubmitOptions) (*requests.TxResponse, error) {
 	// Get the signed transaction blob.
-	txBlob, err := getSignedTx(c, tx, opts.Autofill, opts.Wallet)
+	txBlob, err := c.getSignedTx(tx, opts.Autofill, opts.Wallet)
 	if err != nil {
 		return nil, err
 	}
@@ -733,7 +733,7 @@ func (c *Client) readMessages() {
 // getSignedTx ensures the transaction is fully signed and returns the transaction blob.
 // If the transaction is already signed, it encodes and returns it. Otherwise, it autofills (if enabled)
 // and signs the transaction using the provided wallet.
-func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
+func (c *Client) getSignedTx(tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
 	// Check if the transaction is already signed: both fields must be non-empty.
 	sig, sigOk := tx["TxSignature"].(string)
 	pubKey, pubKeyOk := tx["SigningPubKey"].(string)
@@ -752,7 +752,7 @@ func getSignedTx(client *Client, tx transaction.FlatTransaction, autofill bool, 
 
 	// Optionally autofill the transaction.
 	if autofill {
-		if err := client.Autofill(&tx); err != nil {
+		if err := c.Autofill(&tx); err != nil {
 			return "", err
 		}
 	}

@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/currency"
 	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
@@ -19,6 +20,7 @@ import (
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 
 	jsoniter "github.com/json-iterator/go"
 
@@ -361,4 +363,39 @@ func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*
 	}
 
 	return txResponse, nil
+}
+
+// getSignedTx ensures the transaction is fully signed and returns the transaction blob.
+// If the transaction is already signed, it encodes and returns it. Otherwise, it autofills (if enabled)
+// and signs the transaction using the provided wallet.
+func (c *Client) getSignedTx(tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
+	// Check if the transaction is already signed: both fields must be non-empty.
+	sig, sigOk := tx["TxnSignature"].(string)
+	pubKey, pubKeyOk := tx["SigningPubKey"].(string)
+	if sigOk && sig != "" && pubKeyOk && pubKey != "" {
+		blob, err := binarycodec.Encode(tx)
+		if err != nil {
+			return "", err
+		}
+		return blob, nil
+	}
+
+	// If not signed, ensure a wallet is provided.
+	if wallet == nil {
+		return "", ErrMissingWallet
+	}
+
+	// Optionally autofill the transaction.
+	if autofill {
+		if err := c.Autofill(&tx); err != nil {
+			return "", err
+		}
+	}
+
+	// Sign the transaction.
+	txBlob, _, err := wallet.Sign(tx)
+	if err != nil {
+		return "", err
+	}
+	return txBlob, nil
 }
