@@ -77,7 +77,7 @@ func main() {
 		return
 	}
 
-	res, err := client.SubmitAndWait(blob, false)
+	res, err := client.SubmitTxBlobAndWait(blob, false)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -115,7 +115,7 @@ func main() {
 		return
 	}
 
-	res, err = client.SubmitAndWait(blob, false)
+	res, err = client.SubmitTxBlobAndWait(blob, false)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -155,7 +155,7 @@ func main() {
 		return
 	}
 
-	res, err = client.SubmitAndWait(blob, false)
+	res, err = client.SubmitTxBlobAndWait(blob, false)
 	if err != nil {
 		fmt.Println(err)
 		return

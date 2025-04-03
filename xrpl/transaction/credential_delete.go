@@ -55,7 +55,7 @@ func (c *CredentialDelete) Validate() (bool, error) {
 	}
 
 	if !c.CredentialType.IsValid() {
-		return false, ErrInvalidCredentialType
+		return false, types.ErrInvalidCredentialType
 	}
 
 	if c.Subject != "" && !addresscodec.IsValidAddress(c.Subject.String()) {
