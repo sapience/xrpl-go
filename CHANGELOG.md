@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added tec/tef/tel/tem/ter TxResult codes.
 - Replaced string declaration with constant/object references.
-- Added support for all the `PermissionedDomain` transaction types:
+- Added `XLS-80d` support with `PermissionedDomain` transaction types:
   - `PermissionedDomainSet`
   - `PermissionedDomainDelete`
 
