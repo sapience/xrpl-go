@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### xrpl
 
+- Added support for the Credential fields in the following transaction types:
+  - Payment
+  - DepositPreauth
+  - AccountDelete
+  - PaymentChannelClaim
+  - EscrowFinish
+- Added the `credential` ledger entry for the `account_objects` request.
 - Added tec/tef/tel/tem/ter TxResult codes.
 - Replaced string declaration with constant/object references.
 - Added `XLS-80d` support with `PermissionedDomain` transaction types:
