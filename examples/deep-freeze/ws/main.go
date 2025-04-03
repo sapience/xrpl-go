@@ -344,7 +344,7 @@ func submitAndWait(client *websocket.Client, txn SubmittableTransaction, wallet 
 		return
 	}
 
-	response, err := client.SubmitAndWait(txBlob, false)
+	response, err := client.SubmitTxBlobAndWait(txBlob, false)
 	if err != nil {
 		fmt.Printf("❌ Error submitting %s transaction: %s\n", txn.TxType(), err)
 		fmt.Println()

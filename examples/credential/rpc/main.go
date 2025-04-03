@@ -74,7 +74,7 @@ func main() {
 		URI:            hex.EncodeToString([]byte("https://example.com")),
 	}
 
-	clients.SubmitAndWait(client, txn, issuer)
+	clients.SubmitTxBlobAndWait(client, txn, issuer)
 
 	// -----------------------------------------------------
 
@@ -89,7 +89,7 @@ func main() {
 		Issuer:         types.Address(issuer.ClassicAddress),
 	}
 
-	clients.SubmitAndWait(client, acceptTxn, subjectWallet)
+	clients.SubmitTxBlobAndWait(client, acceptTxn, subjectWallet)
 
 	// -----------------------------------------------------
 
@@ -105,5 +105,5 @@ func main() {
 		Subject:        types.Address(subjectWallet.ClassicAddress),
 	}
 
-	clients.SubmitAndWait(client, deleteTxn, issuer)
+	clients.SubmitTxBlobAndWait(client, deleteTxn, issuer)
 }
