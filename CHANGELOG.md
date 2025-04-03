@@ -7,9 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [Unreleased]
 
-### Added
+## Breaking changes
 
-#### xrpl
+### xrpl
+
+- `Submit` client method is renamed to `SubmitTxBlob` in both clients.
+- `SubmitAndWait` client method is renamed to `SubmitTxBlobAndWait` in both clients.
+
+## Changed
+
+### xrpl
+
+- Added `SubmitTx` and `SubmitTxAndWait` client methods to both clients.
+
+## Added
+
+### xrpl
 
 - Added tec/tef/tel/tem/ter TxResult codes.
 - Replaced string declaration with constant/object references.
@@ -217,7 +230,7 @@ Support for the XLS-77d (deep freeze)
 - New `Multisign` wallet method.
 - Ripple time conversion utility functions.
 - Added query methods for websocket and rpc clients.
-- New `SubmitMultisigned`, `AutofillMultisigned` and `SubmitAndWait` methods for both clients.
+- New `SubmitMultisigned`, `AutofillMultisigned` and `SubmitTxBlobAndWait` methods for both clients.
 - Added `Autofill` method for rpc client.
 - New `MaxRetries` and `RetryDelay` config options for both clients.
 
