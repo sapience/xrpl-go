@@ -153,7 +153,7 @@ func (r *Runner) ProcessTransactionAndWait(flatTx *transaction.FlatTransaction, 
 			return nil, hash, err
 		}
 
-		txResp, err := r.client.SubmitAndWait(blob, true)
+		txResp, err := r.client.SubmitTxBlobAndWait(blob, true)
 		if err != nil {
 			if attempts < r.config.MaxRetries && err.Error() == "transaction failed to submit with engine result: tefPAST_SEQ" {
 				attempts++
