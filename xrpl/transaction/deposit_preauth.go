@@ -99,7 +99,7 @@ func (d *DepositPreauth) Validate() (bool, error) {
 	}
 
 	// check that one of the four fields (Authorize, AuthorizeCredentials, Unauthorize, UnauthorizeCredentials) only is set
-	if !d.IsOnlyOneFieldSet() {
+	if !d.isOnlyOneFieldSet() {
 		return false, ErrDepositPreauthMustSetOnlyOneField
 	}
 
@@ -138,8 +138,8 @@ func (d *DepositPreauth) Validate() (bool, error) {
 	return true, nil
 }
 
-// IsOnlyOneFieldSet returns true if only one field is set in the DepositPreauth struct.
-func (d *DepositPreauth) IsOnlyOneFieldSet() bool {
+// isOnlyOneFieldSet returns true if only one field is set in the DepositPreauth struct.
+func (d *DepositPreauth) isOnlyOneFieldSet() bool {
 	var count int
 
 	if d.Authorize != "" {

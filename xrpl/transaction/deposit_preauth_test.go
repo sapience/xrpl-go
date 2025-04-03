@@ -401,7 +401,7 @@ func TestDepositPreauth_IsOnlyOneFieldSet(t *testing.T) {
 
 	for _, testcase := range testcases {
 		t.Run(testcase.name, func(t *testing.T) {
-			result := testcase.dp.IsOnlyOneFieldSet()
+			result := testcase.dp.isOnlyOneFieldSet()
 			require.Equal(t, testcase.expected, result)
 		})
 	}
