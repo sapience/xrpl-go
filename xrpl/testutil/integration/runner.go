@@ -137,30 +137,3 @@ func (r *Runner) processTransaction(flatTx *transaction.FlatTransaction, signer 
 		attempts++
 	}
 }
-
-func (r *Runner) ProcessTransactionAndWait(flatTx *transaction.FlatTransaction, signer *wallet.Wallet) (*transactions.TxResponse, string, error) {
-	attempts := 0
-
-	for {
-		err := r.client.Autofill(flatTx)
-		if err != nil {
-			return nil, "", err
-		}
-
-		blob, hash, err := signer.Sign(*flatTx)
-		if err != nil {
-			return nil, hash, err
-		}
-
-		txResp, err := r.client.SubmitTxBlobAndWait(blob, true)
-		if err != nil {
-			if attempts < r.config.MaxRetries && err.Error() == "transaction failed to submit with engine result: tefPAST_SEQ" {
-				attempts++
-				continue
-			}
-			return nil, hash, err
-		}
-
-		return txResp, hash, nil
-	}
-}
