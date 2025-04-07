@@ -23,8 +23,8 @@ func TestIssue_FromJson(t *testing.T) {
 			},
 			expected: []byte{
 				0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0,
 			},
 			expectedErr: nil,
 		},
@@ -118,7 +118,7 @@ func TestIssue_ToJson(t *testing.T) {
 			},
 		},
 		{
-			name: "fail - invalid Issue",
+			name:     "fail - invalid Issue",
 			expected: nil,
 			opts:     []int{20},
 			err:      errors.New("errReadBytes"),
