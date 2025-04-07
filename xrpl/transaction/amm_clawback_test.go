@@ -71,7 +71,7 @@ func TestAMMClawback_Flatten(t *testing.T) {
 			},
 			expected: FlatTransaction{
 				"TransactionType": AMMClawbackTx.String(),
-				"Asset2":         "100",
+				"Asset2":          "100",
 			},
 		},
 		{
@@ -110,7 +110,7 @@ func TestAMMClawback_Flatten(t *testing.T) {
 			expected: FlatTransaction{
 				"TransactionType": AMMClawbackTx.String(),
 				"Amount": map[string]interface{}{
-					"currency": "USD", 
+					"currency": "USD",
 					"issuer":   "rWYkbWkCeg8dP6rXALnjgZSjjLyih5NXm",
 					"value":    "100",
 				},
