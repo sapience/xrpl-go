@@ -32,24 +32,26 @@ var (
 // (Added by the AMMClawback amendment)
 //
 // ```json
-// {
-//   "TransactionType": "AMMClawback",
-//   "Account": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
-//   "Holder": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-//   "Asset": {
-//       "currency" : "FOO",
-//       "issuer" : "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL"
-//   },
-//   "Asset2" : {
-//       "currency" : "BAR",
-//       "issuer" : "rHtptZx1yHf6Yv43s1RWffM3XnEYv3XhRg"
-//   },
-//   "Amount": {
-//       "currency" : "FOO",
-//       "issuer" : "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
-//       "value" : "1000"
-//   }
-// }
+//
+//	{
+//	  "TransactionType": "AMMClawback",
+//	  "Account": "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
+//	  "Holder": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+//	  "Asset": {
+//	      "currency" : "FOO",
+//	      "issuer" : "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL"
+//	  },
+//	  "Asset2" : {
+//	      "currency" : "BAR",
+//	      "issuer" : "rHtptZx1yHf6Yv43s1RWffM3XnEYv3XhRg"
+//	  },
+//	  "Amount": {
+//	      "currency" : "FOO",
+//	      "issuer" : "rPdYxU9dNkbzC5Y2h4jLbVJ3rMRrk7WVRL",
+//	      "value" : "1000"
+//	  }
+//	}
+//
 // ```
 type AMMClawback struct {
 	BaseTx
