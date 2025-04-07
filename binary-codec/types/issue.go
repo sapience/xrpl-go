@@ -45,19 +45,19 @@ func (i *Issue) FromJSON(json any) ([]byte, error) {
 
 	currency, ok := mapObj["currency"]
 	if !ok {
-		mptIssuanceId, ok := mapObj["mpt_issuance_id"].(string)
+		mptIssuanceID, ok := mapObj["mpt_issuance_id"].(string)
 		if !ok {
 			return nil, ErrInvalidCurrency
 		}
 
-		mptIssuanceIdBytes, err := hex.DecodeString(mptIssuanceId)
+		mptIssuanceIDBytes, err := hex.DecodeString(mptIssuanceID)
 		if err != nil {
 			return nil, err
 		}
 
 		i.length = MPTIssuanceIDBytesLength
 
-		return mptIssuanceIdBytes, nil
+		return mptIssuanceIDBytes, nil
 	}
 
 	currencyCodec := &Currency{}
@@ -134,8 +134,8 @@ func (i *Issue) isIssueObject(obj any) bool {
 
 	nKeys := len(mapObj)
 
-	_, okMptIssuanceId := mapObj["mpt_issuance_id"]
-	if nKeys == 1 && okMptIssuanceId {
+	_, okMptIssuanceID := mapObj["mpt_issuance_id"]
+	if nKeys == 1 && okMptIssuanceID {
 		return true
 	}
 
