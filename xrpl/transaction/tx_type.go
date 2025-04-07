@@ -2,6 +2,7 @@ package transaction
 
 type TxType string
 
+// nolint // otherwise issues with the Credential transaction types
 const (
 	AccountSetTx       TxType = "AccountSet"
 	AccountDeleteTx    TxType = "AccountDelete"
@@ -15,6 +16,9 @@ const (
 	CheckCashTx        TxType = "CheckCash"
 	CheckCreateTx      TxType = "CheckCreate"
 	ClawbackTx         TxType = "Clawback"
+	CredentialAcceptTx                  TxType = "CredentialAccept"
+	CredentialCreateTx                  TxType = "CredentialCreate"
+	CredentialDeleteTx                  TxType = "CredentialDelete"
 	DepositPreauthTx   TxType = "DepositPreauth"
 	DIDDeleteTx        TxType = "DIDDelete"
 	DIDSetTx           TxType = "DIDSet"
@@ -41,6 +45,8 @@ const (
 	PaymentChannelClaimTx               TxType = "PaymentChannelClaim"
 	PaymentChannelCreateTx              TxType = "PaymentChannelCreate"
 	PaymentChannelFundTx                TxType = "PaymentChannelFund"
+	PermissionedDomainDeleteTx          TxType = "PermissionedDomainDelete"
+	PermissionedDomainSetTx             TxType = "PermissionedDomainSet"
 	SetRegularKeyTx                     TxType = "SetRegularKey"
 	SignerListSetTx                     TxType = "SignerListSet"
 	TrustSetTx                          TxType = "TrustSet"

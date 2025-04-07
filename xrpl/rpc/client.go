@@ -7,10 +7,13 @@ import (
 	"time"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
+	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
+	rpctypes "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 )
 
@@ -100,7 +103,11 @@ func (c *Client) Request(reqParams XRPLRequest) (XRPLResponse, error) {
 	return &jr, nil
 }
 
-func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
+// SubmitTxBlob sends a pre-signed transaction blob to the server.
+// It decodes the blob to confirm that it contains either a signature
+// or a signing public key, and then submits it using a submission request.
+// The failHard flag determines how strictly errors are handled.
+func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return nil, err
@@ -117,6 +124,71 @@ func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse,
 		TxBlob:   txBlob,
 		FailHard: failHard,
 	})
+}
+
+// SubmitTxBlobAndWait sends a pre-signed transaction blob to the server,
+// decodes it to retrieve the required LastLedgerSequence, submits the blob,
+// and then waits until the transaction is confirmed in a ledger. It returns
+// the transaction response if the submission is successful.
+func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
+	tx, err := binarycodec.Decode(txBlob)
+	if err != nil {
+		return nil, err
+	}
+
+	lastLedgerSequence, ok := tx["LastLedgerSequence"].(uint32)
+	if !ok {
+
+		return nil, ErrMissingLastLedgerSequenceInTransaction
+
+	}
+
+	txResponse, err := c.SubmitTxBlob(txBlob, failHard)
+	if err != nil {
+		return nil, err
+	}
+
+	if txResponse.EngineResult != "tesSUCCESS" {
+		return nil, &ClientError{ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult}
+	}
+
+	txHash, err := hash.SignTxBlob(txBlob)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.waitForTransaction(txHash, lastLedgerSequence)
+}
+
+// SubmitTx signs the transaction (if necessary) and submits it to the server
+// via a submission request. It applies the provided submit options to decide whether
+// to autofill missing fields and enforce failHard mode during submission.
+func (c *Client) SubmitTx(tx transaction.FlatTransaction, opts *rpctypes.SubmitOptions) (*requests.SubmitResponse, error) {
+	txBlob, err := c.getSignedTx(tx, opts.Autofill, opts.Wallet)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.submitRequest(&requests.SubmitRequest{
+		TxBlob:   txBlob,
+		FailHard: opts.FailHard,
+	})
+}
+
+// SubmitTxAndWait prepares a transaction by ensuring it is fully signed,
+// submits it to the server, and waits for ledger confirmation.
+// It validates that the transaction's EngineResult is successful before returning
+// the transaction response.
+func (c *Client) SubmitTxAndWait(tx transaction.FlatTransaction, opts *rpctypes.SubmitOptions) (*requests.TxResponse, error) {
+	// Get the signed transaction blob.
+	txBlob, err := c.getSignedTx(tx, opts.Autofill, opts.Wallet)
+	if err != nil {
+		return nil, err
+	}
+
+	// Delegate to SubmitTxBlobAndWait to handle submission, engine result check,
+	// ledger sequence validation, and waiting for confirmation.
+	return c.SubmitTxBlobAndWait(txBlob, opts.FailHard)
 }
 
 func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.SubmitMultisignedResponse, error) {
@@ -210,6 +282,12 @@ func (c *Client) AutofillMultisigned(tx *transaction.FlatTransaction, nSigners u
 	return nil
 }
 
+// FaucetProvider returns the faucet provider for the client.
+func (c *Client) FaucetProvider() common.FaucetProvider {
+	return c.cfg.faucetProvider
+}
+
+// FundWallet funds a wallet with the client's faucet provider.
 func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	if wallet.ClassicAddress == "" {
 		return ErrCannotFundWalletWithoutClassicAddress
@@ -221,32 +299,4 @@ func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	}
 
 	return nil
-}
-
-// SubmitAndWait sends a transaction to the server and waits for it to be included in a ledger.
-// This function is used to send transactions to the server and wait for them to be included in a ledger.
-// It returns the transaction response from the server.
-func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
-	tx, err := binarycodec.Decode(txBlob)
-	if err != nil {
-		return nil, err
-	}
-
-	lastLedgerSequence := tx["LastLedgerSequence"].(uint32)
-
-	txResponse, err := c.Submit(txBlob, failHard)
-	if err != nil {
-		return nil, err
-	}
-
-	if txResponse.EngineResult != "tesSUCCESS" {
-		return nil, &ClientError{ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult}
-	}
-
-	txHash, err := hash.SignTxBlob(txBlob)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.waitForTransaction(txHash, lastLedgerSequence)
 }

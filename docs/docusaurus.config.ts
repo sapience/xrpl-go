@@ -5,15 +5,15 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'XRPL Go',
-  tagline: 'XRPL Go',
+  title: 'XRPL GO',
+  tagline: 'XRPL GO',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://peersyst.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/xrpl-go',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -22,6 +22,9 @@ const config: Config = {
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
+
+  deploymentBranch: 'gh-pages',
+  trailingSlash: false,
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -40,22 +43,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
+            'https://github.com/Peersyst/xrpl-go/tree/main/docs',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -64,14 +52,24 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        docsRouteBasePath: '/docs',
+      },
+    ],
+  ],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/logo.png',
     navbar: {
-      title: 'XRPL Go',
+      title: 'XRPL GO',
       logo: {
-        alt: 'XRPL Go Logo',
-        src: 'img/xrpl-logo.png',
+        alt: 'XRPL GO Logo',
+        src: 'img/xrpl-go-logo.png',
       },
       items: [
         {
@@ -94,8 +92,20 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Docs',
+              label: 'Getting Started',
               to: '/docs/intro',
+            },
+            {
+              label: 'Installation',
+              to: '/docs/installation',
+            },
+            {
+              label: 'keypairs',
+              to: '/docs/keypairs',
+            },
+            {
+              label: 'xrpl',
+              to: '/docs/xrpl/currency',
             },
           ],
         },
@@ -106,10 +116,18 @@ const config: Config = {
               label: 'GitHub',
               href: 'https://github.com/Peersyst/xrpl-go',
             },
+            {
+              label: 'Reference',
+              href: 'https://pkg.go.dev/github.com/Peersyst/xrpl-go',
+            },
           ],
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} XRPL Go.`,
+    },
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: true,
     },
     prism: {
       theme: prismThemes.github,

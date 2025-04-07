@@ -30,6 +30,8 @@ type Config struct {
 
 	// Faucet config
 	faucetProvider common.FaucetProvider
+
+	timeout time.Duration
 }
 
 type ConfigOpt func(c *Config)
@@ -58,6 +60,15 @@ func WithFaucetProvider(fp common.FaucetProvider) ConfigOpt {
 	}
 }
 
+func WithTimeout(timeout time.Duration) ConfigOpt {
+	return func(c *Config) {
+		c.timeout = timeout
+		if hc, ok := c.HTTPClient.(*http.Client); ok {
+			hc.Timeout = timeout
+		}
+	}
+}
+
 func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) {
 
 	// validate a url has been passed in
@@ -70,7 +81,7 @@ func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) {
 	}
 
 	cfg := &Config{
-		HTTPClient: &http.Client{Timeout: time.Duration(1) * time.Second}, // default timeout value - allow custom timme out?
+		HTTPClient: &http.Client{},
 		URL:        url,
 		Headers: map[string][]string{
 			"Content-Type": {"application/json"},
@@ -86,5 +97,11 @@ func NewClientConfig(url string, opts ...ConfigOpt) (*Config, error) {
 	for _, opt := range opts {
 		opt(cfg)
 	}
+
+	// Ensure the HTTPClient has the correct timeout if user did not set one
+	if hc, ok := cfg.HTTPClient.(*http.Client); ok && cfg.timeout == 0 {
+		hc.Timeout = common.DefaultTimeout
+	}
+
 	return cfg, nil
 }

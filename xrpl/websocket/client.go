@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,11 +18,13 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/common"
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
+	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
-	"github.com/gorilla/websocket"
+	wstypes "github.com/Peersyst/xrpl-go/xrpl/websocket/types"
+	ws "github.com/gorilla/websocket"
 
 	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
@@ -36,11 +37,23 @@ const (
 var (
 	ErrIncorrectID          = errors.New("incorrect id")
 	ErrNotConnectedToServer = errors.New("not connected to server")
+	ErrRequestTimedOut      = errors.New("request timed out")
 )
 
 type Client struct {
 	cfg  ClientConfig
-	conn *websocket.Conn
+	conn *Connection
+
+	// Channels
+	errChan          chan error
+	requestChan      chan *ClientResponse
+	ledgerClosedChan chan *streamtypes.LedgerStream
+	validationChan   chan *streamtypes.ValidationStream
+	transactionChan  chan *streamtypes.TransactionStream
+	peerStatusChan   chan *streamtypes.PeerStatusStream
+	orderBookChan    chan *streamtypes.OrderBookStream
+	bookChangesChan  chan *streamtypes.BookChangesStream
+	consensusChan    chan *streamtypes.ConsensusStream
 
 	idCounter atomic.Uint32
 	NetworkID uint32
@@ -50,39 +63,35 @@ type Client struct {
 // This client will open and close a websocket connection for each request.
 func NewClient(cfg ClientConfig) *Client {
 	return &Client{
-		cfg: cfg,
+		cfg:         cfg,
+		requestChan: make(chan *ClientResponse),
+		errChan:     make(chan error),
+		conn:        NewConnection(cfg.host),
 	}
 }
 
-// Connect opens a websocket connection to the server.
+// Connect opens a websocket connection to the server. It starts reading messages in a goroutine.
 func (c *Client) Connect() error {
-	conn, _, err := websocket.DefaultDialer.Dial(c.cfg.host, nil)
+	err := c.conn.Connect()
 	if err != nil {
 		return err
 	}
-	c.conn = conn
+	go c.readMessages()
 	return nil
 }
 
 // Disconnect closes the websocket connection.
-func (c *Client) Disconnect() {
-	if c.conn == nil {
-		return
-	}
-	if err := c.conn.Close(); err != nil {
-		fmt.Println("Error closing websocket connection: ", err)
-	}
-	c.conn = nil
+func (c *Client) Disconnect() error {
+	return c.conn.Disconnect()
 }
 
 // IsConnected returns true if the client is connected to the server.
 func (c *Client) IsConnected() bool {
-	return c.conn != nil
+	return c.conn.IsConnected()
 }
 
-// Conn returns the websocket connection.
-func (c *Client) Conn() *websocket.Conn {
-	return c.conn
+func (c *Client) FaucetProvider() commonconstants.FaucetProvider {
+	return c.cfg.faucetProvider
 }
 
 // Autofill fills in the missing fields in a transaction.
@@ -188,19 +197,12 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 		return nil, ErrNotConnectedToServer
 	}
 
-	err = c.Conn().WriteMessage(websocket.TextMessage, msg)
+	err = c.conn.WriteMessage(msg)
 	if err != nil {
 		return nil, err
 	}
 
-	_, v, err := c.Conn().ReadMessage()
-	if err != nil {
-		return nil, err
-	}
-	jDec := json.NewDecoder(bytes.NewReader(json.RawMessage(v)))
-	jDec.UseNumber()
-	var res ClientResponse
-	err = jDec.Decode(&res)
+	res, err := c.awaitResponse(int(id))
 	if err != nil {
 		return nil, err
 	}
@@ -212,13 +214,14 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 		return nil, err
 	}
 
-	return &res, nil
+	return res, nil
 }
 
-// Submit sends a transaction to the server and returns the response.
-// This function is used to send transactions to the server.
-// It returns the response from the server.
-func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
+// SubmitTxBlob sends a pre-signed transaction blob to the server.
+// It decodes the blob to confirm that it contains either a signature
+// or a signing public key, and then submits it using a submission request.
+// The failHard flag determines how strictly errors are handled.
+func (c *Client) SubmitTxBlob(txBlob string, failHard bool) (*requests.SubmitResponse, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return nil, err
@@ -228,12 +231,27 @@ func (c *Client) Submit(txBlob string, failHard bool) (*requests.SubmitResponse,
 	_, okPubKey := tx["SigningPubKey"].(string)
 
 	if !okTxSig && !okPubKey {
-		return nil, errors.New("transaction must have a TxSignature or SigningPubKey set")
+		return nil, ErrMissingTxSignatureOrSigningPubKey
 	}
 
 	return c.submitRequest(&requests.SubmitRequest{
 		TxBlob:   txBlob,
 		FailHard: failHard,
+	})
+}
+
+// SubmitTx signs the transaction (if necessary) and submits it to the server
+// via a submission request. It applies the provided submit options to decide whether
+// to autofill missing fields and enforce failHard mode during submission.
+func (c *Client) SubmitTx(tx transaction.FlatTransaction, opts *wstypes.SubmitOptions) (*requests.SubmitResponse, error) {
+	txBlob, err := c.getSignedTx(tx, opts.Autofill, opts.Wallet)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.submitRequest(&requests.SubmitRequest{
+		TxBlob:   txBlob,
+		FailHard: opts.FailHard,
 	})
 }
 
@@ -263,24 +281,29 @@ func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.Subm
 	})
 }
 
-// SubmitAndWait sends a transaction to the server and waits for it to be included in a ledger.
-// This function is used to send transactions to the server and wait for them to be included in a ledger.
-// It returns the transaction response from the server.
-func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
+// SubmitTxBlobAndWait sends a pre-signed transaction blob to the server,
+// decodes it to retrieve the required LastLedgerSequence, submits the blob,
+// and then waits until the transaction is confirmed in a ledger. It returns
+// the transaction response if the submission is successful.
+func (c *Client) SubmitTxBlobAndWait(txBlob string, failHard bool) (*requests.TxResponse, error) {
 	tx, err := binarycodec.Decode(txBlob)
 	if err != nil {
 		return nil, err
 	}
 
-	lastLedgerSequence := tx["LastLedgerSequence"].(uint32)
+	lastLedgerSequence, ok := tx["LastLedgerSequence"].(uint32)
+	if !ok {
 
-	txResponse, err := c.Submit(txBlob, failHard)
+		return nil, ErrMissingLastLedgerSequenceInTransaction
+
+	}
+	txResponse, err := c.SubmitTxBlob(txBlob, failHard)
 	if err != nil {
 		return nil, err
 	}
 
 	if txResponse.EngineResult != "tesSUCCESS" {
-		return nil, errors.New("transaction failed to submit with engine result: " + txResponse.EngineResult)
+		return nil, &ClientError{ErrorString: "transaction failed to submit with engine result: " + txResponse.EngineResult}
 	}
 
 	txHash, err := hash.SignTxBlob(txBlob)
@@ -289,6 +312,22 @@ func (c *Client) SubmitAndWait(txBlob string, failHard bool) (*requests.TxRespon
 	}
 
 	return c.waitForTransaction(txHash, lastLedgerSequence)
+}
+
+// SubmitTxAndWait prepares a transaction by ensuring it is fully signed,
+// submits it to the server, and waits for ledger confirmation.
+// It validates that the transaction's EngineResult is successful before returning
+// the transaction response.
+func (c *Client) SubmitTxAndWait(tx transaction.FlatTransaction, opts *wstypes.SubmitOptions) (*requests.TxResponse, error) {
+	// Get the signed transaction blob.
+	txBlob, err := c.getSignedTx(tx, opts.Autofill, opts.Wallet)
+	if err != nil {
+		return nil, err
+	}
+
+	// Delegate to SubmitTxBlobAndWait to handle submission, engine result check,
+	// ledger sequence validation, and waiting for confirmation.
+	return c.SubmitTxBlobAndWait(txBlob, opts.FailHard)
 }
 
 func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*requests.TxResponse, error) {
@@ -571,4 +610,157 @@ func (c *Client) setTransactionFlags(tx *transaction.FlatTransaction) error {
 	}
 
 	return nil
+}
+
+func (c *Client) awaitResponse(id int) (*ClientResponse, error) {
+	for {
+		select {
+		case res := <-c.requestChan:
+			if res.ID == id {
+				return res, nil
+			}
+		case <-time.After(c.cfg.timeout):
+			return nil, ErrRequestTimedOut
+		}
+	}
+}
+
+func (c *Client) handleMessage(message []byte) {
+	var stream wstypes.Message
+	c.unmarshalMessage(message, &stream)
+	if stream.IsRequest() {
+		c.handleRequest(message)
+	} else if stream.IsStream() {
+		c.handleStream(stream.Type, message)
+	}
+}
+
+func (c *Client) handleRequest(message []byte) {
+	var res ClientResponse
+	c.unmarshalMessage(message, &res)
+	c.requestChan <- &res
+}
+
+func (c *Client) unmarshalMessage(message []byte, v any) {
+	if err := json.Unmarshal(message, v); err != nil {
+		if c.errChan == nil {
+			c.errChan = make(chan error)
+		}
+		c.errChan <- err
+	}
+}
+
+func (c *Client) handleStream(t streamtypes.Type, message []byte) {
+	switch t {
+	case streamtypes.LedgerStreamType:
+		var ledger streamtypes.LedgerStream
+		c.unmarshalMessage(message, &ledger)
+
+		if c.ledgerClosedChan != nil {
+			c.ledgerClosedChan <- &ledger
+		}
+	case streamtypes.TransactionStreamType:
+		var transaction streamtypes.TransactionStream
+		c.unmarshalMessage(message, &transaction)
+		if c.transactionChan != nil {
+			c.transactionChan <- &transaction
+		}
+	case streamtypes.ValidationStreamType:
+		var validation streamtypes.ValidationStream
+		c.unmarshalMessage(message, &validation)
+		if c.validationChan != nil {
+			c.validationChan <- &validation
+		}
+	case streamtypes.PeerStatusStreamType:
+		var peerStatus streamtypes.PeerStatusStream
+		c.unmarshalMessage(message, &peerStatus)
+		if c.peerStatusChan != nil {
+			c.peerStatusChan <- &peerStatus
+		}
+	case streamtypes.ConsensusStreamType:
+		var consensus streamtypes.ConsensusStream
+		c.unmarshalMessage(message, &consensus)
+		if c.consensusChan != nil {
+			c.consensusChan <- &consensus
+		}
+	default:
+		if c.errChan == nil {
+			c.errChan = make(chan error)
+		}
+		c.errChan <- fmt.Errorf("unknown stream type: %v", t)
+	}
+}
+
+func (c *Client) readMessages() {
+	retryCount := 0
+	maxRetries := c.cfg.maxReconnects
+
+	for {
+		if c.conn == nil {
+			return
+		}
+		message, err := c.conn.ReadMessage()
+		switch {
+		case ws.IsCloseError(err) || ws.IsUnexpectedCloseError(err):
+			if retryCount >= maxRetries {
+				if c.errChan == nil {
+					c.errChan = make(chan error)
+				}
+				c.errChan <- fmt.Errorf("max reconnection attempts (%d) reached", maxRetries)
+				return
+			}
+			retryCount++
+			connErr := c.conn.Connect()
+			if connErr != nil {
+				if c.errChan == nil {
+					c.errChan = make(chan error)
+				}
+				c.errChan <- connErr
+				return
+			}
+		case err != nil:
+			c.errChan <- err
+			return
+		default:
+			// Send the message to the channel
+			c.handleMessage(message)
+			// Reset retry count on successful message
+			retryCount = 0
+		}
+	}
+}
+
+// getSignedTx ensures the transaction is fully signed and returns the transaction blob.
+// If the transaction is already signed, it encodes and returns it. Otherwise, it autofills (if enabled)
+// and signs the transaction using the provided wallet.
+func (c *Client) getSignedTx(tx transaction.FlatTransaction, autofill bool, wallet *wallet.Wallet) (string, error) {
+	// Check if the transaction is already signed: both fields must be non-empty.
+	sig, sigOk := tx["TxSignature"].(string)
+	pubKey, pubKeyOk := tx["SigningPubKey"].(string)
+	if sigOk && sig != "" && pubKeyOk && pubKey != "" {
+		blob, err := binarycodec.Encode(tx)
+		if err != nil {
+			return "", err
+		}
+		return blob, nil
+	}
+
+	// If not signed, ensure a wallet is provided.
+	if wallet == nil {
+		return "", ErrMissingWallet
+	}
+
+	// Optionally autofill the transaction.
+	if autofill {
+		if err := c.Autofill(&tx); err != nil {
+			return "", err
+		}
+	}
+
+	// Sign the transaction.
+	txBlob, _, err := wallet.Sign(tx)
+	if err != nil {
+		return "", err
+	}
+	return txBlob, nil
 }
