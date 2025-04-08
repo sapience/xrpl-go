@@ -99,7 +99,7 @@ func main() {
 		return
 	}
 
-	response, err := client.SubmitAndWait(txBlob, false)
+	response, err := client.SubmitTxBlobAndWait(txBlob, false)
 	if err != nil {
 		fmt.Println("❌ Error submitting issuance transaction:", err)
 		return
