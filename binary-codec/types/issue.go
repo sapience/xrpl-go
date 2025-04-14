@@ -14,11 +14,11 @@ const (
 )
 
 var (
-	ErrInvalidIssueObject = errors.New("invalid issue object")
-	ErrInvalidCurrency    = errors.New("invalid currency")
-	ErrInvalidIssuer      = errors.New("invalid issuer")
+	ErrInvalidIssueObject       = errors.New("invalid issue object")
+	ErrInvalidCurrency          = errors.New("invalid currency")
+	ErrInvalidIssuer            = errors.New("invalid issuer")
 	ErrMissingIssueLengthOption = errors.New("missing length option for Issue.ToJSON")
-	XRPBytes = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	XRPBytes                    = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 )
 
 // Issue represents an XRPL Issue, which is essentially an AccountID.

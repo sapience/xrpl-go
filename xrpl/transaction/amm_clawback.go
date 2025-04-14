@@ -109,9 +109,9 @@ func (a *AMMClawback) Validate() (bool, error) {
 		return false, ErrInvalidHolder
 	}
 
-	 // Enforce that the issuer for Asset matches the Account if that is truly required.
+	// Enforce that the issuer for Asset matches the Account if that is truly required.
 	if a.Asset != (types.IssuedCurrency{}) && a.Asset.Issuer != string(a.Account) {
-		return false, ErrInvalidAssetIssuer 
+		return false, ErrInvalidAssetIssuer
 	}
 
 	if a.Amount != (types.IssuedCurrencyAmount{}) {
