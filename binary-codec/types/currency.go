@@ -3,8 +3,13 @@ package types
 import (
 	"bytes"
 	"encoding/hex"
+	"errors"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
+)
+
+var (
+	ErrMissingCurrencyLengthOption = errors.New("missing length option for Currency.ToJSON")
 )
 
 type Currency struct{}
@@ -17,6 +22,10 @@ func (c *Currency) FromJSON(json any) ([]byte, error) {
 }
 
 func (c *Currency) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) {
+	if len(opts) == 0 {
+		return nil, ErrMissingCurrencyLengthOption
+	}
+
 	currencyBytes, err := p.ReadBytes(opts[0])
 	if err != nil {
 		return nil, err

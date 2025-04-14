@@ -17,7 +17,7 @@ var (
 	ErrInvalidIssueObject = errors.New("invalid issue object")
 	ErrInvalidCurrency    = errors.New("invalid currency")
 	ErrInvalidIssuer      = errors.New("invalid issuer")
-
+	ErrMissingIssueLengthOption = errors.New("missing length option for Issue.ToJSON")
 	XRPBytes = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 )
 
@@ -84,6 +84,10 @@ func (i *Issue) FromJSON(json any) ([]byte, error) {
 // It uses the addresscodec package to encode the byte slice.
 // If the input is not a valid AccountID byte slice, it returns an error.
 func (i *Issue) ToJSON(p interfaces.BinaryParser, opts ...int) (any, error) {
+	if len(opts) == 0 {
+		return nil, ErrMissingIssueLengthOption
+	}
+
 	currencyCodec := &Currency{}
 
 	if i.length == MPTIssuanceIDBytesLength || opts[0] == MPTIssuanceIDBytesLength {
