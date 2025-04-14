@@ -5,13 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-# [Unreleased]
+## [Unreleased]
 
-## Added
+### Added
 
-### xrpl
+#### binary-codec
+
+- Added `MPToken` definitions. 
+- Adds `Hash192` type.
+
+#### xrpl
 
 - Added `AMMClawback` transaction type.
+- Adds `MPTokenAuthorize`, `MPTokenIssuanceCreate`, `MPTokenIssuanceDestroy`, `MPTokenIssuanceSet` transactions. It also adds the `types.Holder`, `types.AssetScale`, `types.MPTokenMetadata` and `types.TransferFee` types to represent the holder of the token, the asset scale, the metadata and the transfer fee of the token respectively.
 
 ## Changed
 
@@ -19,18 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactor on `Issue` codec type to support `Currency` and `Issuer` fields.
 
-# [v0.1.10]
+## [v0.1.10]
 
-## BREAKING CHANGES
+### BREAKING CHANGES
 
-### xrpl
+#### xrpl
 
 - `Submit` client method is renamed to `SubmitTxBlob` in both clients.
 - `SubmitAndWait` client method is renamed to `SubmitTxBlobAndWait` in both clients.
 
-## Added
+### Added
 
-### xrpl
+#### xrpl
 
 - Added `SubmitTx` and `SubmitTxAndWait` client methods to both clients.
 - Added support for the Credential fields in the following transaction types:
@@ -45,13 +51,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PermissionedDomainSet`
   - `PermissionedDomainDelete`
 
-## Fixed
+### Fixed
 
-### binary-codec
+#### binary-codec
 
 - Added native `uint8` type support for `Uint8` type.
 
-### big-decimal
+#### big-decimal
 
 - Fixed `BigDecimal` precision.
 
