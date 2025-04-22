@@ -78,6 +78,7 @@ func (a *AMMClawback) TxType() TxType {
 // Returns the flattened transaction.
 func (a *AMMClawback) Flatten() FlatTransaction {
 	flattened := a.BaseTx.Flatten()
+	flattened["TransactionType"] = a.TxType().String()
 
 	if a.Holder != "" {
 		flattened["Holder"] = a.Holder
@@ -110,7 +111,7 @@ func (a *AMMClawback) Validate() (bool, error) {
 	}
 
 	// Enforce that the issuer for Asset matches the Account if that is truly required.
-	if a.Asset != (types.IssuedCurrency{}) && a.Asset.Issuer != string(a.Account) {
+	if a.Asset != (types.IssuedCurrency{}) && a.Asset.Issuer != a.Account {
 		return false, ErrInvalidAssetIssuer
 	}
 
