@@ -348,7 +348,7 @@ func TestNFTokenMint_Validate(t *testing.T) {
 			errMessage: ErrExpirationRequiresAmount,
 		},
 		{
-			name: "fail - invalid Amount",
+			name: "fail - invalid issuer Amount",
 			nft: &NFTokenMint{
 				BaseTx: BaseTx{
 					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
