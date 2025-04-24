@@ -279,6 +279,97 @@ func TestNFTokenMint_Validate(t *testing.T) {
 			wantValid: true,
 			wantErr:   false,
 		},
+		{
+			name: "pass - all fields",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				TransferFee:  314,
+				Amount: types.IssuedCurrencyAmount{
+					Currency: "USD",
+					Issuer:   "rbBGwDkFSkTknJ4GA9nhaJdoDwWqSTpLE",
+					Value:    "1000",
+				},
+				Expiration:  1234567890,
+				Destination: "rM8JHG9dzYuPxHEir2qAi998Vsnr3jccUw",
+			},
+			setter: func(n *NFTokenMint) {
+				n.SetTransferableFlag()
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "fail - invalid Destination",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				TransferFee:  314,
+				Amount: types.IssuedCurrencyAmount{
+					Currency: "USD",
+					Issuer:   "rbBGwDkFSkTknJ4GA9nhaJdoDwWqSTpLE",
+					Value:    "1000",
+				},
+				Expiration:  1234567890,
+				Destination: "invalid",
+			},
+			setter: func(n *NFTokenMint) {
+				n.SetTransferableFlag()
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrInvalidDestination,
+		},
+		{
+			name: "fail - missing Amount when Expiration is set",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				TransferFee:  314,
+				Expiration:   1234567890,
+			},
+			setter: func(n *NFTokenMint) {
+				n.SetTransferableFlag()
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrExpirationRequiresAmount,
+		},
+		{
+			name: "fail - invalid Amount",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				TransferFee:  314,
+				Amount: types.IssuedCurrencyAmount{
+					Currency: "USD",
+					Issuer:   "invalid",
+					Value:    "1000",
+				},
+			},
+			setter: func(n *NFTokenMint) {
+				n.SetTransferableFlag()
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrInvalidIssuer,
+		},
 	}
 
 	for _, tt := range tests {
