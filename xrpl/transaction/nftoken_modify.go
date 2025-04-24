@@ -50,13 +50,13 @@ func (n *NFTokenModify) Flatten() FlatTransaction {
 	flattened["TransactionType"] = "NFTokenModify"
 
 	if n.Owner != "" {
-		flattened["Owner"] = n.Owner
+		flattened["Owner"] = n.Owner.String()
 	}
 
-	flattened["NFTokenID"] = n.NFTokenID
+	flattened["NFTokenID"] = n.NFTokenID.String()
 
 	if n.URI != "" {
-		flattened["URI"] = n.URI
+		flattened["URI"] = n.URI.String()
 	}
 
 	return flattened

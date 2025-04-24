@@ -131,7 +131,7 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	flattened["NFTokenTaxon"] = n.NFTokenTaxon
 
 	if n.Issuer != "" {
-		flattened["Issuer"] = n.Issuer
+		flattened["Issuer"] = n.Issuer.String()
 	}
 
 	if n.TransferFee != 0 {
@@ -139,11 +139,11 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	}
 
 	if n.URI != "" {
-		flattened["URI"] = n.URI
+		flattened["URI"] = n.URI.String()
 	}
 
 	if n.Amount != nil {
-		flattened["Amount"] = n.Amount
+		flattened["Amount"] = n.Amount.Flatten()
 	}
 
 	if n.Expiration != 0 {
@@ -151,7 +151,7 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	}
 
 	if n.Destination != "" {
-		flattened["Destination"] = n.Destination
+		flattened["Destination"] = n.Destination.String()
 	}
 
 	return flattened
