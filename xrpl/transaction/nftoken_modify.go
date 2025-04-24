@@ -1,6 +1,10 @@
 package transaction
 
-import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+import (
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+	"github.com/Peersyst/xrpl-go/pkg/typecheck"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+)
 
 // NFTokenModify is used to change the URI field of an NFT to point to a different URI in order to update the supporting data for the NFT.
 // The NFT must have been minted with the tfMutable flag set. See Dynamic Non-Fungible Tokens (https://xrpl.org/docs/concepts/tokens/nfts/dynamic-nfts).
@@ -56,4 +60,29 @@ func (n *NFTokenModify) Flatten() FlatTransaction {
 	}
 
 	return flattened
+}
+
+func (n *NFTokenModify) Validate() (bool, error) {
+	// Validate the base transaction
+	_, err := n.BaseTx.Validate()
+	if err != nil {
+		return false, err
+	}
+
+	// Check if the owner and account are not equal
+	if n.Account == n.Owner {
+		return false, ErrOwnerAccountConflict
+	}
+
+	// Check that the Owner is a valid XRPL address
+	if n.Owner != "" && !addresscodec.IsValidAddress(n.Owner.String()) {
+		return false, ErrInvalidOwner
+	}
+
+	// Check that the URI is a valid hex string
+	if n.URI != "" && !typecheck.IsHex(n.URI.String()) {
+		return false, ErrInvalidURI
+	}
+
+	return true, nil
 }

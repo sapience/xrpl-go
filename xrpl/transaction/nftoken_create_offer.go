@@ -21,8 +21,6 @@ const (
 // **********************************
 
 var (
-	// ErrOwnerAccountConflict is returned when the owner is the same as the account.
-	ErrOwnerAccountConflict = errors.New("owner must be different from the account")
 	// ErrOwnerPresentForSellOffer is returned when the owner is present for a sell offer.
 	ErrOwnerPresentForSellOffer = errors.New("owner must not be present for a sell offer")
 	// ErrOwnerNotPresentForBuyOffer is returned when the owner is not present for a buy offer.
