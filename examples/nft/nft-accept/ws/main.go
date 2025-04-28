@@ -13,17 +13,17 @@ import (
 )
 
 func main() {
+	// Connect to the XRPL devnet
 	fmt.Println("⏳ Connecting to devnet...")
 	client := websocket.NewClient(
 		websocket.NewClientConfig().
 			WithHost("wss://s.devnet.rippletest.net:51233").
 			WithFaucetProvider(faucet.NewDevnetFaucetProvider()),
 	)
-
 	defer client.Disconnect()
 
 	if err := client.Connect(); err != nil {
-		fmt.Println(err)
+		fmt.Println("❌ Error connecting to devnet:", err)
 		return
 	}
 
@@ -31,36 +31,39 @@ func main() {
 		fmt.Println("❌ Failed to connect to devnet")
 		return
 	}
-
 	fmt.Println("✅ Connected to devnet")
 	fmt.Println()
 
+	// Fund wallets
 	fmt.Println("⏳ Funding wallets...")
-	// Create and fund the nft wallets
+
+	// Create and fund the NFT minter wallet
 	nftMinter, err := wallet.New(crypto.ED25519())
 	if err != nil {
-		fmt.Println("❌ Error creating nft minter wallet:", err)
+		fmt.Println("❌ Error creating NFT minter wallet:", err)
 		return
 	}
 	if err := client.FundWallet(&nftMinter); err != nil {
-		fmt.Println("❌ Error funding nft minter wallet:", err)
+		fmt.Println("❌ Error funding NFT minter wallet:", err)
 		return
 	}
 	fmt.Println("💸 NFT minter wallet funded!")
 
+	// Create and fund the NFT buyer wallet
 	nftBuyer, err := wallet.New(crypto.ED25519())
 	if err != nil {
-		fmt.Println("❌ Error creating nft buyer wallet:", err)
+		fmt.Println("❌ Error creating NFT buyer wallet:", err)
 		return
 	}
 	if err := client.FundWallet(&nftBuyer); err != nil {
-		fmt.Println("❌ Error funding nft buyer wallet:", err)
+		fmt.Println("❌ Error funding NFT buyer wallet:", err)
 		return
 	}
 	fmt.Println("💸 NFT buyer wallet funded!")
 	fmt.Println()
 
-	// Mint NFT
+	// Mint an NFT
+	fmt.Println("⏳ Minting NFT...")
 	nftMint := transaction.NFTokenMint{
 		BaseTx: transaction.BaseTx{
 			Account:         nftMinter.ClassicAddress,
@@ -82,13 +85,14 @@ func main() {
 		return
 	}
 	if !responseMint.Validated {
-		fmt.Println("❌ NFTokenMint txn is not in a validated ledger", responseMint)
+		fmt.Println("❌ NFTokenMint transaction is not in a validated ledger:", responseMint)
 		return
 	}
-	fmt.Println("✅ NFT minted successfully! - 🌎 Hash: ", responseMint.Hash)
+	fmt.Println("✅ NFT minted successfully! - 🌎 Hash:", responseMint.Hash)
 	fmt.Println()
 
-	// Get the NFT token offer ID
+	// Extract the NFT token offer ID from the transaction metadata
+	fmt.Println("⏳ Extracting offer ID...")
 	metaMap, ok := responseMint.Meta.(map[string]any)
 	if !ok {
 		fmt.Println("❌ Meta is not a map[string]any")
@@ -100,11 +104,11 @@ func main() {
 		fmt.Println("❌ offer_id not found or not a string")
 		return
 	}
-
 	fmt.Println("🌎 offer_id:", offerID)
 	fmt.Println()
 
-	// Accept NFT
+	// Accept the NFT offer
+	fmt.Println("⏳ Accepting NFT offer...")
 	nftAccept := transaction.NFTokenAcceptOffer{
 		BaseTx: transaction.BaseTx{
 			Account:         nftBuyer.ClassicAddress,
@@ -122,8 +126,8 @@ func main() {
 		return
 	}
 	if !responseModify.Validated {
-		fmt.Println("❌ NFTokenAcceptOffer txn is not in a validated ledger", responseModify)
+		fmt.Println("❌ NFTokenAcceptOffer transaction is not in a validated ledger:", responseModify)
 		return
 	}
-	fmt.Println("✅ NFT offer accepted successfully! - 🌎 Hash: ", responseModify.Hash)
+	fmt.Println("✅ NFT offer accepted successfully! - 🌎 Hash:", responseModify.Hash)
 }

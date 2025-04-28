@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	// Initialize the RPC client configuration
 	cfg, err := rpc.NewClientConfig(
 		"https://s.devnet.rippletest.net:51234/",
 		rpc.WithFaucetProvider(faucet.NewDevnetFaucetProvider()),
@@ -21,34 +22,40 @@ func main() {
 		panic(err)
 	}
 
+	// Create the RPC client
 	client := rpc.NewClient(cfg)
 
+	// Step 1: Fund wallets
 	fmt.Println("⏳ Funding wallets...")
-	// Create and fund the nft wallets
+
+	// Create and fund the NFT minter wallet
 	nftMinter, err := wallet.New(crypto.ED25519())
 	if err != nil {
-		fmt.Println("❌ Error creating nft minter wallet:", err)
+		fmt.Println("❌ Error creating NFT minter wallet:", err)
 		return
 	}
 	if err := client.FundWallet(&nftMinter); err != nil {
-		fmt.Println("❌ Error funding nft minter wallet:", err)
+		fmt.Println("❌ Error funding NFT minter wallet:", err)
 		return
 	}
 	fmt.Println("💸 NFT minter wallet funded!")
 
+	// Create and fund the NFT buyer wallet
 	nftBuyer, err := wallet.New(crypto.ED25519())
 	if err != nil {
-		fmt.Println("❌ Error creating nft buyer wallet:", err)
+		fmt.Println("❌ Error creating NFT buyer wallet:", err)
 		return
 	}
 	if err := client.FundWallet(&nftBuyer); err != nil {
-		fmt.Println("❌ Error funding nft buyer wallet:", err)
+		fmt.Println("❌ Error funding NFT buyer wallet:", err)
 		return
 	}
 	fmt.Println("💸 NFT buyer wallet funded!")
 	fmt.Println()
 
-	// Mint NFT
+	// Step 2: Mint an NFT
+	fmt.Println("⏳ Minting NFT...")
+
 	nftMint := transaction.NFTokenMint{
 		BaseTx: transaction.BaseTx{
 			Account:         nftMinter.ClassicAddress,
@@ -76,7 +83,9 @@ func main() {
 	fmt.Println("✅ NFT minted successfully! - 🌎 Hash: ", responseMint.Hash)
 	fmt.Println()
 
-	// Get the NFT token offer ID
+	// Step 3: Retrieve the NFT token offer ID
+	fmt.Println("⏳ Retrieving NFT offer ID...")
+
 	metaMap, ok := responseMint.Meta.(map[string]any)
 	if !ok {
 		fmt.Println("❌ Meta is not a map[string]any")
@@ -92,7 +101,9 @@ func main() {
 	fmt.Println("🌎 offer_id:", offerID)
 	fmt.Println()
 
-	// Accept NFT
+	// Step 4: Accept the NFT offer
+	fmt.Println("⏳ Accepting NFT offer...")
+
 	nftAccept := transaction.NFTokenAcceptOffer{
 		BaseTx: transaction.BaseTx{
 			Account:         nftBuyer.ClassicAddress,
