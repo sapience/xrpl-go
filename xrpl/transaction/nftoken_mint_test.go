@@ -114,16 +114,16 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 				"TransactionType": "NFTokenMint",
 				"Fee":             "10",
 				"NFTokenTaxon":    uint32(12345),
-				"Issuer":          types.Address("rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW"),
+				"Issuer":          "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 				"TransferFee":     uint16(314),
-				"URI":             types.NFTokenURI("697066733A2F2F62616679626569676479727A74357366703775646D37687537367568377932366E6634646675796C71616266336F636C67747179353566627A6469"),
-				"Amount": types.IssuedCurrencyAmount{
-					Currency: "USD",
-					Issuer:   "r3Q1i8Y2e5v4Z2u7eFYTEXSwuJYfV2Jpn",
-					Value:    "1000",
+				"URI":             "697066733A2F2F62616679626569676479727A74357366703775646D37687537367568377932366E6634646675796C71616266336F636C67747179353566627A6469",
+				"Amount": map[string]interface{}{
+					"currency": "USD",
+					"issuer":   "r3Q1i8Y2e5v4Z2u7eFYTEXSwuJYfV2Jpn",
+					"value":    "1000",
 				},
 				"Expiration":  uint32(1234567890),
-				"Destination": types.Address("rM8JHG9dzYuPxHEir2qAi998Vsnr3jccUw"),
+				"Destination": "rM8JHG9dzYuPxHEir2qAi998Vsnr3jccUw",
 			},
 		},
 		{
