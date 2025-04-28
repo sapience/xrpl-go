@@ -78,18 +78,18 @@ func (n *NFTokenCreateOffer) Flatten() FlatTransaction {
 	flattened["TransactionType"] = "NFTokenCreateOffer"
 
 	if n.Owner != "" {
-		flattened["Owner"] = n.Owner
+		flattened["Owner"] = n.Owner.String()
 	}
 
-	flattened["NFTokenID"] = n.NFTokenID
-	flattened["Amount"] = n.Amount
+	flattened["NFTokenID"] = n.NFTokenID.String()
+	flattened["Amount"] = n.Amount.Flatten()
 
 	if n.Expiration != 0 {
 		flattened["Expiration"] = n.Expiration
 	}
 
 	if n.Destination != "" {
-		flattened["Destination"] = n.Destination
+		flattened["Destination"] = n.Destination.String()
 	}
 
 	return flattened
