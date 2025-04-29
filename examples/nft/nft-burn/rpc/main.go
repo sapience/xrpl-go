@@ -39,18 +39,6 @@ func main() {
 		return
 	}
 	fmt.Println("💸 NFT minter wallet funded!")
-
-	// Create and fund the NFT buyer wallet
-	nftBuyer, err := wallet.New(crypto.ED25519())
-	if err != nil {
-		fmt.Println("❌ Error creating NFT buyer wallet:", err)
-		return
-	}
-	if err := client.FundWallet(&nftBuyer); err != nil {
-		fmt.Println("❌ Error funding NFT buyer wallet:", err)
-		return
-	}
-	fmt.Println("💸 NFT buyer wallet funded!")
 	fmt.Println()
 
 	// Step 2: Mint an NFT
@@ -61,8 +49,6 @@ func main() {
 			Account:         nftMinter.ClassicAddress,
 			TransactionType: transaction.NFTokenMintTx,
 		},
-		Destination:  nftBuyer.ClassicAddress,
-		Amount:       txnTypes.XRPCurrencyAmount(1000000), // 1 XRP
 		NFTokenTaxon: 0,
 		URI:          txnTypes.NFTokenURI("68747470733A2F2F676F6F676C652E636F6D"), // https://google.com
 	}
@@ -83,8 +69,8 @@ func main() {
 	fmt.Println("✅ NFT minted successfully! - 🌎 Hash: ", responseMint.Hash)
 	fmt.Println()
 
-	// Step 3: Retrieve the NFT token offer ID
-	fmt.Println("⏳ Retrieving NFT offer ID...")
+	// Step 3: Retrieve the token ID
+	fmt.Println("⏳ Retrieving NFT ID...")
 
 	metaMap, ok := responseMint.Meta.(map[string]any)
 	if !ok {
@@ -92,37 +78,37 @@ func main() {
 		return
 	}
 
-	offerID, ok := metaMap["offer_id"].(string)
+	nftokenID, ok := metaMap["nftoken_id"].(string)
 	if !ok {
-		fmt.Println("❌ offer_id not found or not a string")
+		fmt.Println("❌ nftoken_id not found or not a string")
 		return
 	}
 
-	fmt.Println("🌎 offer_id:", offerID)
+	fmt.Println("🌎 nftoken_id:", nftokenID)
 	fmt.Println()
 
-	// Step 4: Accept the NFT offer
-	fmt.Println("⏳ Accepting NFT offer...")
+	// Step 4: Burn the NFT
+	fmt.Println("⏳ Burn the NFT...")
 
-	nftAccept := transaction.NFTokenAcceptOffer{
+	nftBurn := transaction.NFTokenBurn{
 		BaseTx: transaction.BaseTx{
-			Account:         nftBuyer.ClassicAddress,
+			Account:         nftMinter.ClassicAddress,
 			TransactionType: transaction.NFTokenAcceptOfferTx,
 		},
-		NFTokenSellOffer: txnTypes.Hash256(offerID),
+		NFTokenID: txnTypes.NFTokenID(nftokenID),
 	}
 
-	response, err := client.SubmitTxAndWait(nftAccept.Flatten(), &types.SubmitOptions{
+	responseBurn, err := client.SubmitTxAndWait(nftBurn.Flatten(), &types.SubmitOptions{
 		Autofill: true,
-		Wallet:   &nftBuyer,
+		Wallet:   &nftMinter,
 	})
 	if err != nil {
-		fmt.Println("❌ Error accepting NFT offer:", err)
+		fmt.Println("❌ Error burning NFT:", err)
 		return
 	}
-	if !response.Validated {
-		fmt.Println("❌ NFTokenAcceptOffer txn is not in a validated ledger", response)
+	if !responseBurn.Validated {
+		fmt.Println("❌ NFTokenBurn transactiob is not in a validated ledger", responseBurn)
 		return
 	}
-	fmt.Println("✅ NFT offer accepted successfully! - 🌎 Hash: ", response.Hash)
+	fmt.Println("✅ NFT burned successfully! - 🌎 Hash: ", responseBurn.Hash)
 }

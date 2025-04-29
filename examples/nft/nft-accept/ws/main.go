@@ -117,7 +117,7 @@ func main() {
 		NFTokenSellOffer: txnTypes.Hash256(offerID),
 	}
 
-	responseModify, err := client.SubmitTxAndWait(nftAccept.Flatten(), &types.SubmitOptions{
+	response, err := client.SubmitTxAndWait(nftAccept.Flatten(), &types.SubmitOptions{
 		Autofill: true,
 		Wallet:   &nftBuyer,
 	})
@@ -125,9 +125,9 @@ func main() {
 		fmt.Println("❌ Error accepting NFT offer:", err)
 		return
 	}
-	if !responseModify.Validated {
-		fmt.Println("❌ NFTokenAcceptOffer transaction is not in a validated ledger:", responseModify)
+	if !response.Validated {
+		fmt.Println("❌ NFTokenAcceptOffer transaction is not in a validated ledger:", response)
 		return
 	}
-	fmt.Println("✅ NFT offer accepted successfully! - 🌎 Hash:", responseModify.Hash)
+	fmt.Println("✅ NFT offer accepted successfully! - 🌎 Hash:", response.Hash)
 }
