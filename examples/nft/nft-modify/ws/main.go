@@ -35,8 +35,8 @@ func main() {
 	fmt.Println("✅ Connected to devnet")
 	fmt.Println()
 
-	fmt.Println("⏳ Funding wallet...")
 	// Create and fund the nft wallet
+	fmt.Println("⏳ Funding wallet...")
 	nftWallet, err := wallet.New(crypto.ED25519())
 	if err != nil {
 		fmt.Println("❌ Error creating nft wallet:", err)
@@ -100,7 +100,7 @@ func main() {
 		URI:       "68747470733A2F2F7961686F6F2E636F6D", // https://yahoo.com
 		NFTokenID: txnTypes.NFTokenID(nftokenID),
 	}
-	// nftoken_id
+
 	responseModify, err := client.SubmitTxAndWait(nftModify.Flatten(), &types.SubmitOptions{
 		Autofill: true,
 		Wallet:   &nftWallet,

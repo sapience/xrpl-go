@@ -145,7 +145,7 @@ func main() {
 	// Step 4: Cancel the NFT offers
 	fmt.Println("⏳ Canceling NFT offers...")
 
-	nftAccept := transaction.NFTokenCancelOffer{
+	nftCancel := transaction.NFTokenCancelOffer{
 		BaseTx: transaction.BaseTx{
 			Account:         nftMinter.ClassicAddress,
 			TransactionType: transaction.NFTokenAcceptOfferTx,
@@ -156,7 +156,7 @@ func main() {
 		},
 	}
 
-	response, err := client.SubmitTxAndWait(nftAccept.Flatten(), &types.SubmitOptions{
+	response, err := client.SubmitTxAndWait(nftCancel.Flatten(), &types.SubmitOptions{
 		Autofill: true,
 		Wallet:   &nftMinter,
 	})
