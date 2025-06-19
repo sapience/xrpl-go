@@ -29,6 +29,14 @@ const (
 	NativeAmountByteLength   = 8
 	CurrencyAmountByteLength = 48
 
+	MPTAmountByteLength      = 33
+	MPTMarkerByte            = 0x60
+	MPTIssuanceIDByteLength  = 24
+	MPTValueByteLength       = 8
+	MPTValueWithHeaderLength = 9
+	MPTSignBitMask           = 0x40
+	MPTHighBitMask           = 0x80
+
 	MinXRP   = 1e-6
 	MaxDrops = 1e17 // 100 billion XRP in drops aka 10^17
 
@@ -38,7 +46,12 @@ const (
 var (
 	ErrInvalidXRPValue     = errors.New("invalid XRP value")
 	ErrInvalidCurrencyCode = errors.New("invalid currency code")
-	zeroByteArray          = make([]byte, 20)
+
+	ErrInvalidMPTLength     = fmt.Errorf("MPT slice must be exactly %d bytes", MPTAmountByteLength)
+	ErrInsufficientMPTBytes = fmt.Errorf("not enough bytes for MPT issuance ID, need %d bytes", MPTIssuanceIDByteLength)
+	ErrInvalidIssuanceIDLen = fmt.Errorf("mpt_issuance_id must be exactly %d bytes", MPTIssuanceIDByteLength)
+
+	zeroByteArray = make([]byte, 20)
 )
 
 // InvalidAmountError is a custom error type for invalid amounts.
@@ -76,12 +89,14 @@ type Amount struct{}
 
 // FromJSON serializes an issued currency amount to its bytes representation from JSON.
 func (a *Amount) FromJSON(value any) ([]byte, error) {
-
 	switch value := value.(type) {
 	case string:
 		return serializeXrpAmount(value)
 	case map[string]any:
-		return serializeIssuedCurrencyAmount(value["value"].(string), value["currency"].(string), value["issuer"].(string))
+		if _, ok := value["issuer"]; ok {
+			return serializeIssuedCurrencyAmount(value["value"].(string), value["currency"].(string), value["issuer"].(string))
+		}
+		return serializeMPTCurrencyAmount(value["value"].(string), value["mpt_issuance_id"].(string))
 	default:
 		return nil, errors.New("invalid amount type")
 	}
@@ -97,6 +112,15 @@ func (a *Amount) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 	if !isPositive(b) {
 		sign = "-"
 	}
+
+	if b&0x20 != 0 {
+		token, err := p.ReadBytes(MPTAmountByteLength)
+		if err != nil {
+			return nil, err
+		}
+		return deserializeMPTAmount(token)
+	}
+
 	if isNative(b) {
 		xrp, err := p.ReadBytes(8)
 		if err != nil {
@@ -106,6 +130,7 @@ func (a *Amount) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 		xrpVal &= 0x3FFFFFFFFFFFFFFF
 		return sign + strconv.FormatUint(xrpVal, 10), nil
 	}
+
 	token, err := p.ReadBytes(48)
 	if err != nil {
 		return nil, err
@@ -187,6 +212,63 @@ func deserializeIssuer(data []byte) (string, error) {
 	return addresscodec.Encode(data, []byte{addresscodec.AccountAddressPrefix}, addresscodec.AccountAddressLength)
 }
 
+// deserializeMPTValue extracts and formats the value component from an MPT amount binary representation.
+// It handles sign bit and converts the 64-bit mantissa (split into MSB and LSB) to a string representation.
+func deserializeMPTValue(data []byte) (string, error) {
+	if len(data) < MPTValueWithHeaderLength {
+		return "", ErrInvalidMPTLength
+	}
+
+	sign := ""
+	if !isPositive(data[0]) {
+		sign = "-"
+	}
+
+	mant := data[1:MPTValueWithHeaderLength]
+	msb := binary.BigEndian.Uint32(mant[0:4])
+	lsb := binary.BigEndian.Uint32(mant[4:8])
+
+	msbBig := new(big.Int).SetUint64(uint64(msb))
+	lsbBig := new(big.Int).SetUint64(uint64(lsb))
+
+	shifted := new(big.Int).Lsh(msbBig, 32)
+
+	num := new(big.Int).Or(shifted, lsbBig)
+
+	return sign + num.String(), nil
+}
+
+// deserializeMPTIssuanceID extracts the issuance ID from an MPT amount binary representation
+// and converts it to a hexadecimal string.
+func deserializeMPTIssuanceID(data []byte) (string, error) {
+	if len(data) < MPTIssuanceIDByteLength {
+		return "", ErrInsufficientMPTBytes
+	}
+	idBytes := data[:MPTIssuanceIDByteLength]
+	return hex.EncodeToString(idBytes), nil
+}
+
+// deserializeMPTAmount deserializes a complete MPT amount binary representation into its
+// value and issuance ID components and returns them as a map.
+// MPT amounts must be exactly 33 bytes in length.
+func deserializeMPTAmount(data []byte) (map[string]any, error) {
+	if len(data) != MPTAmountByteLength {
+		return nil, ErrInvalidMPTLength
+	}
+	val, err := deserializeMPTValue(data[:MPTValueWithHeaderLength])
+	if err != nil {
+		return nil, err
+	}
+	id, err := deserializeMPTIssuanceID(data[MPTValueWithHeaderLength:])
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{
+		"value":           val,
+		"mpt_issuance_id": id,
+	}, nil
+}
+
 // verifyXrpValue validates the format of an XRP amount value.
 // XRP values should not contain a decimal point because they are represented as integers as drops.
 func verifyXrpValue(value string) error {
@@ -242,6 +324,32 @@ func verifyIOUValue(value string) error {
 	}
 
 	return err
+}
+
+// verifyMPTValue validates the format of an MPT amount value.
+// MPT values must be integers (no decimal point) and must not have the high bit set.
+func verifyMPTValue(value string) error {
+	if strings.Contains(value, ".") {
+		return &InvalidAmountError{Amount: value}
+	}
+
+	bi := new(big.Int)
+	if _, ok := bi.SetString(value, 10); !ok {
+		return &InvalidAmountError{Amount: value}
+	}
+
+	if bi.Sign() < 0 {
+		return &InvalidAmountError{Amount: value}
+	}
+
+	if bi.Sign() != 0 {
+		mask := new(big.Int).SetUint64(ZeroCurrencyAmountHex)
+		if new(big.Int).And(bi, mask).Sign() != 0 {
+			return &InvalidAmountError{Amount: value}
+		}
+	}
+
+	return nil
 }
 
 // serializeXrpAmount serializes an XRP amount value.
@@ -429,6 +537,64 @@ func serializeIssuedCurrencyAmount(value, currency, issuer string) ([]byte, erro
 	// So in Amount and PathSet fields, don't use the length indicator 0x14. This is in contrast to the AccountID fields where the length indicator prefix 0x14 is added.
 
 	return append(append(valBytes, currencyBytes...), issuerBytes...), nil
+}
+
+// serializeMPTCurrencyValue serializes an MPT currency value to its binary representation.
+// The value is split into high and low 32-bit parts and encoded as an 8-byte sequence.
+func serializeMPTCurrencyValue(value string) ([]byte, error) {
+	if err := verifyMPTValue(value); err != nil {
+		return nil, err
+	}
+
+	v, ok := new(big.Int).SetString(value, 10)
+	if !ok {
+		return nil, &InvalidAmountError{Amount: value}
+	}
+	maskLow32 := new(big.Int).SetUint64(0xFFFFFFFF)
+	hi := new(big.Int).Rsh(v, 32).Uint64()
+	lo := new(big.Int).And(v, maskLow32).Uint64()
+
+	buf := make([]byte, NativeAmountByteLength)
+	binary.BigEndian.PutUint32(buf[0:4], uint32(hi))
+	binary.BigEndian.PutUint32(buf[4:8], uint32(lo))
+	return buf, nil
+}
+
+// serializeMPTCurrencyIssuanceID converts a hexadecimal issuance ID string to its binary representation.
+// The issuance ID must be exactly 24 bytes when decoded.
+func serializeMPTCurrencyIssuanceID(issuanceHex string) ([]byte, error) {
+	idBytes, err := hex.DecodeString(issuanceHex)
+	if err != nil {
+		return nil, err
+	}
+	if len(idBytes) != MPTIssuanceIDByteLength {
+		return nil, ErrInvalidIssuanceIDLen
+	}
+	return idBytes, nil
+}
+
+// serializeMPTCurrencyAmount serializes a complete MPT amount by combining the value and issuance ID.
+// It adds the MPT marker byte and arranges the components into a 33-byte sequence.
+func serializeMPTCurrencyAmount(valueStr, issuanceHex string) ([]byte, error) {
+	if err := verifyMPTValue(valueStr); err != nil {
+		return nil, err
+	}
+
+	valBytes, err := serializeMPTCurrencyValue(valueStr)
+	if err != nil {
+		return nil, err
+	}
+
+	idBytes, err := serializeMPTCurrencyIssuanceID(issuanceHex)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := make([]byte, MPTAmountByteLength)
+	buf[0] = MPTMarkerByte
+	copy(buf[1:MPTValueWithHeaderLength], valBytes)
+	copy(buf[MPTValueWithHeaderLength:], idBytes)
+	return buf, nil
 }
 
 // Returns true if this amount is a "native" XRP amount - first bit in first byte set to 0 for native XRP

@@ -105,6 +105,56 @@ func TestVerifyIOUValue(t *testing.T) {
 	}
 }
 
+func TestVerifyMPTValue(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		expErr error
+	}{
+		{
+			name:   "valid mpt value - integer",
+			input:  "1000000",
+			expErr: nil,
+		},
+		{
+			name:   "valid mpt value - zero",
+			input:  "0",
+			expErr: nil,
+		},
+		{
+			name:   "invalid mpt value - decimal point",
+			input:  "100.50",
+			expErr: &InvalidAmountError{Amount: "100.50"},
+		},
+		{
+			name:   "invalid mpt value - negative number",
+			input:  "-500",
+			expErr: &InvalidAmountError{Amount: "-500"},
+		},
+		{
+			name:   "invalid mpt value - non-numeric characters",
+			input:  "100abc",
+			expErr: &InvalidAmountError{Amount: "100abc"},
+		},
+		{
+			name:   "invalid mpt value - high bit set",
+			input:  "9223372036854775808", // 2^63 (high bit set)
+			expErr: &InvalidAmountError{Amount: "9223372036854775808"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := verifyMPTValue(tt.input)
+			if tt.expErr != nil {
+				require.EqualError(t, tt.expErr, err.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestSerializeXrpAmount(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -436,6 +486,338 @@ func TestSerializeIssuedCurrencyAmount(t *testing.T) {
 	}
 }
 
+func TestSerializeMPTCurrencyValue(t *testing.T) {
+	tests := []struct {
+		name           string
+		value          string
+		expectedOutput []byte
+		expErr         error
+	}{
+		{
+			name:           "valid value - 1000000",
+			value:          "1000000",
+			expectedOutput: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x42, 0x40},
+			expErr:         nil,
+		},
+		{
+			name:           "valid value - zero",
+			value:          "0",
+			expectedOutput: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			expErr:         nil,
+		},
+		{
+			name:           "valid value - large integer",
+			value:          "9223372036854775807", // 2^63-1
+			expectedOutput: []byte{0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
+			expErr:         nil,
+		},
+		{
+			name:           "invalid mpt value - decimal point",
+			value:          "100.50",
+			expectedOutput: nil,
+			expErr:         &InvalidAmountError{Amount: "100.50"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := serializeMPTCurrencyValue(tt.value)
+
+			if tt.expErr != nil {
+				require.Error(t, err)
+				require.Equal(t, tt.expErr.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedOutput, got)
+			}
+		})
+	}
+}
+
+func TestSerializeMPTCurrencyIssuanceID(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          string
+		expectedOutput []byte
+		expErr         error
+	}{
+		{
+			name:  "valid issuance ID",
+			input: "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+			expectedOutput: []byte{
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+			},
+			expErr: nil,
+		},
+		{
+			name:           "too short issuance ID",
+			input:          "1234567890",
+			expectedOutput: nil,
+			expErr:         errors.New("mpt_issuance_id must be exactly 24 bytes"),
+		},
+		{
+			name:           "too long issuance ID",
+			input:          "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF00",
+			expectedOutput: nil,
+			expErr:         errors.New("mpt_issuance_id must be exactly 24 bytes"),
+		},
+		{
+			name:           "non-hex characters",
+			input:          "1234567890ABCDEFGHIJKLMN1234567890ABCDEF1234",
+			expectedOutput: nil,
+			expErr:         errors.New("encoding/hex: invalid byte: U+0047 'G'"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := serializeMPTCurrencyIssuanceID(tt.input)
+
+			if tt.expErr != nil {
+				require.Error(t, err)
+				require.Equal(t, tt.expErr.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedOutput, got)
+			}
+		})
+	}
+}
+
+func TestSerializeMPTCurrencyAmount(t *testing.T) {
+	validIssuanceID := "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF"
+
+	tests := []struct {
+		name           string
+		value          string
+		issuanceID     string
+		expectedOutput []byte
+		expErr         error
+	}{
+		{
+			name:       "valid amount - 1000000",
+			value:      "1000000",
+			issuanceID: validIssuanceID,
+			expectedOutput: []byte{
+				0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x42, 0x40,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+			},
+			expErr: nil,
+		},
+		{
+			name:       "valid amount - zero",
+			value:      "0",
+			issuanceID: validIssuanceID,
+			expectedOutput: []byte{
+				0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+			},
+			expErr: nil,
+		},
+		{
+			name:           "invalid mpt value - decimal point",
+			value:          "100.50",
+			issuanceID:     validIssuanceID,
+			expectedOutput: nil,
+			expErr:         &InvalidAmountError{Amount: "100.50"},
+		},
+		{
+			name:           "invalid issuance ID - wrong length",
+			value:          "1000000",
+			issuanceID:     "1234567890",
+			expectedOutput: nil,
+			expErr:         errors.New("mpt_issuance_id must be exactly 24 bytes"),
+		},
+		{
+			name:           "invalid issuance ID - not hex",
+			value:          "1000000",
+			issuanceID:     "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234",
+			expectedOutput: nil,
+			expErr:         errors.New("encoding/hex: invalid byte: U+0047 'G'"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := serializeMPTCurrencyAmount(tt.value, tt.issuanceID)
+
+			if tt.expErr != nil {
+				require.Error(t, err)
+				require.Equal(t, tt.expErr.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedOutput, got)
+			}
+		})
+	}
+}
+
+func TestDeserializeMPTValue(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          []byte
+		expectedOutput string
+		expErr         error
+	}{
+		{
+			name:           "valid positive value",
+			input:          []byte{0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x42, 0x40},
+			expectedOutput: "1000000",
+			expErr:         nil,
+		},
+		{
+			name:           "negative value",
+			input:          []byte{0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x42, 0x40},
+			expectedOutput: "-1000000",
+			expErr:         nil,
+		},
+		{
+			name:           "too short input",
+			input:          []byte{0x60, 0x00},
+			expectedOutput: "",
+			expErr:         ErrInvalidMPTLength,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := deserializeMPTValue(tt.input)
+
+			if tt.expErr != nil {
+				require.Error(t, err)
+				require.Equal(t, tt.expErr.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedOutput, got)
+			}
+		})
+	}
+}
+
+func TestDeserializeMPTIssuanceID(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          []byte
+		expectedOutput string
+		expErr         error
+	}{
+		{
+			name: "valid issuance ID",
+			input: []byte{
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+			},
+			expectedOutput: "1234567890abcdef1234567890abcdef1234567890abcdef",
+			expErr:         nil,
+		},
+		{
+			name:           "too short input",
+			input:          []byte{0x12, 0x34, 0x56},
+			expectedOutput: "",
+			expErr:         errors.New("not enough bytes for MPT issuance ID"),
+		},
+		{
+			name: "all zeros",
+			input: []byte{
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			},
+			expectedOutput: "000000000000000000000000000000000000000000000000",
+			expErr:         nil,
+		},
+		{
+			name: "special characters in hex",
+			input: []byte{
+				0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0xAA, 0xBB,
+				0xCC, 0xDD, 0xEE, 0xFF, 0xAA, 0xBB, 0xCC, 0xDD,
+				0xEE, 0xFF, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF,
+			},
+			expectedOutput: "aabbccddeeffaabbccddeeffaabbccddeeffaabbccddeeff",
+			expErr:         nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := deserializeMPTIssuanceID(tt.input)
+
+			if tt.expErr != nil {
+				require.Error(t, err)
+				require.Equal(t, tt.expErr.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedOutput, got)
+			}
+		})
+	}
+}
+
+func TestDeserializeMPTAmount(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          []byte
+		expectedOutput map[string]any
+		expErr         error
+	}{
+		{
+			name: "valid complete MPT amount",
+			input: []byte{
+				0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x42, 0x40,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+			},
+			expectedOutput: map[string]any{
+				"value":           "1000000",
+				"mpt_issuance_id": "1234567890abcdef1234567890abcdef1234567890abcdef",
+			},
+			expErr: nil,
+		},
+		{
+			name:           "invalid length",
+			input:          []byte{0x60, 0x00, 0x00},
+			expectedOutput: nil,
+			expErr:         ErrInvalidMPTLength,
+		},
+		{
+			name: "negative value",
+			input: []byte{
+				0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x42, 0x40,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+			},
+			expectedOutput: map[string]any{
+				"value":           "-1000000",
+				"mpt_issuance_id": "1234567890abcdef1234567890abcdef1234567890abcdef",
+			},
+			expErr: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := deserializeMPTAmount(tt.input)
+
+			if tt.expErr != nil {
+				require.Error(t, err)
+				require.Equal(t, tt.expErr.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expectedOutput, got)
+			}
+		})
+	}
+}
+
 func TestIsNative(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -509,6 +891,41 @@ func TestAmount_FromJson(t *testing.T) {
 			expected: []byte{0xd8, 0x83, 0x8d, 0x7e, 0xa4, 0xc6, 0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x55, 0x53, 0x44, 0x0, 0x0, 0x0, 0x0, 0x0, 0x69, 0xd3, 0x3b, 0x18, 0xd5, 0x33, 0x85, 0xf8, 0xa3, 0x18, 0x55, 0x16, 0xc2, 0xed, 0xa5, 0xde, 0xdb, 0x8a, 0xc5, 0xc6},
 			err:      nil,
 			expPass:  true,
+		},
+		{
+			name: "pass - positive mpt currency",
+			input: map[string]any{
+				"value":           "1000000",
+				"mpt_issuance_id": "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+			},
+			expected: []byte{
+				0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x42, 0x40,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+			},
+			err:     nil,
+			expPass: true,
+		},
+		{
+			name: "fail - invalid mpt value",
+			input: map[string]any{
+				"value":           "100.50",
+				"mpt_issuance_id": "1234567890ABCDEF1234567890ABCDEF", // 24 chars hex
+			},
+			expected: nil,
+			err:      &InvalidAmountError{Amount: "100.50"},
+			expPass:  false,
+		},
+		{
+			name: "fail - invalid mpt issuance id length",
+			input: map[string]any{
+				"value":           "1000000",
+				"mpt_issuance_id": "1234", // too short
+			},
+			expected: nil,
+			err:      errors.New("mpt_issuance_id must be exactly 24 bytes"),
+			expPass:  false,
 		},
 		{
 			name:     "fail - invalid amount type",
@@ -591,6 +1008,23 @@ func TestAmount_ToJson(t *testing.T) {
 			expected: map[string]any{"value": "10000000000000000", "currency": "USD", "issuer": "rweYz56rfmQ98cAdRaeTxQS9wVMGnrdsFp"},
 			expPass:  true,
 			err:      nil,
+		},
+		{
+			name: "pass - positive mpt currency",
+			malleate: func(t *testing.T) interfaces.BinaryParser {
+				return serdes.NewBinaryParser([]byte{
+					0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x42, 0x40,
+					0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+					0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+					0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF,
+				}, defs)
+			},
+			expected: map[string]any{
+				"value":           "1000000",
+				"mpt_issuance_id": "1234567890abcdef1234567890abcdef1234567890abcdef",
+			},
+			expPass: true,
+			err:     nil,
 		},
 		// {
 		// 	name: "pass - issued currency",
