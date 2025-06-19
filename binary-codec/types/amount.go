@@ -342,6 +342,7 @@ func verifyMPTValue(value string) error {
 		return &InvalidAmountError{Amount: value}
 	}
 
+	// reject any value ≥ 1<<63 so v.Uint64() can never overflow
 	if bi.BitLen() > 63 {
 		return &InvalidAmountError{Amount: value}
 	}
@@ -555,6 +556,7 @@ func serializeMPTCurrencyValue(value string) ([]byte, error) {
 		return nil, &InvalidAmountError{Amount: value}
 	}
 
+	// verifyMPTValue ensures v ≤ 2^63-1, so v.Uint64() is safe
 	buf := make([]byte, NativeAmountByteLength)
 	binary.BigEndian.PutUint64(buf, v.Uint64())
 	return buf, nil
