@@ -342,6 +342,10 @@ func verifyMPTValue(value string) error {
 		return &InvalidAmountError{Amount: value}
 	}
 
+	if bi.BitLen() > 63 {
+		return &InvalidAmountError{Amount: value}
+	}
+
 	if bi.Sign() != 0 {
 		mask := new(big.Int).SetUint64(ZeroCurrencyAmountHex)
 		if new(big.Int).And(bi, mask).Sign() != 0 {
@@ -550,13 +554,9 @@ func serializeMPTCurrencyValue(value string) ([]byte, error) {
 	if !ok {
 		return nil, &InvalidAmountError{Amount: value}
 	}
-	maskLow32 := new(big.Int).SetUint64(0xFFFFFFFF)
-	hi := new(big.Int).Rsh(v, 32).Uint64()
-	lo := new(big.Int).And(v, maskLow32).Uint64()
 
 	buf := make([]byte, NativeAmountByteLength)
-	binary.BigEndian.PutUint32(buf[0:4], uint32(hi))
-	binary.BigEndian.PutUint32(buf[4:8], uint32(lo))
+	binary.BigEndian.PutUint64(buf, v.Uint64())
 	return buf, nil
 }
 
