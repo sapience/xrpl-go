@@ -1,8 +1,8 @@
 module github.com/Peersyst/xrpl-go
 
-go 1.22
+go 1.23.0
 
-toolchain go1.22.5
+toolchain go1.23.10
 
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4
@@ -28,9 +28,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/json-iterator/go v1.1.12
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace golang.org/x/crypto => golang.org/x/crypto v0.31.0
