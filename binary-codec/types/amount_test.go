@@ -721,7 +721,7 @@ func TestDeserializeMPTIssuanceID(t *testing.T) {
 			name:           "too short input",
 			input:          []byte{0x12, 0x34, 0x56},
 			expectedOutput: "",
-			expErr:         errors.New("not enough bytes for MPT issuance ID"),
+			expErr:         errors.New("not enough bytes for MPT issuance ID, need 24 bytes"),
 		},
 		{
 			name: "all zeros",
