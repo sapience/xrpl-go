@@ -1,10 +1,8 @@
 FROM golang:1.24.4-alpine3.21 AS install
-
-RUN apk add --no-cache make
+RUN apk add --no-cache make git ca-certificates
 
 WORKDIR /app
 COPY go.mod go.sum ./
-
 RUN go mod download
 COPY . .
 
