@@ -1,4 +1,6 @@
-FROM golang:1.22 AS install
+FROM golang:1.24.4-alpine3.21 AS install
+
+RUN apk add --no-cache make
 
 WORKDIR /app
 COPY go.mod go.sum ./
