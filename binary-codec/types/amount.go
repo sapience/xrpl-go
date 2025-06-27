@@ -65,7 +65,6 @@ var (
 	errInvalidIssuerFormat           = errors.New("invalid issuer")
 	errInvalidAmountType             = errors.New("invalid amount type")
 	errFailedConvertStringToBigFloat = errors.New("failed to convert string to big.Float")
-	errUnsupportedAmountValueType    = errors.New("unsupported type %T for amount value")
 )
 
 // InvalidAmountError is a custom error type for invalid amounts.
@@ -670,17 +669,17 @@ func containsInvalidIOUCodeCharactersHex(currency []byte) bool {
 
 // valueToString converts various JSON‐style value types into their string form.
 func valueToString(v any) (string, error) {
-    switch x := v.(type) {
-    case string:
-        return x, nil
-    case json.Number:
-        return x.String(), nil
-    case float64:
-        if x == math.Trunc(x) {
-            return strconv.FormatInt(int64(x), 10), nil
-        }
-        return strconv.FormatFloat(x, 'f', -1, 64), nil
-    default:
-        return "", fmt.Errorf("unsupported type %T for amount value", x)
-    }
+	switch x := v.(type) {
+	case string:
+		return x, nil
+	case json.Number:
+		return x.String(), nil
+	case float64:
+		if x == math.Trunc(x) {
+			return strconv.FormatInt(int64(x), 10), nil
+		}
+		return strconv.FormatFloat(x, 'f', -1, 64), nil
+	default:
+		return "", fmt.Errorf("unsupported type %T for amount value", x)
+	}
 }
