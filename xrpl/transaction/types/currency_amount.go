@@ -148,7 +148,3 @@ func (m MPTCurrencyAmount) Flatten() interface{} {
 	}
 	return json
 }
-
-func (m MPTCurrencyAmount) IsValid() bool {
-    return m.MPTIssuanceID != "" && m.Value != ""
-}
