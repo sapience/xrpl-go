@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactor on `Issue` codec type to support `Currency` and `Issuer` fields.
 
+### Dependencies
+
+- Bumped Go version to 1.23.0.
+
 ## Fixed
 
 ### xrpl
