@@ -18,9 +18,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### xrpl
 
+- Adds `AMMClawback` transaction type.
 - Adds `MPTokenAuthorize`, `MPTokenIssuanceCreate`, `MPTokenIssuanceDestroy`, `MPTokenIssuanceSet` transactions. It also adds the `types.Holder`, `types.AssetScale`, `types.MPTokenMetadata` and `types.TransferFee` types to represent the holder of the token, the asset scale, the metadata and the transfer fee of the token respectively.
 - Adds `MPTCurrencyAmount` for currency kinds.
 - Adds unit tests for `MPTCurrencyAmount`.
+- Adds `NFTokenModify` transaction type.
+
+## Changed
+
+### binary-codec
+
+- Refactor on `Issue` codec type to support `Currency` and `Issuer` fields.
+
+## Fixed
+
+### xrpl
+
+- Fixed some flattening fields with the `Flatten` function for `NFTokenMint`, `NFTokenCancel`, `NFTokenCreate`, `NFTokenBurn`
 
 ## [v0.1.10]
 
