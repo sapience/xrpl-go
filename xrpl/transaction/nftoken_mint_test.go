@@ -94,6 +94,9 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 				Issuer:       "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 				TransferFee:  314,
 				URI:          "697066733A2F2F62616679626569676479727A74357366703775646D37687537367568377932366E6634646675796C71616266336F636C67747179353566627A6469",
+				Amount:       types.XRPCurrencyAmount(1000),
+				Expiration:   123456789,
+				Destination:  "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
 			},
 			expected: `{
 				"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -102,7 +105,37 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 				"NFTokenTaxon":    12345,
 				"Issuer":          "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
 				"TransferFee":     314,
-				"URI":             "697066733A2F2F62616679626569676479727A74357366703775646D37687537367568377932366E6634646675796C71616266336F636C67747179353566627A6469"
+				"URI":             "697066733A2F2F62616679626569676479727A74357366703775646D37687537367568377932366E6634646675796C71616266336F636C67747179353566627A6469",
+				"Amount":          "1000",
+				"Expiration":      123456789,
+				"Destination":     "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH"
+			}`,
+		},
+		{
+			name: "pass - Flatten with issued currency amount",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Amount: types.IssuedCurrencyAmount{
+					Currency: "USD",
+					Issuer:   "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+					Value:    "100",
+				},
+			},
+			expected: `{
+				"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"TransactionType": "NFTokenMint",
+				"Fee":             "10",
+				"NFTokenTaxon":    12345,
+				"Amount": {
+					"currency": "USD",
+					"issuer":   "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+					"value":    "100"
+				}
 			}`,
 		},
 		{
@@ -126,13 +159,9 @@ func TestNFTokenMint_Flatten(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			for _, tt := range tests {
-				t.Run(tt.name, func(t *testing.T) {
-					err := testutil.CompareFlattenAndExpected(tt.nft.Flatten(), []byte(tt.expected))
-					if err != nil {
-						t.Error(err)
-					}
-				})
+			err := testutil.CompareFlattenAndExpected(tt.nft.Flatten(), []byte(tt.expected))
+			if err != nil {
+				t.Error(err)
 			}
 		})
 	}
@@ -264,6 +293,131 @@ func TestNFTokenMint_Validate(t *testing.T) {
 			},
 			wantValid: true,
 			wantErr:   false,
+		},
+		{
+			name: "fail - destination invalid address",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Destination:  "invalidDestination",
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrInvalidDestination,
+		},
+		{
+			name: "fail - destination same as account",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Destination:  "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrDestinationAccountConflict,
+		},
+		{
+			name: "pass - valid with Amount, Expiration and Destination",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Amount:       types.XRPCurrencyAmount(1000),
+				Expiration:   123456789,
+				Destination:  "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "pass - valid with issued currency amount",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Amount: types.IssuedCurrencyAmount{
+					Currency: "USD",
+					Issuer:   "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+					Value:    "100.50",
+				},
+				Destination: "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "pass - valid with zero amount (free token)",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Amount:       types.XRPCurrencyAmount(0),
+				Destination:  "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+			},
+			wantValid: true,
+			wantErr:   false,
+		}, {
+			name: "fail - Expiration set without Amount",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Expiration:   123456789,
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrAmountRequiredWithExpirationOrDestination,
+		},
+		{
+			name: "fail - Destination set without Amount",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Destination:  "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrAmountRequiredWithExpirationOrDestination,
+		},
+		{
+			name: "fail - Both Expiration and Destination set without Amount",
+			nft: &NFTokenMint{
+				BaseTx: BaseTx{
+					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+					TransactionType: NFTokenMintTx,
+					Fee:             types.XRPCurrencyAmount(10),
+				},
+				NFTokenTaxon: 12345,
+				Expiration:   123456789,
+				Destination:  "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+			},
+			wantValid:  false,
+			wantErr:    true,
+			errMessage: ErrAmountRequiredWithExpirationOrDestination,
 		},
 	}
 
