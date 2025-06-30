@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	ErrExpirationRequiresAmount = errors.New("the Amount field is required when Expiration is set")
 	// ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
 	ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
 	// ErrIssuerAccountConflict is returned when the issuer is the same as the account.
@@ -155,6 +154,7 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	if n.Destination != "" {
 		flattened["Destination"] = n.Destination.String()
 	}
+
 	return flattened
 }
 
@@ -213,10 +213,6 @@ func (n *NFTokenMint) Validate() (bool, error) {
 
 	if n.Destination != "" && !addresscodec.IsValidAddress(n.Destination.String()) {
 		return false, ErrInvalidDestination
-	}
-
-	if n.Expiration != 0 && n.Amount == nil {
-		return false, ErrExpirationRequiresAmount
 	}
 
 	return true, nil
