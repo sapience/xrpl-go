@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"github.com/Peersyst/xrpl-go/xrpl/ledger-entry-types"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 type TxMeta interface {
@@ -47,3 +48,13 @@ type DeletedNode struct {
 	LedgerIndex     string                  `json:"LedgerIndex,omitempty"`
 	FinalFields     ledger.FlatLedgerObject `json:"FinalFields,omitempty"`
 }
+
+type NFTokenMintMetadata struct {
+	TxObjMeta
+	// rippled 1.11.0 or later
+	NFTokenID *types.NFTokenID `json:"nftoken_id,omitempty"`
+	// if Amount is present
+	OfferID *types.Hash256 `json:"offer_id,omitempty"`
+}
+
+func (NFTokenMintMetadata) TxMeta() {}
