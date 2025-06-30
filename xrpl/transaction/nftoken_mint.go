@@ -9,10 +9,9 @@ import (
 )
 
 var (
+	ErrExpirationRequiresAmount = errors.New("the Amount field is required when Expiration is set")
 	// ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
 	ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
-	// ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
-	ErrInvalidURI = errors.New("invalid URI, must be a valid hexadecimal string")
 	// ErrIssuerAccountConflict is returned when the issuer is the same as the account.
 	ErrIssuerAccountConflict = errors.New("issuer cannot be the same as the account")
 	// ErrTransferFeeRequiresTransferableFlag is returned when the transferFee is set without the tfTransferable flag.
@@ -66,18 +65,16 @@ type NFTokenMint struct {
 	// The contents could decode to an HTTP or HTTPS URL, an IPFS URI, a magnet link, immediate data encoded as an RFC 2379 "data" URL, or even an issuer-specific encoding.
 	// The URI is NOT checked for validity.
 	URI types.NFTokenURI `json:",omitempty"`
-	// (Optional) Indicates the amount expected for the Token.
-	// The amount can be zero. This would indicate that the account is giving
-	// the token away free, either to anyone at all, or to the account identified
-	// by the Destination field.
+	// (Optional) Indicates the amount expected or offered for the corresponding NFToken.
+	// The amount must be non-zero, except where the asset is XRP;
+	// then, it is legal to specify an amount of zero, which means that the current owner of the token is giving it away,
+	// gratis, either to anyone at all, or to the account identified by the Destination field.
 	Amount types.CurrencyAmount `json:",omitempty"`
-	// (Optional) Indicates the time after which the offer will no longer
-	// be valid. The value is the number of seconds since the
-	// Ripple Epoch.
+	// (Optional) Time after which the offer is no longer active, in seconds since the Ripple Epoch.
+	// Results in an error if the Amount field is not specified.
 	Expiration uint32 `json:",omitempty"`
-	// (Optional) If present, indicates that this offer may only be
-	// accepted by the specified account. Attempts by other
-	// accounts to accept this offer MUST fail.
+	// (Optional) If present, indicates that this offer may only be accepted by the specified account.
+	// Attempts by other accounts to accept this offer MUST fail. Results in an error if the Amount field is not specified.
 	Destination types.Address `json:",omitempty"`
 }
 
@@ -94,6 +91,8 @@ const (
 	tfTrustLine uint32 = 4
 	// The minted NFToken can be transferred to others. If this flag is not enabled, the token can still be transferred from or to the issuer, but a transfer to the issuer must be made based on a buy offer from the issuer and not a sell offer from the NFT holder.
 	tfTransferable uint32 = 8
+	// The URI field of the minted NFToken can be updated using the NFTokenModify transaction.
+	tfMutable uint32 = 16
 )
 
 // Allow the issuer (or an entity authorized by the issuer) to destroy the minted NFToken. (The NFToken's owner can always do so.)
@@ -116,6 +115,11 @@ func (n *NFTokenMint) SetTransferableFlag() {
 	n.Flags |= tfTransferable
 }
 
+// The URI field of the minted NFToken can be updated using the NFTokenModify transaction.
+func (n *NFTokenMint) SetMutableFlag() {
+	n.Flags |= tfMutable
+}
+
 // TxType returns the type of the transaction (NFTokenMint).
 func (*NFTokenMint) TxType() TxType {
 	return NFTokenMintTx
@@ -129,7 +133,7 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	flattened["NFTokenTaxon"] = n.NFTokenTaxon
 
 	if n.Issuer != "" {
-		flattened["Issuer"] = n.Issuer
+		flattened["Issuer"] = n.Issuer.String()
 	}
 
 	if n.TransferFee != 0 {
@@ -137,7 +141,7 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	}
 
 	if n.URI != "" {
-		flattened["URI"] = n.URI
+		flattened["URI"] = n.URI.String()
 	}
 
 	if n.Amount != nil {
@@ -149,9 +153,8 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	}
 
 	if n.Destination != "" {
-		flattened["Destination"] = n.Destination
+		flattened["Destination"] = n.Destination.String()
 	}
-
 	return flattened
 }
 
@@ -167,12 +170,6 @@ func (n *NFTokenMint) Validate() (bool, error) {
 		return false, err
 	}
 
-	if n.Amount != nil {
-		if ok, err := IsAmount(n.Amount, "Amount", false); !ok {
-			return false, err
-		}
-	}
-
 	// check transfer fee is between 0 and 50000
 	if n.TransferFee > MaxTransferFee {
 		return false, ErrInvalidTransferFee
@@ -186,11 +183,6 @@ func (n *NFTokenMint) Validate() (bool, error) {
 	// check issuer is a valid xrpl address
 	if n.Issuer != "" && !addresscodec.IsValidAddress(n.Issuer.String()) {
 		return false, ErrInvalidIssuer
-	}
-
-	// check destination is a valid xrpl address
-	if n.Destination != "" && !addresscodec.IsValidAddress(n.Destination.String()) {
-		return false, ErrInvalidDestination
 	}
 
 	// check destination is not the same as the account
@@ -213,6 +205,18 @@ func (n *NFTokenMint) Validate() (bool, error) {
 		if n.Expiration != 0 || n.Destination != "" {
 			return false, ErrAmountRequiredWithExpirationOrDestination
 		}
+	}
+
+	if ok, err := IsAmount(n.Amount, "Amount", false); !ok {
+		return false, err
+	}
+
+	if n.Destination != "" && !addresscodec.IsValidAddress(n.Destination.String()) {
+		return false, ErrInvalidDestination
+	}
+
+	if n.Expiration != 0 && n.Amount == nil {
+		return false, ErrExpirationRequiresAmount
 	}
 
 	return true, nil
