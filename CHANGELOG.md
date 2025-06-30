@@ -11,12 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### binary-codec
 
-- Added `MPToken` definitions. 
+- Added `MPToken` definitions.
 - Adds `Hash192` type.
 
 #### xrpl
 
 - Adds `MPTokenAuthorize`, `MPTokenIssuanceCreate`, `MPTokenIssuanceDestroy`, `MPTokenIssuanceSet` transactions. It also adds the `types.Holder`, `types.AssetScale`, `types.MPTokenMetadata` and `types.TransferFee` types to represent the holder of the token, the asset scale, the metadata and the transfer fee of the token respectively.
+- Adds NFTokenMintOffer support by adding `Amount`, `Expiration`, and `Destination` fields to `NFTokenMint` transaction. Also add `NFTokenMintMetadata` struct to handle transaction metadata with `nftoken_id` and `offer_id` fields.
 
 ## [v0.1.10]
 
