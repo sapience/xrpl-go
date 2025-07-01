@@ -41,6 +41,7 @@
     "Credential": 129,
     "DepositPreauth": 112,
     "DID": 73,
+    "Delegate": 131,
     "DirectoryNode": 100,
     "Escrow": 117,
     "FeeSettings": 115,
@@ -182,6 +183,16 @@
         "isSerialized": false,
         "isSigningField": false,
         "type": "Metadata"
+      }
+    ],
+    [
+      "Permissions",
+      {
+        "nth": 29,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "STArray"
       }
     ],
     [
@@ -858,6 +869,16 @@
       "OracleDocumentID",
       {
         "nth": 51,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt32"
+      }
+    ],
+    [
+      "PermissionValue",
+      {
+        "nth": 52,
         "isVLEncoded": false,
         "isSerialized": true,
         "isSigningField": true,
@@ -2465,6 +2486,16 @@
       }
     ],
     [
+      "Permission",
+      {
+        "nth": 15,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "STObject"
+      }
+    ],
+    [
       "Signer",
       {
         "nth": 16,
@@ -2805,6 +2836,16 @@
       }
     ],
     [
+      "Delegate",
+      {
+        "nth": 12,
+        "isVLEncoded": true,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "AccountID"
+      }
+    ],
+    [
       "PriceDataSeries",
       {
         "nth": 24,
@@ -3076,6 +3117,7 @@
     "OfferCreate": 7,
     "OracleDelete": 52,
     "OracleSet": 51,
+    "DelegateSet": 64,
     "Payment": 0,
     "PaymentChannelClaim": 15,
     "PaymentChannelCreate": 13,
