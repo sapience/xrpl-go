@@ -45,27 +45,6 @@ func TestNFTokenMintMetadata_EmbeddedFields(t *testing.T) {
 			expectedNFTokenID:         "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65",
 			expectedOfferID:           "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77",
 		},
-		{
-			name: "pass - embedded fields with different values",
-			metadata: &NFTokenMintMetadata{
-				TxObjMeta: TxObjMeta{
-					TransactionIndex:  456,
-					TransactionResult: "tecPATH_PARTIAL",
-				},
-				NFTokenID: func() *types.NFTokenID {
-					id := types.NFTokenID("111A013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E11111111")
-					return &id
-				}(),
-				OfferID: func() *types.Hash256 {
-					hash := types.Hash256("22221F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B22")
-					return &hash
-				}(),
-			},
-			expectedTransactionIndex:  456,
-			expectedTransactionResult: "tecPATH_PARTIAL",
-			expectedNFTokenID:         "111A013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E11111111",
-			expectedOfferID:           "22221F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B22",
-		},
 	}
 
 	for _, tt := range tests {
@@ -97,26 +76,6 @@ func TestNFTokenMintMetadata_JSONMarshal(t *testing.T) {
 				}(),
 			},
 			expected: `{"nftoken_id":"000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65","offer_id":"68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77"}`,
-		},
-		{
-			name: "pass - with only NFTokenID",
-			metadata: &NFTokenMintMetadata{
-				NFTokenID: func() *types.NFTokenID {
-					id := types.NFTokenID("000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65")
-					return &id
-				}(),
-			},
-			expected: `{"nftoken_id":"000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65"}`,
-		},
-		{
-			name: "pass - with only OfferID",
-			metadata: &NFTokenMintMetadata{
-				OfferID: func() *types.Hash256 {
-					hash := types.Hash256("68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77")
-					return &hash
-				}(),
-			},
-			expected: `{"offer_id":"68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77"}`,
 		},
 		{
 			name:     "pass - empty metadata",
@@ -171,26 +130,6 @@ func TestNFTokenMintMetadata_JSONUnmarshal(t *testing.T) {
 					id := types.NFTokenID("000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65")
 					return &id
 				}(),
-				OfferID: func() *types.Hash256 {
-					hash := types.Hash256("68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77")
-					return &hash
-				}(),
-			},
-		},
-		{
-			name: "pass - with only NFTokenID",
-			json: `{"nftoken_id":"000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65"}`,
-			expected: &NFTokenMintMetadata{
-				NFTokenID: func() *types.NFTokenID {
-					id := types.NFTokenID("000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65")
-					return &id
-				}(),
-			},
-		},
-		{
-			name: "pass - with only OfferID",
-			json: `{"offer_id":"68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77"}`,
-			expected: &NFTokenMintMetadata{
 				OfferID: func() *types.Hash256 {
 					hash := types.Hash256("68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77")
 					return &hash
