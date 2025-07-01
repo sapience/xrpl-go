@@ -40,7 +40,7 @@ func (t *STObject) FromJSON(json any) ([]byte, error) {
 			continue
 		}
 
-		st := GetSerializedType(v.Type)
+		st := GetSerializedTypeForField(v.FieldName, v.Type)
 		b, err := st.FromJSON(fimap[v])
 		if err != nil {
 			return nil, err
@@ -70,7 +70,7 @@ func (t *STObject) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 			break
 		}
 
-		st := GetSerializedType(fi.Type)
+		st := GetSerializedTypeForField(fi.FieldName, fi.Type)
 
 		var res any
 		if fi.IsVLEncoded {
