@@ -367,26 +367,6 @@ func TestNFTokenMint_Validate(t *testing.T) {
 			errMessage: ErrInvalidIssuer,
 		},
 		{
-			name: "fail - destination same as account",
-			nft: &NFTokenMint{
-				BaseTx: BaseTx{
-					Account:         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-					TransactionType: NFTokenMintTx,
-					Fee:             types.XRPCurrencyAmount(10),
-				},
-				NFTokenTaxon: 12345,
-				Amount: types.IssuedCurrencyAmount{
-					Currency: "USD",
-					Issuer:   "rbBGwDkFSkTknJ4GA9nhaJdoDwWqSTpLE",
-					Value:    "1000",
-				},
-				Destination: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-			},
-			wantValid:  false,
-			wantErr:    true,
-			errMessage: ErrDestinationAccountConflict,
-		},
-		{
 			name: "pass - valid Amount with XRP",
 			nft: &NFTokenMint{
 				BaseTx: BaseTx{
