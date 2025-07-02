@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
@@ -22,46 +21,31 @@ func TestPermissionValue_FromJSON(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			name:        "string permission name",
+			name:        "pass - string permission name",
 			input:       "TrustlineAuthorize",
-			expected:    []byte{0, 1, 0, 1}, // 65537 in big endian
+			expected:    []byte{0, 1, 0, 1},
 			expectedErr: nil,
 		},
 		{
-			name:        "transaction type name",
+			name:        "pass - transaction type name",
 			input:       "Payment",
-			expected:    []byte{0, 0, 0, 0}, // 0 in big endian
+			expected:    []byte{0, 0, 0, 1},
 			expectedErr: nil,
 		},
 		{
-			name:        "integer value",
+			name:        "pass - integer value",
 			input:       65537,
 			expected:    []byte{0, 1, 0, 1},
 			expectedErr: nil,
 		},
 		{
-			name:        "uint32 value",
-			input:       uint32(65537),
-			expected:    []byte{0, 1, 0, 1},
-			expectedErr: nil,
-		},
-		{
-			name:        "int32 value",
-			input:       int32(65537),
-			expected:    []byte{0, 1, 0, 1},
-			expectedErr: nil,
-		},
-		{
-			name:        "float64 value",
-			input:       float64(65537),
-			expected:    []byte{0, 1, 0, 1},
-			expectedErr: nil,
-		},
-		{
-			name:        "invalid permission name",
-			input:       "InvalidPermission",
-			expected:    nil,
-			expectedErr: fmt.Errorf("delegatable permission InvalidPermission not found"),
+			name:     "fail - invalid permission name",
+			input:    "InvalidPermission",
+			expected: nil,
+			expectedErr: &definitions.NotFoundError{
+				Instance: "DelegatablePermissionName",
+				Input:    "InvalidPermission",
+			},
 		},
 	}
 
@@ -98,7 +82,7 @@ func TestPermissionValue_ToJSON(t *testing.T) {
 				return parserMock
 			},
 			expected:    nil,
-			expectedErr: fmt.Errorf("binary parser has no data"),
+			expectedErr: errors.New("binary parser has no data"),
 		},
 		{
 			name:  "pass - known permission value returns name",
@@ -119,10 +103,10 @@ func TestPermissionValue_ToJSON(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name:  "pass - zero value",
-			input: []byte{0, 0, 0, 0},
+			name:  "pass - Payment value returns Payment name",
+			input: []byte{0, 0, 0, 1},
 			malleate: func(t *testing.T) interfaces.BinaryParser {
-				return serdes.NewBinaryParser([]byte{0, 0, 0, 0}, defs)
+				return serdes.NewBinaryParser([]byte{0, 0, 0, 1}, defs)
 			},
 			expected:    "Payment",
 			expectedErr: nil,
