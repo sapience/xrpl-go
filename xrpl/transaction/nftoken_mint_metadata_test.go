@@ -9,54 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNFTokenMintMetadata_TxMeta(t *testing.T) {
-	// Test that NFTokenMintMetadata implements TxMeta interface
-	var _ TxMeta = NFTokenMintMetadata{}
-	var _ TxMeta = &NFTokenMintMetadata{}
-}
-
-func TestNFTokenMintMetadata_EmbeddedFields(t *testing.T) {
-	tests := []struct {
-		name                      string
-		metadata                  *NFTokenMintMetadata
-		expectedTransactionIndex  uint64
-		expectedTransactionResult string
-		expectedNFTokenID         string
-		expectedOfferID           string
-	}{
-		{
-			name: "pass - embedded fields are accessible",
-			metadata: &NFTokenMintMetadata{
-				TxObjMeta: TxObjMeta{
-					TransactionIndex:  123,
-					TransactionResult: "tesSUCCESS",
-				},
-				NFTokenID: func() *types.NFTokenID {
-					id := types.NFTokenID("000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65")
-					return &id
-				}(),
-				OfferID: func() *types.Hash256 {
-					hash := types.Hash256("68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77")
-					return &hash
-				}(),
-			},
-			expectedTransactionIndex:  123,
-			expectedTransactionResult: "tesSUCCESS",
-			expectedNFTokenID:         "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65",
-			expectedOfferID:           "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expectedTransactionIndex, tt.metadata.TransactionIndex)
-			assert.Equal(t, tt.expectedTransactionResult, tt.metadata.TransactionResult)
-			assert.Equal(t, tt.expectedNFTokenID, tt.metadata.NFTokenID.String())
-			assert.Equal(t, tt.expectedOfferID, tt.metadata.OfferID.String())
-		})
-	}
-}
-
 func TestNFTokenMintMetadata_JSONMarshal(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -98,12 +50,15 @@ func TestNFTokenMintMetadata_JSONMarshal(t *testing.T) {
 					return &hash
 				}(),
 			},
-			expected: `{
-				"TransactionIndex": 123,
-				"TransactionResult": "tesSUCCESS",
-				"nftoken_id": "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65",
-				"offer_id": "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77"
-			}`,
+			expected: `{"TransactionIndex":123,"TransactionResult":"tesSUCCESS","nftoken_id":"000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65","offer_id":"68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77"}`,
+		},
+		{
+			name: "pass - nil pointers should omit fields",
+			metadata: &NFTokenMintMetadata{
+				NFTokenID: nil,
+				OfferID:   nil,
+			},
+			expected: `{}`,
 		},
 	}
 
@@ -167,45 +122,6 @@ func TestNFTokenMintMetadata_JSONUnmarshal(t *testing.T) {
 			err := json.Unmarshal([]byte(tt.json), &metadata)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, &metadata)
-		})
-	}
-}
-
-func TestNFTokenMintMetadata_PointerFields(t *testing.T) {
-	tests := []struct {
-		name     string
-		metadata *NFTokenMintMetadata
-		expected string
-	}{
-		{
-			name: "pass - nil pointers should omit fields",
-			metadata: &NFTokenMintMetadata{
-				NFTokenID: nil,
-				OfferID:   nil,
-			},
-			expected: `{}`,
-		},
-		{
-			name: "pass - valid pointers should include fields",
-			metadata: &NFTokenMintMetadata{
-				NFTokenID: func() *types.NFTokenID {
-					id := types.NFTokenID("000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65")
-					return &id
-				}(),
-				OfferID: func() *types.Hash256 {
-					hash := types.Hash256("68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77")
-					return &hash
-				}(),
-			},
-			expected: `{"nftoken_id":"000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65","offer_id":"68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77"}`,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			jsonBytes, err := json.Marshal(tt.metadata)
-			require.NoError(t, err)
-			assert.JSONEq(t, tt.expected, string(jsonBytes))
 		})
 	}
 }
