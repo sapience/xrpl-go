@@ -57,7 +57,7 @@ type NFTokenMint struct {
 	// (Optional) The value specifies the fee charged by the issuer for secondary sales of the NFToken, if such sales are allowed.
 	// Valid values for this field are between 0 and 50000 inclusive, allowing transfer rates of between 0.00% and 50.00% in increments of 0.001.
 	// If this field is provided, the transaction MUST have the tfTransferable flag enabled.
-	TransferFee *types.TransferFee `json:",omitempty"`
+	TransferFee *uint16 `json:",omitempty"`
 	// (Optional) Up to 256 bytes of arbitrary data. In JSON, this should be encoded as a string of hexadecimal.
 	// You can use the xrpl.convertStringToHex utility to convert a URI to its hexadecimal equivalent.
 	// This is intended to be a URI that points to the data or metadata associated with the NFT.
@@ -71,7 +71,7 @@ type NFTokenMint struct {
 	Amount types.CurrencyAmount `json:",omitempty"`
 	// (Optional) Time after which the offer is no longer active, in seconds since the Ripple Epoch.
 	// Results in an error if the Amount field is not specified.
-	Expiration *types.Expiration `json:",omitempty"`
+	Expiration *uint32 `json:",omitempty"`
 	// (Optional) If present, indicates that this offer may only be accepted by the specified account.
 	// Attempts by other accounts to accept this offer MUST fail. Results in an error if the Amount field is not specified.
 	Destination types.Address `json:",omitempty"`
