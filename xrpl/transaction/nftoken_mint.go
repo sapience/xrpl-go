@@ -57,7 +57,7 @@ type NFTokenMint struct {
 	// (Optional) The value specifies the fee charged by the issuer for secondary sales of the NFToken, if such sales are allowed.
 	// Valid values for this field are between 0 and 50000 inclusive, allowing transfer rates of between 0.00% and 50.00% in increments of 0.001.
 	// If this field is provided, the transaction MUST have the tfTransferable flag enabled.
-	TransferFee uint16 `json:",omitempty"`
+	TransferFee *types.TransferFee `json:",omitempty"`
 	// (Optional) Up to 256 bytes of arbitrary data. In JSON, this should be encoded as a string of hexadecimal.
 	// You can use the xrpl.convertStringToHex utility to convert a URI to its hexadecimal equivalent.
 	// This is intended to be a URI that points to the data or metadata associated with the NFT.
@@ -71,7 +71,7 @@ type NFTokenMint struct {
 	Amount types.CurrencyAmount `json:",omitempty"`
 	// (Optional) Time after which the offer is no longer active, in seconds since the Ripple Epoch.
 	// Results in an error if the Amount field is not specified.
-	Expiration uint32 `json:",omitempty"`
+	Expiration *types.Expiration `json:",omitempty"`
 	// (Optional) If present, indicates that this offer may only be accepted by the specified account.
 	// Attempts by other accounts to accept this offer MUST fail. Results in an error if the Amount field is not specified.
 	Destination types.Address `json:",omitempty"`
@@ -135,8 +135,8 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 		flattened["Issuer"] = n.Issuer.String()
 	}
 
-	if n.TransferFee != 0 {
-		flattened["TransferFee"] = n.TransferFee
+	if n.TransferFee != nil {
+		flattened["TransferFee"] = *n.TransferFee
 	}
 
 	if n.URI != "" {
@@ -147,8 +147,8 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 		flattened["Amount"] = n.Amount.Flatten()
 	}
 
-	if n.Expiration != 0 {
-		flattened["Expiration"] = n.Expiration
+	if n.Expiration != nil {
+		flattened["Expiration"] = *n.Expiration
 	}
 
 	if n.Destination != "" {
@@ -171,7 +171,7 @@ func (n *NFTokenMint) Validate() (bool, error) {
 	}
 
 	// check transfer fee is between 0 and 50000
-	if n.TransferFee > MaxTransferFee {
+	if n.TransferFee != nil && *n.TransferFee > MaxTransferFee {
 		return false, ErrInvalidTransferFee
 	}
 
@@ -185,24 +185,19 @@ func (n *NFTokenMint) Validate() (bool, error) {
 		return false, ErrInvalidIssuer
 	}
 
-	// check destination is not the same as the account
-	if n.Destination == n.Account {
-		return false, ErrDestinationAccountConflict
-	}
-
 	// check URI is a valid hexadecimal string
 	if n.URI != "" && !typecheck.IsHex(n.URI.String()) {
 		return false, ErrInvalidURI
 	}
 
 	// check transfer fee can only be set if the tfTransferable flag is enabled
-	if n.TransferFee > 0 && !IsFlagEnabled(n.Flags, tfTransferable) {
+	if n.TransferFee != nil && *n.TransferFee > 0 && !IsFlagEnabled(n.Flags, tfTransferable) {
 		return false, ErrTransferFeeRequiresTransferableFlag
 	}
 
 	// check Amount is required when Expiration or Destination is present
 	if n.Amount == nil {
-		if n.Expiration != 0 || n.Destination != "" {
+		if n.Expiration != nil || n.Destination != "" {
 			return false, ErrAmountRequiredWithExpirationOrDestination
 		}
 	}
