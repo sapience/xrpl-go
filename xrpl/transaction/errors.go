@@ -9,6 +9,10 @@ var (
 	ErrDestinationAccountConflict = errors.New("destination cannot be the same as the Account")
 	// ErrInvalidAccount is returned when the Account field does not meet XRPL address standards.
 	ErrInvalidAccount = errors.New("invalid xrpl address for Account")
+	// ErrInvalidDelegate is returned when the Delegate field does not meet XRPL address standards.
+	ErrInvalidDelegate = errors.New("invalid xrpl address for Delegate")
+	// ErrDelegateAccountConflict is returned when the Delegate matches the Account.
+	ErrDelegateAccountConflict = errors.New("addresses for Account and Delegate cannot be the same")
 	// ErrInvalidCheckID is returned when the CheckID is not a valid 64-character hexadecimal string.
 	ErrInvalidCheckID = errors.New("invalid CheckID, must be a valid 64-character hexadecimal string")
 	// ErrInvalidCredentialType is returned when the CredentialType is not a valid hexadecimal string between 1 and 64 bytes.
