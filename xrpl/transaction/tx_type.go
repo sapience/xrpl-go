@@ -20,6 +20,7 @@ const (
 	CredentialAcceptTx TxType = "CredentialAccept"
 	CredentialCreateTx TxType = "CredentialCreate"
 	CredentialDeleteTx TxType = "CredentialDelete"
+	DelegateSetTx      TxType = "DelegateSet"
 	DepositPreauthTx   TxType = "DepositPreauth"
 	DIDDeleteTx        TxType = "DIDDelete"
 	DIDSetTx           TxType = "DIDSet"
