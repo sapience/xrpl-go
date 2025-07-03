@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"math"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
@@ -12,6 +13,7 @@ import (
 var (
 	ErrInvalidJSONNumber         = errors.New("invalid json.Number")
 	ErrUnsupportedPermissionType = errors.New("unsupported JSON type for PermissionValue")
+	ErrPermissionValueOutOfRange = errors.New("permission value out of uint32 range")
 )
 
 // PermissionValue represents a 32-bit unsigned integer permission value.
@@ -29,31 +31,48 @@ func (p *PermissionValue) FromJSON(value any) ([]byte, error) {
 		value = pv
 	}
 
-	var intValue uint32
-
+	var ui64 uint64
 	switch v := value.(type) {
 	case int:
-		intValue = uint32(v)
+		if v < 0 {
+			return nil, ErrPermissionValueOutOfRange
+		}
+		ui64 = uint64(v)
 	case int32:
-		intValue = uint32(v)
+		if v < 0 {
+			return nil, ErrPermissionValueOutOfRange
+		}
+		ui64 = uint64(v)
 	case int64:
-		intValue = uint32(v)
+		if v < 0 {
+			return nil, ErrPermissionValueOutOfRange
+		}
+		ui64 = uint64(v)
 	case uint32:
-		intValue = v
+		ui64 = uint64(v)
 	case float64:
-		intValue = uint32(v)
+		if v < 0 || v > float64(math.MaxUint32) {
+			return nil, ErrPermissionValueOutOfRange
+		}
+		ui64 = uint64(v)
 	case json.Number:
 		num, err := v.Int64()
-		if err != nil {
+		if err != nil || num < 0 {
 			return nil, ErrInvalidJSONNumber
 		}
-		intValue = uint32(num)
+		ui64 = uint64(num)
 	default:
 		return nil, ErrUnsupportedPermissionType
 	}
 
+	if ui64 > math.MaxUint32 {
+		return nil, ErrPermissionValueOutOfRange
+	}
+
+	// Now safe to cast
+	ui32 := uint32(ui64)
 	buf := make([]byte, 4)
-	binary.BigEndian.PutUint32(buf, intValue)
+	binary.BigEndian.PutUint32(buf, ui32)
 	return buf, nil
 }
 
@@ -68,6 +87,7 @@ func (p *PermissionValue) ToJSON(parser interfaces.BinaryParser, _ ...int) (any,
 
 	permissionValue := binary.BigEndian.Uint32(b)
 
+	// #nosec G115
 	if name, err := definitions.Get().GetDelegatablePermissionNameByValue(int32(permissionValue)); err == nil {
 		return name, nil
 	}
