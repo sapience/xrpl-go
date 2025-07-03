@@ -1,11 +1,17 @@
 package types
 
 import (
-	"bytes"
 	"encoding/binary"
+	"encoding/json"
+	"errors"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
+)
+
+var (
+	ErrInvalidJSONNumber         = errors.New("invalid json.Number")
+	ErrUnsupportedPermissionType = errors.New("unsupported JSON type for PermissionValue")
 )
 
 // PermissionValue represents a 32-bit unsigned integer permission value.
@@ -30,18 +36,25 @@ func (p *PermissionValue) FromJSON(value any) ([]byte, error) {
 		intValue = uint32(v)
 	case int32:
 		intValue = uint32(v)
+	case int64:
+		intValue = uint32(v)
 	case uint32:
 		intValue = v
 	case float64:
 		intValue = uint32(v)
+	case json.Number:
+		num, err := v.Int64()
+		if err != nil {
+			return nil, ErrInvalidJSONNumber
+		}
+		intValue = uint32(num)
+	default:
+		return nil, ErrUnsupportedPermissionType
 	}
 
-	buf := new(bytes.Buffer)
-	err := binary.Write(buf, binary.BigEndian, intValue)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
+	buf := make([]byte, 4)
+	binary.BigEndian.PutUint32(buf, intValue)
+	return buf, nil
 }
 
 // ToJSON takes a BinaryParser and optional parameters, and converts the serialized byte data

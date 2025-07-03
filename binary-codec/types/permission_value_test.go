@@ -1,7 +1,9 @@
 package types
 
 import (
+	"encoding/json"
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
@@ -9,7 +11,6 @@ import (
 	"github.com/Peersyst/xrpl-go/binary-codec/types/interfaces"
 	"github.com/Peersyst/xrpl-go/binary-codec/types/testutil"
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestPermissionValue_FromJSON(t *testing.T) {
@@ -39,6 +40,48 @@ func TestPermissionValue_FromJSON(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
+			name:        "pass - int32 value",
+			input:       int32(65537),
+			expected:    []byte{0, 1, 0, 1},
+			expectedErr: nil,
+		},
+		{
+			name:        "pass - int64 value",
+			input:       int64(65537),
+			expected:    []byte{0, 1, 0, 1},
+			expectedErr: nil,
+		},
+		{
+			name:        "pass - uint32 value",
+			input:       uint32(65537),
+			expected:    []byte{0, 1, 0, 1},
+			expectedErr: nil,
+		},
+		{
+			name:        "pass - float64 value",
+			input:       float64(65537),
+			expected:    []byte{0, 1, 0, 1},
+			expectedErr: nil,
+		},
+		{
+			name:        "pass - valid json.Number",
+			input:       json.Number("65537"),
+			expected:    []byte{0, 1, 0, 1},
+			expectedErr: nil,
+		},
+		{
+			name:        "fail - invalid json.Number",
+			input:       json.Number("invalid"),
+			expected:    nil,
+			expectedErr: ErrInvalidJSONNumber,
+		},
+		{
+			name:        "fail - unsupported type",
+			input:       []int{1, 2, 3},
+			expected:    nil,
+			expectedErr: ErrUnsupportedPermissionType,
+		},
+		{
 			name:     "fail - invalid permission name",
 			input:    "InvalidPermission",
 			expected: nil,
@@ -53,11 +96,11 @@ func TestPermissionValue_FromJSON(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			pv := &PermissionValue{}
 			actual, err := pv.FromJSON(tc.input)
-			if tc.expectedErr != nil {
-				require.EqualError(t, err, tc.expectedErr.Error())
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tc.expected, actual)
+			if !reflect.DeepEqual(err, tc.expectedErr) {
+				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
+			}
+			if !reflect.DeepEqual(actual, tc.expected) {
+				t.Errorf("Expected %v, got %v", tc.expected, actual)
 			}
 		})
 	}
@@ -118,10 +161,11 @@ func TestPermissionValue_ToJSON(t *testing.T) {
 			pv := &PermissionValue{}
 			parser := tc.malleate(t)
 			actual, err := pv.ToJSON(parser)
-			if tc.expectedErr != nil {
-				require.EqualError(t, err, tc.expectedErr.Error())
-			} else {
-				require.Equal(t, tc.expected, actual)
+			if !reflect.DeepEqual(err, tc.expectedErr) {
+				t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
+			}
+			if !reflect.DeepEqual(actual, tc.expected) {
+				t.Errorf("Expected %v, got %v", tc.expected, actual)
 			}
 		})
 	}
