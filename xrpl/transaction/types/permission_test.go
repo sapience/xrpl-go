@@ -33,7 +33,9 @@ func TestPermission_Flatten(t *testing.T) {
 				},
 			},
 			expected: map[string]interface{}{
-				"Permission": map[string]interface{}{},
+				"Permission": map[string]interface{}{
+					"PermissionValue": "",
+				},
 			},
 		},
 	}
@@ -66,7 +68,9 @@ func TestPermissionValue_Flatten(t *testing.T) {
 			permissionValue: PermissionValue{
 				PermissionValue: "",
 			},
-			expected: map[string]interface{}{},
+			expected: map[string]interface{}{
+				"PermissionValue": "",
+			},
 		},
 	}
 
@@ -74,6 +78,74 @@ func TestPermissionValue_Flatten(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			result := test.permissionValue.Flatten()
 			require.Equal(t, test.expected, result)
+		})
+	}
+}
+
+func TestPermission_IsValid(t *testing.T) {
+	tests := []struct {
+		name       string
+		permission Permission
+		expected   bool
+	}{
+		{
+			name: "pass - valid permission",
+			permission: Permission{
+				Permission: PermissionValue{
+					PermissionValue: "Payment",
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "fail - empty permission value",
+			permission: Permission{
+				Permission: PermissionValue{
+					PermissionValue: "",
+				},
+			},
+			expected: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			result := test.permission.IsValid()
+			if result != test.expected {
+				t.Errorf("Expected %v, got %v", test.expected, result)
+			}
+		})
+	}
+}
+
+func TestPermissionValue_IsValid(t *testing.T) {
+	tests := []struct {
+		name            string
+		permissionValue PermissionValue
+		expected        bool
+	}{
+		{
+			name: "pass - valid permission value",
+			permissionValue: PermissionValue{
+				PermissionValue: "Payment",
+			},
+			expected: true,
+		},
+		{
+			name: "fail - empty permission value",
+			permissionValue: PermissionValue{
+				PermissionValue: "",
+			},
+			expected: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			result := test.permissionValue.IsValid()
+			if result != test.expected {
+				t.Errorf("Expected %v, got %v", test.expected, result)
+			}
 		})
 	}
 }

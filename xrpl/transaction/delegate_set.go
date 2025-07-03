@@ -29,12 +29,16 @@ const (
 )
 
 // Set of transaction types that cannot be delegated
-var NonDelegatableTransactions = map[string]bool{
-	"AccountSet":    true,
-	"SetRegularKey": true,
-	"SignerListSet": true,
-	"DelegateSet":   true,
-	"AccountDelete": true,
+var NonDelegatableTransactions = map[string]struct{}{
+	"AccountSet":    {},
+	"SetRegularKey": {},
+	"SignerListSet": {},
+	"DelegateSet":   {},
+	"AccountDelete": {},
+	// Pseudo transactions below:
+	"EnableAmendment": {},
+	"SetFee":          {},
+	"UNLModify":       {},
 }
 
 // DelegateSet allows an account to delegate a set of permissions to another account.
@@ -129,25 +133,28 @@ func (d *DelegateSet) Validate() (bool, error) {
 	}
 
 	// Track permission values to check for duplicates
-	permissionValueSet := make(map[string]bool)
+	permissionValueSet := make(map[string]struct{})
 
 	for _, permission := range d.Permissions {
-		// Validate permission structure (should be well-formed)
-		permissionValue := permission.Permission.PermissionValue
-		if permissionValue == "" {
+		// Validate permission structure using the Permission's own validation
+		if !permission.Permission.IsValid() {
 			return false, ErrDelegateSetPermissionValueUndefined
 		}
 
+		permissionValue := permission.Permission.PermissionValue
+
 		// Check if it's a non-delegatable transaction
-		if NonDelegatableTransactions[permissionValue] {
+		if _, isNonDelegatable := NonDelegatableTransactions[permissionValue]; isNonDelegatable {
 			return false, ErrDelegateSetNonDelegatableTransaction
 		}
 
-		// Check for duplicates
-		if permissionValueSet[permissionValue] {
-			return false, ErrDelegateSetDuplicatePermissions
-		}
-		permissionValueSet[permissionValue] = true
+		// Add to set for duplicate detection
+		permissionValueSet[permissionValue] = struct{}{}
+	}
+
+	// Check for duplicates by comparing lengths (like JS implementation)
+	if len(d.Permissions) != len(permissionValueSet) {
+		return false, ErrDelegateSetDuplicatePermissions
 	}
 
 	return true, nil
