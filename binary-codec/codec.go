@@ -17,12 +17,21 @@ var (
 
 	// ErrSigningClaimFieldNotFound is returned when the 'Channel' & 'Amount' fields are both required, but were not found.
 	ErrSigningClaimFieldNotFound = errors.New("'Channel' & 'Amount' fields are both required, but were not found")
+	// ErrBatchFlagsFieldNotFound is returned when the 'flags' field is missing.
+	ErrBatchFlagsFieldNotFound = errors.New("no field `flags`")
+	// ErrBatchTxIDsFieldNotFound is returned when the 'txIDs' field is missing.
+	ErrBatchTxIDsFieldNotFound = errors.New("no field `txIDs`")
+	// ErrBatchTxIDsNotArray is returned when the 'txIDs' field is not an array.
+	ErrBatchTxIDsNotArray = errors.New("txIDs field must be an array")
+	// ErrBatchTxIDNotString is returned when a txID is not a string.
+	ErrBatchTxIDNotString = errors.New("each txID must be a string")
 )
 
 const (
 	txMultiSigPrefix          = "534D5400"
 	paymentChannelClaimPrefix = "434C4D00"
 	txSigPrefix               = "53545800"
+	batchPrefix               = "42434800"
 )
 
 // Encode converts a JSON transaction object to a hex string in the canonical binary format.
@@ -114,6 +123,55 @@ func EncodeForSigningClaim(json map[string]any) (string, error) {
 	}
 
 	return strings.ToUpper(paymentChannelClaimPrefix + hex.EncodeToString(channel) + hex.EncodeToString(amount)), nil
+}
+
+// EncodeForSigningBatch encodes a batch transaction into binary format in preparation for signing.
+func EncodeForSigningBatch(json map[string]any) (string, error) {
+	if json["flags"] == nil {
+		return "", ErrBatchFlagsFieldNotFound
+	}
+	if json["txIDs"] == nil {
+		return "", ErrBatchTxIDsFieldNotFound
+	}
+
+	// Extract and validate txIDs
+	txIDsInterface, ok := json["txIDs"].([]any)
+	if !ok {
+		return "", ErrBatchTxIDsNotArray
+	}
+
+	// Create UInt32 for flags
+	flagsType := &types.UInt32{}
+	flagsBytes, err := flagsType.FromJSON(json["flags"])
+	if err != nil {
+		return "", err
+	}
+
+	// Create UInt32 for txIDs length
+	txIDsLengthType := &types.UInt32{}
+	txIDsLengthBytes, err := txIDsLengthType.FromJSON(uint32(len(txIDsInterface)))
+	if err != nil {
+		return "", err
+	}
+
+	// Build the result string
+	result := batchPrefix + hex.EncodeToString(flagsBytes) + hex.EncodeToString(txIDsLengthBytes)
+
+	// Add each transaction ID
+	for _, txID := range txIDsInterface {
+		txIDStr, ok := txID.(string)
+		if !ok {
+			return "", ErrBatchTxIDNotString
+		}
+		hash256 := types.NewHash256()
+		txIDBytes, err := hash256.FromJSON(txIDStr)
+		if err != nil {
+			return "", err
+		}
+		result += hex.EncodeToString(txIDBytes)
+	}
+
+	return strings.ToUpper(result), nil
 }
 
 // removeNonSigningFields removes the fields from a JSON transaction object that should not be signed.
