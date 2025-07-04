@@ -111,9 +111,7 @@ func TestPermission_IsValid(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			result := test.permission.IsValid()
-			if result != test.expected {
-				t.Errorf("Expected %v, got %v", test.expected, result)
-			}
+			require.Equal(t, test.expected, result)
 		})
 	}
 }
@@ -143,9 +141,7 @@ func TestPermissionValue_IsValid(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			result := test.permissionValue.IsValid()
-			if result != test.expected {
-				t.Errorf("Expected %v, got %v", test.expected, result)
-			}
+			require.Equal(t, test.expected, result)
 		})
 	}
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
@@ -58,7 +57,7 @@ func main() {
 		delegateeBalance = "0"
 	}
 
-	fmt.Printf("� Delegator initial balance: %s XRP\n", delegatorBalance)
+	fmt.Printf("💳 Delegator initial balance: %s XRP\n", delegatorBalance)
 	fmt.Printf("💳 Delegatee initial balance: %s XRP\n", delegateeBalance)
 	fmt.Println()
 
@@ -92,9 +91,6 @@ func main() {
 	fmt.Printf("🌐 Validated: %t\n", response.Validated)
 	fmt.Println()
 
-	// Wait for delegation to be processed
-	time.Sleep(3 * time.Second)
-
 	// Create delegated payment transaction
 	delegatedPaymentTx := &transactions.Payment{
 		BaseTx: transactions.BaseTx{
@@ -117,7 +113,7 @@ func main() {
 
 	fmt.Println("✅ Delegated payment submitted")
 	fmt.Printf("🌐 Hash: %s\n", response2.Hash)
-	fmt.Printf("� Validated: %t\n", response2.Validated)
+	fmt.Printf("🌐 Validated: %t\n", response2.Validated)
 	fmt.Println()
 
 	// Check final balances

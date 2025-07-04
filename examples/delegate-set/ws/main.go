@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/faucet"
-	"github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	transactions "github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
@@ -51,12 +49,15 @@ func main() {
 	}
 	fmt.Println("💸 Wallets funded")
 
-	// Wait for accounts to be available
-	time.Sleep(5 * time.Second)
-
 	// Check initial balances
-	delegatorBalance := getAccountBalance(client, delegatorWallet.ClassicAddress)
-	delegateeBalance := getAccountBalance(client, delegateeWallet.ClassicAddress)
+	delegatorBalance, err := client.GetXrpBalance(delegatorWallet.ClassicAddress)
+	if err != nil {
+		delegatorBalance = "0"
+	}
+	delegateeBalance, err := client.GetXrpBalance(delegateeWallet.ClassicAddress)
+	if err != nil {
+		delegateeBalance = "0"
+	}
 
 	fmt.Printf("💳 Delegator initial balance: %s XRP\n", delegatorBalance)
 	fmt.Printf("💳 Delegatee initial balance: %s XRP\n", delegateeBalance)
@@ -101,9 +102,6 @@ func main() {
 	fmt.Printf("🌐 Validated: %t\n", response.Validated)
 	fmt.Println()
 
-	// Wait for delegation to be processed
-	time.Sleep(3 * time.Second)
-
 	// Create delegated payment transaction
 	delegatedPaymentTx := &transactions.Payment{
 		BaseTx: transactions.BaseTx{
@@ -135,28 +133,19 @@ func main() {
 
 	fmt.Println("✅ Delegated payment submitted")
 	fmt.Printf("🌐 Hash: %s\n", response2.Hash)
-	fmt.Printf("� Validated: %t\n", response2.Validated)
+	fmt.Printf("🌐 Validated: %t\n", response2.Validated)
 	fmt.Println()
 
 	// Check final balances
-	finalDelegatorBalance := getAccountBalance(client, delegatorWallet.ClassicAddress)
-	finalDelegateeBalance := getAccountBalance(client, delegateeWallet.ClassicAddress)
+	finalDelegatorBalance, err := client.GetXrpBalance(delegatorWallet.ClassicAddress)
+	if err != nil {
+		finalDelegatorBalance = "0"
+	}
+	finalDelegateeBalance, err := client.GetXrpBalance(delegateeWallet.ClassicAddress)
+	if err != nil {
+		finalDelegateeBalance = "0"
+	}
 
 	fmt.Printf("💳 Delegator final balance: %s XRP\n", finalDelegatorBalance)
 	fmt.Printf("💳 Delegatee final balance: %s XRP\n", finalDelegateeBalance)
-}
-
-func getAccountBalance(client *websocket.Client, address types.Address) string {
-	accountInfo, err := client.GetAccountInfo(&account.InfoRequest{
-		Account: address,
-	})
-	if err != nil {
-		return "0"
-	}
-
-	// Convert drops to XRP (1 XRP = 1,000,000 drops)
-	balanceDrops := accountInfo.AccountData.Balance
-	balanceXRP := float64(balanceDrops) / 1000000.0
-
-	return fmt.Sprintf("%.6f", balanceXRP)
 }
