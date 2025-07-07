@@ -30,16 +30,14 @@ func SignTxBlob(txBlob string) (string, error) {
 		isInnerBatchTxn = (flags & transaction.TfInnerBatchTxn) != 0
 	}
 
-	// For inner batch transactions, skip signature validation
-	if !isInnerBatchTxn {
-		// Check if the transaction has at least one of the required fields
-		hasTxnSignature := tx["TxnSignature"] != nil
-		hasSigners := tx["Signers"] != nil
-		hasSigningPubKey := tx["SigningPubKey"] != nil
+	// Check if the transaction has at least one of the required signature fields
+	hasTxnSignature := tx["TxnSignature"] != nil
+	hasSigners := tx["Signers"] != nil
+	hasSigningPubKey := tx["SigningPubKey"] != nil
 
-		if !hasTxnSignature && !hasSigners && !hasSigningPubKey {
-			return "", ErrMissingSignature
-		}
+	// For non-inner batch transactions, require at least one signature field
+	if !hasTxnSignature && !hasSigners && !hasSigningPubKey && !isInnerBatchTxn {
+		return "", ErrMissingSignature
 	}
 
 	// Create a byte slice with the correct capacity
