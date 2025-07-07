@@ -233,14 +233,18 @@ func (b *Batch) Validate() (bool, error) {
 			return false, ErrBatchMissingInnerFlag
 		}
 
-		// Fee must be "0" for inner transactions
-		if feeStr, ok := rawTx["Fee"].(string); !ok || feeStr != "0" {
-			return false, ErrBatchInnerTransactionInvalid
+		// Fee must be "0" for inner transactions (or missing, which means 0)
+		if feeField, exists := rawTx["Fee"]; exists {
+			if feeStr, ok := feeField.(string); !ok || feeStr != "0" {
+				return false, ErrBatchInnerTransactionInvalid
+			}
 		}
 
-		// SigningPubKey must be empty for inner transactions
-		if signingPubKey, ok := rawTx["SigningPubKey"].(string); !ok || signingPubKey != "" {
-			return false, ErrBatchInnerTransactionInvalid
+		// SigningPubKey must be empty for inner transactions (or missing, which means empty)
+		if signingPubKeyField, exists := rawTx["SigningPubKey"]; exists {
+			if signingPubKey, ok := signingPubKeyField.(string); !ok || signingPubKey != "" {
+				return false, ErrBatchInnerTransactionInvalid
+			}
 		}
 
 		// Check for disallowed fields in inner transactions
