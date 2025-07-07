@@ -149,6 +149,7 @@ func EncodeForSigningBatch(json map[string]any) (string, error) {
 
 	// Create UInt32 for txIDs length
 	txIDsLengthType := &types.UInt32{}
+	// #nosec G115 -- batch transactions allow a maximum of 10 tx.
 	txIDsLengthBytes, err := txIDsLengthType.FromJSON(uint32(len(txIDsInterface)))
 	if err != nil {
 		return "", err
