@@ -1455,6 +1455,16 @@
       }
     ],
     [
+      "ParentBatchID",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 36,
+        "type": "Hash256"
+      }
+    ],
+    [
       "Amount",
       {
         "nth": 1,
