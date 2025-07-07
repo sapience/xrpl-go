@@ -7,9 +7,6 @@ import (
 )
 
 const (
-	// tfInnerBatchTxn flag that must be set on inner transactions within a batch
-	tfInnerBatchTxn uint32 = 0x40000000
-
 	// Batch transaction flags
 	tfAllOrNothing uint32 = 0x00010000
 	tfOnlyOne      uint32 = 0x00020000
@@ -27,7 +24,7 @@ var (
 	ErrBatchRawTransactionMissing        = errors.New("batch RawTransaction field is missing")
 	ErrBatchRawTransactionFieldNotObject = errors.New("batch RawTransaction field is not an object")
 	ErrBatchNestedTransaction            = errors.New("batch cannot contain nested Batch transactions")
-	ErrBatchMissingInnerFlag             = errors.New("batch RawTransaction must contain the tfInnerBatchTxn flag")
+	ErrBatchMissingInnerFlag             = errors.New("batch RawTransaction must contain the TfInnerBatchTxn flag")
 
 	// Inner transaction validation errors
 	ErrBatchInnerTransactionInvalid = errors.New("batch inner transaction validation failed")
@@ -231,8 +228,8 @@ func (b *Batch) Validate() (bool, error) {
 			return false, ErrBatchNestedTransaction
 		}
 
-		// Check for the `tfInnerBatchTxn` flag in the inner transactions
-		if flags, ok := rawTx["Flags"].(uint32); !ok || !IsFlagEnabled(flags, tfInnerBatchTxn) {
+		// Check for the TfInnerBatchTxn flag in the inner transactions
+		if flags, ok := rawTx["Flags"].(uint32); !ok || !IsFlagEnabled(flags, TfInnerBatchTxn) {
 			return false, ErrBatchMissingInnerFlag
 		}
 

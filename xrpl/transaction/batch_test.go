@@ -34,7 +34,7 @@ func TestBatchFlatten(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -74,7 +74,7 @@ func TestBatchFlatten(t *testing.T) {
 					{
 						RawTransaction: FlatTransaction{
 							"TransactionType": "OfferCreate",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"Account":         "rUserBSM7T3b6nHX3Jjua62wgX9unH8s9b",
 							"TakerGets":       "6000000",
 							"TakerPays": map[string]interface{}{
@@ -90,7 +90,7 @@ func TestBatchFlatten(t *testing.T) {
 					{
 						RawTransaction: FlatTransaction{
 							"TransactionType": "Payment",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"Account":         "rUserBSM7T3b6nHX3Jjua62wgX9unH8s9b",
 							"Destination":     "rDEXfrontEnd23E44wKL3S6dj9FaXv",
 							"Amount":          "1000",
@@ -156,7 +156,7 @@ func TestBatchFlatten(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -232,7 +232,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -255,7 +255,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -264,7 +264,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -285,7 +285,7 @@ func TestBatch_Validate(t *testing.T) {
 			expected: false,
 		},
 		{
-			name: "fail - inner transaction missing tfInnerBatchTxn flag",
+			name: "fail - inner transaction missing TfInnerBatchTxn flag",
 			input: Batch{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
@@ -298,7 +298,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(0), // Missing tfInnerBatchTxn
+							"Flags":           uint32(0), // Missing TfInnerBatchTxn
 							"SigningPubKey":   "",
 						},
 					},
@@ -320,7 +320,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Batch", // Nested batch not allowed
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -342,7 +342,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "12", // Non-zero fee not allowed
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -364,7 +364,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "ED5F5AC8B98974A3CA843326D9B88CEBD0560177B973EE0B149F782CFAA06DC66A", // Non-empty not allowed
 						},
 					},
@@ -386,7 +386,7 @@ func TestBatch_Validate(t *testing.T) {
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Payment",
 							"Fee":             "0",
-							"Flags":           uint32(tfInnerBatchTxn),
+							"Flags":           uint32(TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},

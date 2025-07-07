@@ -3059,6 +3059,7 @@
     "AMMDeposit": 36,
     "AMMVote": 38,
     "AMMWithdraw": 37,
+    "Batch": 64,
     "CheckCancel": 18,
     "CheckCash": 17,
     "CheckCreate": 16,

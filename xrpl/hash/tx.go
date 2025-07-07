@@ -8,6 +8,11 @@ import (
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+)
+
+var (
+	ErrMissingSignature = errors.New("transaction must have at least one of TxnSignature, Signers, or SigningPubKey")
 )
 
 // SignTxBlob hashes a signed transaction blob
@@ -19,13 +24,22 @@ func SignTxBlob(txBlob string) (string, error) {
 		return "", err
 	}
 
-	// Check if the transaction has at least one of the required fields
-	hasTxnSignature := tx["TxnSignature"] != nil
-	hasSigners := tx["Signers"] != nil
-	hasSigningPubKey := tx["SigningPubKey"] != nil
+	// Check if this is an inner batch transaction (has TfInnerBatchTxn flag)
+	isInnerBatchTxn := false
+	if flags, ok := tx["Flags"].(uint32); ok {
+		isInnerBatchTxn = (flags & transaction.TfInnerBatchTxn) != 0
+	}
 
-	if !hasTxnSignature && !hasSigners && !hasSigningPubKey {
-		return "", errors.New("transaction must have at least one of TxnSignature, Signers, or SigningPubKey")
+	// For inner batch transactions, skip signature validation
+	if !isInnerBatchTxn {
+		// Check if the transaction has at least one of the required fields
+		hasTxnSignature := tx["TxnSignature"] != nil
+		hasSigners := tx["Signers"] != nil
+		hasSigningPubKey := tx["SigningPubKey"] != nil
+
+		if !hasTxnSignature && !hasSigners && !hasSigningPubKey {
+			return "", ErrMissingSignature
+		}
 	}
 
 	// Create a byte slice with the correct capacity
