@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `Hash192` type.
 - Adds functions to serialize and deserialize `MPTCurrencyAmount`.
 - Adds unit tests for `MPTCurrencyAmount`.
+- Adds`EncodeForSigningBatch` function.
 
 #### xrpl
 
