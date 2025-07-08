@@ -20,7 +20,7 @@ func (r *RawTransaction) Validate() (bool, error) {
 	flattened := r.Flatten()
 
 	// Validate that the flattened structure is a record
-	if !IsRecord(flattened) {
+	if !IsTransactionArray(flattened) {
 		return false, ErrBatchRawTransactionNotObject
 	}
 
@@ -30,7 +30,7 @@ func (r *RawTransaction) Validate() (bool, error) {
 		return false, ErrBatchRawTransactionMissing
 	}
 
-	if !IsRecord(rawTxField) {
+	if !IsTransactionArray(rawTxField) {
 		return false, ErrBatchRawTransactionFieldNotObject
 	}
 
