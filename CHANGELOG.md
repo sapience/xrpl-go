@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `TfInnerBatchTxn` in `flags.go` file
 - Adds `isArray` and `isRecord` validation helpers.
 - Adds support for `tfInnerBatchTxn` flag on `SignTxBlob`.
+- Adds `CombineBatchSigners` function to combine the batch signers of a set of transactions into a single transaction.
+- Adds `SignMultiBatch` function to sign a multi-account Batch transaction.
 
 ## Changed
 
