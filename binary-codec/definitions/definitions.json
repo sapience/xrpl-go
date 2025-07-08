@@ -2948,6 +2948,7 @@
     "temDST_NEEDED": -278,
     "temINVALID": -277,
     "temINVALID_FLAG": -276,
+    "temINVALID_INNER_BATCH": -250,
     "temREDUNDANT": -275,
     "temRIPPLE_EMPTY": -274,
     "temDISABLED": -273,
