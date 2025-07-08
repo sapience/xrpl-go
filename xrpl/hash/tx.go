@@ -68,7 +68,7 @@ func isTxValid(tx map[string]interface{}) (bool, error) {
 	if flags, ok := tx["Flags"].(uint32); ok {
 		isInnerBatchTxn = (flags & transaction.TfInnerBatchTxn) != 0
 	}
-	
+
 	hasTxnSignature := tx["TxnSignature"] != nil
 	hasSigners := tx["Signers"] != nil
 	hasSigningPubKey := tx["SigningPubKey"] != nil
