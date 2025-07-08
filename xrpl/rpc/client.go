@@ -300,3 +300,64 @@ func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 
 	return nil
 }
+
+func (c *Client) AutofillBatch(tx *transaction.Batch) error {
+	accountSequences := make(map[string]uint32)
+
+	for _, t := range tx.RawTransactions {
+		if t.RawTransaction["Sequence"] == nil && t.RawTransaction["TicketSequence"] == nil {
+			accountAddr := t.RawTransaction["Account"].(string)
+
+			if _, exists := accountSequences[accountAddr]; exists {
+				t.RawTransaction["Sequence"] = accountSequences[accountAddr]
+				accountSequences[accountAddr]++
+
+			} else {
+				nextSequence, err := c.getTransactionNextValidSequenceNumber(&t.RawTransaction)
+				if err != nil {
+					return err
+				}
+				var sequence uint32
+				if accountAddr == string(tx.Account) {
+					sequence = nextSequence + 1
+				} else {
+					sequence = nextSequence
+				}
+				accountSequences[accountAddr] = sequence + 1
+				t.RawTransaction["Sequence"] = sequence
+			}
+		}
+
+		if t.RawTransaction["Fee"] == nil {
+			t.RawTransaction["Fee"] = "0"
+		} else if t.RawTransaction["Fee"] != "0" {
+			return types.ErrBatchInnerTransactionInvalid
+		}
+
+		if t.RawTransaction["SigningPubKey"] == nil {
+			t.RawTransaction["SigningPubKey"] = ""
+		} else if t.RawTransaction["SigningPubKey"] != "" {
+			return types.ErrBatchInnerTransactionInvalid
+		}
+
+		if t.RawTransaction["TxnSignature"] != nil {
+			return types.ErrBatchInnerTransactionInvalid
+		}
+
+		if t.RawTransaction["Signers"] != nil {
+			return types.ErrBatchNestedTransaction
+		}
+
+		if t.RawTransaction["NetworkID"] == nil {
+			needsNetworkID, err := c.txNeedsNetworkID()
+			if err != nil {
+				return err
+			}
+			if needsNetworkID {
+				t.RawTransaction["NetworkID"] = c.NetworkID
+			}
+		}
+
+	}
+	return nil
+}
