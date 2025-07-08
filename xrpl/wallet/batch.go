@@ -96,15 +96,15 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 		return err
 	}
 
-	var batchSigner transaction.BatchSigner
+	var batchSigner types.BatchSigner
 
 	if multisignAddress != "" {
-		batchSigner = transaction.BatchSigner{
-			BatchSigner: transaction.BatchSignerData{
+		batchSigner = types.BatchSigner{
+			BatchSigner: types.BatchSignerData{
 				Account: types.Address(batchAccount),
-				Signers: []transaction.Signer{
+				Signers: []types.Signer{
 					{
-						SignerData: transaction.SignerData{
+						SignerData: types.SignerData{
 							Account:       types.Address(multisignAddress),
 							SigningPubKey: wallet.PublicKey,
 							TxnSignature:  signature,
@@ -114,8 +114,8 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 			},
 		}
 	} else {
-		batchSigner = transaction.BatchSigner{
-			BatchSigner: transaction.BatchSignerData{
+		batchSigner = types.BatchSigner{
+			BatchSigner: types.BatchSignerData{
 				Account:       types.Address(batchAccount),
 				SigningPubKey: wallet.PublicKey,
 				TxnSignature:  signature,
@@ -123,7 +123,7 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 		}
 	}
 
-	tx.BatchSigners = []transaction.BatchSigner{batchSigner}
+	tx.BatchSigners = []types.BatchSigner{batchSigner}
 
 	return nil
 }
@@ -138,7 +138,7 @@ func CombineBatchSigners(transactions []transaction.Batch) (string, error) {
 
 	var prevBatchSignable *wallettypes.BatchSignable
 
-	signers := []transaction.BatchSigner{}
+	signers := []types.BatchSigner{}
 
 	for index, tx := range transactions {
 		if len(tx.BatchSigners) == 0 {
@@ -156,23 +156,21 @@ func CombineBatchSigners(transactions []transaction.Batch) (string, error) {
 
 		if index == 0 {
 			prevBatchSignable = batchSignable
-			continue
+		} else {
+			if !prevBatchSignable.Equals(batchSignable) {
+				return "", ErrBatchSignableNotEqual
+			}
 		}
 
-		if !prevBatchSignable.Equals(batchSignable) {
-			return "", ErrBatchSignableNotEqual
-		}
-
+		// Add signers from this transaction, excluding the batch submitter
 		for _, signer := range tx.BatchSigners {
 			if signer.BatchSigner.Account != transactions[0].Account {
 				signers = append(signers, signer)
 			}
 		}
-
-		prevBatchSignable = batchSignable
 	}
 
-	slices.SortFunc(signers, func(a, b transaction.BatchSigner) int {
+	slices.SortFunc(signers, func(a, b types.BatchSigner) int {
 		return cmp.Compare(a.BatchSigner.Account, b.BatchSigner.Account)
 	})
 

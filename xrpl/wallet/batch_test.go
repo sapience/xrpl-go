@@ -66,7 +66,7 @@ func TestSignMultiBatch_ED25519(t *testing.T) {
 				Account:         types.Address("rJCxK2hX9tDMzbnn3cg1GU2g19Kfmhzxkp"),
 				TransactionType: transaction.BatchTx,
 			},
-			RawTransactions: []transaction.RawTransactionWrapper{
+			RawTransactions: []transaction.InnerTransaction{
 				{
 					RawTransaction: flatPaymentTx1,
 				},
@@ -236,7 +236,7 @@ func TestSignMultiBatch_SECP256K1(t *testing.T) {
 				Account:         types.Address("rJCxK2hX9tDMzbnn3cg1GU2g19Kfmhzxkp"),
 				TransactionType: transaction.BatchTx,
 			},
-			RawTransactions: []transaction.RawTransactionWrapper{
+			RawTransactions: []transaction.InnerTransaction{
 				{
 					RawTransaction: flatPaymentTx1,
 				},
@@ -346,7 +346,7 @@ func TestCombineBatchSigners(t *testing.T) {
 				NetworkID:          21336,
 				Sequence:           215,
 			},
-			RawTransactions: []transaction.RawTransactionWrapper{
+			RawTransactions: []transaction.InnerTransaction{
 				{
 					RawTransaction: paymentTx1.Flatten(),
 				},
@@ -374,7 +374,7 @@ func TestCombineBatchSigners(t *testing.T) {
 			Amount:      types.XRPCurrencyAmount(1000000),
 		}
 
-		originalTx.RawTransactions = append(originalTx.RawTransactions, transaction.RawTransactionWrapper{
+		originalTx.RawTransactions = append(originalTx.RawTransactions, transaction.InnerTransaction{
 			RawTransaction: paymentTx3.Flatten(),
 		})
 
@@ -412,7 +412,7 @@ func TestCombineBatchSigners(t *testing.T) {
 				require.Contains(t, decoded, "BatchSigners")
 			},
 		},
-		{
+				{
 			name: "pass - sorts the signers",
 			setupTxs: func() []transaction.Batch {
 				tx1 := createOriginalBatchTx()
@@ -429,21 +429,29 @@ func TestCombineBatchSigners(t *testing.T) {
 			expectedError: nil,
 			postCheck: func(t *testing.T, result string, err error) {
 				require.NoError(t, err)
-
-				// Test that order doesn't matter by comparing both orders
-				tx1 := createOriginalBatchTx()
-				tx2 := createOriginalBatchTx()
-
-				err = SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				
+				// Decode and verify that signers are sorted by account address
+				decoded, err := binarycodec.Decode(result)
 				require.NoError(t, err)
+				
+				batchSigners, ok := decoded["BatchSigners"].([]interface{})
+				require.True(t, ok)
+				require.Len(t, batchSigners, 2)
 
-				err = SignMultiBatch(secpWallet, tx2, &SignMultiBatchOptions{})
-				require.NoError(t, err)
+				// Extract the account addresses from the signers
+				accounts := make([]string, len(batchSigners))
+				for i, signerInterface := range batchSigners {
+					signer, ok := signerInterface.(map[string]interface{})
+					require.True(t, ok)
+					batchSigner, ok := signer["BatchSigner"].(map[string]interface{})
+					require.True(t, ok)
+					account, ok := batchSigner["Account"].(string)
+					require.True(t, ok)
+					accounts[i] = account
+				}
 
-				result2, err := CombineBatchSigners([]transaction.Batch{*tx1, *tx2})
-				require.NoError(t, err)
-
-				require.Equal(t, result, result2)
+				// Verify that the accounts are sorted
+				require.True(t, accounts[0] < accounts[1], "Accounts should be sorted: %v", accounts)
 			},
 		},
 		{
