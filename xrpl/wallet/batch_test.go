@@ -3,6 +3,7 @@ package wallet
 import (
 	"testing"
 
+	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
@@ -290,6 +291,280 @@ func TestSignMultiBatch_SECP256K1(t *testing.T) {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.expectedError.Error())
 			}
+		})
+	}
+}
+
+func TestCombineBatchSigners(t *testing.T) {
+	// Create test wallets using the same seeds as in TypeScript tests
+	// rPZsMhM7jNaixFiiipWUuDPifUXCVNYfb6
+	edWallet, err := FromSeed("sEdStM1pngFcLQqVfH3RQcg2Qr6ov9e", "")
+	require.NoError(t, err)
+
+	// rPMh7Pi9ct699iZUTWaytJUoHcJ7cgyziK
+	secpWallet, err := FromSeed("spkcsko6Ag3RbCSVXV2FJ8Pd4Zac1", "")
+	require.NoError(t, err)
+
+	// rJCxK2hX9tDMzbnn3cg1GU2g19Kfmhzxkp
+	submitWallet, err := FromSeed("sEd7HmQFsoyj5TAm6d98gytM9LJA1MF", "")
+	require.NoError(t, err)
+
+	// Helper function to create original batch transaction
+	createOriginalBatchTx := func() *transaction.Batch {
+		paymentTx1 := &transaction.Payment{
+			BaseTx: transaction.BaseTx{
+				Account:         types.Address(edWallet.ClassicAddress.String()),
+				TransactionType: transaction.PaymentTx,
+				Flags:           0x40000000,
+				Fee:             types.XRPCurrencyAmount(0),
+				Sequence:        215,
+				SigningPubKey:   "",
+			},
+			Destination: types.Address(secpWallet.ClassicAddress.String()),
+			Amount:      types.XRPCurrencyAmount(5000000),
+		}
+
+		paymentTx2 := &transaction.Payment{
+			BaseTx: transaction.BaseTx{
+				Account:         types.Address(secpWallet.ClassicAddress.String()),
+				TransactionType: transaction.PaymentTx,
+				Flags:           0x40000000,
+				Fee:             types.XRPCurrencyAmount(0),
+				Sequence:        470,
+				SigningPubKey:   "",
+			},
+			Destination: types.Address(submitWallet.ClassicAddress.String()),
+			Amount:      types.XRPCurrencyAmount(1000000),
+		}
+
+		return &transaction.Batch{
+			BaseTx: transaction.BaseTx{
+				Account:         types.Address(submitWallet.ClassicAddress.String()),
+				TransactionType: transaction.BatchTx,
+				Flags:           1, // tfAllOrNothing
+				LastLedgerSequence: 14973,
+				NetworkID:      21336,
+				Sequence:        215,
+			},
+			RawTransactions: []transaction.RawTransactionWrapper{
+				{
+					RawTransaction: paymentTx1.Flatten(),
+				},
+				{
+					RawTransaction: paymentTx2.Flatten(),
+				},
+			},
+		}
+	}
+
+	// Helper function to create batch transaction with submitter transaction
+	createBatchTxWithSubmitter := func() *transaction.Batch {
+		originalTx := createOriginalBatchTx()
+		
+		paymentTx3 := &transaction.Payment{
+			BaseTx: transaction.BaseTx{
+				Account:         types.Address(submitWallet.ClassicAddress.String()), // submitter account
+				TransactionType: transaction.PaymentTx,
+				Flags:           0x40000000,
+				Fee:             types.XRPCurrencyAmount(0),
+				Sequence:        470,
+				SigningPubKey:   "",
+			},
+			Destination: types.Address(secpWallet.ClassicAddress.String()),
+			Amount:      types.XRPCurrencyAmount(1000000),
+		}
+
+		originalTx.RawTransactions = append(originalTx.RawTransactions, transaction.RawTransactionWrapper{
+			RawTransaction: paymentTx3.Flatten(),
+		})
+
+		return originalTx
+	}
+
+	testCases := []struct {
+		name          string
+		setupTxs      func() []transaction.Batch
+		expectedError error
+		postCheck     func(t *testing.T, result string, err error)
+	}{
+		{
+			name: "pass - combines valid transactions",
+			setupTxs: func() []transaction.Batch {
+				tx1 := createOriginalBatchTx()
+				tx2 := createOriginalBatchTx()
+
+				err := SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				err = SignMultiBatch(secpWallet, tx2, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				return []transaction.Batch{*tx1, *tx2}
+			},
+			expectedError: nil,
+			postCheck: func(t *testing.T, result string, err error) {
+				require.NoError(t, err)
+				require.NotEmpty(t, result)
+
+				// Decode the result to verify structure
+				decoded, err := binarycodec.Decode(result)
+				require.NoError(t, err)
+				require.Contains(t, decoded, "BatchSigners")
+			},
+		},
+		{
+			name: "pass - sorts the signers",
+			setupTxs: func() []transaction.Batch {
+				tx1 := createOriginalBatchTx()
+				tx2 := createOriginalBatchTx()
+
+				err := SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				err = SignMultiBatch(secpWallet, tx2, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				return []transaction.Batch{*tx2, *tx1} // Note: reversed order to test sorting
+			},
+			expectedError: nil,
+			postCheck: func(t *testing.T, result string, err error) {
+				require.NoError(t, err)
+				
+				// Test that order doesn't matter by comparing both orders
+				tx1 := createOriginalBatchTx()
+				tx2 := createOriginalBatchTx()
+
+				err = SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				err = SignMultiBatch(secpWallet, tx2, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				result2, err := CombineBatchSigners([]transaction.Batch{*tx1, *tx2})
+				require.NoError(t, err)
+
+				require.Equal(t, result, result2)
+			},
+		},
+		{
+			name: "pass - removes signer for Batch submitter",
+			setupTxs: func() []transaction.Batch {
+				originalTx := createBatchTxWithSubmitter()
+
+				tx1 := &transaction.Batch{}
+				*tx1 = *originalTx
+				tx2 := &transaction.Batch{}
+				*tx2 = *originalTx
+				tx3 := &transaction.Batch{}
+				*tx3 = *originalTx
+
+				err := SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				err = SignMultiBatch(secpWallet, tx2, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				err = SignMultiBatch(submitWallet, tx3, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				return []transaction.Batch{*tx1, *tx2, *tx3}
+			},
+			expectedError: nil,
+			postCheck: func(t *testing.T, result string, err error) {
+				require.NoError(t, err)
+
+				// Decode and verify that only 2 signers remain (not 3)
+				decoded, err := binarycodec.Decode(result)
+				require.NoError(t, err)
+				
+				batchSigners, ok := decoded["BatchSigners"].([]interface{})
+				require.True(t, ok)
+				require.Len(t, batchSigners, 2) // Should exclude the submitter's signer
+			},
+		},
+		{
+			name: "fail - fails with no transactions provided",
+			setupTxs: func() []transaction.Batch {
+				return []transaction.Batch{}
+			},
+			expectedError: ErrNoTransactionsProvided,
+			postCheck: func(t *testing.T, result string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), ErrNoTransactionsProvided.Error())
+			},
+		},
+		{
+			name: "fail - fails with no BatchSigners provided in a transaction",
+			setupTxs: func() []transaction.Batch {
+				tx1 := createOriginalBatchTx()
+				tx2 := createOriginalBatchTx()
+
+				// Sign only one transaction
+				err := SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				// tx2 has no BatchSigners
+				return []transaction.Batch{*tx1, *tx2}
+			},
+			expectedError: ErrTxMustIncludeBatchSigner,
+			postCheck: func(t *testing.T, result string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), ErrTxMustIncludeBatchSigner.Error())
+			},
+		},
+		{
+			name: "fail - fails with signed inner transaction",
+			setupTxs: func() []transaction.Batch {
+				tx1 := createOriginalBatchTx()
+				tx2 := createOriginalBatchTx()
+
+				err := SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				err = SignMultiBatch(secpWallet, tx2, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				// Sign the transaction completely (add TxnSignature to make it signed)
+				tx1.TxnSignature = "some_signature"
+
+				return []transaction.Batch{*tx1, *tx2}
+			},
+			expectedError: ErrTransactionAlreadySigned,
+			postCheck: func(t *testing.T, result string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), ErrTransactionAlreadySigned.Error())
+			},
+		},
+		{
+			name: "fail - fails with different flags signed",
+			setupTxs: func() []transaction.Batch {
+				tx1 := createOriginalBatchTx()
+				tx2 := createOriginalBatchTx()
+
+				// Change flags on tx2
+				tx2.Flags = 4 // tfIndependent
+
+				err := SignMultiBatch(edWallet, tx1, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				err = SignMultiBatch(secpWallet, tx2, &SignMultiBatchOptions{})
+				require.NoError(t, err)
+
+				return []transaction.Batch{*tx1, *tx2}
+			},
+			expectedError: ErrBatchSignableNotEqual,
+			postCheck: func(t *testing.T, result string, err error) {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), ErrBatchSignableNotEqual.Error())
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			txs := tc.setupTxs()
+			result, err := CombineBatchSigners(txs)
+			tc.postCheck(t, result, err)
 		})
 	}
 }

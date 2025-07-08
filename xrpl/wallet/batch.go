@@ -1,7 +1,9 @@
 package wallet
 
 import (
+	"cmp"
 	"errors"
+	"slices"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/keypairs"
@@ -16,6 +18,14 @@ var (
 	ErrBatchAccountNotFound = errors.New("batch account not found in transaction")
 	// ErrTransactionMustBeBatch is returned when the transaction is not a batch transaction.
 	ErrTransactionMustBeBatch = errors.New("transaction must be a batch transaction")
+	// ErrNoTransactionsProvided is returned when no transactions are provided.
+	ErrNoTransactionsProvided = errors.New("no transactions provided")
+	// ErrTxMustIncludeBatchSigner is returned when the transaction does not include a batch signer.
+	ErrTxMustIncludeBatchSigner = errors.New("transaction must include a batch signer")
+	// ErrTransactionAlreadySigned is returned when the transaction has already been signed.
+	ErrTransactionAlreadySigned = errors.New("transaction has already been signed")
+	// ErrBatchSignableNotEqual is returned when the batch signable is not equal.
+	ErrBatchSignableNotEqual = errors.New("batch signable is not equal")
 )
 
 // SignMultiBatchOptions is a set of options for signing a multi-account Batch transaction.
@@ -116,4 +126,59 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 	tx.BatchSigners = []transaction.BatchSigner{batchSigner}
 
 	return nil
+}
+
+// CombineBatchSigners combines the batch signers of a set of transactions into a single transaction.
+// It takes a slice of transactions and returns a single transaction with the combined batch signers.
+// It returns an error if the transactions are invalid.
+func CombineBatchSigners(transactions []transaction.Batch) (string, error) {
+	if len(transactions) == 0 {
+		return "", ErrNoTransactionsProvided
+	}
+	
+	var prevBatchSignable *wallettypes.BatchSignable
+
+	signers := []transaction.BatchSigner{}
+
+
+	for index, tx := range transactions {
+		if tx.BatchSigners == nil || len(tx.BatchSigners) == 0 {
+			return "", ErrTxMustIncludeBatchSigner
+		}
+
+		if tx.TxnSignature != "" || len(tx.Signers) > 0 {
+			return "", ErrTransactionAlreadySigned
+		}
+
+		batchSignable, err := wallettypes.FromBatchTransaction(&tx)
+		if err != nil {
+			return "", err
+		}
+
+		if index == 0 {
+			prevBatchSignable = batchSignable
+			continue
+		}
+
+		if !prevBatchSignable.Equals(batchSignable) {
+			return "", ErrBatchSignableNotEqual
+		}
+
+		for _, signer := range tx.BatchSigners {
+			if signer.BatchSigner.Account != transactions[0].Account {
+				signers = append(signers, signer)
+			}
+		}
+
+		prevBatchSignable = batchSignable
+	}
+
+	slices.SortFunc(signers, func(a, b transaction.BatchSigner) int {
+		return cmp.Compare(a.BatchSigner.Account, b.BatchSigner.Account)
+	})
+
+	tx := transactions[0]
+	tx.BatchSigners = signers
+
+	return binarycodec.Encode(tx.Flatten())
 }
