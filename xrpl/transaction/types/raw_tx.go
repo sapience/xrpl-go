@@ -12,7 +12,9 @@ type RawTransaction struct {
 
 // Flatten returns the flattened map representation of the RawTransaction.
 func (r *RawTransaction) Flatten() map[string]any {
-	return r.RawTransaction
+	return map[string]any{
+		"RawTransaction": r.RawTransaction,
+	}
 }
 
 // Validate validates the RawTransaction and its wrapped transaction.
@@ -20,7 +22,7 @@ func (r *RawTransaction) Validate() (bool, error) {
 	flattened := r.Flatten()
 
 	// Validate that the flattened structure is a record
-	if !IsTransactionArray(flattened) {
+	if !IsTransactionObject(flattened) {
 		return false, ErrBatchRawTransactionNotObject
 	}
 
@@ -30,7 +32,7 @@ func (r *RawTransaction) Validate() (bool, error) {
 		return false, ErrBatchRawTransactionMissing
 	}
 
-	if !IsTransactionArray(rawTxField) {
+	if !IsTransactionObject(rawTxField) {
 		return false, ErrBatchRawTransactionFieldNotObject
 	}
 
