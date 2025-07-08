@@ -34,7 +34,7 @@ func (r *RawTransaction) Validate() (bool, error) {
 		return false, ErrBatchRawTransactionFieldNotObject
 	}
 
-	rawTx, ok := rawTxField.(map[string]interface{})
+	rawTx, ok := rawTxField.(map[string]any)
 	if !ok {
 		return false, ErrBatchRawTransactionFieldNotObject
 	}

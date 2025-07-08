@@ -111,7 +111,7 @@ func (bs *BatchSigner) Validate() error {
 		return ErrBatchSignerFieldNotObject
 	}
 
-	signer, ok := batchSignerField.(map[string]interface{})
+	signer, ok := batchSignerField.(map[string]any)
 	if !ok {
 		return ErrBatchSignerFieldNotObject
 	}
