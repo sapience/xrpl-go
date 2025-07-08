@@ -135,14 +135,13 @@ func CombineBatchSigners(transactions []transaction.Batch) (string, error) {
 	if len(transactions) == 0 {
 		return "", ErrNoTransactionsProvided
 	}
-	
+
 	var prevBatchSignable *wallettypes.BatchSignable
 
 	signers := []transaction.BatchSigner{}
 
-
 	for index, tx := range transactions {
-		if tx.BatchSigners == nil || len(tx.BatchSigners) == 0 {
+		if len(tx.BatchSigners) == 0 {
 			return "", ErrTxMustIncludeBatchSigner
 		}
 

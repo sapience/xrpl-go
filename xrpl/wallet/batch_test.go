@@ -339,12 +339,12 @@ func TestCombineBatchSigners(t *testing.T) {
 
 		return &transaction.Batch{
 			BaseTx: transaction.BaseTx{
-				Account:         types.Address(submitWallet.ClassicAddress.String()),
-				TransactionType: transaction.BatchTx,
-				Flags:           1, // tfAllOrNothing
+				Account:            types.Address(submitWallet.ClassicAddress.String()),
+				TransactionType:    transaction.BatchTx,
+				Flags:              1, // tfAllOrNothing
 				LastLedgerSequence: 14973,
-				NetworkID:      21336,
-				Sequence:        215,
+				NetworkID:          21336,
+				Sequence:           215,
 			},
 			RawTransactions: []transaction.RawTransactionWrapper{
 				{
@@ -360,7 +360,7 @@ func TestCombineBatchSigners(t *testing.T) {
 	// Helper function to create batch transaction with submitter transaction
 	createBatchTxWithSubmitter := func() *transaction.Batch {
 		originalTx := createOriginalBatchTx()
-		
+
 		paymentTx3 := &transaction.Payment{
 			BaseTx: transaction.BaseTx{
 				Account:         types.Address(submitWallet.ClassicAddress.String()), // submitter account
@@ -429,7 +429,7 @@ func TestCombineBatchSigners(t *testing.T) {
 			expectedError: nil,
 			postCheck: func(t *testing.T, result string, err error) {
 				require.NoError(t, err)
-				
+
 				// Test that order doesn't matter by comparing both orders
 				tx1 := createOriginalBatchTx()
 				tx2 := createOriginalBatchTx()
@@ -476,7 +476,7 @@ func TestCombineBatchSigners(t *testing.T) {
 				// Decode and verify that only 2 signers remain (not 3)
 				decoded, err := binarycodec.Decode(result)
 				require.NoError(t, err)
-				
+
 				batchSigners, ok := decoded["BatchSigners"].([]interface{})
 				require.True(t, ok)
 				require.Len(t, batchSigners, 2) // Should exclude the submitter's signer
