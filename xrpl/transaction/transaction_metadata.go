@@ -18,6 +18,7 @@ type TxObjMeta struct {
 	// DeliveredAmount        types.CurrencyAmount `json:"delivered_amount,omitempty"`
 	DeliveredAmount any `json:"delivered_amount,omitempty"`
 
+	// ParentBatchID is the hash of the parent Batch transaction when this transaction is executed as part of a batch.
 	ParentBatchID string `json:"ParentBatchID,omitempty"`
 }
 
