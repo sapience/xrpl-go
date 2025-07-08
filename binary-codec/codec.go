@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"errors"
+	"math"
 	"strings"
 
 	"github.com/Peersyst/xrpl-go/binary-codec/definitions"
@@ -27,6 +28,8 @@ var (
 	ErrBatchTxIDNotString = errors.New("each txID must be a string")
 	// ErrBatchFlagsNotUInt32 is returned when the 'flags' field is not a uint32.
 	ErrBatchFlagsNotUInt32 = errors.New("flags field must be a uint32")
+	// ErrBatchTxIDsLengthTooLong is returned when the 'txIDs' field is too long.
+	ErrBatchTxIDsLengthTooLong = errors.New("txIDs length exceeds maximum uint32 value")
 )
 
 const (
@@ -157,8 +160,11 @@ func EncodeForSigningBatch(json map[string]any) (string, error) {
 
 	// Create UInt32 for txIDs length
 	txIDsLengthType := &types.UInt32{}
-	// #nosec G115 -- batch transactions allow a maximum of 8 txs.
-	txIDsLengthBytes, err := txIDsLengthType.FromJSON(uint32(len(txIDsInterface)))
+	txIDsLength := len(txIDsInterface)
+	if txIDsLength > math.MaxUint32 {
+		return "", ErrBatchTxIDsLengthTooLong
+	}
+	txIDsLengthBytes, err := txIDsLengthType.FromJSON(uint32(txIDsLength))
 	if err != nil {
 		return "", err
 	}
