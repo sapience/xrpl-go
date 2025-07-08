@@ -11,4 +11,4 @@ RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
 RUN make lint
 
 FROM lint AS test
-RUN make test
+RUN make test-ci
