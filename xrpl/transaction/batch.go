@@ -189,7 +189,7 @@ func (b *Batch) Validate() (bool, error) {
 
 	flattenedTx := b.Flatten()
 
-	if err := ValidateRequiredField(flattenedTx, "RawTransactions", types.IsArray); err != nil {
+	if err := ValidateRequiredField(flattenedTx, "RawTransactions", types.IsTransactionArray); err != nil {
 		return false, err
 	}
 
@@ -206,7 +206,7 @@ func (b *Batch) Validate() (bool, error) {
 		}
 	}
 
-	if err := ValidateOptionalField(flattenedTx, "BatchSigners", types.IsArray); err != nil {
+	if err := ValidateOptionalField(flattenedTx, "BatchSigners", types.IsTransactionArray); err != nil {
 		return false, err
 	}
 

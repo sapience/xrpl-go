@@ -191,7 +191,7 @@ func (n *NFTokenMint) Validate() (bool, error) {
 	}
 
 	// check transfer fee can only be set if the tfTransferable flag is enabled
-	if n.TransferFee != nil && *n.TransferFee > 0 && !IsFlagEnabled(n.Flags, tfTransferable) {
+	if n.TransferFee != nil && *n.TransferFee > 0 && !types.IsFlagEnabled(n.Flags, tfTransferable) {
 		return false, ErrTransferFeeRequiresTransferableFlag
 	}
 

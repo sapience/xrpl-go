@@ -103,7 +103,7 @@ func (x *XChainModifyBridge) Validate() (bool, error) {
 		return false, err
 	}
 
-	if !IsFlagEnabled(x.Flags, tfClearAccountCreateAmount) {
+	if !types.IsFlagEnabled(x.Flags, tfClearAccountCreateAmount) {
 		return false, ErrInvalidFlags
 	}
 

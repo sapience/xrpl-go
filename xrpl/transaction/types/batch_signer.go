@@ -107,7 +107,7 @@ func (bs *BatchSigner) Validate() error {
 		return ErrBatchSignerMissing
 	}
 
-	if !IsRecord(batchSignerField) {
+	if !IsTransactionArray(batchSignerField) {
 		return ErrBatchSignerFieldNotObject
 	}
 
@@ -141,7 +141,7 @@ func (bs *BatchSigner) Validate() error {
 
 	// Validate optional Signers field
 	if signersField, exists := signer["Signers"]; exists {
-		if !IsArray(signersField) {
+		if !IsTransactionArray(signersField) {
 			return ErrBatchSignerInvalid
 		}
 	}
