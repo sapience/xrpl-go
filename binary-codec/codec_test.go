@@ -665,10 +665,7 @@ func TestEncodeForSigningBatch(t *testing.T) {
 					"795AAC88B59E95C3497609749127E69F12958BC016C600C770AEEB1474C840B4",
 				},
 			},
-			output: "4243480000000001" + // hash prefix + flags
-				"00000002" + // txIds length
-				"ABE4871E9083DF66727045D49DEEDD3A6F166EB7F8D1E92FE868F02E76B2C5CA" + // first txID
-				"795AAC88B59E95C3497609749127E69F12958BC016C600C770AEEB1474C840B4", // second txID
+			output:      "424348000000000100000002ABE4871E9083DF66727045D49DEEDD3A6F166EB7F8D1E92FE868F02E76B2C5CA795AAC88B59E95C3497609749127E69F12958BC016C600C770AEEB1474C840B4",
 			expectedErr: nil,
 		},
 		{
@@ -714,11 +711,33 @@ func TestEncodeForSigningBatch(t *testing.T) {
 			input: map[string]any{
 				"flags": uint32(12345),
 				"txIDs": []any{
-					123, // not a string
+					123, //
 				},
 			},
 			output:      "",
 			expectedErr: ErrBatchTxIDNotString,
+		},
+		{
+			description: "fail - batch with invalid flags type",
+			input: map[string]any{
+				"flags": "invalid_flags_type",
+				"txIDs": []any{
+					"ABE4871E9083DF66727045D49DEEDD3A6F166EB7F8D1E92FE868F02E76B2C5CA",
+				},
+			},
+			output:      "",
+			expectedErr: ErrBatchFlagsNotUInt32,
+		},
+		{
+			description: "fail - batch with flags as int instead of uint32",
+			input: map[string]any{
+				"flags": 123,
+				"txIDs": []any{
+					"ABE4871E9083DF66727045D49DEEDD3A6F166EB7F8D1E92FE868F02E76B2C5CA",
+				},
+			},
+			output:      "",
+			expectedErr: ErrBatchFlagsNotUInt32,
 		},
 	}
 

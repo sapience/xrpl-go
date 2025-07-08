@@ -25,6 +25,8 @@ var (
 	ErrBatchTxIDsNotArray = errors.New("txIDs field must be an array")
 	// ErrBatchTxIDNotString is returned when a txID is not a string.
 	ErrBatchTxIDNotString = errors.New("each txID must be a string")
+	// ErrBatchFlagsNotUInt32 is returned when the 'flags' field is not a uint32.
+	ErrBatchFlagsNotUInt32 = errors.New("flags field must be a uint32")
 )
 
 const (
@@ -138,6 +140,12 @@ func EncodeForSigningBatch(json map[string]any) (string, error) {
 	txIDsInterface, ok := json["txIDs"].([]any)
 	if !ok {
 		return "", ErrBatchTxIDsNotArray
+	}
+
+	// Validate flags type
+	_, ok = json["flags"].(uint32)
+	if !ok {
+		return "", ErrBatchFlagsNotUInt32
 	}
 
 	// Create UInt32 for flags
