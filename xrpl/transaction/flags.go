@@ -2,12 +2,6 @@ package transaction
 
 import "math/big"
 
-// Shared transaction flags that are used across multiple transaction types
-const (
-	// TfInnerBatchTxn flag that must be set on inner transactions within a batch
-	TfInnerBatchTxn uint32 = 0x40000000
-)
-
 // Perform bitwise AND (&) to check if a flag is enabled within Flags (as a number).
 // @param Flags - A number that represents flags enabled.
 // @param checkFlag - A specific flag to check if it's enabled within Flags.

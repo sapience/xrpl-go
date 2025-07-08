@@ -90,7 +90,7 @@ func IsMemo(memo types.Memo) (bool, error) {
 }
 
 // IsSigner checks if the given object is a valid Signer object.
-func IsSigner(signerData SignerData) (bool, error) {
+func IsSigner(signerData types.SignerData) (bool, error) {
 	size := len(maputils.GetKeys(signerData.Flatten()))
 	if size != SignerSize {
 		return false, errors.New("signers: Signer should have 3 fields: Account, TxnSignature, SigningPubKey")

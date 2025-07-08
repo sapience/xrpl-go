@@ -1,8 +1,4 @@
-package transaction
-
-import (
-	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
-)
+package types
 
 type Signer struct {
 	SignerData SignerData `json:"Signer"`
@@ -15,7 +11,7 @@ func (s *Signer) Flatten() map[string]interface{} {
 }
 
 type SignerData struct {
-	Account       types.Address
+	Account       Address
 	TxnSignature  string
 	SigningPubKey string
 }
