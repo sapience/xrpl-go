@@ -412,7 +412,7 @@ func TestCombineBatchSigners(t *testing.T) {
 				require.Contains(t, decoded, "BatchSigners")
 			},
 		},
-				{
+		{
 			name: "pass - sorts the signers",
 			setupTxs: func() []transaction.Batch {
 				tx1 := createOriginalBatchTx()
@@ -429,11 +429,11 @@ func TestCombineBatchSigners(t *testing.T) {
 			expectedError: nil,
 			postCheck: func(t *testing.T, result string, err error) {
 				require.NoError(t, err)
-				
+
 				// Decode and verify that signers are sorted by account address
 				decoded, err := binarycodec.Decode(result)
 				require.NoError(t, err)
-				
+
 				batchSigners, ok := decoded["BatchSigners"].([]interface{})
 				require.True(t, ok)
 				require.Len(t, batchSigners, 2)

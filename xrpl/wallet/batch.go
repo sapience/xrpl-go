@@ -156,10 +156,8 @@ func CombineBatchSigners(transactions []transaction.Batch) (string, error) {
 
 		if index == 0 {
 			prevBatchSignable = batchSignable
-		} else {
-			if !prevBatchSignable.Equals(batchSignable) {
-				return "", ErrBatchSignableNotEqual
-			}
+		} else if prevBatchSignable != nil {
+			return "", ErrBatchSignableNotEqual
 		}
 
 		// Add signers from this transaction, excluding the batch submitter
