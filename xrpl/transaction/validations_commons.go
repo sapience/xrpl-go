@@ -2,9 +2,32 @@ package transaction
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
+
+// isArray verifies the form and type of an Array at runtime.
+// Equivalent to xrpl.js isArray function.
+func isArray(input interface{}) bool {
+	if input == nil {
+		return false
+	}
+	val := reflect.ValueOf(input)
+	return val.Kind() == reflect.Slice || val.Kind() == reflect.Array
+}
+
+// isRecord verifies the form and type of a Record/Object at runtime.
+// Equivalent to xrpl.js isRecord function.
+func isRecord(value interface{}) bool {
+	if value == nil {
+		return false
+	}
+	val := reflect.ValueOf(value)
+	// Check if it's an object (map or struct) but not an array/slice
+	return (val.Kind() == reflect.Map || val.Kind() == reflect.Struct) &&
+		val.Kind() != reflect.Slice && val.Kind() != reflect.Array
+}
 
 func ValidateRequiredField(tx FlatTransaction, field string, checkValidity func(interface{}) bool) error {
 	// Check if the field is present in the transaction map.

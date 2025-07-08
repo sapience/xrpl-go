@@ -17,6 +17,8 @@ type TxObjMeta struct {
 	TransactionResult      string `json:"TransactionResult,omitempty"`
 	// DeliveredAmount        types.CurrencyAmount `json:"delivered_amount,omitempty"`
 	DeliveredAmount any `json:"delivered_amount,omitempty"`
+
+	ParentBatchID string `json:"ParentBatchID,omitempty"`
 }
 
 func (TxObjMeta) TxMeta() {}

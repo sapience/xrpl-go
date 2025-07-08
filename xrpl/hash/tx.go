@@ -3,10 +3,16 @@ package hash
 import (
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 	"strings"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+)
+
+var (
+	ErrMissingSignature = errors.New("transaction must have at least one of TxnSignature, Signers, or SigningPubKey")
 )
 
 // SignTxBlob hashes a signed transaction blob
@@ -58,12 +64,16 @@ func encodeSignedTxBlob(txBlob string) (string, error) {
 }
 
 func isTxValid(tx map[string]interface{}) (bool, error) {
+	isInnerBatchTxn := false
+	if flags, ok := tx["Flags"].(uint32); ok {
+		isInnerBatchTxn = (flags & transaction.TfInnerBatchTxn) != 0
+	}
 	
 	hasTxnSignature := tx["TxnSignature"] != nil
 	hasSigners := tx["Signers"] != nil
 	hasSigningPubKey := tx["SigningPubKey"] != nil
 
-	if !hasTxnSignature && !hasSigners && !hasSigningPubKey {
+	if !hasTxnSignature && !hasSigners && !hasSigningPubKey && !isInnerBatchTxn {
 		return false, ErrNonSignedTransaction
 	}
 

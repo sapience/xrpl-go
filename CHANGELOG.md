@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `MPTCurrencyAmount` for currency kinds.
 - Adds unit tests for `MPTCurrencyAmount`.
 - Adds `NFTokenModify` transaction type.
+- Adds `Batch` transaction type.
+- Adds `TfInnerBatchTxn` in `flags.go` file
+- Adds `isArray` and `isRecord` validation helpers.
+- Adds support for `tfInnerBatchTxn` flag on `SignTxBlob`.
 
 ## Changed
 

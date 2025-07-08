@@ -1455,6 +1455,16 @@
       }
     ],
     [
+      "ParentBatchID",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 36,
+        "type": "Hash256"
+      }
+    ],
+    [
       "Amount",
       {
         "nth": 1,
@@ -3049,6 +3059,7 @@
     "AMMDeposit": 36,
     "AMMVote": 38,
     "AMMWithdraw": 37,
+    "Batch": 64,
     "CheckCancel": 18,
     "CheckCash": 17,
     "CheckCreate": 16,
