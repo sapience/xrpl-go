@@ -66,7 +66,7 @@ func TestSignMultiBatch_ED25519(t *testing.T) {
 				Account:         types.Address("rJCxK2hX9tDMzbnn3cg1GU2g19Kfmhzxkp"),
 				TransactionType: transaction.BatchTx,
 			},
-			RawTransactions: []transaction.InnerTransaction{
+			RawTransactions: []types.RawTransaction{
 				{
 					RawTransaction: flatPaymentTx1,
 				},
@@ -236,7 +236,7 @@ func TestSignMultiBatch_SECP256K1(t *testing.T) {
 				Account:         types.Address("rJCxK2hX9tDMzbnn3cg1GU2g19Kfmhzxkp"),
 				TransactionType: transaction.BatchTx,
 			},
-			RawTransactions: []transaction.InnerTransaction{
+			RawTransactions: []types.RawTransaction{
 				{
 					RawTransaction: flatPaymentTx1,
 				},
@@ -346,7 +346,7 @@ func TestCombineBatchSigners(t *testing.T) {
 				NetworkID:          21336,
 				Sequence:           215,
 			},
-			RawTransactions: []transaction.InnerTransaction{
+			RawTransactions: []types.RawTransaction{
 				{
 					RawTransaction: paymentTx1.Flatten(),
 				},
@@ -374,7 +374,7 @@ func TestCombineBatchSigners(t *testing.T) {
 			Amount:      types.XRPCurrencyAmount(1000000),
 		}
 
-		originalTx.RawTransactions = append(originalTx.RawTransactions, transaction.InnerTransaction{
+		originalTx.RawTransactions = append(originalTx.RawTransactions, types.RawTransaction{
 			RawTransaction: paymentTx3.Flatten(),
 		})
 
