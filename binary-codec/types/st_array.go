@@ -71,7 +71,7 @@ func (t *STArray) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 			break
 		}
 		fn := fi.FieldName
-		st := GetSerializedTypeForField(fi.FieldName, fi.Type)
+		st := GetSerializedType(fi.Type)
 		res, err := st.ToJSON(p)
 		if err != nil {
 			return nil, err

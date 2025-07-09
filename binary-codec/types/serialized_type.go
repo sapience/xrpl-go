@@ -60,15 +60,3 @@ func GetSerializedType(t string) SerializedType {
 	}
 	return nil
 }
-
-// GetSerializedTypeForField returns the correct SerializedType instance based on
-// both the field name and type, allowing for special handling of specific fields.
-func GetSerializedTypeForField(fieldName, fieldType string) SerializedType {
-	// Special handling for PermissionValue field
-	if fieldName == "PermissionValue" {
-		return &PermissionValue{}
-	}
-
-	// For all other fields, use the standard type resolution
-	return GetSerializedType(fieldType)
-}
