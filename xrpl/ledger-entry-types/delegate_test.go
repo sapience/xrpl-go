@@ -13,7 +13,7 @@ func TestDelegate_EntryType(t *testing.T) {
 	require.Equal(t, delegate.EntryType(), DelegateEntry)
 }
 
-func TestDelegate_Flatten(t *testing.T) {
+func TestDelegate_Serialization(t *testing.T) {
 	tests := []struct {
 		name     string
 		delegate *Delegate

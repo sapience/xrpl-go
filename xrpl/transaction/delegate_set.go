@@ -15,8 +15,8 @@ var (
 	ErrDelegateSetPermissionMalformed = errors.New("permissions array is required and cannot be empty")
 	// ErrDelegateSetPermissionsMaxLength is returned when the Permissions array exceeds the maximum length.
 	ErrDelegateSetPermissionsMaxLength = errors.New("permissions array cannot exceed maximum length")
-	// ErrDelegateSetPermissionValueUndefined is returned when a permission value is empty or undefined.
-	ErrDelegateSetPermissionValueUndefined = errors.New("permission value cannot be empty or undefined")
+	// ErrDelegateSetEmptyPermissionValue is returned when a permission value is empty or undefined.
+	ErrDelegateSetEmptyPermissionValue = errors.New("permission value cannot be empty")
 	// ErrDelegateSetNonDelegatableTransaction is returned when trying to delegate a non-delegatable transaction type.
 	ErrDelegateSetNonDelegatableTransaction = errors.New("cannot delegate non-delegatable transaction types")
 	// ErrDelegateSetDuplicatePermissions is returned when the same permission is specified multiple times.
@@ -29,16 +29,16 @@ const (
 )
 
 // Set of transaction types that cannot be delegated
-var NonDelegatableTransactions = map[string]struct{}{
-	"AccountSet":    {},
-	"SetRegularKey": {},
-	"SignerListSet": {},
-	"DelegateSet":   {},
-	"AccountDelete": {},
+var NonDelegatableTransactionsMap = map[string]uint8{
+	string(AccountSetTx):    0,
+	string(SetRegularKeyTx): 0,
+	string(SignerListSetTx): 0,
+	string(DelegateSetTx):   0,
+	string(AccountDeleteTx): 0,
 	// Pseudo transactions below:
-	"EnableAmendment": {},
-	"SetFee":          {},
-	"UNLModify":       {},
+	"EnableAmendment": 0,
+	"SetFee":          0,
+	"UNLModify":       0,
 }
 
 // DelegateSet allows an account to delegate a set of permissions to another account.
@@ -109,11 +109,6 @@ func (d *DelegateSet) Validate() (bool, error) {
 		return false, err
 	}
 
-	// Validate Authorize field
-	if d.Authorize == "" {
-		return false, ErrInvalidDestination // Using existing error for required address field
-	}
-
 	if !addresscodec.IsValidAddress(d.Authorize.String()) {
 		return false, ErrInvalidDestination
 	}
@@ -133,23 +128,23 @@ func (d *DelegateSet) Validate() (bool, error) {
 	}
 
 	// Track permission values to check for duplicates
-	permissionValueSet := make(map[string]struct{})
+	permissionValueSet := make(map[string]uint8)
 
 	for _, permission := range d.Permissions {
 		// Validate permission structure using the Permission's own validation
 		if !permission.Permission.IsValid() {
-			return false, ErrDelegateSetPermissionValueUndefined
+			return false, ErrDelegateSetEmptyPermissionValue
 		}
 
 		permissionValue := permission.Permission.PermissionValue
 
 		// Check if it's a non-delegatable transaction
-		if _, isNonDelegatable := NonDelegatableTransactions[permissionValue]; isNonDelegatable {
+		if _, isNonDelegatable := NonDelegatableTransactionsMap[permissionValue]; isNonDelegatable {
 			return false, ErrDelegateSetNonDelegatableTransaction
 		}
 
 		// Add to set for duplicate detection
-		permissionValueSet[permissionValue] = struct{}{}
+		permissionValueSet[permissionValue] = 0
 	}
 
 	// Check for duplicates by comparing lengths (like JS implementation)
