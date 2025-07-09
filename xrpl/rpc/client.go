@@ -261,6 +261,23 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 				return err
 			}
 		}
+		if txType == transaction.BatchTx {
+			// Convert FlatTransaction to Batch for autofilling
+			if batchTx, ok := (*tx)["RawTransactions"]; ok {
+				batch := &transaction.Batch{
+					RawTransactions: batchTx.([]types.RawTransaction),
+				}
+				if account, ok := (*tx)["Account"].(types.Address); ok {
+					batch.Account = account
+				}
+				err := c.AutofillBatch(batch)
+				if err != nil {
+					return err
+				}
+				// Update the original transaction with the autofilled RawTransactions
+				(*tx)["RawTransactions"] = batch.RawTransactions
+			}
+		}
 	}
 	return nil
 }
@@ -313,7 +330,8 @@ func (c *Client) AutofillBatch(tx *transaction.Batch) error {
 				accountSequences[accountAddr]++
 
 			} else {
-				nextSequence, err := c.getTransactionNextValidSequenceNumber(&t.RawTransaction)
+				flatTx := transaction.FlatTransaction(t.RawTransaction)
+				nextSequence, err := c.getTransactionNextValidSequenceNumber(&flatTx)
 				if err != nil {
 					return err
 				}
