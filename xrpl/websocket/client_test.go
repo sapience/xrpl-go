@@ -515,6 +515,7 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 		expectedFee    string
 		expectedErr    error
 		feeCushion     float32
+		nSigners       uint64
 	}{
 		{
 			name: "Basic fee calculation",
@@ -582,6 +583,288 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			expectedErr: nil,
 			feeCushion:  1,
 		},
+		{
+			name: "EscrowFinish with Fulfillment",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "EscrowFinish",
+				"Fulfillment":     "A0028000", // 8 characters = 4 bytes
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "330", // 10 * (33 + 4/16) = 10 * 33 = 330
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "EscrowFinish without Fulfillment",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "EscrowFinish",
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "10", // Regular base fee
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "AccountDelete special transaction cost",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "AccountDelete",
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				{
+					"id": 2,
+					"result": map[string]any{
+						"state": map[string]any{
+							"validated_ledger": map[string]any{
+								"reserve_inc": 2000000, // 2 XRP in drops
+							},
+						},
+					},
+				},
+			},
+			expectedFee: "2000000", // Owner reserve fee
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "AMMCreate special transaction cost",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "AMMCreate",
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				{
+					"id": 2,
+					"result": map[string]any{
+						"state": map[string]any{
+							"validated_ledger": map[string]any{
+								"reserve_inc": 2000000, // 2 XRP in drops
+							},
+						},
+					},
+				},
+			},
+			expectedFee: "2000000", // Owner reserve fee
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "Batch transaction",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "Batch",
+				"RawTransactions": []interface{}{
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Flags":           uint32(0x40000000),
+							"Fee":             "0",
+							"SigningPubKey":   "",
+						},
+					},
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "OfferCreate",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"TakerGets":       "1000000",
+							"TakerPays": map[string]interface{}{
+								"currency": "USD",
+								"issuer":   "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+								"value":    "100",
+							},
+							"Flags":         uint32(0x40000000),
+							"Fee":           "0",
+							"SigningPubKey": "",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				// Outer Batch fee fetch
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner Payment fee fetch
+				{
+					"id": 2,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner OfferCreate fee fetch
+				{
+					"id": 3,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "40", // 2*10 + 10 + 10
+			expectedErr: nil,
+			feeCushion:  1,
+		}, {
+			name: "Batch transaction with multisign",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "Batch",
+				"RawTransactions": []interface{}{
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Flags":           uint32(0x40000000),
+							"Fee":             "0",
+							"SigningPubKey":   "",
+						},
+					},
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "OfferCreate",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"TakerGets":       "1000000",
+							"TakerPays": map[string]interface{}{
+								"currency": "USD",
+								"issuer":   "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+								"value":    "100",
+							},
+							"Flags":         uint32(0x40000000),
+							"Fee":           "0",
+							"SigningPubKey": "",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				// Outer Batch fee fetch
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner Payment fee fetch
+				{
+					"id": 2,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner OfferCreate fee fetch
+				{
+					"id": 3,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "50", // 2*10 + (10+10) + 10 (one extra signer)
+			expectedErr: nil,
+			feeCushion:  1,
+			nSigners:    1,
+		},
+		{
+			name: "Multi-signed transaction",
+			tx: transaction.FlatTransaction{
+				"TransactionType": transaction.PaymentTx,
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "30", // 10 + (10 * 2) = 30
+			expectedErr: nil,
+			feeCushion:  1,
+			nSigners:    2,
+		},
 	}
 
 	for _, tt := range tests {
@@ -592,7 +875,7 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			cl.cfg.feeCushion = tt.feeCushion
 			cl.cfg.maxFeeXRP = DefaultMaxFeeXRP
 
-			err := cl.calculateFeePerTransactionType(&tt.tx, 0)
+			err := cl.calculateFeePerTransactionType(&tt.tx, tt.nSigners)
 
 			if tt.expectedErr != nil {
 				if !reflect.DeepEqual(err.Error(), tt.expectedErr.Error()) {
