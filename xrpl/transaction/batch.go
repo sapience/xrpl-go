@@ -187,15 +187,7 @@ func (b *Batch) Validate() (bool, error) {
 		return false, err
 	}
 
-	flattenedTx := b.Flatten()
-
-	if err := ValidateRequiredField(flattenedTx, "RawTransactions", types.IsTransactionArray); err != nil {
-		return false, err
-	}
-
-	// Validate RawTransactions array is not empty
-	rawTxs, ok := flattenedTx["RawTransactions"].([]map[string]any)
-	if !ok || len(rawTxs) == 0 {
+	if len(b.RawTransactions) == 0 {
 		return false, ErrBatchRawTransactionsEmpty
 	}
 
@@ -204,10 +196,6 @@ func (b *Batch) Validate() (bool, error) {
 		if valid, err := rawTx.Validate(); !valid {
 			return false, err
 		}
-	}
-
-	if err := ValidateOptionalField(flattenedTx, "BatchSigners", types.IsTransactionArray); err != nil {
-		return false, err
 	}
 
 	for _, batchSigner := range b.BatchSigners {

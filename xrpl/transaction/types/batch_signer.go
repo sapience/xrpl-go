@@ -1,57 +1,21 @@
 package types
 
-import "errors"
+import (
+	"errors"
+
+	addresscodec "github.com/Peersyst/xrpl-go/address-codec"
+)
 
 var (
-	// General batch validation errors
-
-	// ErrBatchRawTransactionsEmpty is returned when the RawTransactions array is empty or nil.
-	ErrBatchRawTransactionsEmpty = errors.New("RawTransactions must be a non-empty array")
-
-	// ErrBatchSignersNotArray is returned when BatchSigners field is present but not an array type.
-	ErrBatchSignersNotArray = errors.New("BatchSigners must be an array")
-
-	// RawTransactions validation errors
-
-	// ErrBatchRawTransactionNotObject is returned when a RawTransaction array element is not an object.
-	ErrBatchRawTransactionNotObject = errors.New("batch RawTransaction element is not an object")
-
-	// ErrBatchRawTransactionMissing is returned when the RawTransaction field is missing from an array element.
-	ErrBatchRawTransactionMissing = errors.New("batch RawTransaction field is missing")
-
-	// ErrBatchRawTransactionFieldNotObject is returned when the RawTransaction field is not an object.
-	ErrBatchRawTransactionFieldNotObject = errors.New("batch RawTransaction field is not an object")
-
-	// ErrBatchNestedTransaction is returned when trying to include a Batch transaction within another Batch.
-	ErrBatchNestedTransaction = errors.New("batch cannot contain nested Batch transactions")
-
-	// ErrBatchMissingInnerFlag is returned when an inner transaction lacks the TfInnerBatchTxn flag.
-	ErrBatchMissingInnerFlag = errors.New("batch RawTransaction must contain the TfInnerBatchTxn flag")
-
-	// Inner transaction validation errors
-
-	// ErrBatchInnerTransactionInvalid is returned when an inner transaction fails its own validation.
-	ErrBatchInnerTransactionInvalid = errors.New("batch inner transaction validation failed")
-
-	// BatchSigners validation errors
-
-	// ErrBatchSignerNotObject is returned when a BatchSigner array element is not an object.
-	ErrBatchSignerNotObject = errors.New("batch BatchSigner element is not an object")
-
-	// ErrBatchSignerMissing is returned when the BatchSigner field is missing from an array element.
-	ErrBatchSignerMissing = errors.New("batch BatchSigner field is missing")
-
-	// ErrBatchSignerFieldNotObject is returned when the BatchSigner field is not an object.
-	ErrBatchSignerFieldNotObject = errors.New("batch BatchSigner field is not an object")
 
 	// ErrBatchSignerAccountMissing is returned when a BatchSigner lacks the required Account field.
 	ErrBatchSignerAccountMissing = errors.New("batch BatchSigner Account is missing")
 
-	// ErrBatchSignerAccountNotString is returned when a BatchSigner Account field is not a string.
-	ErrBatchSignerAccountNotString = errors.New("batch BatchSigner Account must be a string")
+	// ErrBatchSignerSigningPubKeyMissing is returned when a BatchSigner lacks the required SigningPubKey field.
+	ErrBatchSignerSigningPubKeyMissing = errors.New("batch BatchSigner SigningPubKey is missing")
 
-	// ErrBatchSignerInvalid is returned when a BatchSigner fails its validation rules.
-	ErrBatchSignerInvalid = errors.New("batch signer validation failed")
+	// ErrBatchSignerInvalidTxnSignature is returned when a BatchSigner has an invalid TxnSignature field.
+	ErrBatchSignerInvalidTxnSignature = errors.New("batch BatchSigner TxnSignature is invalid")
 )
 
 // BatchSigner represents a single batch signer entry.
@@ -93,57 +57,16 @@ func (bs *BatchSigner) Flatten() map[string]any {
 }
 
 func (bs *BatchSigner) Validate() error {
-	// Validate that BatchSigner exists
-	if bs == nil {
-		return ErrBatchSignerInvalid
-	}
-
-	// Convert the single BatchSigner to the same format that was being validated
-	flattened := bs.Flatten()
-
-	// Validate BatchSigner field exists
-	batchSignerField, exists := flattened["BatchSigner"]
-	if !exists {
-		return ErrBatchSignerMissing
-	}
-
-	if !IsTransactionObject(batchSignerField) {
-		return ErrBatchSignerFieldNotObject
-	}
-
-	signer, ok := batchSignerField.(map[string]any)
-	if !ok {
-		return ErrBatchSignerFieldNotObject
-	}
-
-	// Validate required Account field
-	if account, exists := signer["Account"]; !exists {
+	if !addresscodec.IsValidAddress(bs.BatchSigner.Account.String()) {
 		return ErrBatchSignerAccountMissing
-	} else if accountStr, ok := account.(string); !ok {
-		return ErrBatchSignerAccountNotString
-	} else if accountStr == "" {
-		return ErrBatchSignerInvalid
 	}
 
-	// Validate optional SigningPubKey field
-	if signingPubKey, exists := signer["SigningPubKey"]; exists {
-		if _, ok := signingPubKey.(string); !ok {
-			return ErrBatchSignerInvalid
-		}
+	if bs.BatchSigner.SigningPubKey == "" {
+		return ErrBatchSignerSigningPubKeyMissing
 	}
 
-	// Validate optional TxnSignature field
-	if txnSignature, exists := signer["TxnSignature"]; exists {
-		if _, ok := txnSignature.(string); !ok {
-			return ErrBatchSignerInvalid
-		}
-	}
-
-	// Validate optional Signers field
-	if signersField, exists := signer["Signers"]; exists {
-		if !IsTransactionArray(signersField) {
-			return ErrBatchSignerInvalid
-		}
+	if bs.BatchSigner.TxnSignature != "" {
+		return ErrBatchSignerInvalidTxnSignature
 	}
 
 	return nil

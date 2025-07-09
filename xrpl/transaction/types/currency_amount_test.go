@@ -59,136 +59,136 @@ func TestIssuedCurrencyAmount_IsZero(t *testing.T) {
 }
 
 func TestMPTCurrencyAmount_Kind(t *testing.T) {
-    testcases := []struct {
-        name     string
-        mpt      MPTCurrencyAmount
-        expected CurrencyKind
-        expPass  bool
-    }{
-        {
-            name:     "pass - mpt kind",
-            mpt:      MPTCurrencyAmount{},
-            expected: MPT,
-            expPass:  true,
-        },
-    }
+	testcases := []struct {
+		name     string
+		mpt      MPTCurrencyAmount
+		expected CurrencyKind
+		expPass  bool
+	}{
+		{
+			name:     "pass - mpt kind",
+			mpt:      MPTCurrencyAmount{},
+			expected: MPT,
+			expPass:  true,
+		},
+	}
 
-    for _, tc := range testcases {
-        t.Run(tc.name, func(t *testing.T) {
-            actual := tc.mpt.Kind()
-            require.Equal(t, tc.expected, actual)
-            if tc.expPass {
-                require.NoError(t, nil)
-            } else {
-                require.Error(t, nil)
-            }
-        })
-    }
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := tc.mpt.Kind()
+			require.Equal(t, tc.expected, actual)
+			if tc.expPass {
+				require.NoError(t, nil)
+			} else {
+				require.Error(t, nil)
+			}
+		})
+	}
 }
 
 func TestMPTCurrencyAmount_Flatten(t *testing.T) {
-    testcases := []struct {
-        name     string
-        mpt      MPTCurrencyAmount
-        expected map[string]interface{}
-        err      error
-        expPass  bool
-    }{
-        {
-            name:     "pass - empty",
-            mpt:      MPTCurrencyAmount{},
-            expected: map[string]interface{}{},
-            err:      nil,
-            expPass:  true,
-        },
-        {
-            name: "pass - only issuance id",
-            mpt: MPTCurrencyAmount{
-                MPTIssuanceID: "00000000000000000000000000000000",
-            },
-            expected: map[string]interface{}{
-                "mpt_issuance_id": "00000000000000000000000000000000",
-            },
-            err:     nil,
-            expPass: true,
-        },
-        {
-            name: "pass - only value",
-            mpt: MPTCurrencyAmount{
-                Value: "100",
-            },
-            expected: map[string]interface{}{
-                "value": "100",
-            },
-            err:     nil,
-            expPass: true,
-        },
-        {
-            name: "pass - both fields",
-            mpt: MPTCurrencyAmount{
-                MPTIssuanceID: "00000000000000000000000000000000",
-                Value:         "100",
-            },
-            expected: map[string]interface{}{
-                "mpt_issuance_id": "00000000000000000000000000000000",
-                "value":           "100",
-            },
-            err:     nil,
-            expPass: true,
-        },
-    }
+	testcases := []struct {
+		name     string
+		mpt      MPTCurrencyAmount
+		expected map[string]interface{}
+		err      error
+		expPass  bool
+	}{
+		{
+			name:     "pass - empty",
+			mpt:      MPTCurrencyAmount{},
+			expected: map[string]interface{}{},
+			err:      nil,
+			expPass:  true,
+		},
+		{
+			name: "pass - only issuance id",
+			mpt: MPTCurrencyAmount{
+				MPTIssuanceID: "00000000000000000000000000000000",
+			},
+			expected: map[string]interface{}{
+				"mpt_issuance_id": "00000000000000000000000000000000",
+			},
+			err:     nil,
+			expPass: true,
+		},
+		{
+			name: "pass - only value",
+			mpt: MPTCurrencyAmount{
+				Value: "100",
+			},
+			expected: map[string]interface{}{
+				"value": "100",
+			},
+			err:     nil,
+			expPass: true,
+		},
+		{
+			name: "pass - both fields",
+			mpt: MPTCurrencyAmount{
+				MPTIssuanceID: "00000000000000000000000000000000",
+				Value:         "100",
+			},
+			expected: map[string]interface{}{
+				"mpt_issuance_id": "00000000000000000000000000000000",
+				"value":           "100",
+			},
+			err:     nil,
+			expPass: true,
+		},
+	}
 
-    for _, tc := range testcases {
-        t.Run(tc.name, func(t *testing.T) {
-            actual := tc.mpt.Flatten()
-            require.Equal(t, tc.expected, actual)
-            if tc.expPass {
-                require.NoError(t, tc.err)
-            } else {
-                require.Error(t, tc.err)
-            }
-        })
-    }
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := tc.mpt.Flatten()
+			require.Equal(t, tc.expected, actual)
+			if tc.expPass {
+				require.NoError(t, tc.err)
+			} else {
+				require.Error(t, tc.err)
+			}
+		})
+	}
 }
 
 func TestUnmarshalCurrencyAmount_MPT(t *testing.T) {
-    testcases := []struct {
-        name     string
-        input    []byte
-        expected MPTCurrencyAmount
-        err      error
-        expPass  bool
-    }{
-        {
-            name:  "pass - valid mpt json",
-            input: []byte(`{"mpt_issuance_id":"issuance","value":"42"}`),
-            expected: MPTCurrencyAmount{
-                MPTIssuanceID: "issuance",
-                Value:         "42",
-            },
-            err:     nil,
-            expPass: true,
-        },
-        {
-            name:     "fail - invalid json",
-            input:    []byte(`{invalid}`),
-            expected: MPTCurrencyAmount{},
-            err:      nil, 
-            expPass:  false,
-        },
-    }
+	testcases := []struct {
+		name     string
+		input    []byte
+		expected MPTCurrencyAmount
+		err      error
+		expPass  bool
+	}{
+		{
+			name:  "pass - valid mpt json",
+			input: []byte(`{"mpt_issuance_id":"issuance","value":"42"}`),
+			expected: MPTCurrencyAmount{
+				MPTIssuanceID: "issuance",
+				Value:         "42",
+			},
+			err:     nil,
+			expPass: true,
+		},
+		{
+			name:     "fail - invalid json",
+			input:    []byte(`{invalid}`),
+			expected: MPTCurrencyAmount{},
+			err:      nil,
+			expPass:  false,
+		},
+	}
 
-    for _, tc := range testcases {
-        t.Run(tc.name, func(t *testing.T) {
-            actual, err := UnmarshalCurrencyAmount(tc.input)
-            if tc.expPass {
-                require.NoError(t, err)
-                mpt, ok := actual.(MPTCurrencyAmount)
-                require.True(t, ok, "expected MPTCurrencyAmount, got %T", actual)
-                require.Equal(t, tc.expected, mpt)
-            } else {
-                require.Error(t, err)
-            }
-        })
-    }
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := UnmarshalCurrencyAmount(tc.input)
+			if tc.expPass {
+				require.NoError(t, err)
+				mpt, ok := actual.(MPTCurrencyAmount)
+				require.True(t, ok, "expected MPTCurrencyAmount, got %T", actual)
+				require.Equal(t, tc.expected, mpt)
+			} else {
+				require.Error(t, err)
+			}
+		})
+	}
 }
