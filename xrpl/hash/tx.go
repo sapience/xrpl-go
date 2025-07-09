@@ -8,10 +8,13 @@ import (
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/pkg/crypto"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
 
 var (
+	// ErrMissingSignature is returned when a transaction lacks the required signature fields.
+	// A transaction must have at least one of: TxnSignature, Signers, or SigningPubKey,
+	// unless it's an inner batch transaction (has TfInnerBatchTxn flag set).
 	ErrMissingSignature = errors.New("transaction must have at least one of TxnSignature, Signers, or SigningPubKey")
 )
 
@@ -66,7 +69,7 @@ func encodeSignedTxBlob(txBlob string) (string, error) {
 func isTxValid(tx map[string]interface{}) (bool, error) {
 	isInnerBatchTxn := false
 	if flags, ok := tx["Flags"].(uint32); ok {
-		isInnerBatchTxn = (flags & transaction.TfInnerBatchTxn) != 0
+		isInnerBatchTxn = (flags & types.TfInnerBatchTxn) != 0
 	}
 
 	hasTxnSignature := tx["TxnSignature"] != nil

@@ -16,7 +16,7 @@ var (
 			Account:         "rUser1fcu9RJa5W1ncAuEgLJF2oJC6",
 			TransactionType: PaymentTx,
 			Fee:             types.XRPCurrencyAmount(0),
-			Flags:           TfInnerBatchTxn,
+			Flags:           types.TfInnerBatchTxn,
 			SigningPubKey:   "",
 			Sequence:        5,
 		},
@@ -30,7 +30,7 @@ var (
 			Account:         "rUser3ABC123456789DEF456GHI789JKL",
 			TransactionType: OfferCreateTx,
 			Fee:             types.XRPCurrencyAmount(0),
-			Flags:           TfInnerBatchTxn,
+			Flags:           types.TfInnerBatchTxn,
 			SigningPubKey:   "",
 			Sequence:        10,
 		},
@@ -48,7 +48,7 @@ var (
 			Account:         "rUser1fcu9RJa5W1ncAuEgLJF2oJC6",
 			TransactionType: PaymentTx,
 			Fee:             types.XRPCurrencyAmount(0),
-			Flags:           0, // Missing TfInnerBatchTxn flag
+			Flags:           0, // Missing types.TfInnerBatchTxn flag
 			SigningPubKey:   "",
 			Sequence:        5,
 		},
@@ -61,7 +61,7 @@ var (
 			Account:         "rUser1fcu9RJa5W1ncAuEgLJF2oJC6",
 			TransactionType: PaymentTx,
 			Fee:             types.XRPCurrencyAmount(12), // Non-zero fee
-			Flags:           TfInnerBatchTxn,
+			Flags:           types.TfInnerBatchTxn,
 			SigningPubKey:   "",
 			Sequence:        5,
 		},
@@ -74,7 +74,7 @@ var (
 			Account:         "rUser1fcu9RJa5W1ncAuEgLJF2oJC6",
 			TransactionType: PaymentTx,
 			Fee:             types.XRPCurrencyAmount(0),
-			Flags:           TfInnerBatchTxn,
+			Flags:           types.TfInnerBatchTxn,
 			SigningPubKey:   "ED5F5AC8B98974A3CA843326D9B88CEBD0560177B973EE0B149F782CFAA06DC66A", // Non-empty signing pub key
 			Sequence:        5,
 		},
@@ -103,7 +103,7 @@ func TestBatchFlatten(t *testing.T) {
 					Fee:             types.XRPCurrencyAmount(12),
 					Flags:           tfAllOrNothing,
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTx.Flatten(),
 					},
@@ -140,7 +140,7 @@ func TestBatchFlatten(t *testing.T) {
 					SigningPubKey:   "022D40673B44C82DEE1DDB8B9BB53DCCE4F97B27404DB850F068DD91D685E337EA",
 					TxnSignature:    "3045022100EC5D367FAE2B461679AD446FBBE7BA260506579AF4ED5EFC3EC25F4DD1885B38022018C2327DB281743B12553C7A6DC0E45B07D3FC6983F261D7BCB474D89A0EC5B8",
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: offerCreateTx.Flatten(),
 					},
@@ -194,7 +194,7 @@ func TestBatchFlatten(t *testing.T) {
 					Fee:             types.XRPCurrencyAmount(12),
 					Flags:           tfAllOrNothing,
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTx.Flatten(),
 					},
@@ -265,7 +265,7 @@ func TestBatch_Validate(t *testing.T) {
 					Fee:             types.XRPCurrencyAmount(12),
 					Flags:           tfAllOrNothing,
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTx.Flatten(),
 					},
@@ -282,7 +282,7 @@ func TestBatch_Validate(t *testing.T) {
 					Fee:             types.XRPCurrencyAmount(12),
 					Flags:           tfIndependent,
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTx.Flatten(),
 					},
@@ -301,19 +301,19 @@ func TestBatch_Validate(t *testing.T) {
 					TransactionType: BatchTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				RawTransactions: []InnerTransaction{},
+				RawTransactions: []types.RawTransaction{},
 			},
 			expected: false,
 		},
 		{
-			name: "fail - inner transaction missing TfInnerBatchTxn flag",
+			name: "fail - inner transaction missing types.TfInnerBatchTxn flag",
 			input: Batch{
 				BaseTx: BaseTx{
 					Account:         "rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2",
 					TransactionType: BatchTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTxNoFlag.Flatten(),
 					},
@@ -329,13 +329,13 @@ func TestBatch_Validate(t *testing.T) {
 					TransactionType: BatchTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: FlatTransaction{
 							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
 							"TransactionType": "Batch", // Nested batch not allowed
 							"Fee":             "0",
-							"Flags":           uint32(TfInnerBatchTxn),
+							"Flags":           uint32(types.TfInnerBatchTxn),
 							"SigningPubKey":   "",
 						},
 					},
@@ -351,7 +351,7 @@ func TestBatch_Validate(t *testing.T) {
 					TransactionType: BatchTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTxWithFee.Flatten(),
 					},
@@ -367,7 +367,7 @@ func TestBatch_Validate(t *testing.T) {
 					TransactionType: BatchTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTxWithSigning.Flatten(),
 					},
@@ -383,7 +383,7 @@ func TestBatch_Validate(t *testing.T) {
 					TransactionType: BatchTx,
 					Fee:             types.XRPCurrencyAmount(12),
 				},
-				RawTransactions: []InnerTransaction{
+				RawTransactions: []types.RawTransaction{
 					{
 						RawTransaction: paymentTx.Flatten(),
 					},
@@ -470,73 +470,6 @@ func TestBatch_Flags(t *testing.T) {
 			tt.setter(b)
 			if b.Flags != tt.expected {
 				t.Errorf("Expected Batch Flags to be %d, got %d", tt.expected, b.Flags)
-			}
-		})
-	}
-}
-
-func TestBatchSigner_Flatten(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    types.BatchSigner
-		expected string
-	}{
-		{
-			name: "pass - basic batch signer",
-			input: types.BatchSigner{
-				BatchSigner: types.BatchSignerData{
-					Account:       "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					SigningPubKey: "ED5F5AC8B98974A3CA843326D9B88CEBD0560177B973EE0B149F782CFAA06DC66A",
-					TxnSignature:  "C4E2834B9C0E7519DC47E4C48F19B4B2C5C92FB4F8C5C8F8C8C8C8C8C8C8",
-				},
-			},
-			expected: `{
-				"BatchSigner": {
-					"Account": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					"SigningPubKey": "ED5F5AC8B98974A3CA843326D9B88CEBD0560177B973EE0B149F782CFAA06DC66A",
-					"TxnSignature": "C4E2834B9C0E7519DC47E4C48F19B4B2C5C92FB4F8C5C8F8C8C8C8C8C8C8"
-				}
-			}`,
-		},
-		{
-			name: "pass - batch signer with inner signers",
-			input: types.BatchSigner{
-				BatchSigner: types.BatchSignerData{
-					Account: "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					Signers: []types.Signer{
-						{
-							SignerData: types.SignerData{
-								Account:       "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-								SigningPubKey: "ED5F5AC8B98974A3CA843326D9B88CEBD0560177B973EE0B149F782CFAA06DC66A",
-								TxnSignature:  "C4E2834B9C0E7519DC47E4C48F19B4B2C5C92FB4F8C5C8F8C8C8C8C8C8C8",
-							},
-						},
-					},
-				},
-			},
-			expected: `{
-				"BatchSigner": {
-					"Account": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-					"Signers": [
-						{
-							"Signer": {
-								"Account": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
-								"SigningPubKey": "ED5F5AC8B98974A3CA843326D9B88CEBD0560177B973EE0B149F782CFAA06DC66A",
-								"TxnSignature": "C4E2834B9C0E7519DC47E4C48F19B4B2C5C92FB4F8C5C8F8C8C8C8C8C8C8"
-							}
-						}
-					]
-				}
-			}`,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := tt.input.Flatten()
-			err := testutil.CompareFlattenAndExpected(result, []byte(tt.expected))
-			if err != nil {
-				t.Error(err)
 			}
 		})
 	}
