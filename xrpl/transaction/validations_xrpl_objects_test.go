@@ -10,12 +10,12 @@ import (
 func TestIsSigner(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    SignerData
+		input    types.SignerData
 		expected bool
 	}{
 		{
 			name: "pass - valid Signer object",
-			input: SignerData{
+			input: types.SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				TxnSignature:  "0123456789abcdef",
 				SigningPubKey: "abcdef0123456789",
@@ -24,7 +24,7 @@ func TestIsSigner(t *testing.T) {
 		},
 		{
 			name: "fail - Signer object with missing fields",
-			input: SignerData{
+			input: types.SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				SigningPubKey: "abcdef0123456789",
 			},
@@ -32,7 +32,7 @@ func TestIsSigner(t *testing.T) {
 		},
 		{
 			name: "fail - invalid Signer object with empty XRPL account",
-			input: SignerData{
+			input: types.SignerData{
 				Account:       "  ",
 				SigningPubKey: "abcdef0123456789",
 				TxnSignature:  "0123456789abcdef",
@@ -41,7 +41,7 @@ func TestIsSigner(t *testing.T) {
 		},
 		{
 			name: "fail - invalid Signer object with invalid XRPL account",
-			input: SignerData{
+			input: types.SignerData{
 				Account:       "invalid",
 				SigningPubKey: "abcdef0123456789",
 				TxnSignature:  "0123456789abcdef",
@@ -50,7 +50,7 @@ func TestIsSigner(t *testing.T) {
 		},
 		{
 			name: "fail - invalid Signer object with empty TxnSignature",
-			input: SignerData{
+			input: types.SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				TxnSignature:  "  ",
 				SigningPubKey: "abcdef0123456789",
@@ -59,7 +59,7 @@ func TestIsSigner(t *testing.T) {
 		},
 		{
 			name: "fail - invalid Signer object with empty SigningPubKey",
-			input: SignerData{
+			input: types.SignerData{
 				Account:       "r4ES5Mmnz4HGbu2asdicuECBaBWo4knhXW",
 				TxnSignature:  "0123456789abcdef",
 				SigningPubKey: "  ",
@@ -68,7 +68,7 @@ func TestIsSigner(t *testing.T) {
 		},
 		{
 			name:     "fail - nil object",
-			input:    SignerData{},
+			input:    types.SignerData{},
 			expected: false,
 		},
 	}
