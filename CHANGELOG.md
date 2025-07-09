@@ -32,8 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds unit tests for `MPTCurrencyAmount`.
 - Adds `NFTokenModify` transaction type.
 - Adds `Batch` transaction type.
+- Adds `CombineBatchSigners` function to combine the batch signers of a set of transactions into a single transaction.
+- Adds `SignMultiBatch` function to sign a multi-account Batch transaction.
 - Adds `TfInnerBatchTxn` flag.
-- Adds support for `TfInnerBatchTxn` flag on `SignTxBlob`.
 
 ## Changed
 

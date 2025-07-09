@@ -140,7 +140,7 @@ func EncodeForSigningBatch(json map[string]any) (string, error) {
 	}
 
 	// Extract and validate txIDs
-	txIDsInterface, ok := json["txIDs"].([]any)
+	txIDsInterface, ok := json["txIDs"].([]string)
 	if !ok {
 		return "", ErrBatchTxIDsNotArray
 	}
@@ -174,12 +174,8 @@ func EncodeForSigningBatch(json map[string]any) (string, error) {
 
 	// Add each transaction ID
 	for _, txID := range txIDsInterface {
-		txIDStr, ok := txID.(string)
-		if !ok {
-			return "", ErrBatchTxIDNotString
-		}
 		hash256 := types.NewHash256()
-		txIDBytes, err := hash256.FromJSON(txIDStr)
+		txIDBytes, err := hash256.FromJSON(txID)
 		if err != nil {
 			return "", err
 		}
