@@ -367,36 +367,37 @@ func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction,
 	// Check if this is a special transaction cost type
 	isSpecialTxCost := transactionType == "AccountDelete" || transactionType == "AMMCreate"
 
-	// EscrowFinish Transaction with Fulfillment
-	if transactionType == "EscrowFinish" {
+	switch transactionType {
+	case "EscrowFinish":
 		if fulfillment, ok := (*tx)["Fulfillment"]; ok && fulfillment != nil {
 			if fulfillmentStr, ok := fulfillment.(string); ok && fulfillmentStr != "" {
 				fulfillmentBytesSize := (len(fulfillmentStr) + 1) / 2 // Math.ceil(length / 2)
-				// BaseFee × (33 + (Fulfillment size in bytes / 16))
-				baseFee = baseFeeUint * (33 + uint64(fulfillmentBytesSize)/16)
+				if fulfillmentBytesSize < 0 {
+					return fmt.Errorf("invalid fulfillment length")
+				}
+				// BaseFee × (33 + ceil(Fulfillment size in bytes / 16))
+				chunks := (uint64(fulfillmentBytesSize) + 15) / 16 // ceil division
+				baseFee = baseFeeUint * (33 + chunks)
 			}
 		}
-	} else if isSpecialTxCost {
-		// For AccountDelete and AMMCreate, use owner reserve fee
+	case "AccountDelete", "AMMCreate":
 		reserveFee, err := c.fetchOwnerReserveFee()
 		if err != nil {
 			return err
 		}
 		baseFee = reserveFee
-	} else if transactionType == "Batch" {
-		// For Batch transactions, calculate fee for all inner transactions
+	case "Batch":
 		rawTxFees, err := c.calculateBatchFees(tx)
 		if err != nil {
 			return err
 		}
-		// baseFee = BigNumber.sum(baseFee.times(2), rawTxFees)
 		baseFee = baseFeeUint*2 + rawTxFees
 	}
 
 	// Multi-signed Transaction: BaseFee × (1 + Number of Signatures Provided)
 	if nSigners > 0 {
 		signersFee := baseFeeUint * nSigners
-		baseFee = baseFee + signersFee
+		baseFee += signersFee
 	}
 
 	// Apply max fee limit (but not for special transaction cost types)
@@ -608,7 +609,7 @@ func (c *Client) fetchOwnerReserveFee() (uint64, error) {
 // calculateBatchFees calculates the total fees for all inner transactions in a Batch.
 // Replicates the JavaScript logic for Batch transaction fee calculation.
 func (c *Client) calculateBatchFees(tx *transaction.FlatTransaction) (uint64, error) {
-	var totalFees uint64 = 0
+	var totalFees uint64
 
 	// Get RawTransactions from the batch transaction
 	rawTransactions, ok := (*tx)["RawTransactions"]

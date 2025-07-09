@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -32,6 +33,13 @@ import (
 const (
 	DefaultFeeCushion float32 = 1.2
 	DefaultMaxFeeXRP  float32 = 2
+
+	// Sidechains are expected to have network IDs above this.
+	// Networks with ID above this restricted number are expected specify an accurate NetworkID field
+	// in every transaction to that chain to prevent replay attacks.
+	// Mainnet and testnet are exceptions. More context: https://github.com/XRPLF/rippled/pull/4370
+	RestrictedNetworks       = 1024
+	RequiredNetworkIDVersion = "1.11.0"
 )
 
 var (
@@ -569,38 +577,37 @@ func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction,
 	// Check if this is a special transaction cost type
 	isSpecialTxCost := transactionType == "AccountDelete" || transactionType == "AMMCreate"
 
-	// EscrowFinish Transaction with Fulfillment
-	if transactionType == "EscrowFinish" {
+	switch transactionType {
+	case "EscrowFinish":
 		if fulfillment, ok := (*tx)["Fulfillment"]; ok && fulfillment != nil {
 			if fulfillmentStr, ok := fulfillment.(string); ok && fulfillmentStr != "" {
 				fulfillmentBytesSize := (len(fulfillmentStr) + 1) / 2 // Math.ceil(length / 2)
-				// BaseFee × (33 + (Fulfillment size in bytes / 16))
-				baseFee = baseFeeUint * (33 + uint64(fulfillmentBytesSize)/16)
+				if fulfillmentBytesSize < 0 {
+					return fmt.Errorf("invalid fulfillment length")
+				}
+				// BaseFee × (33 + ceil(Fulfillment size in bytes / 16))
+				chunks := (uint64(fulfillmentBytesSize) + 15) / 16 // ceil division
+				baseFee = baseFeeUint * (33 + chunks)
 			}
 		}
-	} else if isSpecialTxCost {
-		// For AccountDelete and AMMCreate, use owner reserve fee
+	case "AccountDelete", "AMMCreate":
 		reserveFee, err := c.fetchOwnerReserveFee()
 		if err != nil {
 			return err
 		}
 		baseFee = reserveFee
-	} else if transactionType == "Batch" {
-		// For Batch transactions, calculate fee for all inner transactions
+	case "Batch":
 		rawTxFees, err := c.calculateBatchFees(tx)
 		if err != nil {
-
 			return err
 		}
-
-		// baseFee = BigNumber.sum(baseFee.times(2), rawTxFees)
 		baseFee = baseFeeUint*2 + rawTxFees
 	}
 
 	// Multi-signed Transaction: BaseFee × (1 + Number of Signatures Provided)
 	if nSigners > 0 {
 		signersFee := baseFeeUint * nSigners
-		baseFee = baseFee + signersFee
+		baseFee += signersFee
 	}
 
 	// Apply max fee limit (but not for special transaction cost types)
@@ -858,7 +865,7 @@ func (c *Client) fetchOwnerReserveFee() (uint64, error) {
 // calculateBatchFees calculates the total fees for all inner transactions in a Batch.
 // Replicates the JavaScript logic for Batch transaction fee calculation.
 func (c *Client) calculateBatchFees(tx *transaction.FlatTransaction) (uint64, error) {
-	var totalFees uint64 = 0
+	var totalFees uint64
 
 	// Get RawTransactions from the batch transaction
 	rawTransactions, ok := (*tx)["RawTransactions"]
@@ -975,7 +982,10 @@ func (c *Client) AutofillBatch(tx *transaction.Batch) error {
 		}
 
 		if t.RawTransaction["NetworkID"] == nil {
-			needsNetworkID := c.NetworkID != 0
+			needsNetworkID, err := c.txNeedsNetworkID()
+			if err != nil {
+				return err
+			}
 			if needsNetworkID {
 				t.RawTransaction["NetworkID"] = c.NetworkID
 			}
@@ -1001,4 +1011,121 @@ func (c *Client) getTransactionNextValidSequenceNumber(tx *transaction.FlatTrans
 	}
 
 	return uint32(res.AccountData.Sequence), nil
+}
+
+// isNotLaterRippledVersion determines whether the source rippled version is not later than the target rippled version.
+// Example usage: isNotLaterRippledVersion("1.10.0", "1.11.0") returns true.
+//
+//	isNotLaterRippledVersion("1.10.0", "1.10.0-b1") returns false.
+func isNotLaterRippledVersion(source, target string) bool {
+	if source == target {
+		return true
+	}
+
+	sourceDecomp := strings.Split(source, ".")
+	targetDecomp := strings.Split(target, ".")
+
+	if len(sourceDecomp) < 3 || len(targetDecomp) < 3 {
+		return false
+	}
+
+	sourceMajor, err := strconv.Atoi(sourceDecomp[0])
+	if err != nil {
+		return false
+	}
+	sourceMinor, err := strconv.Atoi(sourceDecomp[1])
+	if err != nil {
+		return false
+	}
+	targetMajor, err := strconv.Atoi(targetDecomp[0])
+	if err != nil {
+		return false
+	}
+	targetMinor, err := strconv.Atoi(targetDecomp[1])
+	if err != nil {
+		return false
+	}
+
+	// Compare major version
+	if sourceMajor != targetMajor {
+		return sourceMajor < targetMajor
+	}
+
+	// Compare minor version
+	if sourceMinor != targetMinor {
+		return sourceMinor < targetMinor
+	}
+
+	sourcePatch := strings.Split(sourceDecomp[2], "-")
+	targetPatch := strings.Split(targetDecomp[2], "-")
+
+	sourcePatchVersion, err := strconv.Atoi(sourcePatch[0])
+	if err != nil {
+		return false
+	}
+	targetPatchVersion, err := strconv.Atoi(targetPatch[0])
+	if err != nil {
+		return false
+	}
+
+	// Compare patch version
+	if sourcePatchVersion != targetPatchVersion {
+		return sourcePatchVersion < targetPatchVersion
+	}
+
+	// Compare release version
+	if len(sourcePatch) != len(targetPatch) {
+		return len(sourcePatch) > len(targetPatch)
+	}
+
+	if len(sourcePatch) == 2 {
+		// Compare different release types
+		if !strings.HasPrefix(sourcePatch[1], string(targetPatch[1][0])) {
+			return sourcePatch[1] < targetPatch[1]
+		}
+
+		// Compare beta version
+		if strings.HasPrefix(sourcePatch[1], "b") {
+			sourceBeta, err := strconv.Atoi(sourcePatch[1][1:])
+			if err != nil {
+				return false
+			}
+			targetBeta, err := strconv.Atoi(targetPatch[1][1:])
+			if err != nil {
+				return false
+			}
+			return sourceBeta < targetBeta
+		}
+
+		// Compare rc version
+		if strings.HasPrefix(sourcePatch[1], "rc") {
+			sourceRC, err := strconv.Atoi(sourcePatch[1][2:])
+			if err != nil {
+				return false
+			}
+			targetRC, err := strconv.Atoi(targetPatch[1][2:])
+			if err != nil {
+				return false
+			}
+			return sourceRC < targetRC
+		}
+	}
+
+	return false
+}
+
+// txNeedsNetworkID determines if the transaction required a networkID to be valid.
+// Transaction needs networkID if later than restricted ID and build version is >= 1.11.0
+func (c *Client) txNeedsNetworkID() (bool, error) {
+	if c.NetworkID != 0 && c.NetworkID > RestrictedNetworks {
+		res, err := c.GetServerInfo(&server.InfoRequest{})
+		if err != nil {
+			return false, err
+		}
+
+		if res.Info.BuildVersion != "" {
+			return isNotLaterRippledVersion(RequiredNetworkIDVersion, res.Info.BuildVersion), nil
+		}
+	}
+	return false, nil
 }
