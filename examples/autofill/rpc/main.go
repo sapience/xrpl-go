@@ -38,16 +38,16 @@ func main() {
 	payment := transactions.Payment{
 		BaseTx: transactions.BaseTx{
 			Account: types.Address(w.GetAddress()),
-			Signers: []transactions.Signer{
+			Signers: []types.Signer{
 				{
-					SignerData: transactions.SignerData{
+					SignerData: types.SignerData{
 						Account:       types.Address(w.GetAddress()),
 						SigningPubKey: w.PublicKey,
 						TxnSignature:  "",
 					},
 				},
 				{
-					SignerData: transactions.SignerData{
+					SignerData: types.SignerData{
 						Account:       types.Address(w.GetAddress()),
 						SigningPubKey: w.PublicKey,
 						TxnSignature:  "",

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### BREAKING CHANGES
+
+#### xrpl
+
+- Move `Signers` type from `github.com/Peersyst/xrpl-go/xrpl/transaction` package to `github.com/Peersyst/xrpl-go/xrpl/transaction/types`.
+
 ### Added
 
 #### binary-codec
@@ -15,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `Hash192` type.
 - Adds functions to serialize and deserialize `MPTCurrencyAmount`.
 - Adds unit tests for `MPTCurrencyAmount`.
+- Adds`EncodeForSigningBatch` function.
 
 #### xrpl
 
@@ -24,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `MPTCurrencyAmount` for currency kinds.
 - Adds unit tests for `MPTCurrencyAmount`.
 - Adds `NFTokenModify` transaction type.
+- Adds `Batch` transaction type.
+- Adds `TfInnerBatchTxn` flag.
+- Adds support for `TfInnerBatchTxn` flag on `SignTxBlob`.
 
 ## Changed
 

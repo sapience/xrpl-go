@@ -46,9 +46,9 @@ func TestTx_Validate(t *testing.T) {
 						},
 					},
 				},
-				Signers: []Signer{
+				Signers: []types.Signer{
 					{
-						SignerData{
+						SignerData: types.SignerData{
 							Account:       "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC",
 							TxnSignature:  "abc123",
 							SigningPubKey: "def456",
@@ -114,9 +114,9 @@ func TestTx_Validate(t *testing.T) {
 				SigningPubKey:      "abcdefg",
 				TicketSequence:     2,
 				TxnSignature:       "xyz123",
-				Signers: []Signer{
+				Signers: []types.Signer{
 					{
-						SignerData{
+						SignerData: types.SignerData{
 							Account: "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC",
 						},
 					},
@@ -184,7 +184,7 @@ func TestBaseTx_Flatten(t *testing.T) {
 					},
 				},
 				NetworkID:      1,
-				Signers:        []Signer{{SignerData{Account: "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC", TxnSignature: "abc123", SigningPubKey: "def456"}}},
+				Signers:        []types.Signer{{SignerData: types.SignerData{Account: "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC", TxnSignature: "abc123", SigningPubKey: "def456"}}},
 				SourceTag:      123,
 				SigningPubKey:  "abcdefg",
 				TicketSequence: 2,

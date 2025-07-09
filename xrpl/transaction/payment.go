@@ -227,7 +227,7 @@ func checkPartialPayment(tx *Payment) (bool, error) {
 		return false, ErrPartialPaymentFlagRequired
 	}
 
-	if !IsFlagEnabled(tx.Flags, tfPartialPayment) {
+	if !types.IsFlagEnabled(tx.Flags, tfPartialPayment) {
 		return false, ErrPartialPaymentFlagRequired
 	}
 

@@ -1455,6 +1455,16 @@
       }
     ],
     [
+      "ParentBatchID",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 36,
+        "type": "Hash256"
+      }
+    ],
+    [
       "Amount",
       {
         "nth": 1,
@@ -2635,6 +2645,26 @@
       }
     ],
     [
+      "RawTransaction",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 34,
+        "type": "STObject"
+      }
+    ],
+    [
+      "BatchSigner",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 35,
+        "type": "STObject"
+      }
+    ],
+    [
       "Signers",
       {
         "nth": 3,
@@ -2853,6 +2883,26 @@
         "isSigningField": true,
         "type": "STArray"
       }
+    ],
+    [
+      "RawTransactions",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 30,
+        "type": "STArray"
+      }
+    ],
+    [
+      "BatchSigners",
+      {
+        "isSerialized": true,
+        "isSigningField": false,
+        "isVLEncoded": false,
+        "nth": 31,
+        "type": "STArray"
+      }
     ]
   ],
   "TRANSACTION_RESULTS": {
@@ -2898,6 +2948,7 @@
     "temDST_NEEDED": -278,
     "temINVALID": -277,
     "temINVALID_FLAG": -276,
+    "temINVALID_INNER_BATCH": -250,
     "temREDUNDANT": -275,
     "temRIPPLE_EMPTY": -274,
     "temDISABLED": -273,
@@ -3049,6 +3100,7 @@
     "AMMDeposit": 36,
     "AMMVote": 38,
     "AMMWithdraw": 37,
+    "Batch": 71,
     "CheckCancel": 18,
     "CheckCash": 17,
     "CheckCreate": 16,

@@ -1118,39 +1118,39 @@ func TestAmount_ToJson(t *testing.T) {
 
 // TestValueToString covers all branches of valueToString
 func TestValueToString(t *testing.T) {
-    tests := []struct {
-        name   string
-        input  any
-        exp    string
-        expErr bool
-    }{
-        {"pass - string", "foo", "foo", false},
-        {"pass - json.Number", json.Number("123.45"), "123.45", false},
-        {"pass - float64 integer", float64(42), "42", false},
-        {"pass - float64 decimal", float64(3.14), "3.14", false},
-        {"pass - float64 negative", float64(-2.5), "-2.5", false},
-        {"pass - float64 zero", float64(0), "0", false},
-        {"pass - float64 large integer", float64(1000000), "1000000", false},
-        {"fail - unsupported int", int(7), "", true},
-        {"fail - unsupported int64", int64(8), "", true},
-        {"fail - unsupported uint64", uint64(9), "", true},
-        {"fail - unsupported slice", []int{1, 2, 3}, "", true},
-        {"fail - unsupported map", map[string]string{"key": "value"}, "", true},
-        {"fail - unsupported nil", nil, "", true},
-    }
+	tests := []struct {
+		name   string
+		input  any
+		exp    string
+		expErr bool
+	}{
+		{"pass - string", "foo", "foo", false},
+		{"pass - json.Number", json.Number("123.45"), "123.45", false},
+		{"pass - float64 integer", float64(42), "42", false},
+		{"pass - float64 decimal", float64(3.14), "3.14", false},
+		{"pass - float64 negative", float64(-2.5), "-2.5", false},
+		{"pass - float64 zero", float64(0), "0", false},
+		{"pass - float64 large integer", float64(1000000), "1000000", false},
+		{"fail - unsupported int", int(7), "", true},
+		{"fail - unsupported int64", int64(8), "", true},
+		{"fail - unsupported uint64", uint64(9), "", true},
+		{"fail - unsupported slice", []int{1, 2, 3}, "", true},
+		{"fail - unsupported map", map[string]string{"key": "value"}, "", true},
+		{"fail - unsupported nil", nil, "", true},
+	}
 
-    for _, tc := range tests {
-        t.Run(tc.name, func(t *testing.T) {
-            got, err := valueToString(tc.input)
-            if tc.expErr {
-                require.Error(t, err)
-                require.Contains(t, err.Error(), "unsupported type")
-            } else {
-                require.NoError(t, err)
-                require.Equal(t, tc.exp, got)
-            }
-        })
-    }
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := valueToString(tc.input)
+			if tc.expErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "unsupported type")
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.exp, got)
+			}
+		})
+	}
 }
 
 // Extend TestAmount_FromJson with missing‐field and unsupported‐type cases
@@ -1163,42 +1163,42 @@ func TestAmount_FromJson_Errors(t *testing.T) {
 		input  any
 		expErr string
 	}{
-        {
-            name:   "fail - missing value",
-            input:  map[string]any{"currency": currency, "issuer": issuer},
-            expErr: "amount missing value field",
-        },
-        {
-            name:   "fail - unsupported value type",
-            input:  map[string]any{"value": []int{1}, "currency": currency, "issuer": issuer},
-            expErr: "invalid amount value: unsupported type \\[\\]int for amount value",
-        },
-        {
-            name:   "fail - missing currency",
-            input:  map[string]any{"value": "1", "issuer": issuer},
-            expErr: "issued currency missing currency field",
-        },
-        {
-            name:   "fail - missing issuer (IOU)",
-            input:  map[string]any{"value": "1", "currency": currency},
-            expErr: "issued currency missing issuer field",
-        },
-        {
-            name:   "fail - unsupported mpt_issuance_id type",
-            input:  map[string]any{"value": "1", "mpt_issuance_id": []int{1}},
-            expErr: "invalid mpt_issuance_id: unsupported type \\[\\]int for amount value",
-        },
-        {
-            name:   "fail - invalid mpt_issuance_id hex",
-            input:  map[string]any{"value": "1", "mpt_issuance_id": "zzzz"},
-            expErr: "encoding/hex: invalid byte",
-        },
-        {
-            name:   "fail - invalid amount type",
-            input:  123,
-            expErr: "invalid amount type",
-        },
-    }
+		{
+			name:   "fail - missing value",
+			input:  map[string]any{"currency": currency, "issuer": issuer},
+			expErr: "amount missing value field",
+		},
+		{
+			name:   "fail - unsupported value type",
+			input:  map[string]any{"value": []int{1}, "currency": currency, "issuer": issuer},
+			expErr: "invalid amount value: unsupported type \\[\\]int for amount value",
+		},
+		{
+			name:   "fail - missing currency",
+			input:  map[string]any{"value": "1", "issuer": issuer},
+			expErr: "issued currency missing currency field",
+		},
+		{
+			name:   "fail - missing issuer (IOU)",
+			input:  map[string]any{"value": "1", "currency": currency},
+			expErr: "issued currency missing issuer field",
+		},
+		{
+			name:   "fail - unsupported mpt_issuance_id type",
+			input:  map[string]any{"value": "1", "mpt_issuance_id": []int{1}},
+			expErr: "invalid mpt_issuance_id: unsupported type \\[\\]int for amount value",
+		},
+		{
+			name:   "fail - invalid mpt_issuance_id hex",
+			input:  map[string]any{"value": "1", "mpt_issuance_id": "zzzz"},
+			expErr: "encoding/hex: invalid byte",
+		},
+		{
+			name:   "fail - invalid amount type",
+			input:  123,
+			expErr: "invalid amount type",
+		},
+	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
