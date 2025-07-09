@@ -1,25 +1,28 @@
-package transaction
+package types
 
-import "github.com/Peersyst/xrpl-go/xrpl/transaction/types"
+const (
+	// TfInnerBatchTxn flag that must be set on inner transactions within a batch
+	TfInnerBatchTxn uint32 = 0x40000000
+)
 
 // RawTransactionWrapper represents the wrapper structure for transactions within a Batch.
-type InnerTransaction struct {
-	RawTransaction FlatTransaction `json:"RawTransaction"`
+type RawTransaction struct {
+	RawTransaction map[string]any `json:"RawTransaction"`
 }
 
-// Flatten returns the flattened map representation of the InnerTransaction.
-func (i *InnerTransaction) Flatten() FlatTransaction {
+// Flatten returns the flattened map representation of the RawTransaction.
+func (r *RawTransaction) Flatten() map[string]any {
 	return map[string]any{
-		"RawTransaction": map[string]any(i.RawTransaction),
+		"RawTransaction": r.RawTransaction,
 	}
 }
 
-// Validate validates the InnerTransaction and its wrapped transaction.
-func (i *InnerTransaction) Validate() (bool, error) {
-	flattened := i.Flatten()
+// Validate validates the RawTransaction and its wrapped transaction.
+func (r *RawTransaction) Validate() (bool, error) {
+	flattened := r.Flatten()
 
 	// Validate that the flattened structure is a record
-	if !types.IsRecord(flattened) {
+	if !IsTransactionObject(flattened) {
 		return false, ErrBatchRawTransactionNotObject
 	}
 
@@ -29,11 +32,11 @@ func (i *InnerTransaction) Validate() (bool, error) {
 		return false, ErrBatchRawTransactionMissing
 	}
 
-	if !types.IsRecord(rawTxField) {
+	if !IsTransactionObject(rawTxField) {
 		return false, ErrBatchRawTransactionFieldNotObject
 	}
 
-	rawTx, ok := rawTxField.(map[string]interface{})
+	rawTx, ok := rawTxField.(map[string]any)
 	if !ok {
 		return false, ErrBatchRawTransactionFieldNotObject
 	}

@@ -85,8 +85,8 @@ func (m *MPTokenIssuanceSet) Validate() (bool, error) {
 	}
 
 	// Check flag conflict: tfMPTLock and tfMPTUnlock cannot both be enabled
-	isLock := IsFlagEnabled(m.Flags, tfMPTLock)
-	isUnlock := IsFlagEnabled(m.Flags, tfMPTUnlock)
+	isLock := types.IsFlagEnabled(m.Flags, tfMPTLock)
+	isUnlock := types.IsFlagEnabled(m.Flags, tfMPTUnlock)
 
 	if isLock && isUnlock {
 		return false, ErrMPTokenIssuanceSetFlags

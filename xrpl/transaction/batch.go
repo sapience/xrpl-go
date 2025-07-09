@@ -7,9 +7,6 @@ import (
 )
 
 const (
-	// TfInnerBatchTxn flag that must be set on inner transactions within a batch
-	TfInnerBatchTxn uint32 = 0x40000000
-
 	// Batch transaction flags
 	tfAllOrNothing uint32 = 0x00010000
 	tfOnlyOne      uint32 = 0x00020000
@@ -19,26 +16,68 @@ const (
 
 var (
 	// General batch validation errors
+
+	// ErrBatchRawTransactionsEmpty is returned when the RawTransactions array is empty or nil.
+	// This validates that a batch transaction contains at least one inner transaction to execute.
 	ErrBatchRawTransactionsEmpty = errors.New("RawTransactions must be a non-empty array")
-	ErrBatchSignersNotArray      = errors.New("BatchSigners must be an array")
+
+	// ErrBatchSignersNotArray is returned when BatchSigners field is present but not an array type.
+	// BatchSigners must be an array of signer objects for multi-signing validation.
+	ErrBatchSignersNotArray = errors.New("BatchSigners must be an array")
 
 	// RawTransactions validation errors
-	ErrBatchRawTransactionNotObject      = errors.New("batch RawTransaction element is not an object")
-	ErrBatchRawTransactionMissing        = errors.New("batch RawTransaction field is missing")
+
+	// ErrBatchRawTransactionNotObject is returned when a RawTransaction array element is not an object.
+	// Each element in the RawTransactions array must be a valid transaction object.
+	ErrBatchRawTransactionNotObject = errors.New("batch RawTransaction element is not an object")
+
+	// ErrBatchRawTransactionMissing is returned when the RawTransaction field is missing from an array element.
+	// Each RawTransactions array element must contain a RawTransaction field.
+	ErrBatchRawTransactionMissing = errors.New("batch RawTransaction field is missing")
+
+	// ErrBatchRawTransactionFieldNotObject is returned when the RawTransaction field is not an object.
+	// The RawTransaction field must contain a valid transaction object structure.
 	ErrBatchRawTransactionFieldNotObject = errors.New("batch RawTransaction field is not an object")
-	ErrBatchNestedTransaction            = errors.New("batch cannot contain nested Batch transactions")
-	ErrBatchMissingInnerFlag             = errors.New("batch RawTransaction must contain the TfInnerBatchTxn flag")
+
+	// ErrBatchNestedTransaction is returned when trying to include a Batch transaction within another Batch.
+	// Nested batch transactions are not allowed to prevent infinite recursion and complexity.
+	ErrBatchNestedTransaction = errors.New("batch cannot contain nested Batch transactions")
+
+	// ErrBatchMissingInnerFlag is returned when an inner transaction lacks the TfInnerBatchTxn flag.
+	// All transactions within a batch must have the TfInnerBatchTxn flag set to indicate they are inner transactions.
+	ErrBatchMissingInnerFlag = errors.New("batch RawTransaction must contain the TfInnerBatchTxn flag")
 
 	// Inner transaction validation errors
+
+	// ErrBatchInnerTransactionInvalid is returned when an inner transaction fails its own validation.
+	// Each inner transaction must pass its individual validation rules.
 	ErrBatchInnerTransactionInvalid = errors.New("batch inner transaction validation failed")
 
 	// BatchSigners validation errors
-	ErrBatchSignerNotObject        = errors.New("batch BatchSigner element is not an object")
-	ErrBatchSignerMissing          = errors.New("batch BatchSigner field is missing")
-	ErrBatchSignerFieldNotObject   = errors.New("batch BatchSigner field is not an object")
-	ErrBatchSignerAccountMissing   = errors.New("batch BatchSigner Account is missing")
+
+	// ErrBatchSignerNotObject is returned when a BatchSigner array element is not an object.
+	// Each element in the BatchSigners array must be a valid signer object.
+	ErrBatchSignerNotObject = errors.New("batch BatchSigner element is not an object")
+
+	// ErrBatchSignerMissing is returned when the BatchSigner field is missing from an array element.
+	// Each BatchSigners array element must contain a BatchSigner field.
+	ErrBatchSignerMissing = errors.New("batch BatchSigner field is missing")
+
+	// ErrBatchSignerFieldNotObject is returned when the BatchSigner field is not an object.
+	// The BatchSigner field must contain a valid signer object structure.
+	ErrBatchSignerFieldNotObject = errors.New("batch BatchSigner field is not an object")
+
+	// ErrBatchSignerAccountMissing is returned when a BatchSigner lacks the required Account field.
+	// Each BatchSigner must specify an Account for the signing operation.
+	ErrBatchSignerAccountMissing = errors.New("batch BatchSigner Account is missing")
+
+	// ErrBatchSignerAccountNotString is returned when a BatchSigner Account field is not a string.
+	// The Account field must be a valid string representing an XRPL account address.
 	ErrBatchSignerAccountNotString = errors.New("batch BatchSigner Account must be a string")
-	ErrBatchSignerInvalid          = errors.New("batch signer validation failed")
+
+	// ErrBatchSignerInvalid is returned when a BatchSigner fails its validation rules.
+	// Each BatchSigner must pass its individual validation requirements.
+	ErrBatchSignerInvalid = errors.New("batch signer validation failed")
 )
 
 // Batch represents a Batch transaction that can execute multiple transactions atomically.
@@ -72,7 +111,7 @@ var (
 type Batch struct {
 	BaseTx
 	// Array of transactions to be executed as part of this batch.
-	RawTransactions []InnerTransaction `json:"RawTransactions"`
+	RawTransactions []types.RawTransaction `json:"RawTransactions"`
 	// Optional array of batch signers for multi-signing the batch.
 	BatchSigners []types.BatchSigner `json:"BatchSigners,omitempty"`
 }
@@ -120,25 +159,25 @@ func (b *Batch) SetIndependentFlag() {
 
 // Flatten returns the flattened map of the Batch transaction.
 func (b *Batch) Flatten() FlatTransaction {
-	out := b.BaseTx.Flatten()
+	flattenedTx := b.BaseTx.Flatten()
 
-	out["TransactionType"] = b.TxType().String()
+	flattenedTx["TransactionType"] = b.TxType().String()
 
 	rawTxs := make([]map[string]any, len(b.RawTransactions))
 	for i, rtw := range b.RawTransactions {
 		rawTxs[i] = rtw.Flatten()
 	}
-	out["RawTransactions"] = rawTxs
+	flattenedTx["RawTransactions"] = rawTxs
 
 	if len(b.BatchSigners) > 0 {
 		signers := make([]map[string]any, len(b.BatchSigners))
 		for i, bs := range b.BatchSigners {
 			signers[i] = bs.Flatten()
 		}
-		out["BatchSigners"] = signers
+		flattenedTx["BatchSigners"] = signers
 	}
 
-	return out
+	return flattenedTx
 }
 
 // Validate validates the Batch transaction.
@@ -150,7 +189,7 @@ func (b *Batch) Validate() (bool, error) {
 
 	flattenedTx := b.Flatten()
 
-	if err := ValidateRequiredField(flattenedTx, "RawTransactions", types.IsArray); err != nil {
+	if err := ValidateRequiredField(flattenedTx, "RawTransactions", types.IsTransactionArray); err != nil {
 		return false, err
 	}
 
@@ -167,7 +206,7 @@ func (b *Batch) Validate() (bool, error) {
 		}
 	}
 
-	if err := ValidateOptionalField(flattenedTx, "BatchSigners", types.IsArray); err != nil {
+	if err := ValidateOptionalField(flattenedTx, "BatchSigners", types.IsTransactionArray); err != nil {
 		return false, err
 	}
 

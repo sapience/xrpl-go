@@ -4,26 +4,54 @@ import "errors"
 
 var (
 	// General batch validation errors
+
+	// ErrBatchRawTransactionsEmpty is returned when the RawTransactions array is empty or nil.
 	ErrBatchRawTransactionsEmpty = errors.New("RawTransactions must be a non-empty array")
-	ErrBatchSignersNotArray      = errors.New("BatchSigners must be an array")
+
+	// ErrBatchSignersNotArray is returned when BatchSigners field is present but not an array type.
+	ErrBatchSignersNotArray = errors.New("BatchSigners must be an array")
 
 	// RawTransactions validation errors
-	ErrBatchRawTransactionNotObject      = errors.New("batch RawTransaction element is not an object")
-	ErrBatchRawTransactionMissing        = errors.New("batch RawTransaction field is missing")
+
+	// ErrBatchRawTransactionNotObject is returned when a RawTransaction array element is not an object.
+	ErrBatchRawTransactionNotObject = errors.New("batch RawTransaction element is not an object")
+
+	// ErrBatchRawTransactionMissing is returned when the RawTransaction field is missing from an array element.
+	ErrBatchRawTransactionMissing = errors.New("batch RawTransaction field is missing")
+
+	// ErrBatchRawTransactionFieldNotObject is returned when the RawTransaction field is not an object.
 	ErrBatchRawTransactionFieldNotObject = errors.New("batch RawTransaction field is not an object")
-	ErrBatchNestedTransaction            = errors.New("batch cannot contain nested Batch transactions")
-	ErrBatchMissingInnerFlag             = errors.New("batch RawTransaction must contain the TfInnerBatchTxn flag")
+
+	// ErrBatchNestedTransaction is returned when trying to include a Batch transaction within another Batch.
+	ErrBatchNestedTransaction = errors.New("batch cannot contain nested Batch transactions")
+
+	// ErrBatchMissingInnerFlag is returned when an inner transaction lacks the TfInnerBatchTxn flag.
+	ErrBatchMissingInnerFlag = errors.New("batch RawTransaction must contain the TfInnerBatchTxn flag")
 
 	// Inner transaction validation errors
+
+	// ErrBatchInnerTransactionInvalid is returned when an inner transaction fails its own validation.
 	ErrBatchInnerTransactionInvalid = errors.New("batch inner transaction validation failed")
 
 	// BatchSigners validation errors
-	ErrBatchSignerNotObject        = errors.New("batch BatchSigner element is not an object")
-	ErrBatchSignerMissing          = errors.New("batch BatchSigner field is missing")
-	ErrBatchSignerFieldNotObject   = errors.New("batch BatchSigner field is not an object")
-	ErrBatchSignerAccountMissing   = errors.New("batch BatchSigner Account is missing")
+
+	// ErrBatchSignerNotObject is returned when a BatchSigner array element is not an object.
+	ErrBatchSignerNotObject = errors.New("batch BatchSigner element is not an object")
+
+	// ErrBatchSignerMissing is returned when the BatchSigner field is missing from an array element.
+	ErrBatchSignerMissing = errors.New("batch BatchSigner field is missing")
+
+	// ErrBatchSignerFieldNotObject is returned when the BatchSigner field is not an object.
+	ErrBatchSignerFieldNotObject = errors.New("batch BatchSigner field is not an object")
+
+	// ErrBatchSignerAccountMissing is returned when a BatchSigner lacks the required Account field.
+	ErrBatchSignerAccountMissing = errors.New("batch BatchSigner Account is missing")
+
+	// ErrBatchSignerAccountNotString is returned when a BatchSigner Account field is not a string.
 	ErrBatchSignerAccountNotString = errors.New("batch BatchSigner Account must be a string")
-	ErrBatchSignerInvalid          = errors.New("batch signer validation failed")
+
+	// ErrBatchSignerInvalid is returned when a BatchSigner fails its validation rules.
+	ErrBatchSignerInvalid = errors.New("batch signer validation failed")
 )
 
 // BatchSigner represents a single batch signer entry.
@@ -79,11 +107,11 @@ func (bs *BatchSigner) Validate() error {
 		return ErrBatchSignerMissing
 	}
 
-	if !IsRecord(batchSignerField) {
+	if !IsTransactionObject(batchSignerField) {
 		return ErrBatchSignerFieldNotObject
 	}
 
-	signer, ok := batchSignerField.(map[string]interface{})
+	signer, ok := batchSignerField.(map[string]any)
 	if !ok {
 		return ErrBatchSignerFieldNotObject
 	}
@@ -113,7 +141,7 @@ func (bs *BatchSigner) Validate() error {
 
 	// Validate optional Signers field
 	if signersField, exists := signer["Signers"]; exists {
-		if !IsArray(signersField) {
+		if !IsTransactionArray(signersField) {
 			return ErrBatchSignerInvalid
 		}
 	}
