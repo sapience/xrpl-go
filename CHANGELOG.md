@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### BREAKING CHANGES
 
+#### xrpl
+
 - Move `Signers` type from `github.com/Peersyst/xrpl-go/xrpl/transaction` package to `github.com/Peersyst/xrpl-go/xrpl/transaction/types`.
 
 ### Added
@@ -19,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `Hash192` type.
 - Adds functions to serialize and deserialize `MPTCurrencyAmount`.
 - Adds unit tests for `MPTCurrencyAmount`.
+- Adds `GranularPermissions` and `DelegatablePermissions` entries to definitions.
+- Adds `PermissionValue` serialized type with custom serializer routing.
+- Adds`EncodeForSigningBatch` function.
 
 #### xrpl
 
@@ -28,9 +33,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `MPTCurrencyAmount` for currency kinds.
 - Adds unit tests for `MPTCurrencyAmount`.
 - Adds `NFTokenModify` transaction type.
+- Adds `DelegateSet` transaction type (XLS-74d) with validation and error support.
+- Adds `Delegate` ledger entry type (XLS-74d).
+- Adds `PermissionValue` and `Permission` types for delegated permissions.
+- Adds integration tests for `DelegateSet` submission and delegated `Payment` execution (XLS-75d).
 - Adds `Batch` transaction type.
+  <<<<<<< HEAD
 - Adds `TfInnerBatchTxn` flag.
-- Adds support for `TfInnerBatchTxn` flag on `SignTxBlob`.
+- # Adds support for `TfInnerBatchTxn` flag on `SignTxBlob`.
+- Adds `CombineBatchSigners` function to combine the batch signers of a set of transactions into a single transaction.
+- Adds `SignMultiBatch` function to sign a multi-account Batch transaction.
+- Adds `TfInnerBatchTxn` flag.
+  > > > > > > > v0.1.x
 
 ## Changed
 

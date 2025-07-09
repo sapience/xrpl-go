@@ -19,28 +19,15 @@ func (r *RawTransaction) Flatten() map[string]any {
 
 // Validate validates the RawTransaction and its wrapped transaction.
 func (r *RawTransaction) Validate() (bool, error) {
-	flattened := r.Flatten()
-
-	// Validate that the flattened structure is a record
-	if !IsTransactionObject(flattened) {
-		return false, ErrBatchRawTransactionNotObject
-	}
-
 	// Validate RawTransaction field exists
-	rawTxField, exists := flattened["RawTransaction"]
-	if !exists {
+	if r.RawTransaction == nil {
 		return false, ErrBatchRawTransactionMissing
 	}
 
-	if !IsTransactionObject(rawTxField) {
-		return false, ErrBatchRawTransactionFieldNotObject
-	}
+	return validateRawTransaction(r.RawTransaction)
+}
 
-	rawTx, ok := rawTxField.(map[string]any)
-	if !ok {
-		return false, ErrBatchRawTransactionFieldNotObject
-	}
-
+func validateRawTransaction(rawTx map[string]any) (bool, error) {
 	// Check that TransactionType is not "Batch" (no nesting)
 	if txType, ok := rawTx["TransactionType"].(string); ok && txType == "Batch" {
 		return false, ErrBatchNestedTransaction
