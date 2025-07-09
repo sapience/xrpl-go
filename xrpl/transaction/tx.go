@@ -76,7 +76,7 @@ type BaseTx struct {
 	// Array of objects that represent a multi-signature which authorizes this
 	// transaction.
 	//
-	Signers []Signer `json:",omitempty"`
+	Signers []types.Signer `json:",omitempty"`
 	//
 	// Arbitrary integer used to identify the reason for this payment, or a sender
 	// on whose behalf this transaction is made. Conventionally, a refund should

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### BREAKING CHANGES
+
+#### xrpl
+
+- Move `Signers` type from `github.com/Peersyst/xrpl-go/xrpl/transaction` package to `github.com/Peersyst/xrpl-go/xrpl/transaction/types`.
+
 ### Added
 
 #### binary-codec
@@ -17,11 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds unit tests for `MPTCurrencyAmount`.
 - Adds `GranularPermissions` and `DelegatablePermissions` entries to definitions.
 - Adds `PermissionValue` serialized type with custom serializer routing.
+- Adds`EncodeForSigningBatch` function.
 
 #### xrpl
 
 - Adds `AMMClawback` transaction type.
 - Adds `MPTokenAuthorize`, `MPTokenIssuanceCreate`, `MPTokenIssuanceDestroy`, `MPTokenIssuanceSet` transactions. It also adds the `types.Holder`, `types.AssetScale`, `types.MPTokenMetadata` and `types.TransferFee` types to represent the holder of the token, the asset scale, the metadata and the transfer fee of the token respectively.
+- Adds `NFTokenMintOffer` support by adding `Amount`, `Expiration`, and `Destination` fields to `NFTokenMint` transaction. Also add `NFTokenMintMetadata` struct to handle transaction metadata with `nftoken_id` and `offer_id` fields.
 - Adds `MPTCurrencyAmount` for currency kinds.
 - Adds unit tests for `MPTCurrencyAmount`.
 - Adds `NFTokenModify` transaction type.
@@ -29,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `Delegate` ledger entry type (XLS-74d).
 - Adds `PermissionValue` and `Permission` types for delegated permissions.
 - Adds integration tests for `DelegateSet` submission and delegated `Payment` execution (XLS-75d).
+- Adds `Batch` transaction type.
+- Adds `CombineBatchSigners` function to combine the batch signers of a set of transactions into a single transaction.
+- Adds `SignMultiBatch` function to sign a multi-account Batch transaction.
+- Adds `TfInnerBatchTxn` flag.
 
 ## Changed
 

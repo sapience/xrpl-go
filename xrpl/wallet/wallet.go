@@ -12,7 +12,6 @@ import (
 	"github.com/Peersyst/xrpl-go/pkg/random"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	"github.com/Peersyst/xrpl-go/xrpl/interfaces"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/tyler-smith/go-bip32"
 	"github.com/tyler-smith/go-bip39"
@@ -184,8 +183,8 @@ func (w *Wallet) Multisign(tx map[string]interface{}) (string, string, error) {
 		return "", "", err
 	}
 
-	signer := transaction.Signer{
-		SignerData: transaction.SignerData{
+	signer := types.Signer{
+		SignerData: types.SignerData{
 			Account:       w.ClassicAddress,
 			TxnSignature:  txHash,
 			SigningPubKey: w.PublicKey,

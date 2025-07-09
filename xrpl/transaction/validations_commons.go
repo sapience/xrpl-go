@@ -49,7 +49,7 @@ func validateMemos(memoWrapper []types.MemoWrapper) error {
 }
 
 // validateSigners validates the Signers field in the transaction map.
-func validateSigners(signers []Signer) error {
+func validateSigners(signers []types.Signer) error {
 	// loop through each signer and validate it
 	for _, signer := range signers {
 		isSigner, err := IsSigner(signer.SignerData)

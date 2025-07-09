@@ -13,6 +13,7 @@ const (
 	AMMDepositTx       TxType = "AMMDeposit"
 	AMMVoteTx          TxType = "AMMVote"
 	AMMWithdrawTx      TxType = "AMMWithdraw"
+	BatchTx            TxType = "Batch"
 	CheckCancelTx      TxType = "CheckCancel"
 	CheckCashTx        TxType = "CheckCash"
 	CheckCreateTx      TxType = "CheckCreate"

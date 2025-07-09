@@ -123,12 +123,12 @@ func (n *NFTokenCreateOffer) Validate() (bool, error) {
 	}
 
 	// validate Sell Offer Cases
-	if IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner != "" {
+	if types.IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner != "" {
 		return false, ErrOwnerPresentForSellOffer
 	}
 
 	// validate Buy Offer Cases
-	if !IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner == "" {
+	if !types.IsFlagEnabled(n.Flags, tfSellNFToken) && n.Owner == "" {
 		return false, ErrOwnerNotPresentForBuyOffer
 	}
 
