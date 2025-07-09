@@ -7,7 +7,6 @@ import (
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/keypairs"
-	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	wallettypes "github.com/Peersyst/xrpl-go/xrpl/wallet/types"
@@ -72,18 +71,9 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 		return ErrBatchAccountNotFound
 	}
 
-	txIDs := make([]string, len(tx.RawTransactions))
-	for i, rawTx := range tx.RawTransactions {
-		signedTx, err := hash.SignTx(rawTx.RawTransaction)
-		if err != nil {
-			return err
-		}
-		txIDs[i] = signedTx
-	}
-
-	payload := wallettypes.BatchSignable{
-		Flags: tx.Flags,
-		TxIDs: txIDs,
+	payload, err := wallettypes.FromBatchTransaction(tx)
+	if err != nil {
+		return err
 	}
 
 	encodedBatch, err := binarycodec.EncodeForSigningBatch(payload.Flatten())
