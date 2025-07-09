@@ -197,3 +197,30 @@ func (d *Definitions) GetLedgerEntryTypeNameByLedgerEntryTypeCode(c int32) (stri
 		Input:    c,
 	}
 }
+
+// Returns the delegatable permission value associated with the permission name.
+func (d *Definitions) GetDelegatablePermissionValueByName(n string) (int32, error) {
+	permissionValue, ok := d.DelegatablePermissions[n]
+
+	if !ok {
+		return 0, &NotFoundError{
+			Instance: "DelegatablePermissionName",
+			Input:    n,
+		}
+	}
+	return permissionValue, nil
+}
+
+// Returns the delegatable permission name associated with the permission value.
+func (d *Definitions) GetDelegatablePermissionNameByValue(v int32) (string, error) {
+	for permissionName, value := range d.DelegatablePermissions {
+		if value == v {
+			return permissionName, nil
+		}
+	}
+
+	return "", &NotFoundErrorInt{
+		Instance: "DelegatablePermissionValue",
+		Input:    v,
+	}
+}
