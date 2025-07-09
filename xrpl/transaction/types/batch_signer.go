@@ -107,7 +107,7 @@ func (bs *BatchSigner) Validate() error {
 		return ErrBatchSignerMissing
 	}
 
-	if !IsTransactionArray(batchSignerField) {
+	if !IsTransactionObject(batchSignerField) {
 		return ErrBatchSignerFieldNotObject
 	}
 
