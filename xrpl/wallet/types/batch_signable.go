@@ -19,7 +19,7 @@ var (
 	// ErrRawTransactionFieldIsNotAnObject is returned when the raw transaction field is not an object.
 	ErrRawTransactionFieldIsNotAnObject = errors.New("raw transaction field is not an object")
 )
-	
+
 // BatchSignable contains the fields needed to perform a Batch transactions signature.
 // It contains the Flags of all transactions in the batch and the IDs of the transactions.
 type BatchSignable struct {

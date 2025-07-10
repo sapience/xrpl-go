@@ -696,9 +696,9 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			name: "Batch transaction",
 			tx: transaction.FlatTransaction{
 				"TransactionType": "Batch",
-				"RawTransactions": []interface{}{
-					map[string]interface{}{
-						"RawTransaction": map[string]interface{}{
+			"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
 							"TransactionType": "Payment",
 							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
 							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
@@ -708,12 +708,12 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 							"SigningPubKey":   "",
 						},
 					},
-					map[string]interface{}{
-						"RawTransaction": map[string]interface{}{
+					{
+						"RawTransaction": map[string]any{
 							"TransactionType": "OfferCreate",
 							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
 							"TakerGets":       "1000000",
-							"TakerPays": map[string]interface{}{
+							"TakerPays": map[string]any{
 								"currency": "USD",
 								"issuer":   "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
 								"value":    "100",
@@ -766,13 +766,13 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			expectedFee: "40", // 2*10 + 10 + 10
 			expectedErr: nil,
 			feeCushion:  1,
-		}, {
+		}, 		{
 			name: "Batch transaction with multisign",
 			tx: transaction.FlatTransaction{
 				"TransactionType": "Batch",
-				"RawTransactions": []interface{}{
-					map[string]interface{}{
-						"RawTransaction": map[string]interface{}{
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
 							"TransactionType": "Payment",
 							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
 							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
@@ -782,12 +782,12 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 							"SigningPubKey":   "",
 						},
 					},
-					map[string]interface{}{
-						"RawTransaction": map[string]interface{}{
+					{
+						"RawTransaction": map[string]any{
 							"TransactionType": "OfferCreate",
 							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
 							"TakerGets":       "1000000",
-							"TakerPays": map[string]interface{}{
+							"TakerPays": map[string]any{
 								"currency": "USD",
 								"issuer":   "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
 								"value":    "100",

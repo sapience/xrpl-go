@@ -140,7 +140,13 @@ func FromMnemonic(mnemonic string) (*Wallet, error) {
 func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 	tx["SigningPubKey"] = w.PublicKey
 
-	encodedTx, err := binarycodec.EncodeForSigning(tx)
+	// Copy the transaction to avoid modifying the original transaction
+	signTx := make(map[string]interface{}, len(tx))
+	for k, v := range tx {
+		signTx[k] = v
+	}
+
+	encodedTx, err := binarycodec.EncodeForSigning(signTx)
 	if err != nil {
 		return "", "", err
 	}

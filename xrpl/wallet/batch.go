@@ -48,7 +48,7 @@ func SignMultiBatch(wallet Wallet, tx *transaction.FlatTransaction, opts *SignMu
 	if opts != nil {
 		if opts.BatchAccount != nil {
 			batchAccount = opts.BatchAccount.String()
-		} 
+		}
 
 		if opts.MultisignAccount != "" {
 			multisignAddress = opts.MultisignAccount
