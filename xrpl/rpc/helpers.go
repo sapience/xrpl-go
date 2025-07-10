@@ -603,55 +603,33 @@ func (c *Client) calculateBatchFees(tx *transaction.FlatTransaction) (uint64, er
 	var totalFees uint64
 
 	// Get RawTransactions from the batch transaction
-	rawTransactions, ok := (*tx)["RawTransactions"]
+	rawTransactions, ok := (*tx)["RawTransactions"].([]map[string]any)
 	if !ok {
 		return 0, errors.New("RawTransactions field missing from Batch transaction")
 	}
 
-	// Convert to array of interfaces
-	rawTxArray, ok := rawTransactions.([]interface{})
-	if !ok {
-		return 0, errors.New("RawTransactions field is not an array")
-	}
-
 	// Iterate through each raw transaction
-	for _, rawTxItem := range rawTxArray {
-		// Each item should be a map containing a "RawTransaction" field
-		rawTxWrapper, ok := rawTxItem.(map[string]interface{})
-		if !ok {
-			return 0, errors.New("RawTransaction item is not an object")
-		}
-
+	for _, rawTx := range rawTransactions {
 		// Extract the actual transaction from the wrapper
-		innerTx, ok := rawTxWrapper["RawTransaction"]
+		innerTx, ok := rawTx["RawTransaction"].(map[string]any)
 		if !ok {
 			return 0, errors.New("RawTransaction field missing from wrapper")
 		}
 
-		innerTxMap, ok := innerTx.(map[string]interface{})
-		if !ok {
-			return 0, errors.New("RawTransaction field is not an object")
-		}
-
-		// Convert to FlatTransaction for fee calculation
-		flatInnerTx := transaction.FlatTransaction(innerTxMap)
-
 		// Calculate fee for this inner transaction (no multi-signing for inner transactions)
-		err := c.calculateFeePerTransactionType(&flatInnerTx, 0)
+		innerTxFlat := transaction.FlatTransaction(innerTx)
+		err := c.calculateFeePerTransactionType(&innerTxFlat, 0)
 		if err != nil {
 			return 0, err
 		}
 
 		// Extract the calculated fee
-		feeValue, ok := flatInnerTx["Fee"]
+		feeStr, ok := innerTx["Fee"].(string)
 		if !ok {
 			return 0, errors.New("fee field missing after calculation")
 		}
 
-		feeStr, ok := feeValue.(string)
-		if !ok {
-			return 0, errors.New("fee field is not a string")
-		}
+		innerTx["Fee"] = "0"
 
 		// Convert fee string to uint64 and add to total
 		feeUint, err := strconv.ParseUint(feeStr, 10, 64)
