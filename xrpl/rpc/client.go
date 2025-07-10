@@ -9,6 +9,7 @@ import (
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
+	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	rpctypes "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -214,46 +215,6 @@ func (c *Client) SubmitMultisigned(txBlob string, failHard bool) (*requests.Subm
 	})
 }
 
-// SubmitBatch handles a Batch transaction that ends up with exactly 1 signature.
-// It will autofill (including inner-batch), sign with your wallet, and call `submit`.
-func (c *Client) SubmitBatch(
-	tx transaction.FlatTransaction,
-	opts *rpctypes.SubmitBatchOptions,
-) (*requests.SubmitResponse, error) {
-	if sig, ok1 := tx["TxnSignature"].(string); ok1 && sig != "" {
-		if pub, ok2 := tx["SigningPubKey"].(string); ok2 && pub != "" {
-			blob, err := binarycodec.Encode(tx)
-			if err != nil {
-				return nil, err
-			}
-			return c.submitRequest(&requests.SubmitRequest{
-				TxBlob:   blob,
-				FailHard: opts.FailHard,
-			})
-		}
-	}
-
-	if opts.Wallet == nil {
-		return nil, ErrMissingWallet
-	}
-
-	if opts.Autofill {
-		if err := c.AutofillBatch(&tx, 0); err != nil {
-			return nil, err
-		}
-	}
-
-	signedBlob, _, err := opts.Wallet.Sign(tx)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.submitRequest(&requests.SubmitRequest{
-		TxBlob:   signedBlob,
-		FailHard: opts.FailHard,
-	})
-}
-
 // Autofill fills in the missing fields in a transaction.
 func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 	if err := c.setValidTransactionAddresses(tx); err != nil {
@@ -301,7 +262,12 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 				return err
 			}
 		}
-
+		if txType == transaction.BatchTx {
+			err := c.autofillRawTransactions(tx)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
@@ -342,47 +308,80 @@ func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	return nil
 }
 
-func (c *Client) AutofillBatch(
-	tx *transaction.FlatTransaction,
-	nSigners uint64,
-) error {
-	err := c.Autofill(tx)
+func (c *Client) autofillRawTransactions(tx *transaction.FlatTransaction) error {
+	needsNetworkID, err := c.txNeedsNetworkID()
 	if err != nil {
 		return err
 	}
 
-	outerSeq, _ := (*tx)["Sequence"].(uint32)
-	nextSeq := outerSeq + 1
+	rawTxs, ok := (*tx)["RawTransactions"].([]map[string]any)
+	if !ok {
+		return ErrRawTransactionsFieldIsNotAnArray
+	}
 
-	rawTxs := (*tx)["RawTransactions"].([]map[string]any)
-	for _, wrapper := range rawTxs {
-		inner := wrapper["RawTransaction"].(map[string]any)
+	accountSeq := make(map[string]uint32, len(rawTxs))
 
-		if inner["Sequence"] == nil && inner["TicketSequence"] == nil {
-			inner["Sequence"] = nextSeq
-			nextSeq++
+	for _, rawTx := range rawTxs {
+		innerRawTx, ok := rawTx["RawTransaction"].(map[string]any)
+		if !ok {
+			return ErrRawTransactionFieldIsNotAnObject
 		}
 
-		if inner["Fee"] == nil {
-			inner["Fee"] = "0"
-		} else if inner["Fee"] != "0" {
+		// Validate `Fee` field
+		if innerRawTx["Fee"] == nil {
+			innerRawTx["Fee"] = "0"
+		} else if innerRawTx["Fee"] != "0" {
 			return types.ErrBatchInnerTransactionInvalid
 		}
 
-		if inner["SigningPubKey"] == nil {
-			inner["SigningPubKey"] = ""
+		// Validate `SigningPubKey` field
+		if innerRawTx["SigningPubKey"] == nil {
+			innerRawTx["SigningPubKey"] = ""
+		} else if innerRawTx["SigningPubKey"] != "" {
+			return ErrSigningPubKeyFieldMustBeEmpty
 		}
 
-		if inner["NetworkID"] == nil {
-			if needs, _ := c.txNeedsNetworkID(); needs {
-				inner["NetworkID"] = c.NetworkID
+		// Validate `TxnSignature` field
+		if innerRawTx["TxnSignature"] != nil {
+			return ErrTxnSignatureFieldMustBeEmpty
+		}
+		if innerRawTx["Signers"] != nil {
+			return ErrSignersFieldMustBeEmpty
+		}
+
+		// Validate `NetworkID` field
+		if innerRawTx["NetworkID"] == nil && needsNetworkID {
+			innerRawTx["NetworkID"] = c.NetworkID
+		}
+
+		// Validate `Sequence` field
+		if innerRawTx["Sequence"] == nil && innerRawTx["TicketSequence"] == nil {
+
+			acc, ok := innerRawTx["Account"].(string)
+			if !ok {
+				return ErrAccountFieldIsNotAString
+			}
+
+			if accountSeq[acc] != 0 {
+				innerRawTx["Sequence"] = accountSeq[acc]
+				accountSeq[acc]++
+			} else {
+				accountInfo, err := c.GetAccountInfo(&account.InfoRequest{
+					Account: types.Address(acc),
+				})
+				if err != nil {
+					return err
+				}
+				var seq uint32
+				if innerRawTx["Account"] == (*tx)["Account"] {
+					seq = accountInfo.AccountData.Sequence + 1
+				} else {
+					seq = accountInfo.AccountData.Sequence
+				}
+				accountSeq[acc] = seq + 1
+				innerRawTx["Sequence"] = seq
 			}
 		}
-	}
-
-	err = c.calculateFeePerTransactionType(tx, nSigners)
-	if err != nil {
-		return err
 	}
 
 	return nil
