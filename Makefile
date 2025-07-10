@@ -3,7 +3,7 @@
 EXCLUDED_TEST_PACKAGES = $(shell go list ./... | grep -v /faucet | grep -v /examples | grep -v /testutil | grep -v /interfaces)
 EXCLUDED_COVERAGE_PACKAGES = $(shell go list ./... | grep -v /faucet | grep -v /examples | grep -v /testutil | grep -v /interfaces)
 
-INTEGRATION_TEST_PACKAGES = ./xrpl/transaction/integration/batch_test.go
+INTEGRATION_TEST_PACKAGES = ./xrpl/transaction/integration
 
 PARALLEL_TESTS = 4
 TEST_TIMEOUT = 5m

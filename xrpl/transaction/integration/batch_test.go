@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil/integration"
@@ -129,10 +128,6 @@ func TestIntegrationBatchMultisign_Websocket(t *testing.T) {
 			err = wallet.SignMultiBatch(*sender2, &flatTx, nil)
 
 			require.NoError(t, err)
-
-			jsonBytes, err := json.MarshalIndent(flatTx, "", "  ")
-			require.NoError(t, err)
-			t.Logf("Batch Transaction JSON:\n%s", string(jsonBytes))
 
 			_, err = runner.TestTransaction(&flatTx, sender, "tesSUCCESS", &integration.TestTransactionOptions{
 				SkipAutofill: true,
