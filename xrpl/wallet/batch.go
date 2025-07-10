@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"cmp"
+	"encoding/hex"
 	"errors"
 	"slices"
 
@@ -40,16 +41,14 @@ type SignMultiBatchOptions struct {
 // Sign a multi-account Batch transaction.
 // It takes a wallet, a batch transaction, and a set of options.
 // It returns an error if the transaction is invalid.
-func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOptions) error {
-	var batchAccount string
+func SignMultiBatch(wallet Wallet, tx *transaction.FlatTransaction, opts *SignMultiBatchOptions) error {
+	batchAccount := wallet.ClassicAddress.String()
 	var multisignAddress string
 
 	if opts != nil {
 		if opts.BatchAccount != nil {
 			batchAccount = opts.BatchAccount.String()
-		} else {
-			batchAccount = wallet.ClassicAddress.String()
-		}
+		} 
 
 		if opts.MultisignAccount != "" {
 			multisignAddress = opts.MultisignAccount
@@ -60,10 +59,16 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 
 	// Check batch account exists in RawTransactions.Account
 	batchAccountExists := false
-	for _, rawTx := range tx.RawTransactions {
-		if acc, ok := rawTx.RawTransaction["Account"]; ok && acc == batchAccount {
-			batchAccountExists = true
-			break
+	rawTxs, ok := (*tx)["RawTransactions"].([]map[string]any)
+	if !ok {
+		return wallettypes.ErrRawTransactionsFieldIsNotAnArray
+	}
+	for _, rawTx := range rawTxs {
+		if innerRawTx, ok := rawTx["RawTransaction"].(map[string]any); ok {
+			if acc, ok := innerRawTx["Account"]; ok && acc == batchAccount {
+				batchAccountExists = true
+				break
+			}
 		}
 	}
 
@@ -71,7 +76,7 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 		return ErrBatchAccountNotFound
 	}
 
-	payload, err := wallettypes.FromBatchTransaction(tx)
+	payload, err := wallettypes.FromFlatBatchTransaction(tx)
 	if err != nil {
 		return err
 	}
@@ -81,7 +86,12 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 		return err
 	}
 
-	signature, err := keypairs.Sign(encodedBatch, wallet.PrivateKey)
+	hexBatch, err := hex.DecodeString(encodedBatch)
+	if err != nil {
+		return err
+	}
+
+	signature, err := keypairs.Sign(string(hexBatch), wallet.PrivateKey)
 	if err != nil {
 		return err
 	}
@@ -113,7 +123,7 @@ func SignMultiBatch(wallet Wallet, tx *transaction.Batch, opts *SignMultiBatchOp
 		}
 	}
 
-	tx.BatchSigners = []types.BatchSigner{batchSigner}
+	(*tx)["BatchSigners"] = []map[string]any{batchSigner.Flatten()}
 
 	return nil
 }
