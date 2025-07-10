@@ -602,7 +602,7 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 					},
 				},
 			},
-			expectedFee: "330", // 10 * (33 + 4/16) = 10 * 33 = 330
+			expectedFee: "340", // 10 * (33 + 1) = 340
 			expectedErr: nil,
 			feeCushion:  1,
 		},

@@ -278,29 +278,20 @@ func (c *Client) validateTransactionAddress(tx *transaction.FlatTransaction, add
 
 // Sets the next valid sequence number for a given transaction.
 func (c *Client) setTransactionNextValidSequenceNumber(tx *transaction.FlatTransaction) error {
-	seqNumber, err := c.getTransactionNextValidSequenceNumber(tx)
-	if err != nil {
-		return err
-	}
-	(*tx)["Sequence"] = seqNumber
-	return nil
-}
-
-func (c *Client) getTransactionNextValidSequenceNumber(tx *transaction.FlatTransaction) (uint32, error) {
 	if _, ok := (*tx)["Account"].(string); !ok {
-		return 0, errors.New("missing Account in transaction")
+		return errors.New("missing Account in transaction")
 	}
-
 	res, err := c.GetAccountInfo(&account.InfoRequest{
 		Account:     types.Address((*tx)["Account"].(string)),
 		LedgerIndex: common.LedgerTitle("current"),
 	})
 
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return uint32(res.AccountData.TicketCount), nil
+	(*tx)["Sequence"] = uint32(res.AccountData.Sequence)
+	return nil
 }
 
 // Calculates the current transaction fee for the ledger.

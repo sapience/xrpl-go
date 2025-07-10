@@ -515,3 +515,105 @@ func TestClient_SubmitMultisigned(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_SubmitBatch(t *testing.T) {
+	tests := []struct {
+		name         string
+		mockResponse string
+		tx           map[string]interface{}
+		opts         *rpctypes.SubmitBatchOptions
+		expectError  error
+		expectResult *requests.SubmitResponse
+	}{
+		{
+			name: "pass - batch already signed",
+			mockResponse: `{
+                "result": {
+                    "engine_result": "tesSUCCESS",
+                    "engine_result_code": 0,
+                    "engine_result_message": "Batch applied."
+                },
+                "status": "success",
+                "type": "response"
+            }`,
+			tx: map[string]interface{}{
+				"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"TransactionType": "Batch",
+				"SigningPubKey":   "03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB",
+				"TxnSignature":    "3045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE",
+				"Sequence":        uint32(359),
+				"RawTransactions": []map[string]interface{}{
+					{
+						"RawTransaction": map[string]interface{}{
+							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+							"TransactionType": "Payment",
+							"Destination":     "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+							"Amount":          "1000",
+							"Fee":             "0",
+							"Sequence":        uint32(360),
+							"SigningPubKey":   "",
+						},
+					},
+				},
+			},
+			opts: &rpctypes.SubmitBatchOptions{
+				Autofill: false,
+				FailHard: false,
+				NSigners: 0,
+			},
+			expectError: nil,
+			expectResult: &requests.SubmitResponse{
+				EngineResult:        "tesSUCCESS",
+				EngineResultCode:    0,
+				EngineResultMessage: "Batch applied.",
+			},
+		},
+		{
+			name: "fail - no wallet provided for unsigned batch",
+			tx: map[string]interface{}{
+				"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+				"TransactionType": "Batch",
+				"Sequence":        uint32(359),
+				"RawTransactions": []map[string]interface{}{
+					{
+						"RawTransaction": map[string]interface{}{
+							"Account":         "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+							"TransactionType": "Payment",
+							"Destination":     "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+							"Amount":          "1000",
+							"Fee":             "0",
+							"Sequence":        uint32(360),
+							"SigningPubKey":   "",
+						},
+					},
+				},
+			},
+			opts:        &rpctypes.SubmitBatchOptions{},
+			expectError: ErrMissingWallet,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mc := &testutil.JSONRPCMockClient{}
+			if tt.mockResponse != "" {
+				mc.DoFunc = testutil.MockResponse(tt.mockResponse, 200, mc)
+			}
+
+			cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
+			assert.NoError(t, err)
+			jsonRpcClient := NewClient(cfg)
+
+			response, err := jsonRpcClient.SubmitBatch(tt.tx, tt.opts)
+			if tt.expectError != nil {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectError.Error(), err.Error())
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expectResult.EngineResult, response.EngineResult)
+			assert.Equal(t, tt.expectResult.EngineResultCode, response.EngineResultCode)
+			assert.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
+		})
+	}
+}

@@ -149,23 +149,6 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 				return err
 			}
 		}
-		if txType == transaction.BatchTx {
-			// Convert FlatTransaction to Batch for autofilling
-			if batchTx, ok := (*tx)["RawTransactions"]; ok {
-				batch := &transaction.Batch{
-					RawTransactions: batchTx.([]types.RawTransaction),
-				}
-				if account, ok := (*tx)["Account"].(types.Address); ok {
-					batch.Account = account
-				}
-				err := c.AutofillBatch(batch)
-				if err != nil {
-					return err
-				}
-				// Update the original transaction with the autofilled RawTransactions
-				(*tx)["RawTransactions"] = batch.RawTransactions
-			}
-		}
 	}
 	return nil
 }
@@ -353,6 +336,46 @@ func (c *Client) SubmitTxAndWait(tx transaction.FlatTransaction, opts *wstypes.S
 	// Delegate to SubmitTxBlobAndWait to handle submission, engine result check,
 	// ledger sequence validation, and waiting for confirmation.
 	return c.SubmitTxBlobAndWait(txBlob, opts.FailHard)
+}
+
+// SubmitBatch handles a Batch transaction that ends up with exactly 1 signature.
+// It will autofill (including inner-batch), sign with your wallet, and call `submit`.
+func (c *Client) SubmitBatch(
+	tx transaction.FlatTransaction,
+	opts *wstypes.SubmitBatchOptions,
+) (*requests.SubmitResponse, error) {
+	if sig, ok1 := tx["TxnSignature"].(string); ok1 && sig != "" {
+		if pub, ok2 := tx["SigningPubKey"].(string); ok2 && pub != "" {
+			blob, err := binarycodec.Encode(tx)
+			if err != nil {
+				return nil, err
+			}
+			return c.submitRequest(&requests.SubmitRequest{
+				TxBlob:   blob,
+				FailHard: opts.FailHard,
+			})
+		}
+	}
+
+	if opts.Wallet == nil {
+		return nil, ErrMissingWallet
+	}
+
+	if opts.Autofill {
+		if err := c.AutofillBatch(&tx, 0); err != nil {
+			return nil, err
+		}
+	}
+
+	signedBlob, _, err := opts.Wallet.Sign(tx)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.submitRequest(&requests.SubmitRequest{
+		TxBlob:   signedBlob,
+		FailHard: opts.FailHard,
+	})
 }
 
 func (c *Client) waitForTransaction(txHash string, lastLedgerSequence uint32) (*requests.TxResponse, error) {
@@ -933,84 +956,50 @@ func (c *Client) calculateBatchFees(tx *transaction.FlatTransaction) (uint64, er
 }
 
 // AutofillBatch fills in the missing fields in a batch transaction.
-func (c *Client) AutofillBatch(tx *transaction.Batch) error {
-	accountSequences := make(map[string]uint32)
-
-	for _, t := range tx.RawTransactions {
-		if t.RawTransaction["Sequence"] == nil && t.RawTransaction["TicketSequence"] == nil {
-			accountAddr := t.RawTransaction["Account"].(string)
-
-			if _, exists := accountSequences[accountAddr]; exists {
-				t.RawTransaction["Sequence"] = accountSequences[accountAddr]
-				accountSequences[accountAddr]++
-
-			} else {
-				flatTx := transaction.FlatTransaction(t.RawTransaction)
-				nextSequence, err := c.getTransactionNextValidSequenceNumber(&flatTx)
-				if err != nil {
-					return err
-				}
-				var sequence uint32
-				if accountAddr == string(tx.Account) {
-					sequence = nextSequence + 1
-				} else {
-					sequence = nextSequence
-				}
-				accountSequences[accountAddr] = sequence + 1
-				t.RawTransaction["Sequence"] = sequence
-			}
-		}
-
-		if t.RawTransaction["Fee"] == nil {
-			t.RawTransaction["Fee"] = "0"
-		} else if t.RawTransaction["Fee"] != "0" {
-			return types.ErrBatchInnerTransactionInvalid
-		}
-
-		if t.RawTransaction["SigningPubKey"] == nil {
-			t.RawTransaction["SigningPubKey"] = ""
-		} else if t.RawTransaction["SigningPubKey"] != "" {
-			return types.ErrBatchInnerTransactionInvalid
-		}
-
-		if t.RawTransaction["TxnSignature"] != nil {
-			return types.ErrBatchInnerTransactionInvalid
-		}
-
-		if t.RawTransaction["Signers"] != nil {
-			return types.ErrBatchNestedTransaction
-		}
-
-		if t.RawTransaction["NetworkID"] == nil {
-			needsNetworkID, err := c.txNeedsNetworkID()
-			if err != nil {
-				return err
-			}
-			if needsNetworkID {
-				t.RawTransaction["NetworkID"] = c.NetworkID
-			}
-		}
-
-	}
-	return nil
-}
-
-// getTransactionNextValidSequenceNumber gets the next valid sequence number for a transaction.
-func (c *Client) getTransactionNextValidSequenceNumber(tx *transaction.FlatTransaction) (uint32, error) {
-	if _, ok := (*tx)["Account"].(string); !ok {
-		return 0, errors.New("transaction is missing Account field")
-	}
-
-	res, err := c.GetAccountInfo(&account.InfoRequest{
-		Account:     types.Address((*tx)["Account"].(string)),
-		LedgerIndex: common.LedgerTitle("current"),
-	})
-
+func (c *Client) AutofillBatch(
+	tx *transaction.FlatTransaction,
+	nSigners uint64,
+) error {
+	err := c.Autofill(tx)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return uint32(res.AccountData.Sequence), nil
+	outerSeq, _ := (*tx)["Sequence"].(uint32)
+	nextSeq := outerSeq + 1
+
+	rawTxs := (*tx)["RawTransactions"].([]map[string]any)
+	for _, wrapper := range rawTxs {
+		inner := wrapper["RawTransaction"].(map[string]any)
+
+		if inner["Sequence"] == nil && inner["TicketSequence"] == nil {
+			inner["Sequence"] = nextSeq
+			nextSeq++
+		}
+
+		if inner["Fee"] == nil {
+			inner["Fee"] = "0"
+		} else if inner["Fee"] != "0" {
+			return types.ErrBatchInnerTransactionInvalid
+		}
+
+		if inner["SigningPubKey"] == nil {
+			inner["SigningPubKey"] = ""
+		}
+
+		if inner["NetworkID"] == nil {
+			if needs, _ := c.txNeedsNetworkID(); needs {
+				inner["NetworkID"] = c.NetworkID
+			}
+		}
+	}
+
+	err = c.calculateFeePerTransactionType(tx, nSigners)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // isNotLaterRippledVersion determines whether the source rippled version is not later than the target rippled version.
