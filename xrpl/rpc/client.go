@@ -249,20 +249,21 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 			return err
 		}
 	}
-	if txType, ok := (*tx)["TransactionType"].(transaction.TxType); ok {
-		if acc, ok := (*tx)["Account"].(types.Address); txType == transaction.AccountDeleteTx && ok {
+
+	if txType, ok := (*tx)["TransactionType"].(string); ok {
+		if acc, ok := (*tx)["Account"].(types.Address); txType == transaction.AccountDeleteTx.String() && ok {
 			err := c.checkAccountDeleteBlockers(acc)
 			if err != nil {
 				return err
 			}
 		}
-		if txType == transaction.PaymentTx {
+		if txType == transaction.PaymentTx.String() {
 			err := c.checkPaymentAmounts(tx)
 			if err != nil {
 				return err
 			}
 		}
-		if txType == transaction.BatchTx {
+		if txType == transaction.BatchTx.String() {
 			err := c.autofillRawTransactions(tx)
 			if err != nil {
 				return err
@@ -314,12 +315,12 @@ func (c *Client) autofillRawTransactions(tx *transaction.FlatTransaction) error 
 		return err
 	}
 
+	accountSeq := make(map[string]uint32)
+
 	rawTxs, ok := (*tx)["RawTransactions"].([]map[string]any)
 	if !ok {
 		return ErrRawTransactionsFieldIsNotAnArray
 	}
-
-	accountSeq := make(map[string]uint32, len(rawTxs))
 
 	for _, rawTx := range rawTxs {
 		innerRawTx, ok := rawTx["RawTransaction"].(map[string]any)
