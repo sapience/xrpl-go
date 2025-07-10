@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Peersyst/xrpl-go/xrpl/testutil/integration"
@@ -12,8 +13,8 @@ import (
 )
 
 type BatchTest struct {
-	Name string
-	Batch *transaction.Batch
+	Name          string
+	Batch         *transaction.Batch
 	ExpectedError string
 }
 
@@ -21,9 +22,9 @@ var (
 	CreatePaymentTx = func(sender, receiver *wallet.Wallet, amount types.CurrencyAmount) *transaction.Payment {
 		return &transaction.Payment{
 			BaseTx: transaction.BaseTx{
-				Account: sender.GetAddress(),
+				Account:         sender.GetAddress(),
 				TransactionType: transaction.PaymentTx,
-				Flags: 0x40000000,
+				Flags:           0x40000000,
 			},
 			Amount:      amount,
 			Destination: receiver.GetAddress(),
@@ -51,7 +52,7 @@ func TestIntegrationBatch_Websocket(t *testing.T) {
 			Name: "pass - valid batch transaction",
 			Batch: &transaction.Batch{
 				BaseTx: transaction.BaseTx{
-					Account: runner.GetWallet(0).GetAddress(),
+					Account:         runner.GetWallet(0).GetAddress(),
 					TransactionType: transaction.BatchTx,
 				},
 				RawTransactions: []types.RawTransaction{
@@ -103,7 +104,7 @@ func TestIntegrationBatchMultisign_Websocket(t *testing.T) {
 			Name: "pass - valid batch transaction",
 			Batch: &transaction.Batch{
 				BaseTx: transaction.BaseTx{
-					Account: sender.GetAddress(),
+					Account:         sender.GetAddress(),
 					TransactionType: transaction.BatchTx,
 				},
 				RawTransactions: []types.RawTransaction{
@@ -124,14 +125,19 @@ func TestIntegrationBatchMultisign_Websocket(t *testing.T) {
 			flatTx := tc.Batch.Flatten()
 			err := client.AutofillMultisigned(&flatTx, 1)
 			require.NoError(t, err)
-			
+
 			err = wallet.SignMultiBatch(*sender2, &flatTx, nil)
 
 			require.NoError(t, err)
 
+			jsonBytes, err := json.MarshalIndent(flatTx, "", "  ")
+			require.NoError(t, err)
+			t.Logf("Batch Transaction JSON:\n%s", string(jsonBytes))
+
 			_, err = runner.TestTransaction(&flatTx, sender, "tesSUCCESS", &integration.TestTransactionOptions{
 				SkipAutofill: true,
 			})
+
 			require.NoError(t, err)
 		})
 	}
