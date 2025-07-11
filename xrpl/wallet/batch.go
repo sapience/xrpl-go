@@ -65,11 +65,18 @@ func SignMultiBatch(wallet Wallet, tx *transaction.FlatTransaction, opts *SignMu
 	}
 	for _, rawTx := range rawTxs {
 		if innerRawTx, ok := rawTx["RawTransaction"].(map[string]any); ok {
-			if acc, ok := innerRawTx["Account"]; ok && acc == batchAccount {
+			acc, ok := innerRawTx["Account"]
+			if !ok {
+				return ErrBatchAccountNotFound
+			}
+			if acc == batchAccount {
 				batchAccountExists = true
 				break
 			}
+		} else {
+			return wallettypes.ErrRawTransactionFieldIsNotAnObject
 		}
+
 	}
 
 	if !batchAccountExists {

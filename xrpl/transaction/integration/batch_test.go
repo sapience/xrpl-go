@@ -249,4 +249,3 @@ func TestIntegrationBatchMultisign_RPC(t *testing.T) {
 		})
 	}
 }
-
