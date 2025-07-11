@@ -249,7 +249,6 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 			return err
 		}
 	}
-
 	if txType, ok := (*tx)["TransactionType"].(string); ok {
 		if acc, ok := (*tx)["Account"].(types.Address); txType == transaction.AccountDeleteTx.String() && ok {
 			err := c.checkAccountDeleteBlockers(acc)
