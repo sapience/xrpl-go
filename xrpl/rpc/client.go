@@ -314,12 +314,12 @@ func (c *Client) autofillRawTransactions(tx *transaction.FlatTransaction) error 
 		return err
 	}
 
-	accountSeq := make(map[string]uint32)
-
 	rawTxs, ok := (*tx)["RawTransactions"].([]map[string]any)
 	if !ok {
 		return ErrRawTransactionsFieldIsNotAnArray
 	}
+
+	accountSeq := make(map[string]uint32, len(rawTxs))
 
 	for _, rawTx := range rawTxs {
 		innerRawTx, ok := rawTx["RawTransaction"].(map[string]any)
