@@ -133,7 +133,7 @@ func TestIntegrationDelegateSet_Websocket(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			flatTx := tc.DelegateSet.Flatten()
-			_, err := runner.TestTransaction(&flatTx, delegator, "tesSUCCESS")
+			_, err := runner.TestTransaction(&flatTx, delegator, "tesSUCCESS", nil)
 			if tc.ExpectedError != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.ExpectedError)
@@ -231,7 +231,7 @@ func TestIntegrationDelegateSet_RPCClient(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			flatTx := tc.DelegateSet.Flatten()
-			_, err := runner.TestTransaction(&flatTx, delegator, "tesSUCCESS")
+			_, err := runner.TestTransaction(&flatTx, delegator, "tesSUCCESS", nil)
 			if tc.ExpectedError != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.ExpectedError)
@@ -279,7 +279,7 @@ func TestDelegateSetUsage_Websocket(t *testing.T) {
 	}
 
 	flatDelegateSet := delegateSetTx.Flatten()
-	_, err = runner.TestTransaction(&flatDelegateSet, delegator, "tesSUCCESS")
+	_, err = runner.TestTransaction(&flatDelegateSet, delegator, "tesSUCCESS", nil)
 	require.NoError(t, err)
 
 	// Step 2: Use the delegation - delegated payment
@@ -293,7 +293,7 @@ func TestDelegateSetUsage_Websocket(t *testing.T) {
 	}
 
 	flatPayment := delegatedPaymentTx.Flatten()
-	_, err = runner.TestTransaction(&flatPayment, delegatee, "tesSUCCESS")
+	_, err = runner.TestTransaction(&flatPayment, delegatee, "tesSUCCESS", nil)
 	require.NoError(t, err)
 }
 
@@ -336,7 +336,7 @@ func TestDelegateSetUsage_RPCClient(t *testing.T) {
 	}
 
 	flatDelegateSet := delegateSetTx.Flatten()
-	_, err = runner.TestTransaction(&flatDelegateSet, delegator, "tesSUCCESS")
+	_, err = runner.TestTransaction(&flatDelegateSet, delegator, "tesSUCCESS", nil)
 	require.NoError(t, err)
 
 	// Step 2: Use the delegation - delegated payment
@@ -350,6 +350,6 @@ func TestDelegateSetUsage_RPCClient(t *testing.T) {
 	}
 
 	flatPayment := delegatedPaymentTx.Flatten()
-	_, err = runner.TestTransaction(&flatPayment, delegatee, "tesSUCCESS")
+	_, err = runner.TestTransaction(&flatPayment, delegatee, "tesSUCCESS", nil)
 	require.NoError(t, err)
 }
