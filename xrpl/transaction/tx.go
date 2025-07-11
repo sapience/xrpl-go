@@ -54,6 +54,10 @@ type BaseTx struct {
 	// the provided hash.
 	//
 	AccountTxnID types.Hash256 `json:",omitempty"`
+	//
+	// The delegate account that is sending the transaction.
+	//
+	Delegate types.Address `json:",omitempty"`
 	// Set of bit-flags for this transaction.
 	Flags uint32 `json:",omitempty"`
 	//
@@ -72,7 +76,7 @@ type BaseTx struct {
 	// Array of objects that represent a multi-signature which authorizes this
 	// transaction.
 	//
-	Signers []Signer `json:",omitempty"`
+	Signers []types.Signer `json:",omitempty"`
 	//
 	// Arbitrary integer used to identify the reason for this payment, or a sender
 	// on whose behalf this transaction is made. Conventionally, a refund should
@@ -158,6 +162,9 @@ func (tx *BaseTx) Flatten() FlatTransaction {
 	if tx.TxnSignature != "" {
 		flattened["TxnSignature"] = tx.TxnSignature
 	}
+	if tx.Delegate != "" {
+		flattened["Delegate"] = tx.Delegate.String()
+	}
 
 	return flattened
 }
@@ -215,6 +222,17 @@ func (tx *BaseTx) Validate() (bool, error) {
 	err = ValidateOptionalField(flattenTx, "NetworkID", typecheck.IsUint32)
 	if err != nil {
 		return false, err
+	}
+
+	// Validate Delegate field
+	if tx.Delegate != "" {
+		if !addresscodec.IsValidAddress(tx.Delegate.String()) {
+			return false, ErrInvalidDelegate
+		}
+		// Delegate and Account addresses cannot be the same
+		if tx.Delegate == tx.Account {
+			return false, ErrDelegateAccountConflict
+		}
 	}
 
 	// memos

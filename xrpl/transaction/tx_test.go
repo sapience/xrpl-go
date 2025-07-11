@@ -46,9 +46,9 @@ func TestTx_Validate(t *testing.T) {
 						},
 					},
 				},
-				Signers: []Signer{
+				Signers: []types.Signer{
 					{
-						SignerData{
+						SignerData: types.SignerData{
 							Account:       "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC",
 							TxnSignature:  "abc123",
 							SigningPubKey: "def456",
@@ -114,13 +114,49 @@ func TestTx_Validate(t *testing.T) {
 				SigningPubKey:      "abcdefg",
 				TicketSequence:     2,
 				TxnSignature:       "xyz123",
-				Signers: []Signer{
+				Signers: []types.Signer{
 					{
-						SignerData{
+						SignerData: types.SignerData{
 							Account: "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC",
 						},
 					},
 				},
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "Valid transaction with Delegate",
+			tx: &BaseTx{
+				Account:         "rhbi7TGHknHCsRrVYmW57tQHmHjmFgjEpU",
+				TransactionType: PaymentTx,
+				Fee:             types.XRPCurrencyAmount(10),
+				Sequence:        1,
+				Delegate:        "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
+			},
+			wantValid: true,
+			wantErr:   false,
+		},
+		{
+			name: "Invalid Delegate address",
+			tx: &BaseTx{
+				Account:         "rhbi7TGHknHCsRrVYmW57tQHmHjmFgjEpU",
+				TransactionType: PaymentTx,
+				Fee:             types.XRPCurrencyAmount(10),
+				Sequence:        1,
+				Delegate:        "invalid_address",
+			},
+			wantValid: false,
+			wantErr:   true,
+		},
+		{
+			name: "Delegate same as Account",
+			tx: &BaseTx{
+				Account:         "rhbi7TGHknHCsRrVYmW57tQHmHjmFgjEpU",
+				TransactionType: PaymentTx,
+				Fee:             types.XRPCurrencyAmount(10),
+				Sequence:        1,
+				Delegate:        "rhbi7TGHknHCsRrVYmW57tQHmHjmFgjEpU",
 			},
 			wantValid: false,
 			wantErr:   true,
@@ -172,6 +208,7 @@ func TestBaseTx_Flatten(t *testing.T) {
 				Fee:                types.XRPCurrencyAmount(10),
 				Sequence:           1,
 				AccountTxnID:       "abcdef123456",
+				Delegate:           "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				Flags:              2147483648,
 				LastLedgerSequence: 100,
 				Memos: []types.MemoWrapper{
@@ -184,7 +221,7 @@ func TestBaseTx_Flatten(t *testing.T) {
 					},
 				},
 				NetworkID:      1,
-				Signers:        []Signer{{SignerData{Account: "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC", TxnSignature: "abc123", SigningPubKey: "def456"}}},
+				Signers:        []types.Signer{{SignerData: types.SignerData{Account: "rDqbKhee18wUCnvjPjZA5Kgpe4zeubLQUC", TxnSignature: "abc123", SigningPubKey: "def456"}}},
 				SourceTag:      123,
 				SigningPubKey:  "abcdefg",
 				TicketSequence: 2,
@@ -196,6 +233,7 @@ func TestBaseTx_Flatten(t *testing.T) {
 				"Fee": "10",
 				"Sequence": 1,
 				"AccountTxnID": "abcdef123456",
+				"Delegate": "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf",
 				"Flags": 2147483648,
 				"LastLedgerSequence": 100,
 				"Memos": [

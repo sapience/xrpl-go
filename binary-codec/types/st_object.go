@@ -103,6 +103,7 @@ func (t *STObject) ToJSON(p interfaces.BinaryParser, _ ...int) (any, error) {
 // createFieldInstanceMapFromJson creates a map of field instances from a JSON object.
 // Each key-value pair in the JSON object is converted into a field instance, where the key
 // represents the field name and the value is the field's value.
+// Special handling for PermissionValue fields: converts string permission names to numeric values.
 //
 //lint:ignore U1000 // ignore this for now
 func createFieldInstanceMapFromJson(json map[string]any) (map[definitions.FieldInstance]any, error) {
@@ -115,9 +116,30 @@ func createFieldInstanceMapFromJson(json map[string]any) (map[definitions.FieldI
 			return nil, err
 		}
 
+		v, err = parseSpecialFields(k, v)
+		if err != nil {
+			return nil, err
+		}
+
 		m[*fi] = v
 	}
 	return m, nil
+}
+
+// parseSpecialFields is a helper function that handles special fields that need type parsing.
+func parseSpecialFields(k string, v any) (any, error) {
+	if k == "PermissionValue" {
+		if strValue, ok := v.(string); ok {
+			permissionValue, err := definitions.Get().GetDelegatablePermissionValueByName(strValue)
+			if err != nil {
+				return nil, err
+			}
+			//nolint:gosec // G115: Potential hardcoded credentials (gosec)
+			return uint32(permissionValue), nil
+		}
+	}
+
+	return v, nil
 }
 
 // nolint
@@ -142,10 +164,10 @@ func getSortedKeys(m map[definitions.FieldInstance]any) []definitions.FieldInsta
 
 // enumToStr is a helper function that takes a field name and its associated value,
 // and returns a string representation of the value if the field is an enumerated type
-// (i.e., TransactionType, TransactionResult, LedgerEntryType).
+// (i.e., TransactionType, TransactionResult, LedgerEntryType, PermissionValue).
 // If the field is not an enumerated type, the original value is returned.
-func enumToStr(fieldType string, value any) (any, error) {
-	switch fieldType {
+func enumToStr(fieldName string, value any) (any, error) {
+	switch fieldName {
 	case "TransactionType":
 		// TODO: Check if this is still needed
 		//nolint:gosec // G115: Potential hardcoded credentials (gosec)
@@ -158,6 +180,13 @@ func enumToStr(fieldType string, value any) (any, error) {
 		// TODO: Check if this is still needed
 		//nolint:gosec // G115: Potential hardcoded credentials (gosec)
 		return definitions.Get().GetLedgerEntryTypeNameByLedgerEntryTypeCode(int32(value.(int)))
+	case "PermissionValue":
+		// Convert permission value to permission name if available, otherwise return numeric value
+		//nolint:gosec // G115: Potential hardcoded credentials (gosec)
+		if name, err := definitions.Get().GetDelegatablePermissionNameByValue(int32(value.(uint32))); err == nil {
+			return name, nil
+		}
+		return value, nil
 	default:
 		return value, nil
 	}

@@ -3,6 +3,8 @@
 EXCLUDED_TEST_PACKAGES = $(shell go list ./... | grep -v /faucet | grep -v /examples | grep -v /testutil | grep -v /interfaces)
 EXCLUDED_COVERAGE_PACKAGES = $(shell go list ./... | grep -v /faucet | grep -v /examples | grep -v /testutil | grep -v /interfaces)
 
+INTEGRATION_TEST_PACKAGES = ./xrpl/transaction/integration
+
 PARALLEL_TESTS = 4
 TEST_TIMEOUT = 5m
 
@@ -70,19 +72,19 @@ run-localnet-linux/amd64:
 test-integration-localnet:
 	@echo "Running Go tests for integration package..."
 	@go clean -testcache
-	@INTEGRATION=localnet go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
+	@INTEGRATION=localnet go test $(INTEGRATION_TEST_PACKAGES) -timeout $(TEST_TIMEOUT) -v
 	@echo "Tests complete!"
 
 test-integration-devnet:
 	@echo "Running Go tests for integration package..."
 	@go clean -testcache
-	@INTEGRATION=devnet go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
+	@INTEGRATION=devnet go test $(INTEGRATION_TEST_PACKAGES)  -timeout $(TEST_TIMEOUT) -v
 	@echo "Tests complete!"
 
 test-integration-testnet:
 	@echo "Running Go tests for integration package..."
 	@go clean -testcache
-	@INTEGRATION=testnet go test $(EXCLUDED_TEST_PACKAGES) -parallel $(PARALLEL_TESTS) -timeout $(TEST_TIMEOUT)
+	@INTEGRATION=testnet go test $(INTEGRATION_TEST_PACKAGES) -timeout $(TEST_TIMEOUT) -v
 	@echo "Tests complete!"
 
 coverage-unit:

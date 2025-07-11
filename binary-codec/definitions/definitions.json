@@ -41,6 +41,7 @@
     "Credential": 129,
     "DepositPreauth": 112,
     "DID": 73,
+    "Delegate": 131,
     "DirectoryNode": 100,
     "Escrow": 117,
     "FeeSettings": 115,
@@ -182,6 +183,16 @@
         "isSerialized": false,
         "isSigningField": false,
         "type": "Metadata"
+      }
+    ],
+    [
+      "Permissions",
+      {
+        "nth": 29,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "STArray"
       }
     ],
     [
@@ -865,6 +876,16 @@
       }
     ],
     [
+      "PermissionValue",
+      {
+        "nth": 52,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt32"
+      }
+    ],
+    [
       "IndexNext",
       {
         "nth": 1,
@@ -1451,6 +1472,16 @@
         "isSigningField": true,
         "isVLEncoded": false,
         "nth": 34,
+        "type": "Hash256"
+      }
+    ],
+    [
+      "ParentBatchID",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 36,
         "type": "Hash256"
       }
     ],
@@ -2465,6 +2496,16 @@
       }
     ],
     [
+      "Permission",
+      {
+        "nth": 15,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "STObject"
+      }
+    ],
+    [
       "Signer",
       {
         "nth": 16,
@@ -2631,6 +2672,26 @@
         "isVLEncoded": false,
         "isSerialized": true,
         "isSigningField": true,
+        "type": "STObject"
+      }
+    ],
+    [
+      "RawTransaction",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 34,
+        "type": "STObject"
+      }
+    ],
+    [
+      "BatchSigner",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 35,
         "type": "STObject"
       }
     ],
@@ -2805,6 +2866,16 @@
       }
     ],
     [
+      "Delegate",
+      {
+        "nth": 12,
+        "isVLEncoded": true,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "AccountID"
+      }
+    ],
+    [
       "PriceDataSeries",
       {
         "nth": 24,
@@ -2853,6 +2924,26 @@
         "isSigningField": true,
         "type": "STArray"
       }
+    ],
+    [
+      "RawTransactions",
+      {
+        "isSerialized": true,
+        "isSigningField": true,
+        "isVLEncoded": false,
+        "nth": 30,
+        "type": "STArray"
+      }
+    ],
+    [
+      "BatchSigners",
+      {
+        "isSerialized": true,
+        "isSigningField": false,
+        "isVLEncoded": false,
+        "nth": 31,
+        "type": "STArray"
+      }
     ]
   ],
   "TRANSACTION_RESULTS": {
@@ -2898,6 +2989,7 @@
     "temDST_NEEDED": -278,
     "temINVALID": -277,
     "temINVALID_FLAG": -276,
+    "temINVALID_INNER_BATCH": -250,
     "temREDUNDANT": -275,
     "temRIPPLE_EMPTY": -274,
     "temDISABLED": -273,
@@ -3049,6 +3141,7 @@
     "AMMDeposit": 36,
     "AMMVote": 38,
     "AMMWithdraw": 37,
+    "Batch": 71,
     "CheckCancel": 18,
     "CheckCash": 17,
     "CheckCreate": 16,
@@ -3070,11 +3163,13 @@
     "NFTokenCancelOffer": 28,
     "NFTokenCreateOffer": 27,
     "NFTokenMint": 25,
+    "NFTokenModify": 61,
     "NickNameSet": 6,
     "OfferCancel": 8,
     "OfferCreate": 7,
     "OracleDelete": 52,
     "OracleSet": 51,
+    "DelegateSet": 64,
     "Payment": 0,
     "PaymentChannelClaim": 15,
     "PaymentChannelCreate": 13,

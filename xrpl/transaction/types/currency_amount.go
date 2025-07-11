@@ -10,6 +10,7 @@ type CurrencyKind int
 const (
 	XRP CurrencyKind = iota
 	ISSUED
+	MPT
 )
 
 type CurrencyAmount interface {
@@ -23,6 +24,19 @@ func UnmarshalCurrencyAmount(data []byte) (CurrencyAmount, error) {
 	}
 	switch data[0] {
 	case '{':
+		var raw map[string]interface{}
+		if err := json.Unmarshal(data, &raw); err != nil {
+			return nil, err
+		}
+
+		if _, hasMPTID := raw["mpt_issuance_id"]; hasMPTID {
+			var m MPTCurrencyAmount
+			if err := json.Unmarshal(data, &m); err != nil {
+				return nil, err
+			}
+			return m, nil
+		}
+
 		var i IssuedCurrencyAmount
 		if err := json.Unmarshal(data, &i); err != nil {
 			return nil, err
@@ -113,4 +127,28 @@ func (a *XRPCurrencyAmount) UnmarshalText(data []byte) error {
 	}
 	*a = XRPCurrencyAmount(v)
 	return nil
+}
+
+type MPTCurrencyAmount struct {
+	MPTIssuanceID string `json:"mpt_issuance_id"`
+	Value         string `json:"value"`
+}
+
+func (MPTCurrencyAmount) Kind() CurrencyKind {
+	return MPT
+}
+
+func (m MPTCurrencyAmount) Flatten() interface{} {
+	json := make(map[string]interface{})
+	if m.MPTIssuanceID != "" {
+		json["mpt_issuance_id"] = m.MPTIssuanceID
+	}
+	if m.Value != "" {
+		json["value"] = m.Value
+	}
+	return json
+}
+
+func (m MPTCurrencyAmount) IsValid() bool {
+	return m.MPTIssuanceID != "" && m.Value != ""
 }

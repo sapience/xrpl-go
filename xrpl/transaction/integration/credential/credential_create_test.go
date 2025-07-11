@@ -118,7 +118,7 @@ func TestIntegrationCredentialCreateWebsocket(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			flatTx := tc.CredentialCreate.Flatten()
 
-			_, err = runner.TestTransaction(&flatTx, sender, tc.ExpectedResultCode.String())
+			_, err = runner.TestTransaction(&flatTx, sender, tc.ExpectedResultCode.String(), nil)
 			if tc.ExpectedError != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.ExpectedError)

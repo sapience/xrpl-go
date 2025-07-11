@@ -57,7 +57,7 @@ func (f *Runner) fundWalletWithGenesis(w *wallet.Wallet) error {
 	}
 
 	flatTx := payment.Flatten()
-	_, err = f.TestTransaction(&flatTx, &genesisWallet, "tesSUCCESS")
+	_, err = f.TestTransaction(&flatTx, &genesisWallet, "tesSUCCESS", nil)
 	if err != nil {
 		return err
 	}

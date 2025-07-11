@@ -12,7 +12,6 @@ import (
 	"github.com/Peersyst/xrpl-go/pkg/random"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
 	"github.com/Peersyst/xrpl-go/xrpl/interfaces"
-	"github.com/Peersyst/xrpl-go/xrpl/transaction"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/tyler-smith/go-bip32"
 	"github.com/tyler-smith/go-bip39"
@@ -141,7 +140,13 @@ func FromMnemonic(mnemonic string) (*Wallet, error) {
 func (w *Wallet) Sign(tx map[string]interface{}) (string, string, error) {
 	tx["SigningPubKey"] = w.PublicKey
 
-	encodedTx, err := binarycodec.EncodeForSigning(tx)
+	// Copy the transaction to avoid modifying the original transaction
+	signTx := make(map[string]interface{}, len(tx))
+	for k, v := range tx {
+		signTx[k] = v
+	}
+
+	encodedTx, err := binarycodec.EncodeForSigning(signTx)
 	if err != nil {
 		return "", "", err
 	}
@@ -184,8 +189,8 @@ func (w *Wallet) Multisign(tx map[string]interface{}) (string, string, error) {
 		return "", "", err
 	}
 
-	signer := transaction.Signer{
-		SignerData: transaction.SignerData{
+	signer := types.Signer{
+		SignerData: types.SignerData{
 			Account:       w.ClassicAddress,
 			TxnSignature:  txHash,
 			SigningPubKey: w.PublicKey,

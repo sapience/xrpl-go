@@ -11,12 +11,12 @@ import (
 var (
 	// ErrInvalidTransferFee is returned when the transferFee is not between 0 and 50000 inclusive.
 	ErrInvalidTransferFee = errors.New("transferFee must be between 0 and 50000 inclusive")
-	// ErrInvalidURI is returned when the URI is not a valid hexadecimal string.
-	ErrInvalidURI = errors.New("invalid URI, must be a valid hexadecimal string")
 	// ErrIssuerAccountConflict is returned when the issuer is the same as the account.
 	ErrIssuerAccountConflict = errors.New("issuer cannot be the same as the account")
 	// ErrTransferFeeRequiresTransferableFlag is returned when the transferFee is set without the tfTransferable flag.
 	ErrTransferFeeRequiresTransferableFlag = errors.New("transferFee can only be set if the tfTransferable flag is enabled")
+	// ErrAmountRequiredWithExpirationOrDestination is returned when Expiration or Destination is set without Amount.
+	ErrAmountRequiredWithExpirationOrDestination = errors.New("amount is required when Expiration or Destination is present")
 )
 
 // The NFTokenMint transaction creates a non-fungible token and adds it to the relevant NFTokenPage object of the NFTokenMinter as an NFToken object.
@@ -57,13 +57,24 @@ type NFTokenMint struct {
 	// (Optional) The value specifies the fee charged by the issuer for secondary sales of the NFToken, if such sales are allowed.
 	// Valid values for this field are between 0 and 50000 inclusive, allowing transfer rates of between 0.00% and 50.00% in increments of 0.001.
 	// If this field is provided, the transaction MUST have the tfTransferable flag enabled.
-	TransferFee uint16 `json:",omitempty"`
+	TransferFee *uint16 `json:",omitempty"`
 	// (Optional) Up to 256 bytes of arbitrary data. In JSON, this should be encoded as a string of hexadecimal.
 	// You can use the xrpl.convertStringToHex utility to convert a URI to its hexadecimal equivalent.
 	// This is intended to be a URI that points to the data or metadata associated with the NFT.
 	// The contents could decode to an HTTP or HTTPS URL, an IPFS URI, a magnet link, immediate data encoded as an RFC 2379 "data" URL, or even an issuer-specific encoding.
 	// The URI is NOT checked for validity.
 	URI types.NFTokenURI `json:",omitempty"`
+	// (Optional) Indicates the amount expected or offered for the corresponding NFToken.
+	// The amount must be non-zero, except where the asset is XRP;
+	// then, it is legal to specify an amount of zero, which means that the current owner of the token is giving it away,
+	// gratis, either to anyone at all, or to the account identified by the Destination field.
+	Amount types.CurrencyAmount `json:",omitempty"`
+	// (Optional) Time after which the offer is no longer active, in seconds since the Ripple Epoch.
+	// Results in an error if the Amount field is not specified.
+	Expiration *uint32 `json:",omitempty"`
+	// (Optional) If present, indicates that this offer may only be accepted by the specified account.
+	// Attempts by other accounts to accept this offer MUST fail. Results in an error if the Amount field is not specified.
+	Destination types.Address `json:",omitempty"`
 }
 
 // **********************************
@@ -79,6 +90,8 @@ const (
 	tfTrustLine uint32 = 4
 	// The minted NFToken can be transferred to others. If this flag is not enabled, the token can still be transferred from or to the issuer, but a transfer to the issuer must be made based on a buy offer from the issuer and not a sell offer from the NFT holder.
 	tfTransferable uint32 = 8
+	// The URI field of the minted NFToken can be updated using the NFTokenModify transaction.
+	tfMutable uint32 = 16
 )
 
 // Allow the issuer (or an entity authorized by the issuer) to destroy the minted NFToken. (The NFToken's owner can always do so.)
@@ -101,6 +114,11 @@ func (n *NFTokenMint) SetTransferableFlag() {
 	n.Flags |= tfTransferable
 }
 
+// The URI field of the minted NFToken can be updated using the NFTokenModify transaction.
+func (n *NFTokenMint) SetMutableFlag() {
+	n.Flags |= tfMutable
+}
+
 // TxType returns the type of the transaction (NFTokenMint).
 func (*NFTokenMint) TxType() TxType {
 	return NFTokenMintTx
@@ -114,15 +132,27 @@ func (n *NFTokenMint) Flatten() FlatTransaction {
 	flattened["NFTokenTaxon"] = n.NFTokenTaxon
 
 	if n.Issuer != "" {
-		flattened["Issuer"] = n.Issuer
+		flattened["Issuer"] = n.Issuer.String()
 	}
 
-	if n.TransferFee != 0 {
-		flattened["TransferFee"] = n.TransferFee
+	if n.TransferFee != nil {
+		flattened["TransferFee"] = *n.TransferFee
 	}
 
 	if n.URI != "" {
-		flattened["URI"] = n.URI
+		flattened["URI"] = n.URI.String()
+	}
+
+	if n.Amount != nil {
+		flattened["Amount"] = n.Amount.Flatten()
+	}
+
+	if n.Expiration != nil {
+		flattened["Expiration"] = *n.Expiration
+	}
+
+	if n.Destination != "" {
+		flattened["Destination"] = n.Destination.String()
 	}
 
 	return flattened
@@ -141,7 +171,7 @@ func (n *NFTokenMint) Validate() (bool, error) {
 	}
 
 	// check transfer fee is between 0 and 50000
-	if n.TransferFee > MaxTransferFee {
+	if n.TransferFee != nil && *n.TransferFee > MaxTransferFee {
 		return false, ErrInvalidTransferFee
 	}
 
@@ -161,8 +191,23 @@ func (n *NFTokenMint) Validate() (bool, error) {
 	}
 
 	// check transfer fee can only be set if the tfTransferable flag is enabled
-	if n.TransferFee > 0 && !IsFlagEnabled(n.Flags, tfTransferable) {
+	if n.TransferFee != nil && *n.TransferFee > 0 && !types.IsFlagEnabled(n.Flags, tfTransferable) {
 		return false, ErrTransferFeeRequiresTransferableFlag
+	}
+
+	// check Amount is required when Expiration or Destination is present
+	if n.Amount == nil {
+		if n.Expiration != nil || n.Destination != "" {
+			return false, ErrAmountRequiredWithExpirationOrDestination
+		}
+	}
+
+	if ok, err := IsAmount(n.Amount, "Amount", false); !ok {
+		return false, err
+	}
+
+	if n.Destination != "" && !addresscodec.IsValidAddress(n.Destination.String()) {
+		return false, ErrInvalidDestination
 	}
 
 	return true, nil

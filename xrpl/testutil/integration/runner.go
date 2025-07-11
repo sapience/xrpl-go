@@ -18,6 +18,10 @@ type Runner struct {
 	wallets []*wallet.Wallet
 }
 
+type TestTransactionOptions struct {
+	SkipAutofill bool
+}
+
 // NewRunner creates a new runner. It doesn't connect to the websocket or generate wallets until Setup is called.
 // A testing.T is required to use the require package.
 func NewRunner(t *testing.T, client Client, config *RunnerConfig) *Runner {
@@ -67,8 +71,8 @@ func (r *Runner) Teardown() error {
 
 // TestTransaction submits a signed transaction and validates the result.
 // If validate is nil, the transaction is not validated.
-func (r *Runner) TestTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet, expectedEngineResult string) (*transactions.SubmitResponse, error) {
-	tx, hash, err := r.processTransaction(flatTx, signer)
+func (r *Runner) TestTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet, expectedEngineResult string, opts *TestTransactionOptions) (*transactions.SubmitResponse, error) {
+	tx, hash, err := r.processTransaction(flatTx, signer, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -112,13 +116,15 @@ func (r *Runner) GetClient() Client {
 	return r.client
 }
 
-func (r *Runner) processTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet) (*transactions.SubmitResponse, string, error) {
+func (r *Runner) processTransaction(flatTx *transaction.FlatTransaction, signer *wallet.Wallet, opts *TestTransactionOptions) (*transactions.SubmitResponse, string, error) {
 	attempts := 0
 
 	for {
-		err := r.client.Autofill(flatTx)
-		if err != nil {
-			return nil, "", err
+		if opts == nil || !opts.SkipAutofill {
+			err := r.client.Autofill(flatTx)
+			if err != nil {
+				return nil, "", err
+			}
 		}
 
 		blob, hash, err := signer.Sign(*flatTx)

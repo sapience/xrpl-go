@@ -58,7 +58,7 @@ func TestIntegrationPayment_Websocket(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			flatTx := tc.Payment.Flatten()
-			_, err := runner.TestTransaction(&flatTx, sender, "tesSUCCESS")
+			_, err := runner.TestTransaction(&flatTx, sender, "tesSUCCESS", nil)
 			if tc.ExpectedError != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.ExpectedError)
@@ -112,7 +112,7 @@ func TestIntegrationPayment_RPCClient(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			flatTx := tc.Payment.Flatten()
-			_, err := runner.TestTransaction(&flatTx, sender, "tesSUCCESS")
+			_, err := runner.TestTransaction(&flatTx, sender, "tesSUCCESS", nil)
 			if tc.ExpectedError != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.ExpectedError)
