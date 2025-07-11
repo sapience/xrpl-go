@@ -696,7 +696,7 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			name: "Batch transaction",
 			tx: transaction.FlatTransaction{
 				"TransactionType": "Batch",
-			"RawTransactions": []map[string]any{
+				"RawTransactions": []map[string]any{
 					{
 						"RawTransaction": map[string]any{
 							"TransactionType": "Payment",
@@ -766,7 +766,7 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			expectedFee: "40", // 2*10 + 10 + 10
 			expectedErr: nil,
 			feeCushion:  1,
-		}, 		{
+		}, {
 			name: "Batch transaction with multisign",
 			tx: transaction.FlatTransaction{
 				"TransactionType": "Batch",

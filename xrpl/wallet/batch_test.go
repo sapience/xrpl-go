@@ -27,7 +27,7 @@ func parseBatchSignersFromFlat(flatTx transaction.FlatTransaction) ([]types.Batc
 		}
 
 		var batchSigner types.BatchSigner
-		
+
 		// Parse Account
 		if account, ok := batchSignerData["Account"].(string); ok {
 			batchSigner.BatchSigner.Account = types.Address(account)
@@ -242,12 +242,12 @@ func TestSignMultiBatch_ED25519(t *testing.T) {
 			err := SignMultiBatch(tt.wallet, &txFlat, &tt.opts)
 			if tt.expectedError == nil {
 				require.NoError(t, err)
-				
+
 				// Extract BatchSigners from the signed flattened transaction and update the original
 				batchSigners, parseErr := parseBatchSignersFromFlat(txFlat)
 				require.NoError(t, parseErr)
 				tt.tx.BatchSigners = batchSigners
-				
+
 				tt.postCheck(t, tt.tx)
 			} else {
 				require.Error(t, err)
@@ -354,12 +354,12 @@ func TestSignMultiBatch_SECP256K1(t *testing.T) {
 			err := SignMultiBatch(tt.wallet, &txFlat, &tt.opts)
 			if tt.expectedError == nil {
 				require.NoError(t, err)
-				
+
 				// Extract BatchSigners from the signed flattened transaction and update the original
 				batchSigners, parseErr := parseBatchSignersFromFlat(txFlat)
 				require.NoError(t, parseErr)
 				tt.tx.BatchSigners = batchSigners
-				
+
 				tt.postCheck(t, tt.tx)
 			} else {
 				require.Error(t, err)
