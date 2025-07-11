@@ -5,48 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.1.11]
 
 ### BREAKING CHANGES
 
 #### xrpl
 
-- Move `Signers` type from `github.com/Peersyst/xrpl-go/xrpl/transaction` package to `github.com/Peersyst/xrpl-go/xrpl/transaction/types`.
+- Moved `Signers` type from `github.com/Peersyst/xrpl-go/xrpl/transaction` package to `github.com/Peersyst/xrpl-go/xrpl/transaction/types`.
 
 ### Added
 
 #### binary-codec
 
-- Adds `MPToken` definitions.
-- Adds `Hash192` type.
-- Adds functions to serialize and deserialize `MPTCurrencyAmount`.
-- Adds unit tests for `MPTCurrencyAmount`.
-- Adds `GranularPermissions` and `DelegatablePermissions` entries to definitions.
-- Adds `PermissionValue` serialized type with custom serializer routing.
-- Adds`EncodeForSigningBatch` function.
+- Added `MPToken` definitions.
+- Added `Hash192` type.
+- Added functions to serialize and deserialize `MPTCurrencyAmount`.
+- Added `GranularPermissions` and `DelegatablePermissions` entries to definitions.
+- Added `PermissionValue` serialized type with custom serializer routing.
+- Added`EncodeForSigningBatch` function.
 
 #### xrpl
 
-- Adds `AMMClawback` transaction type.
-- Adds `MPTokenAuthorize`, `MPTokenIssuanceCreate`, `MPTokenIssuanceDestroy`, `MPTokenIssuanceSet` transactions. It also adds the `types.Holder`, `types.AssetScale`, `types.MPTokenMetadata` and `types.TransferFee` types to represent the holder of the token, the asset scale, the metadata and the transfer fee of the token respectively.
-- Adds `NFTokenMintOffer` support by adding `Amount`, `Expiration`, and `Destination` fields to `NFTokenMint` transaction. Also add `NFTokenMintMetadata` struct to handle transaction metadata with `nftoken_id` and `offer_id` fields.
-- Adds `MPTCurrencyAmount` for currency kinds.
-- Adds unit tests for `MPTCurrencyAmount`.
-- Adds `NFTokenModify` transaction type.
-- Adds `DelegateSet` transaction type (XLS-74d) with validation and error support.
-- Adds `Delegate` ledger entry type (XLS-74d).
-- Adds `PermissionValue` and `Permission` types for delegated permissions.
-- Adds integration tests for `DelegateSet` submission and delegated `Payment` execution (XLS-75d).
-- Adds `Batch` transaction type.
-- Adds `CombineBatchSigners` function to combine the batch signers of a set of transactions into a single transaction.
-- Adds `SignMultiBatch` function to sign a multi-account Batch transaction.
-- Adds `TfInnerBatchTxn` flag.
+- Added `AMMClawback` transaction type.
+- Added `MPTokenAuthorize`, `MPTokenIssuanceCreate`, `MPTokenIssuanceDestroy`, `MPTokenIssuanceSet` transactions. It also adds the `types.Holder`, `types.AssetScale`, `types.MPTokenMetadata` and `types.TransferFee` types to represent the holder of the token, the asset scale, the metadata and the transfer fee of the token respectively.
+- Added `NFTokenMintOffer` support by adding `Amount`, `Expiration`, and `Destination` fields to `NFTokenMint` transaction. Also add `NFTokenMintMetadata` struct to handle transaction metadata with `nftoken_id` and `offer_id` fields.
+- Added `MPTCurrencyAmount` for currency kinds.
+- Added unit tests for `MPTCurrencyAmount`.
+- Added `NFTokenModify` transaction type.
+
+##### Account Permission Delegation (XLS-74d, XLS-75d)
+
+- Added `DelegateSet` transaction type (XLS-74d) with validation and error support.
+- Added `Delegate` ledger entry type (XLS-74d).
+- Added `PermissionValue` and `Permission` types for delegated permissions.
+- Added integration tests for `DelegateSet` submission and delegated `Payment` execution (XLS-75d).
+
+##### Batch (XLS-56d)
+
+- Added `Batch` transaction type.
+- Added `CombineBatchSigners` function to combine the batch signers of a set of transactions into a single transaction.
+- Added `SignMultiBatch` function to sign a multi-account Batch transaction.
+- Added `TfInnerBatchTxn` flag.
 
 ## Changed
 
 ### binary-codec
 
-- Refactor on `Issue` codec type to support `Currency` and `Issuer` fields.
+- Refactored `Issue` codec type to support `Currency` and `Issuer` fields.
 
 ### Dependencies
 
@@ -56,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### xrpl
 
-- Fixed some flattening fields with the `Flatten` function for `NFTokenMint`, `NFTokenCancel`, `NFTokenCreate`, `NFTokenBurn`
+- Fixed some flatten fields with the `Flatten` function for `NFTokenMint`, `NFTokenCancel`, `NFTokenCreate`, `NFTokenBurn`
 
 ## [v0.1.10]
 
