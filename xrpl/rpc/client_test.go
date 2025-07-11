@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 
@@ -12,6 +13,8 @@ import (
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	"github.com/Peersyst/xrpl-go/xrpl/rpc/testutil"
 	rpctypes "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -514,4 +517,398 @@ func TestClient_SubmitMultisigned(t *testing.T) {
 			require.Equal(t, tt.expectResult.EngineResultMessage, response.EngineResultMessage)
 		})
 	}
+}
+
+func TestClient_autofillRawTransactions(t *testing.T) {
+	tests := []struct {
+		name          string
+		tx            transaction.FlatTransaction
+		mockResponses []string
+		networkID     uint32
+		expectedTx    transaction.FlatTransaction
+		expectedErr   error
+	}{
+		{
+			name: "pass - valid single transaction autofill",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+						},
+					},
+				},
+			},
+			mockResponses: []string{
+				`{
+					"result": {
+						"account_data": {
+							"Sequence": 42
+						}
+					}
+				}`,
+			},
+			networkID: 0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(43), // 42 + 1 since same account
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - multiple transactions with different accounts",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+						},
+					},
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Destination":     "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Amount":          "2000000",
+						},
+					},
+				},
+			},
+			mockResponses: []string{
+				`{
+					"result": {
+						"account_data": {
+							"Sequence": 42
+						}
+					}
+				}`,
+				`{
+					"result": {
+						"account_data": {
+							"Sequence": 100
+						}
+					}
+				}`,
+			},
+			networkID: 0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(43), // 42 + 1 since same account
+						},
+					},
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Destination":     "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Amount":          "2000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(100), // Different account, use actual sequence
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - transaction with TicketSequence - no Sequence needed",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"TicketSequence":  uint32(100),
+						},
+					},
+				},
+			},
+			mockResponses: []string{}, // No API calls needed
+			networkID:     0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"TicketSequence":  uint32(100),
+							"Fee":             "0",
+							"SigningPubKey":   "",
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		// Error cases
+		{
+			name: "fail - RawTransactions field not an array",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": "not_an_array",
+			},
+			mockResponses: []string{},
+			networkID:     0,
+			expectedTx:    transaction.FlatTransaction{},
+			expectedErr:   ErrRawTransactionsFieldIsNotAnArray,
+		},
+		{
+			name: "fail - RawTransaction field not an object",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": "not_an_object",
+					},
+				},
+			},
+			mockResponses: []string{},
+			networkID:     0,
+			expectedTx:    transaction.FlatTransaction{},
+			expectedErr:   ErrRawTransactionFieldIsNotAnObject,
+		},
+		{
+			name: "fail - Fee field set to non-zero value - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Fee":             "10",
+						},
+					},
+				},
+			},
+			mockResponses: []string{},
+			networkID:     0,
+			expectedTx:    transaction.FlatTransaction{},
+			expectedErr:   types.ErrBatchInnerTransactionInvalid,
+		},
+		{
+			name: "fail - SigningPubKey field set to non-empty value - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"SigningPubKey":   "03ABC123",
+						},
+					},
+				},
+			},
+			mockResponses: []string{},
+			networkID:     0,
+			expectedTx:    transaction.FlatTransaction{},
+			expectedErr:   ErrSigningPubKeyFieldMustBeEmpty,
+		},
+		{
+			name: "fail - TxnSignature field present - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"TxnSignature":    "304502",
+						},
+					},
+				},
+			},
+			mockResponses: []string{},
+			networkID:     0,
+			expectedTx:    transaction.FlatTransaction{},
+			expectedErr:   ErrTxnSignatureFieldMustBeEmpty,
+		},
+		{
+			name: "fail - Signers field present - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Signers":         []any{},
+						},
+					},
+				},
+			},
+			mockResponses: []string{},
+			networkID:     0,
+			expectedTx:    transaction.FlatTransaction{},
+			expectedErr:   ErrSignersFieldMustBeEmpty,
+		},
+		{
+			name: "fail - Account field not a string - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         12345, // Invalid: not a string
+						},
+					},
+				},
+			},
+			mockResponses: []string{},
+			networkID:     0,
+			expectedTx:    transaction.FlatTransaction{},
+			expectedErr:   ErrAccountFieldIsNotAString,
+		},
+		{
+			name: "fail - Error from GetAccountInfo",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+						},
+					},
+				},
+			},
+			mockResponses: []string{
+				`{
+					"result": {
+						"error": "actNotFound"
+					}
+				}`,
+			},
+			networkID:   0,
+			expectedTx:  transaction.FlatTransaction{},
+			expectedErr: &ClientError{ErrorString: "actNotFound"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl := setupTestRPCClientForAutofill(t, tt.mockResponses)
+
+			// Set NetworkID for test
+			cl.NetworkID = tt.networkID
+
+			// Make a copy of the original tx for comparison
+			originalTx := make(transaction.FlatTransaction)
+			for k, v := range tt.tx {
+				originalTx[k] = v
+			}
+
+			err := cl.autofillRawTransactions(&tt.tx)
+
+			if tt.expectedErr != nil {
+				require.Error(t, err)
+
+				// Check error type and message
+				switch expectedErr := tt.expectedErr.(type) {
+				case *ClientError:
+					if clientErr, ok := err.(*ClientError); ok {
+						require.Equal(t, expectedErr.ErrorString, clientErr.ErrorString)
+					} else {
+						t.Errorf("Expected ClientError, but got %T", err)
+					}
+				default:
+					require.Equal(t, tt.expectedErr.Error(), err.Error())
+				}
+				return
+			}
+
+			require.NoError(t, err)
+
+			// Compare the resulting transaction
+			if !reflect.DeepEqual(tt.expectedTx, tt.tx) {
+				t.Errorf("Expected tx %+v, but got %+v", tt.expectedTx, tt.tx)
+
+				// Detailed comparison for debugging
+				if rawTxs, ok := tt.tx["RawTransactions"].([]map[string]any); ok {
+					expectedRawTxs := tt.expectedTx["RawTransactions"].([]map[string]any)
+					for i, rawTx := range rawTxs {
+						if i < len(expectedRawTxs) {
+							t.Logf("RawTransaction[%d] expected: %+v", i, expectedRawTxs[i]["RawTransaction"])
+							t.Logf("RawTransaction[%d] actual:   %+v", i, rawTx["RawTransaction"])
+						}
+					}
+				}
+			}
+		})
+	}
+}
+
+// Helper function to setup test RPC client for autofill tests
+func setupTestRPCClientForAutofill(t *testing.T, mockResponses []string) *Client {
+	mc := &testutil.JSONRPCMockClient{}
+	responseIndex := 0
+
+	mc.DoFunc = func(req *http.Request) (*http.Response, error) {
+		if responseIndex < len(mockResponses) {
+			response := mockResponses[responseIndex]
+			responseIndex++
+			return testutil.MockResponse(response, 200, mc)(req)
+		}
+		// Default empty response if no more responses configured
+		return testutil.MockResponse(`{"result": {}}`, 200, mc)(req)
+	}
+
+	cfg, err := NewClientConfig("http://testnode/", WithHTTPClient(mc))
+	require.NoError(t, err)
+
+	return NewClient(cfg)
 }

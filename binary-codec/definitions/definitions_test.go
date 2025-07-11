@@ -26,6 +26,8 @@ func TestLoadDefinitions(t *testing.T) {
 	require.Equal(t, "NFTokenSellOffer", definitions.FieldIDNameMap[FieldHeader{TypeCode: 5, FieldCode: 29}])
 	require.Equal(t, int32(131076), definitions.Fields["Sequence"].Ordinal)
 	require.Equal(t, int32(131097), definitions.Fields["OfferSequence"].Ordinal)
+	require.Equal(t, int32(65537), definitions.GranularPermissions["TrustlineAuthorize"])
+	require.Equal(t, int32(1), definitions.DelegatablePermissions["Payment"])
 }
 
 // Helper functions to create and test ordinals.

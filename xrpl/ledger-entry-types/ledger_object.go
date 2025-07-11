@@ -14,6 +14,7 @@ const (
 	BridgeEntry                          EntryType = "Bridge"
 	CheckEntry                           EntryType = "Check"
 	CredentialEntry                      EntryType = "Credential"
+	DelegateEntry                        EntryType = "Delegate"
 	DepositPreauthObjEntry               EntryType = "DepositPreauth"
 	DIDEntry                             EntryType = "DID"
 	DirectoryNodeEntry                   EntryType = "DirectoryNode"
@@ -57,6 +58,8 @@ func EmptyLedgerObject(t string) (Object, error) {
 		return &Check{}, nil
 	case CredentialEntry:
 		return &Credential{}, nil
+	case DelegateEntry:
+		return &Delegate{}, nil
 	case DepositPreauthObjEntry:
 		return &DepositPreauthObj{}, nil
 	case DIDEntry:
@@ -118,6 +121,8 @@ func UnmarshalLedgerObject(data []byte) (Object, error) {
 		o = &Check{}
 	case CredentialEntry:
 		o = &Credential{}
+	case DelegateEntry:
+		o = &Delegate{}
 	case DepositPreauthObjEntry:
 		o = &DepositPreauthObj{}
 	case DIDEntry:
