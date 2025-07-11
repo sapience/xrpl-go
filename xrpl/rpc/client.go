@@ -9,6 +9,7 @@ import (
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	"github.com/Peersyst/xrpl-go/xrpl/common"
 	"github.com/Peersyst/xrpl-go/xrpl/hash"
+	account "github.com/Peersyst/xrpl-go/xrpl/queries/account"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
 	rpctypes "github.com/Peersyst/xrpl-go/xrpl/rpc/types"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -261,6 +262,12 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 				return err
 			}
 		}
+		if txType == transaction.BatchTx {
+			err := c.autofillRawTransactions(tx)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
@@ -296,6 +303,85 @@ func (c *Client) FundWallet(wallet *wallet.Wallet) error {
 	err := c.cfg.faucetProvider.FundWallet(wallet.ClassicAddress)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (c *Client) autofillRawTransactions(tx *transaction.FlatTransaction) error {
+	needsNetworkID, err := c.txNeedsNetworkID()
+	if err != nil {
+		return err
+	}
+
+	rawTxs, ok := (*tx)["RawTransactions"].([]map[string]any)
+	if !ok {
+		return ErrRawTransactionsFieldIsNotAnArray
+	}
+
+	accountSeq := make(map[string]uint32, len(rawTxs))
+
+	for _, rawTx := range rawTxs {
+		innerRawTx, ok := rawTx["RawTransaction"].(map[string]any)
+		if !ok {
+			return ErrRawTransactionFieldIsNotAnObject
+		}
+
+		// Validate `Fee` field
+		if innerRawTx["Fee"] == nil {
+			innerRawTx["Fee"] = "0"
+		} else if innerRawTx["Fee"] != "0" {
+			return types.ErrBatchInnerTransactionInvalid
+		}
+
+		// Validate `SigningPubKey` field
+		if innerRawTx["SigningPubKey"] == nil {
+			innerRawTx["SigningPubKey"] = ""
+		} else if innerRawTx["SigningPubKey"] != "" {
+			return ErrSigningPubKeyFieldMustBeEmpty
+		}
+
+		// Validate `TxnSignature` field
+		if innerRawTx["TxnSignature"] != nil {
+			return ErrTxnSignatureFieldMustBeEmpty
+		}
+		if innerRawTx["Signers"] != nil {
+			return ErrSignersFieldMustBeEmpty
+		}
+
+		// Validate `NetworkID` field
+		if innerRawTx["NetworkID"] == nil && needsNetworkID {
+			innerRawTx["NetworkID"] = c.NetworkID
+		}
+
+		// Validate `Sequence` field
+		if innerRawTx["Sequence"] == nil && innerRawTx["TicketSequence"] == nil {
+
+			acc, ok := innerRawTx["Account"].(string)
+			if !ok {
+				return ErrAccountFieldIsNotAString
+			}
+
+			if accountSeq[acc] != 0 {
+				innerRawTx["Sequence"] = accountSeq[acc]
+				accountSeq[acc]++
+			} else {
+				accountInfo, err := c.GetAccountInfo(&account.InfoRequest{
+					Account: types.Address(acc),
+				})
+				if err != nil {
+					return err
+				}
+				var seq uint32
+				if innerRawTx["Account"] == (*tx)["Account"] {
+					seq = accountInfo.AccountData.Sequence + 1
+				} else {
+					seq = accountInfo.AccountData.Sequence
+				}
+				accountSeq[acc] = seq + 1
+				innerRawTx["Sequence"] = seq
+			}
+		}
 	}
 
 	return nil

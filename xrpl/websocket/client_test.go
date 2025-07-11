@@ -515,6 +515,7 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 		expectedFee    string
 		expectedErr    error
 		feeCushion     float32
+		nSigners       uint64
 	}{
 		{
 			name: "Basic fee calculation",
@@ -582,6 +583,288 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			expectedErr: nil,
 			feeCushion:  1,
 		},
+		{
+			name: "EscrowFinish with Fulfillment",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "EscrowFinish",
+				"Fulfillment":     "A0028000", // 8 characters = 4 bytes
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "340", // 10 * (33 + 1) = 340
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "EscrowFinish without Fulfillment",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "EscrowFinish",
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "10", // Regular base fee
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "AccountDelete special transaction cost",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "AccountDelete",
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				{
+					"id": 2,
+					"result": map[string]any{
+						"state": map[string]any{
+							"validated_ledger": map[string]any{
+								"reserve_inc": 2000000, // 2 XRP in drops
+							},
+						},
+					},
+				},
+			},
+			expectedFee: "2000000", // Owner reserve fee
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "AMMCreate special transaction cost",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "AMMCreate",
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				{
+					"id": 2,
+					"result": map[string]any{
+						"state": map[string]any{
+							"validated_ledger": map[string]any{
+								"reserve_inc": 2000000, // 2 XRP in drops
+							},
+						},
+					},
+				},
+			},
+			expectedFee: "2000000", // Owner reserve fee
+			expectedErr: nil,
+			feeCushion:  1,
+		},
+		{
+			name: "Batch transaction",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "Batch",
+				"RawTransactions": []interface{}{
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Flags":           uint32(0x40000000),
+							"Fee":             "0",
+							"SigningPubKey":   "",
+						},
+					},
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "OfferCreate",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"TakerGets":       "1000000",
+							"TakerPays": map[string]interface{}{
+								"currency": "USD",
+								"issuer":   "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+								"value":    "100",
+							},
+							"Flags":         uint32(0x40000000),
+							"Fee":           "0",
+							"SigningPubKey": "",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				// Outer Batch fee fetch
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner Payment fee fetch
+				{
+					"id": 2,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner OfferCreate fee fetch
+				{
+					"id": 3,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "40", // 2*10 + 10 + 10
+			expectedErr: nil,
+			feeCushion:  1,
+		}, {
+			name: "Batch transaction with multisign",
+			tx: transaction.FlatTransaction{
+				"TransactionType": "Batch",
+				"RawTransactions": []interface{}{
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Flags":           uint32(0x40000000),
+							"Fee":             "0",
+							"SigningPubKey":   "",
+						},
+					},
+					map[string]interface{}{
+						"RawTransaction": map[string]interface{}{
+							"TransactionType": "OfferCreate",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"TakerGets":       "1000000",
+							"TakerPays": map[string]interface{}{
+								"currency": "USD",
+								"issuer":   "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+								"value":    "100",
+							},
+							"Flags":         uint32(0x40000000),
+							"Fee":           "0",
+							"SigningPubKey": "",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				// Outer Batch fee fetch
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner Payment fee fetch
+				{
+					"id": 2,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+				// Inner OfferCreate fee fetch
+				{
+					"id": 3,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "50", // 2*10 + (10+10) + 10 (one extra signer)
+			expectedErr: nil,
+			feeCushion:  1,
+			nSigners:    1,
+		},
+		{
+			name: "Multi-signed transaction",
+			tx: transaction.FlatTransaction{
+				"TransactionType": transaction.PaymentTx,
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"validated_ledger": map[string]any{
+								"base_fee_xrp": float32(0.00001),
+							},
+							"load_factor": float32(1),
+						},
+					},
+				},
+			},
+			expectedFee: "30", // 10 + (10 * 2) = 30
+			expectedErr: nil,
+			feeCushion:  1,
+			nSigners:    2,
+		},
 	}
 
 	for _, tt := range tests {
@@ -592,7 +875,7 @@ func TestClient_calculateFeePerTransactionType(t *testing.T) {
 			cl.cfg.feeCushion = tt.feeCushion
 			cl.cfg.maxFeeXRP = DefaultMaxFeeXRP
 
-			err := cl.calculateFeePerTransactionType(&tt.tx, 0)
+			err := cl.calculateFeePerTransactionType(&tt.tx, tt.nSigners)
 
 			if tt.expectedErr != nil {
 				if !reflect.DeepEqual(err.Error(), tt.expectedErr.Error()) {
@@ -774,5 +1057,630 @@ func TestClient_setTransactionFlags(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestClient_autofillRawTransactions(t *testing.T) {
+	tests := []struct {
+		name           string
+		tx             transaction.FlatTransaction
+		serverMessages []map[string]any
+		networkID      uint32
+		expectedTx     transaction.FlatTransaction
+		expectedErr    error
+	}{
+		{
+			name: "pass - valid single transaction autofill",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"account_data": map[string]any{
+							"Sequence": uint32(42),
+						},
+					},
+				},
+			},
+			networkID: 0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(43), // 42 + 1 since same account
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - multiple transactions with different accounts",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+						},
+					},
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Destination":     "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Amount":          "2000000",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"account_data": map[string]any{
+							"Sequence": uint32(42),
+						},
+					},
+				},
+				{
+					"id": 2,
+					"result": map[string]any{
+						"account_data": map[string]any{
+							"Sequence": uint32(100),
+						},
+					},
+				},
+			},
+			networkID: 0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(43), // 42 + 1 since same account
+						},
+					},
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Destination":     "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Amount":          "2000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(100), // Different account, use actual sequence
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - multiple transactions same account sequence increment",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Destination":     "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Amount":          "1000000",
+						},
+					},
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "OfferCreate",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"TakerGets":       "2000000",
+							"TakerPays":       "3000000",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"account_data": map[string]any{
+							"Sequence": uint32(100),
+						},
+					},
+				},
+			},
+			networkID: 0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Destination":     "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(100), // First use of this account
+						},
+					},
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "OfferCreate",
+							"Account":         "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"TakerGets":       "2000000",
+							"TakerPays":       "3000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(101), // Incremented from cached value
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - transaction with NetworkID needed",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"info": map[string]any{
+							"build_version": "1.12.0",
+						},
+					},
+				},
+				{
+					"id": 2,
+					"result": map[string]any{
+						"account_data": map[string]any{
+							"Sequence": uint32(42),
+						},
+					},
+				},
+			},
+			networkID: 2000, // Above RestrictedNetworks threshold
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"NetworkID":       uint32(2000),
+							"Sequence":        uint32(43),
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - transaction with TicketSequence - no Sequence needed",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"TicketSequence":  uint32(100),
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"TicketSequence":  uint32(100),
+							"Fee":             "0",
+							"SigningPubKey":   "",
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - fee field already set to 0 - valid",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"account_data": map[string]any{
+							"Sequence": uint32(42),
+						},
+					},
+				},
+			},
+			networkID: 0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(43),
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "pass - signingPubKey field already empty - valid",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"SigningPubKey":   "",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				{
+					"id": 1,
+					"result": map[string]any{
+						"account_data": map[string]any{
+							"Sequence": uint32(42),
+						},
+					},
+				},
+			},
+			networkID: 0,
+			expectedTx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+							"Fee":             "0",
+							"SigningPubKey":   "",
+							"Sequence":        uint32(43),
+						},
+					},
+				},
+			},
+			expectedErr: nil,
+		},
+		// Error cases
+		{
+			name: "fail - RawTransactions field not an array",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": "not_an_array",
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx:     transaction.FlatTransaction{},
+			expectedErr:    ErrRawTransactionsFieldIsNotAnArray,
+		},
+		{
+			name: "fail - RawTransaction field not an object",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": "not_an_object",
+					},
+				},
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx:     transaction.FlatTransaction{},
+			expectedErr:    ErrRawTransactionFieldIsNotAnObject,
+		},
+		{
+			name: "fail - Fee field set to non-zero value - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Fee":             "10",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx:     transaction.FlatTransaction{},
+			expectedErr:    types.ErrBatchInnerTransactionInvalid,
+		},
+		{
+			name: "fail - SigningPubKey field set to non-empty value - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"SigningPubKey":   "03ABC123",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx:     transaction.FlatTransaction{},
+			expectedErr:    ErrSigningPubKeyFieldMustBeEmpty,
+		},
+		{
+			name: "fail - TxnSignature field present - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"TxnSignature":    "304502",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx:     transaction.FlatTransaction{},
+			expectedErr:    ErrTxnSignatureFieldMustBeEmpty,
+		},
+		{
+			name: "fail - Signers field present - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Signers":         []any{},
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx:     transaction.FlatTransaction{},
+			expectedErr:    ErrSignersFieldMustBeEmpty,
+		},
+		{
+			name: "fail - Account field not a string - error",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         12345, // Invalid: not a string
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{},
+			networkID:      0,
+			expectedTx:     transaction.FlatTransaction{},
+			expectedErr:    ErrAccountFieldIsNotAString,
+		},
+		{
+			name: "fail - Error from GetAccountInfo",
+			tx: transaction.FlatTransaction{
+				"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+				"TransactionType": "Batch",
+				"RawTransactions": []map[string]any{
+					{
+						"RawTransaction": map[string]any{
+							"TransactionType": "Payment",
+							"Account":         "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+							"Destination":     "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+							"Amount":          "1000000",
+						},
+					},
+				},
+			},
+			serverMessages: []map[string]any{
+				{
+					"id":    1,
+					"error": "actNotFound",
+				},
+			},
+			networkID:   0,
+			expectedTx:  transaction.FlatTransaction{},
+			expectedErr: &ErrorWebsocketClientXrplResponse{Type: "actNotFound"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, cleanup := setupTestClientForAutofill(t, tt.serverMessages)
+			defer cleanup()
+
+			// Set NetworkID for test
+			cl.NetworkID = tt.networkID
+
+			// Make a copy of the original tx for comparison
+			originalTx := make(transaction.FlatTransaction)
+			for k, v := range tt.tx {
+				originalTx[k] = v
+			}
+
+			err := cl.autofillRawTransactions(&tt.tx)
+
+			if tt.expectedErr != nil {
+				if err == nil {
+					t.Errorf("Expected error %v, but got nil", tt.expectedErr)
+					return
+				}
+
+				// Check error type and message
+				switch expectedErr := tt.expectedErr.(type) {
+				case *ErrorWebsocketClientXrplResponse:
+					if wsErr, ok := err.(*ErrorWebsocketClientXrplResponse); ok {
+						if wsErr.Type != expectedErr.Type {
+							t.Errorf("Expected error type %v, but got %v", expectedErr.Type, wsErr.Type)
+						}
+					} else {
+						t.Errorf("Expected ErrorWebsocketClientXrplResponse, but got %T", err)
+					}
+				default:
+					if err.Error() != tt.expectedErr.Error() {
+						t.Errorf("Expected error %v, but got %v", tt.expectedErr, err)
+					}
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Unexpected error: %v", err)
+				return
+			}
+
+			// Compare the resulting transaction
+			if !reflect.DeepEqual(tt.expectedTx, tt.tx) {
+				t.Errorf("Expected tx %+v, but got %+v", tt.expectedTx, tt.tx)
+
+				// Detailed comparison for debugging
+				if rawTxs, ok := tt.tx["RawTransactions"].([]map[string]any); ok {
+					expectedRawTxs := tt.expectedTx["RawTransactions"].([]map[string]any)
+					for i, rawTx := range rawTxs {
+						if i < len(expectedRawTxs) {
+							t.Logf("RawTransaction[%d] expected: %+v", i, expectedRawTxs[i]["RawTransaction"])
+							t.Logf("RawTransaction[%d] actual:   %+v", i, rawTx["RawTransaction"])
+						}
+					}
+				}
+			}
+		})
+	}
+}
+
+// Helper function to setup test client for autofill tests
+func setupTestClientForAutofill(t *testing.T, serverMessages []map[string]any) (*Client, func()) {
+	ws := &testutil.MockWebSocketServer{Msgs: serverMessages}
+	s := ws.TestWebSocketServer(func(c *websocket.Conn) {
+		for _, m := range serverMessages {
+			err := c.WriteJSON(m)
+			if err != nil {
+				t.Errorf("error writing message: %v", err)
+			}
+		}
+	})
+
+	url, _ := testutil.ConvertHTTPToWS(s.URL)
+	cl := NewClient(NewClientConfig().WithHost(url))
+
+	if err := cl.Connect(); err != nil {
+		t.Fatalf("Error connecting to server: %v", err)
+	}
+
+	return cl, func() {
+		cl.Disconnect()
+		s.Close()
 	}
 }

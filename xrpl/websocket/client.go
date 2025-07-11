@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -32,6 +33,13 @@ import (
 const (
 	DefaultFeeCushion float32 = 1.2
 	DefaultMaxFeeXRP  float32 = 2
+
+	// Sidechains are expected to have network IDs above this.
+	// Networks with ID above this restricted number are expected specify an accurate NetworkID field
+	// in every transaction to that chain to prevent replay attacks.
+	// Mainnet and testnet are exceptions. More context: https://github.com/XRPLF/rippled/pull/4370
+	RestrictedNetworks       = 1024
+	RequiredNetworkIDVersion = "1.11.0"
 )
 
 var (
@@ -137,6 +145,12 @@ func (c *Client) Autofill(tx *transaction.FlatTransaction) error {
 		}
 		if txType == transaction.PaymentTx {
 			err := c.checkPaymentAmounts(tx)
+			if err != nil {
+				return err
+			}
+		}
+		if txType == transaction.BatchTx {
+			err := c.autofillRawTransactions(tx)
 			if err != nil {
 				return err
 			}
@@ -519,37 +533,93 @@ func (c *Client) getFeeXrp(cushion float32) (string, error) {
 
 // Calculates the fee per transaction type.
 //
-// TODO: Add fee support for `EscrowFinish` `AccountDelete`, `AMMCreate`, and multisigned transactions.
+// Enhanced implementation that replicates xrpl.js calculateFeePerTransactionType logic,
+// including special cases for EscrowFinish, AccountDelete, AMMCreate, Batch, and multi-signing.
 func (c *Client) calculateFeePerTransactionType(tx *transaction.FlatTransaction, nSigners uint64) error {
-	fee, err := c.getFeeXrp(c.cfg.feeCushion)
+	// Get base network fee
+	netFeeXRP, err := c.getFeeXrp(c.cfg.feeCushion)
 	if err != nil {
 		return err
 	}
 
-	feeDrops, err := currency.XrpToDrops(fee)
+	netFeeDrops, err := currency.XrpToDrops(netFeeXRP)
 	if err != nil {
 		return err
 	}
 
-	if nSigners > 0 {
-		// Convert feeDrops to uint64 for safe arithmetic
-		baseFee, err := strconv.ParseUint(feeDrops, 10, 64)
+	// Convert to uint64 for calculations
+	baseFeeUint, err := strconv.ParseUint(netFeeDrops, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	baseFee := baseFeeUint
+
+	// Get transaction type
+	transactionType := ""
+	if txType, ok := (*tx)["TransactionType"]; ok {
+		if str, ok := txType.(string); ok {
+			transactionType = str
+		}
+	}
+
+	// Check if this is a special transaction cost type
+	isSpecialTxCost := transactionType == "AccountDelete" || transactionType == "AMMCreate"
+
+	switch transactionType {
+	case "EscrowFinish":
+		if fulfillment, ok := (*tx)["Fulfillment"]; ok && fulfillment != nil {
+			if fulfillmentStr, ok := fulfillment.(string); ok && fulfillmentStr != "" {
+				fulfillmentBytesSize := (len(fulfillmentStr) + 1) / 2 // Math.ceil(length / 2)
+				if fulfillmentBytesSize < 0 {
+					return fmt.Errorf("invalid fulfillment length")
+				}
+				// BaseFee × (33 + ceil(Fulfillment size in bytes / 16))
+				chunks := (uint64(fulfillmentBytesSize) + 15) / 16 // ceil division
+				baseFee = baseFeeUint * (33 + chunks)
+			}
+		}
+	case "AccountDelete", "AMMCreate":
+		reserveFee, err := c.fetchOwnerReserveFee()
 		if err != nil {
 			return err
 		}
-
-		// Calculate total signers fee: fee * nSigners
-		signersFee := baseFee * nSigners
-
-		// Add base fee and signers fee
-		totalFee := baseFee + signersFee
-
-		// Convert back to string
-		feeDrops = strconv.FormatUint(totalFee, 10)
+		baseFee = reserveFee
+	case "Batch":
+		rawTxFees, err := c.calculateBatchFees(tx)
+		if err != nil {
+			return err
+		}
+		baseFee = baseFeeUint*2 + rawTxFees
 	}
 
-	(*tx)["Fee"] = feeDrops
+	// Multi-signed Transaction: BaseFee × (1 + Number of Signatures Provided)
+	if nSigners > 0 {
+		signersFee := baseFeeUint * nSigners
+		baseFee += signersFee
+	}
 
+	// Apply max fee limit (but not for special transaction cost types)
+	var totalFee uint64
+	if isSpecialTxCost {
+		totalFee = baseFee
+	} else {
+		maxFeeDrops, err := currency.XrpToDrops(fmt.Sprintf("%.6f", c.cfg.maxFeeXRP))
+		if err != nil {
+			return err
+		}
+		maxFeeUint, err := strconv.ParseUint(maxFeeDrops, 10, 64)
+		if err != nil {
+			return err
+		}
+		if baseFee < maxFeeUint {
+			totalFee = baseFee
+		} else {
+			totalFee = maxFeeUint
+		}
+	}
+
+	(*tx)["Fee"] = strconv.FormatUint(totalFee, 10)
 	return nil
 }
 
@@ -763,4 +833,286 @@ func (c *Client) getSignedTx(tx transaction.FlatTransaction, autofill bool, wall
 		return "", err
 	}
 	return txBlob, nil
+}
+
+// fetchOwnerReserveFee fetches the owner reserve fee from the server state.
+// Replicates the JavaScript fetchOwnerReserveFee function.
+func (c *Client) fetchOwnerReserveFee() (uint64, error) {
+	response, err := c.GetServerState(&server.StateRequest{})
+	if err != nil {
+		return 0, err
+	}
+
+	reserveInc := response.State.ValidatedLedger.ReserveInc
+	if reserveInc == 0 {
+		return 0, errors.New("could not fetch Owner Reserve")
+	}
+
+	return uint64(reserveInc), nil
+}
+
+// calculateBatchFees calculates the total fees for all inner transactions in a Batch.
+// Replicates the JavaScript logic for Batch transaction fee calculation.
+func (c *Client) calculateBatchFees(tx *transaction.FlatTransaction) (uint64, error) {
+	var totalFees uint64
+
+	// Get RawTransactions from the batch transaction
+	rawTransactions, ok := (*tx)["RawTransactions"]
+	if !ok {
+		return 0, errors.New("RawTransactions field missing from Batch transaction")
+	}
+
+	// Convert to array of interfaces
+	rawTxArray, ok := rawTransactions.([]interface{})
+	if !ok {
+		return 0, errors.New("RawTransactions field is not an array")
+	}
+
+	// Iterate through each raw transaction
+	for _, rawTxItem := range rawTxArray {
+
+		// Each item should be a map containing a "RawTransaction" field
+		rawTxWrapper, ok := rawTxItem.(map[string]interface{})
+		if !ok {
+			return 0, errors.New("RawTransaction item is not an object")
+		}
+
+		// Extract the actual transaction from the wrapper
+		innerTx, ok := rawTxWrapper["RawTransaction"]
+		if !ok {
+			return 0, errors.New("RawTransaction field missing from wrapper")
+		}
+
+		innerTxMap, ok := innerTx.(map[string]interface{})
+		if !ok {
+			return 0, errors.New("RawTransaction field is not an object")
+		}
+
+		// Convert to FlatTransaction for fee calculation
+		flatInnerTx := transaction.FlatTransaction(innerTxMap)
+
+		// Calculate fee for this inner transaction (no multi-signing for inner transactions)
+		err := c.calculateFeePerTransactionType(&flatInnerTx, 0)
+		if err != nil {
+
+			return 0, err
+		}
+
+		// Extract the calculated fee
+		feeValue, ok := flatInnerTx["Fee"]
+		if !ok {
+			return 0, errors.New("fee field missing after calculation")
+		}
+
+		feeStr, ok := feeValue.(string)
+		if !ok {
+			return 0, errors.New("fee field is not a string")
+		}
+
+		// Convert fee string to uint64 and add to total
+		feeUint, err := strconv.ParseUint(feeStr, 10, 64)
+		if err != nil {
+			return 0, fmt.Errorf("failed to parse fee '%s': %w", feeStr, err)
+		}
+
+		totalFees += feeUint
+	}
+
+	return totalFees, nil
+}
+
+func (c *Client) autofillRawTransactions(tx *transaction.FlatTransaction) error {
+	needsNetworkID, err := c.txNeedsNetworkID()
+	if err != nil {
+		return err
+	}
+
+	accountSeq := make(map[string]uint32)
+
+	rawTxs, ok := (*tx)["RawTransactions"].([]map[string]any)
+	if !ok {
+		return ErrRawTransactionsFieldIsNotAnArray
+	}
+
+	for _, rawTx := range rawTxs {
+		innerRawTx, ok := rawTx["RawTransaction"].(map[string]any)
+		if !ok {
+			return ErrRawTransactionFieldIsNotAnObject
+		}
+
+		// Validate `Fee` field
+		if innerRawTx["Fee"] == nil {
+			innerRawTx["Fee"] = "0"
+		} else if innerRawTx["Fee"] != "0" {
+			return types.ErrBatchInnerTransactionInvalid
+		}
+
+		// Validate `SigningPubKey` field
+		if innerRawTx["SigningPubKey"] == nil {
+			innerRawTx["SigningPubKey"] = ""
+		} else if innerRawTx["SigningPubKey"] != "" {
+			return ErrSigningPubKeyFieldMustBeEmpty
+		}
+
+		// Validate `TxnSignature` field
+		if innerRawTx["TxnSignature"] != nil {
+			return ErrTxnSignatureFieldMustBeEmpty
+		}
+		if innerRawTx["Signers"] != nil {
+			return ErrSignersFieldMustBeEmpty
+		}
+
+		// Validate `NetworkID` field
+		if innerRawTx["NetworkID"] == nil && needsNetworkID {
+			innerRawTx["NetworkID"] = c.NetworkID
+		}
+
+		// Validate `Sequence` field
+		if innerRawTx["Sequence"] == nil && innerRawTx["TicketSequence"] == nil {
+
+			acc, ok := innerRawTx["Account"].(string)
+			if !ok {
+				return ErrAccountFieldIsNotAString
+			}
+
+			if accountSeq[acc] != 0 {
+				innerRawTx["Sequence"] = accountSeq[acc]
+				accountSeq[acc]++
+			} else {
+				accountInfo, err := c.GetAccountInfo(&account.InfoRequest{
+					Account: types.Address(acc),
+				})
+				if err != nil {
+					return err
+				}
+				var seq uint32
+				if innerRawTx["Account"] == (*tx)["Account"] {
+					seq = accountInfo.AccountData.Sequence + 1
+				} else {
+					seq = accountInfo.AccountData.Sequence
+				}
+				accountSeq[acc] = seq + 1
+				innerRawTx["Sequence"] = seq
+			}
+		}
+	}
+
+	return nil
+}
+
+// isNotLaterRippledVersion determines whether the source rippled version is not later than the target rippled version.
+// Example usage: isNotLaterRippledVersion("1.10.0", "1.11.0") returns true.
+//
+//	isNotLaterRippledVersion("1.10.0", "1.10.0-b1") returns false.
+func isNotLaterRippledVersion(source, target string) bool {
+	if source == target {
+		return true
+	}
+
+	sourceDecomp := strings.Split(source, ".")
+	targetDecomp := strings.Split(target, ".")
+
+	if len(sourceDecomp) < 3 || len(targetDecomp) < 3 {
+		return false
+	}
+
+	sourceMajor, err := strconv.Atoi(sourceDecomp[0])
+	if err != nil {
+		return false
+	}
+	sourceMinor, err := strconv.Atoi(sourceDecomp[1])
+	if err != nil {
+		return false
+	}
+	targetMajor, err := strconv.Atoi(targetDecomp[0])
+	if err != nil {
+		return false
+	}
+	targetMinor, err := strconv.Atoi(targetDecomp[1])
+	if err != nil {
+		return false
+	}
+
+	// Compare major version
+	if sourceMajor != targetMajor {
+		return sourceMajor < targetMajor
+	}
+
+	// Compare minor version
+	if sourceMinor != targetMinor {
+		return sourceMinor < targetMinor
+	}
+
+	sourcePatch := strings.Split(sourceDecomp[2], "-")
+	targetPatch := strings.Split(targetDecomp[2], "-")
+
+	sourcePatchVersion, err := strconv.Atoi(sourcePatch[0])
+	if err != nil {
+		return false
+	}
+	targetPatchVersion, err := strconv.Atoi(targetPatch[0])
+	if err != nil {
+		return false
+	}
+
+	// Compare patch version
+	if sourcePatchVersion != targetPatchVersion {
+		return sourcePatchVersion < targetPatchVersion
+	}
+
+	// Compare release version
+	if len(sourcePatch) != len(targetPatch) {
+		return len(sourcePatch) > len(targetPatch)
+	}
+
+	if len(sourcePatch) == 2 {
+		// Compare different release types
+		if !strings.HasPrefix(sourcePatch[1], string(targetPatch[1][0])) {
+			return sourcePatch[1] < targetPatch[1]
+		}
+
+		// Compare beta version
+		if strings.HasPrefix(sourcePatch[1], "b") {
+			sourceBeta, err := strconv.Atoi(sourcePatch[1][1:])
+			if err != nil {
+				return false
+			}
+			targetBeta, err := strconv.Atoi(targetPatch[1][1:])
+			if err != nil {
+				return false
+			}
+			return sourceBeta < targetBeta
+		}
+
+		// Compare rc version
+		if strings.HasPrefix(sourcePatch[1], "rc") {
+			sourceRC, err := strconv.Atoi(sourcePatch[1][2:])
+			if err != nil {
+				return false
+			}
+			targetRC, err := strconv.Atoi(targetPatch[1][2:])
+			if err != nil {
+				return false
+			}
+			return sourceRC < targetRC
+		}
+	}
+
+	return false
+}
+
+// txNeedsNetworkID determines if the transaction required a networkID to be valid.
+// Transaction needs networkID if later than restricted ID and build version is >= 1.11.0
+func (c *Client) txNeedsNetworkID() (bool, error) {
+	if c.NetworkID != 0 && c.NetworkID > RestrictedNetworks {
+		res, err := c.GetServerInfo(&server.InfoRequest{})
+		if err != nil {
+			return false, err
+		}
+
+		if res.Info.BuildVersion != "" {
+			return isNotLaterRippledVersion(RequiredNetworkIDVersion, res.Info.BuildVersion), nil
+		}
+	}
+	return false, nil
 }
