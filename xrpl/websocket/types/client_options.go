@@ -9,10 +9,3 @@ type SubmitOptions struct {
 	Wallet   *wallet.Wallet
 	FailHard bool
 }
-
-type SubmitBatchOptions struct {
-	Autofill bool
-	Wallet   *wallet.Wallet
-	FailHard bool
-	NSigners uint64
-}
