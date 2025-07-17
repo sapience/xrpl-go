@@ -61,3 +61,21 @@ type PermissionedDomain struct {
 func (*PermissionedDomain) EntryType() EntryType {
 	return PermissionedDomainEntry
 }
+
+func (p *PermissionedDomain) Flatten() FlatLedgerObject {
+	flattened := make(FlatLedgerObject)
+	if p.Index.String() != "" {
+		flattened["index"] = p.Index.String()
+	}
+	flattened["LedgerEntryType"] = p.LedgerEntryType
+	flattened["Fee"] = p.Fee.Flatten()
+	flattened["Flags"] = p.Flags
+	flattened["Owner"] = p.Owner.String()
+	flattened["OwnerNode"] = p.OwnerNode
+	flattened["Sequence"] = p.Sequence
+	flattened["AcceptedCredentials"] = p.AcceptedCredentials.Flatten()
+	flattened["PreviousTxnID"] = p.PreviousTxnID.String()
+	flattened["PreviousTxnLgrSeq"] = p.PreviousTxnLgrSeq
+
+	return flattened
+}
