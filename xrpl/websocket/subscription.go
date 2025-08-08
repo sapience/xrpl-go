@@ -3,7 +3,112 @@ package websocket
 import (
 	subscribe "github.com/Peersyst/xrpl-go/xrpl/queries/subscription"
 	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
+	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 )
+
+// Supports Streams, Accounts, AccountsProposed only. Does not support Books
+// TODO: add Books subscription support
+type subscriptions struct {
+	streams          map[string]bool
+	accounts         map[types.Address]bool
+	accountsProposed map[types.Address]bool
+}
+
+func buildNewSubscriptions() *subscriptions {
+	return &subscriptions{
+		streams:          make(map[string]bool),
+		accounts:         make(map[types.Address]bool),
+		accountsProposed: make(map[types.Address]bool),
+	}
+}
+
+func (s *subscriptions) Add(req *subscribe.Request) {
+	for _, item := range req.Streams {
+		s.streams[item] = true
+	}
+	for _, item := range req.Accounts {
+		s.accounts[item] = true
+	}
+	for _, item := range req.AccountsProposed {
+		s.accountsProposed[item] = true
+	}
+}
+
+func (s *subscriptions) Remove(req *subscribe.UnsubscribeRequest) {
+	for _, item := range req.Streams {
+		s.streams[item] = false
+	}
+	for _, item := range req.Accounts {
+		s.accounts[item] = false
+	}
+	for _, item := range req.AccountsProposed {
+		s.accountsProposed[item] = false
+	}
+}
+
+func (s *subscriptions) buildSubscribeRequest() *subscribe.Request {
+	var streams []string
+	if len(s.streams) > 0 { // This is need to create streams as []string{nil} in case of empty array. it will be omitted by json serialization
+		streams = make([]string, 0, len(s.streams))
+		for k := range s.streams {
+			streams = append(streams, k)
+		}
+	}
+
+	var accounts []types.Address
+	if len(s.accounts) > 0 {
+		accounts = make([]types.Address, 0, len(s.accounts))
+		for k := range s.accounts {
+			accounts = append(accounts, k)
+		}
+	}
+
+	var accountsProposed []types.Address
+	if len(s.accountsProposed) > 0 {
+		accountsProposed = make([]types.Address, 0, len(s.accountsProposed))
+		for k := range s.accountsProposed {
+			accountsProposed = append(accountsProposed, k)
+		}
+	}
+
+	return &subscribe.Request{
+		Streams:          streams,
+		Accounts:         accounts,
+		AccountsProposed: accountsProposed,
+	}
+}
+
+func (s *subscriptions) buildUnsubscribeRequest() *subscribe.UnsubscribeRequest {
+	var streams []string
+	if len(s.streams) > 0 { // This is need to create streams as []string{nil} in case of empty array. it will be omitted by json serialization
+		streams = make([]string, 0, len(s.streams))
+		for k := range s.streams {
+			streams = append(streams, k)
+		}
+	}
+
+	var accounts []types.Address
+	if len(s.accounts) > 0 {
+		accounts = make([]types.Address, 0, len(s.accounts))
+		for k := range s.accounts {
+			accounts = append(accounts, k)
+		}
+	}
+
+	var accountsProposed []types.Address
+	if len(s.accountsProposed) > 0 {
+		accountsProposed = make([]types.Address, 0, len(s.accountsProposed))
+		for k := range s.accountsProposed {
+			accountsProposed = append(accountsProposed, k)
+		}
+	}
+
+	return &subscribe.UnsubscribeRequest{
+		Streams:          streams,
+		Accounts:         accounts,
+		AccountsProposed: accountsProposed,
+	}
+}
 
 // Subscribe subscribes to the streams and accounts specified in the request.
 // It returns a response from the server.
@@ -17,6 +122,8 @@ func (c *Client) Subscribe(req *subscribe.Request) (*subscribe.Response, error) 
 	if err != nil {
 		return nil, err
 	}
+	c.subscriptions.Add(req)
+
 	return &lr, nil
 }
 
@@ -32,6 +139,8 @@ func (c *Client) Unsubscribe(req *subscribe.UnsubscribeRequest) (*subscribe.Unsu
 	if err != nil {
 		return nil, err
 	}
+	c.subscriptions.Remove(req)
+
 	return &lr, nil
 }
 

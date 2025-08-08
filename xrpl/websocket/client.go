@@ -25,7 +25,6 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
 	wstypes "github.com/Peersyst/xrpl-go/xrpl/websocket/types"
-	ws "github.com/gorilla/websocket"
 
 	commonconstants "github.com/Peersyst/xrpl-go/xrpl/common"
 )
@@ -49,8 +48,9 @@ var (
 )
 
 type Client struct {
-	cfg  ClientConfig
-	conn *Connection
+	cfg           ClientConfig
+	conn          *Connection
+	subscriptions *subscriptions
 
 	// Channels
 	errChan          chan error
@@ -71,20 +71,64 @@ type Client struct {
 // This client will open and close a websocket connection for each request.
 func NewClient(cfg ClientConfig) *Client {
 	return &Client{
-		cfg:         cfg,
-		requestChan: make(chan *ClientResponse),
-		errChan:     make(chan error),
-		conn:        NewConnection(cfg.host),
+		cfg:           cfg,
+		requestChan:   make(chan *ClientResponse),
+		errChan:       make(chan error),
+		conn:          NewConnection(cfg.host),
+		subscriptions: buildNewSubscriptions(),
 	}
 }
 
 // Connect opens a websocket connection to the server. It starts reading messages in a goroutine.
 func (c *Client) Connect() error {
+	if c.IsConnected() {
+		return fmt.Errorf("already connected")
+	}
+
 	err := c.conn.Connect()
 	if err != nil {
 		return err
 	}
-	go c.readMessages()
+	go c.connectionManager()
+	return nil
+}
+
+func (c *Client) connectionManager() {
+	initRun := true
+	for {
+		if initRun {
+			initRun = false
+		} else {
+			fmt.Println("Start reconnecting")
+			if err := c.conn.Disconnect(); err != nil {
+				fmt.Printf("Error in disconnecting while reconnect (Continue connecting): %v\n", err)
+			}
+			fmt.Println("should be disconnected")
+			if err := c.conn.Connect(); err != nil {
+				fmt.Println("error in connection attempt, waiting 1s and connect again")
+				time.Sleep(1 * time.Second)
+				continue
+			}
+
+			go c.resubscribe()
+		}
+		c.readMessages()
+	}
+}
+
+func (c *Client) resubscribe() error {
+	fmt.Println("!!! Start RESUBSCRIBING !!!")
+
+	subscribeRequest := c.subscriptions.buildSubscribeRequest()
+	fmt.Printf("RE subscription object: %#v\n", subscribeRequest)
+
+	subRes, err := c.Subscribe(subscribeRequest)
+	fmt.Printf("Response to subscribe: %#v\n", subRes)
+	if err != nil {
+		fmt.Printf("Error while RESUBSCRIBING: %v\n", err)
+		return err
+	}
+
 	return nil
 }
 
@@ -212,6 +256,7 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 		return nil, ErrNotConnectedToServer
 	}
 
+	fmt.Printf("REQUEST ID: %v; BODY: %v\n", int(id), req)
 	err = c.conn.WriteMessage(msg)
 	if err != nil {
 		return nil, err
@@ -687,9 +732,11 @@ func (c *Client) awaitResponse(id int) (*ClientResponse, error) {
 	for {
 		select {
 		case res := <-c.requestChan:
+			fmt.Printf("RESPONSE: %v\n", res)
 			if res.ID == id {
 				return res, nil
 			}
+			fmt.Printf("RESPONSE with wrong ID: %v\n", res)
 		case <-time.After(c.cfg.timeout):
 			return nil, ErrRequestTimedOut
 		}
@@ -722,6 +769,7 @@ func (c *Client) unmarshalMessage(message []byte, v any) {
 }
 
 func (c *Client) handleStream(t streamtypes.Type, message []byte) {
+	fmt.Printf("Stream message type: %s\n", t)
 	switch t {
 	case streamtypes.LedgerStreamType:
 		var ledger streamtypes.LedgerStream
@@ -763,41 +811,21 @@ func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 }
 
 func (c *Client) readMessages() {
-	retryCount := 0
-	maxRetries := c.cfg.maxReconnects
-
+	fmt.Println("START READING MESSAGES")
 	for {
-		if c.conn == nil {
+		if !c.IsConnected() {
+			fmt.Println("No connection. STOP reading messages.")
 			return
 		}
+		fmt.Println("Wait for a new message")
 		message, err := c.conn.ReadMessage()
-		switch {
-		case ws.IsCloseError(err) || ws.IsUnexpectedCloseError(err):
-			if retryCount >= maxRetries {
-				if c.errChan == nil {
-					c.errChan = make(chan error)
-				}
-				c.errChan <- fmt.Errorf("max reconnection attempts (%d) reached", maxRetries)
-				return
-			}
-			retryCount++
-			connErr := c.conn.Connect()
-			if connErr != nil {
-				if c.errChan == nil {
-					c.errChan = make(chan error)
-				}
-				c.errChan <- connErr
-				return
-			}
-		case err != nil:
-			c.errChan <- err
+		fmt.Println("Received message")
+		if err != nil {
+			fmt.Printf("error in READ message: %v\n", err)
 			return
-		default:
-			// Send the message to the channel
-			c.handleMessage(message)
-			// Reset retry count on successful message
-			retryCount = 0
 		}
+		// Send the message to a channel
+		c.handleMessage(message)
 	}
 }
 
