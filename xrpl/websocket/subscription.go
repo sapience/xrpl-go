@@ -80,7 +80,8 @@ func (s *subscriptions) buildSubscribeRequest() *subscribe.Request {
 
 func (s *subscriptions) buildUnsubscribeRequest() *subscribe.UnsubscribeRequest {
 	var streams []string
-	if len(s.streams) > 0 { // This is need to create streams as []string{nil} in case of empty array. it will be omitted by json serialization
+	// This is need to create streams as []string{nil} in case of empty array. it will be omitted by json serialization
+	if len(s.streams) > 0 {
 		streams = make([]string, 0, len(s.streams))
 		for k := range s.streams {
 			streams = append(streams, k)

@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -62,6 +63,7 @@ type Client struct {
 	orderBookChan    chan *streamtypes.OrderBookStream
 	bookChangesChan  chan *streamtypes.BookChangesStream
 	consensusChan    chan *streamtypes.ConsensusStream
+	disconnectChan   chan struct{}
 
 	idCounter atomic.Uint32
 	NetworkID uint32
@@ -71,62 +73,73 @@ type Client struct {
 // This client will open and close a websocket connection for each request.
 func NewClient(cfg ClientConfig) *Client {
 	return &Client{
-		cfg:           cfg,
-		requestChan:   make(chan *ClientResponse),
-		errChan:       make(chan error),
-		conn:          NewConnection(cfg.host),
-		subscriptions: buildNewSubscriptions(),
+		cfg:            cfg,
+		requestChan:    make(chan *ClientResponse),
+		errChan:        make(chan error),
+		conn:           NewConnection(cfg.host),
+		subscriptions:  buildNewSubscriptions(),
+		disconnectChan: make(chan struct{}),
 	}
 }
 
 // Connect opens a websocket connection to the server. It starts reading messages in a goroutine.
 func (c *Client) Connect() error {
 	if c.IsConnected() {
-		return fmt.Errorf("already connected")
+		return fmt.Errorf("already connected, please disconnect first")
 	}
-
 	err := c.conn.Connect()
 	if err != nil {
 		return err
 	}
-	go c.connectionManager()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	go c.connectionManager(ctx)
+	go func() {
+		<-c.disconnectChan
+		cancel()
+	}()
+
 	return nil
 }
 
-func (c *Client) connectionManager() {
+func (c *Client) connectionManager(ctx context.Context) {
 	initRun := true
 	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
 		if initRun {
 			initRun = false
 		} else {
-			fmt.Println("Start reconnecting")
+			fmt.Println("reconnecting...")
 			if err := c.conn.Disconnect(); err != nil {
 				fmt.Printf("Error in disconnecting while reconnect (Continue connecting): %v\n", err)
 			}
-			fmt.Println("should be disconnected")
 			if err := c.conn.Connect(); err != nil {
-				fmt.Println("error in connection attempt, waiting 1s and connect again")
+				fmt.Println("error in connection attempt, waiting 1s and try to connect again")
 				time.Sleep(1 * time.Second)
 				continue
 			}
 
-			go c.resubscribe()
+			go c.resubscribe() // Sends subscription message.
 		}
-		c.readMessages()
+
+		err := c.readMessages()
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
+// This function send a subscription message, which response is read in readMessages().
+// So if an error occurs, it will trigger exit from readMessages() and reconnect in connectionManager().
 func (c *Client) resubscribe() error {
-	fmt.Println("!!! Start RESUBSCRIBING !!!")
-
 	subscribeRequest := c.subscriptions.buildSubscribeRequest()
-	fmt.Printf("RE subscription object: %#v\n", subscribeRequest)
-
-	subRes, err := c.Subscribe(subscribeRequest)
-	fmt.Printf("Response to subscribe: %#v\n", subRes)
+	_, err := c.Subscribe(subscribeRequest)
 	if err != nil {
-		fmt.Printf("Error while RESUBSCRIBING: %v\n", err)
-		return err
+		return fmt.Errorf("error while resubscribing: %w", err)
 	}
 
 	return nil
@@ -134,6 +147,7 @@ func (c *Client) resubscribe() error {
 
 // Disconnect closes the websocket connection.
 func (c *Client) Disconnect() error {
+	c.disconnectChan <- struct{}{}
 	return c.conn.Disconnect()
 }
 
@@ -732,11 +746,9 @@ func (c *Client) awaitResponse(id int) (*ClientResponse, error) {
 	for {
 		select {
 		case res := <-c.requestChan:
-			fmt.Printf("RESPONSE: %v\n", res)
 			if res.ID == id {
 				return res, nil
 			}
-			fmt.Printf("RESPONSE with wrong ID: %v\n", res)
 		case <-time.After(c.cfg.timeout):
 			return nil, ErrRequestTimedOut
 		}
@@ -810,21 +822,16 @@ func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 	}
 }
 
-func (c *Client) readMessages() {
-	fmt.Println("START READING MESSAGES")
+func (c *Client) readMessages() error {
 	for {
 		if !c.IsConnected() {
-			fmt.Println("No connection. STOP reading messages.")
-			return
+			return fmt.Errorf("no connection, stop reading messages")
 		}
-		fmt.Println("Wait for a new message")
 		message, err := c.conn.ReadMessage()
-		fmt.Println("Received message")
 		if err != nil {
-			fmt.Printf("error in READ message: %v\n", err)
-			return
+			return fmt.Errorf("error in read message: %w", err)
 		}
-		// Send the message to a channel
+		// Send the message to a respective channel (ledgerClosedChan, transactionChan, validationChan, peerStatusChan, consensusChan)
 		c.handleMessage(message)
 	}
 }
