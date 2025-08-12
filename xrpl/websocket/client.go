@@ -270,7 +270,6 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 		return nil, ErrNotConnectedToServer
 	}
 
-	fmt.Printf("REQUEST ID: %v; BODY: %v\n", int(id), req)
 	err = c.conn.WriteMessage(msg)
 	if err != nil {
 		return nil, err
