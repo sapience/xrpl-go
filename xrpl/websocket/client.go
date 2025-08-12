@@ -22,6 +22,7 @@ import (
 	"github.com/Peersyst/xrpl-go/xrpl/queries/server"
 	streamtypes "github.com/Peersyst/xrpl-go/xrpl/queries/subscription/types"
 	requests "github.com/Peersyst/xrpl-go/xrpl/queries/transactions"
+	"github.com/Peersyst/xrpl-go/xrpl/queries/utility"
 	"github.com/Peersyst/xrpl-go/xrpl/transaction/types"
 	"github.com/Peersyst/xrpl-go/xrpl/wallet"
 	"github.com/Peersyst/xrpl-go/xrpl/websocket/interfaces"
@@ -102,11 +103,11 @@ func (c *Client) Connect() error {
 	return nil
 }
 
-func (c *Client) connectionManager(ctx context.Context) {
+func (c *Client) connectionManager(disconnectCtx context.Context) {
 	initRun := true
 	for {
 		select {
-		case <-ctx.Done():
+		case <-disconnectCtx.Done():
 			return
 		default:
 		}
@@ -126,10 +127,31 @@ func (c *Client) connectionManager(ctx context.Context) {
 			go c.resubscribe() // Sends subscription message.
 		}
 
+		tickerCtx, tickerCtxCancel := context.WithCancel(disconnectCtx)
+		defer tickerCtxCancel()
+		go func() {
+			ticker := time.NewTicker(20 * time.Second)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-tickerCtx.Done():
+					return
+				case <-ticker.C:
+					_, err := c.Ping(&utility.PingRequest{})
+					if err != nil {
+						fmt.Println("error while pinging: %w", err)
+						c.conn.Disconnect()
+						return
+					}
+				}
+			}
+		}()
+
 		err := c.readMessages()
 		if err != nil {
 			fmt.Println(err)
 		}
+		tickerCtxCancel()
 	}
 }
 
