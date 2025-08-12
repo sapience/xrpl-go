@@ -780,7 +780,6 @@ func (c *Client) unmarshalMessage(message []byte, v any) {
 }
 
 func (c *Client) handleStream(t streamtypes.Type, message []byte) {
-	fmt.Printf("Stream message type: %s\n", t)
 	switch t {
 	case streamtypes.LedgerStreamType:
 		var ledger streamtypes.LedgerStream
