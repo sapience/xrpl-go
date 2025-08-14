@@ -114,12 +114,12 @@ func (c *Client) connectionManager(disconnectCtx context.Context) {
 		if initRun {
 			initRun = false
 		} else {
-			fmt.Println("reconnecting...")
+			c.errChan <- fmt.Errorf("reconnecting to %s", c.cfg.host)
 			if err := c.conn.Disconnect(); err != nil {
-				fmt.Printf("Error in disconnecting while reconnect (Continue connecting): %v\n", err)
+				c.errChan <- fmt.Errorf("error to disconnect while reconnecting: %w", err)
 			}
 			if err := c.conn.Connect(); err != nil {
-				fmt.Println("error in connection attempt, waiting 1s and try to connect again")
+				c.errChan <- fmt.Errorf("error in connection attempt, waiting 1s and try to connect again: %w", err)
 				time.Sleep(1 * time.Second)
 				continue
 			}
@@ -139,7 +139,7 @@ func (c *Client) connectionManager(disconnectCtx context.Context) {
 				case <-ticker.C:
 					_, err := c.Ping(&utility.PingRequest{})
 					if err != nil {
-						fmt.Println("error while pinging: %w", err)
+						c.errChan <- fmt.Errorf("error while pinging: %w", err)
 						c.conn.Disconnect()
 						return
 					}
@@ -149,7 +149,7 @@ func (c *Client) connectionManager(disconnectCtx context.Context) {
 
 		err := c.readMessages()
 		if err != nil {
-			fmt.Println(err)
+			c.errChan <- err
 		}
 		tickerCtxCancel()
 	}
@@ -161,7 +161,8 @@ func (c *Client) resubscribe() error {
 	subscribeRequest := c.subscriptions.buildSubscribeRequest()
 	_, err := c.Subscribe(subscribeRequest)
 	if err != nil {
-		return fmt.Errorf("error while resubscribing: %w", err)
+		c.errChan <- fmt.Errorf("error while resubscribing: %w", err)
+		return err
 	}
 
 	return nil
