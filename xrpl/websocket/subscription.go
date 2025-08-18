@@ -147,17 +147,52 @@ func (c *Client) Unsubscribe(req *subscribe.UnsubscribeRequest) (*subscribe.Unsu
 
 // Handle errors
 
-// OnError handles "error" events.
-// It returns a stream of error streams. Creates a new channel and a goroutine to handle the stream.
+// OnError is needed to provide a mechanism to a library client to handle "error" messages.
+// It creates an error channel and a goroutine to handle the errors.
 func (c *Client) OnError(
 	errHandler func(err error),
 ) {
+	if c.errChan != nil {
+		return
+	}
+
+	c.errChan = make(chan error)
 	go func() {
 		defer close(c.errChan)
 		for err := range c.errChan {
 			errHandler(err)
 		}
 	}()
+}
+
+func (c *Client) error(err error) {
+	if c.errChan != nil {
+		c.errChan <- err
+	}
+}
+
+// OnDebug handles "debug" messages.
+// It creates a debug channel and a goroutine to provide messages to the client.
+func (c *Client) OnDebug(
+	debugHandler func(message string),
+) {
+	if c.debugChan != nil {
+		return
+	}
+
+	c.debugChan = make(chan string)
+	go func() {
+		defer close(c.debugChan)
+		for message := range c.debugChan {
+			debugHandler(message)
+		}
+	}()
+}
+
+func (c *Client) debug(message string) {
+	if c.debugChan != nil {
+		c.debugChan <- message
+	}
 }
 
 // Ledger streams
@@ -167,7 +202,7 @@ func (c *Client) OnError(
 func (c *Client) OnLedgerClosed(
 	handler func(ledger *streamtypes.LedgerStream),
 ) {
-	c.ledgerClosedChan = make(chan *streamtypes.LedgerStream)
+	c.ledgerClosedChan = make(chan *streamtypes.LedgerStream, 10)
 	go func() {
 		defer close(c.ledgerClosedChan)
 		for ledger := range c.ledgerClosedChan {
@@ -183,7 +218,7 @@ func (c *Client) OnLedgerClosed(
 func (c *Client) OnValidationReceived(
 	handler func(validation *streamtypes.ValidationStream),
 ) {
-	c.validationChan = make(chan *streamtypes.ValidationStream)
+	c.validationChan = make(chan *streamtypes.ValidationStream, 10)
 	go func() {
 		defer close(c.validationChan)
 		for validation := range c.validationChan {
@@ -199,7 +234,7 @@ func (c *Client) OnValidationReceived(
 func (c *Client) OnTransactions(
 	handler func(transactions *streamtypes.TransactionStream),
 ) {
-	c.transactionChan = make(chan *streamtypes.TransactionStream)
+	c.transactionChan = make(chan *streamtypes.TransactionStream, 10)
 	go func() {
 		defer close(c.transactionChan)
 		for transaction := range c.transactionChan {
@@ -215,7 +250,7 @@ func (c *Client) OnTransactions(
 func (c *Client) OnPeerStatusChange(
 	handler func(peerStatus *streamtypes.PeerStatusStream),
 ) {
-	c.peerStatusChan = make(chan *streamtypes.PeerStatusStream)
+	c.peerStatusChan = make(chan *streamtypes.PeerStatusStream, 10)
 	go func() {
 		defer close(c.peerStatusChan)
 		for peerStatus := range c.peerStatusChan {
@@ -231,7 +266,7 @@ func (c *Client) OnPeerStatusChange(
 func (c *Client) OnOrderBook(
 	handler func(orderbook *streamtypes.OrderBookStream),
 ) {
-	c.orderBookChan = make(chan *streamtypes.OrderBookStream)
+	c.orderBookChan = make(chan *streamtypes.OrderBookStream, 10)
 	go func() {
 		defer close(c.orderBookChan)
 		for orderbook := range c.orderBookChan {
@@ -247,7 +282,7 @@ func (c *Client) OnOrderBook(
 func (c *Client) OnBookChanges(
 	handler func(bookChanges *streamtypes.BookChangesStream),
 ) {
-	c.bookChangesChan = make(chan *streamtypes.BookChangesStream)
+	c.bookChangesChan = make(chan *streamtypes.BookChangesStream, 10)
 	go func() {
 		defer close(c.bookChangesChan)
 		for bookChanges := range c.bookChangesChan {
@@ -264,7 +299,7 @@ func (c *Client) OnConsensusPhase(
 	handler func(consensusPhase *streamtypes.ConsensusStream),
 ) {
 
-	c.consensusChan = make(chan *streamtypes.ConsensusStream)
+	c.consensusChan = make(chan *streamtypes.ConsensusStream, 10)
 	go func() {
 		defer close(c.consensusChan)
 		for consensusPhase := range c.consensusChan {

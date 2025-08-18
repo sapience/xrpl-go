@@ -56,6 +56,7 @@ type Client struct {
 
 	// Channels
 	errChan          chan error
+	debugChan        chan string
 	requestChan      chan *ClientResponse
 	ledgerClosedChan chan *streamtypes.LedgerStream
 	validationChan   chan *streamtypes.ValidationStream
@@ -75,8 +76,7 @@ type Client struct {
 func NewClient(cfg ClientConfig) *Client {
 	return &Client{
 		cfg:            cfg,
-		requestChan:    make(chan *ClientResponse),
-		errChan:        make(chan error),
+		requestChan:    make(chan *ClientResponse, 10),
 		conn:           NewConnection(cfg.host),
 		subscriptions:  buildNewSubscriptions(),
 		disconnectChan: make(chan struct{}),
@@ -111,18 +111,20 @@ func (c *Client) connectionManager(disconnectCtx context.Context) {
 			return
 		default:
 		}
+
 		if initRun {
 			initRun = false
 		} else {
-			c.errChan <- fmt.Errorf("reconnecting to %s", c.cfg.host)
+			c.error(fmt.Errorf("reconnecting to %s", c.cfg.host))
 			if err := c.conn.Disconnect(); err != nil {
-				c.errChan <- fmt.Errorf("error to disconnect while reconnecting: %w", err)
+				c.debug(fmt.Sprintf("error to disconnect while reconnecting: %v", err))
 			}
 			if err := c.conn.Connect(); err != nil {
-				c.errChan <- fmt.Errorf("error in connection attempt, waiting 1s and try to connect again: %w", err)
+				c.error(fmt.Errorf("error in connection attempt, waiting 1s and try to connect again: %w", err))
 				time.Sleep(1 * time.Second)
 				continue
 			}
+			c.error(fmt.Errorf("connected to %s", c.cfg.host))
 
 			go c.resubscribe() // Sends subscription message.
 		}
@@ -139,7 +141,7 @@ func (c *Client) connectionManager(disconnectCtx context.Context) {
 				case <-ticker.C:
 					_, err := c.Ping(&utility.PingRequest{})
 					if err != nil {
-						c.errChan <- fmt.Errorf("error while pinging: %w", err)
+						c.error(fmt.Errorf("error while pinging: %w", err))
 						c.conn.Disconnect()
 						return
 					}
@@ -149,7 +151,7 @@ func (c *Client) connectionManager(disconnectCtx context.Context) {
 
 		err := c.readMessages()
 		if err != nil {
-			c.errChan <- err
+			c.error(err)
 		}
 		tickerCtxCancel()
 	}
@@ -161,7 +163,7 @@ func (c *Client) resubscribe() error {
 	subscribeRequest := c.subscriptions.buildSubscribeRequest()
 	_, err := c.Subscribe(subscribeRequest)
 	if err != nil {
-		c.errChan <- fmt.Errorf("error while resubscribing: %w", err)
+		c.error(fmt.Errorf("error while resubscribing: %w", err))
 		return err
 	}
 
@@ -283,6 +285,7 @@ func (c *Client) Request(req interfaces.Request) (*ClientResponse, error) {
 	}
 
 	id := c.idCounter.Add(1)
+	c.debug(fmt.Sprintf("id: %v, req: %+v", id, req))
 
 	msg, err := c.formatRequest(req, int(id), nil)
 	if err != nil {
@@ -768,6 +771,7 @@ func (c *Client) awaitResponse(id int) (*ClientResponse, error) {
 	for {
 		select {
 		case res := <-c.requestChan:
+			c.debug(fmt.Sprintf("res ID: %+v, waiting for %+v", res.ID, id))
 			if res.ID == id {
 				return res, nil
 			}
@@ -798,7 +802,7 @@ func (c *Client) unmarshalMessage(message []byte, v any) {
 		if c.errChan == nil {
 			c.errChan = make(chan error)
 		}
-		c.errChan <- err
+		c.error(err)
 	}
 }
 
@@ -839,7 +843,7 @@ func (c *Client) handleStream(t streamtypes.Type, message []byte) {
 		if c.errChan == nil {
 			c.errChan = make(chan error)
 		}
-		c.errChan <- fmt.Errorf("unknown stream type: %v", t)
+		c.error(fmt.Errorf("unknown stream type: %v", t))
 	}
 }
 
