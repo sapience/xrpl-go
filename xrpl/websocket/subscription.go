@@ -234,7 +234,7 @@ func (c *Client) OnValidationReceived(
 func (c *Client) OnTransactions(
 	handler func(transactions *streamtypes.TransactionStream),
 ) {
-	c.transactionChan = make(chan *streamtypes.TransactionStream, 10)
+	c.transactionChan = make(chan *streamtypes.TransactionStream, 40)
 	go func() {
 		defer close(c.transactionChan)
 		for transaction := range c.transactionChan {

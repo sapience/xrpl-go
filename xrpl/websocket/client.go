@@ -76,7 +76,7 @@ type Client struct {
 func NewClient(cfg ClientConfig) *Client {
 	return &Client{
 		cfg:            cfg,
-		requestChan:    make(chan *ClientResponse, 10),
+		requestChan:    make(chan *ClientResponse, 30),
 		conn:           NewConnection(cfg.host),
 		subscriptions:  buildNewSubscriptions(),
 		disconnectChan: make(chan struct{}),
